@@ -74,14 +74,12 @@ Duckiebot-v0
 ## Installation
 
 Requirements:
-- Python 3.6+
+- Python 3.9
 - OpenAI gym
 - NumPy
 - Pyglet
 - PyYAML
 - PyTorch
-
-You can install all the dependencies except PyTorch with `pip3`:
 
 ```
 git clone https://github.com/duckietown/gym-duckietown.git
@@ -89,18 +87,34 @@ cd gym-duckietown
 pip3 install -e .
 ```
 
-Reinforcement learning code forked from [this repository](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr)
-is included under [/pytorch_rl](/pytorch_rl). If you wish to use this code, you
-should install [PyTorch](http://pytorch.org/).
+*** NO LONGER VALID:
+*** Reinforcement learning code forked from [this repository](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr)
+*** is included under [/pytorch_rl](/pytorch_rl). If you wish to use this code, you
+*** should install [PyTorch](http://pytorch.org/).
 
-### Installation Using Conda (Alternative Method)
+### Installation Using Conda & Pip (***Working***)
 
-Alternatively, you can install all the dependencies, including PyTorch, using Conda as follows. For those trying to use this package on MILA machines, this is the way to go:
+You can install all the dependencies, including PyTorch, using Conda as follows. For those trying to use this package on MILA machines, this is the way to go:
 
 ```
 git clone https://github.com/duckietown/gym-duckietown.git
 cd gym-duckietown
 conda env create -f environment.yaml
+conda develop .
+```
+
+Please note that if you use Conda to install this package instead of pip, you will need to activate your Conda environment and add the package to your Python path before you can use it
+by running the following commands:
+
+```
+source activate gym-duckietown
+export PYTHONPATH="${PYTHONPATH}:`pwd`"
+```
+
+Finally, run pip install using the setup.py (run the following command)
+
+```
+pip3 install -e .
 ```
 
 Please note that if you use Conda to install this package instead of pip, you will need to activate your Conda environment and add the package to your Python path before you can use it:
@@ -110,11 +124,11 @@ source activate gym-duckietown
 export PYTHONPATH="${PYTHONPATH}:`pwd`"
 ```
 
-### Docker Image
+### Docker Image (***NOT YET ASSESSED, LIKELY NOT WORKING***)
 
 There is a pre-built Docker image available [on Docker Hub](https://hub.docker.com/r/duckietown/gym-duckietown), which also contains an installation of PyTorch.
 
-*Note that in order to get GPU acceleration, you should install and use [nvidia-docker 2.0](https://github.com/nvidia/nvidia-docker/wiki/Installation-(version-2.0)).*
+Note that in order to get GPU acceleration, you should install and use [nvidia-docker 2.0](https://github.com/nvidia/nvidia-docker/wiki/Installation-(version-2.0)).*
 
 To get started, pull the `duckietown/gym-duckietown` image from Docker Hub and open a shell in the container:
 
@@ -162,23 +176,30 @@ There is a simple UI application which allows you to control the simulation or r
 ./manual_control.py --env-name Duckietown-udem1-v0
 ```
 
-There is also a script to run automated tests (`run_tests.py`) and a script to gather performance metrics (`benchmark.py`).
+(*** NOT WORKING***) There is also a script to run automated tests (`run_tests.py`) and a script to gather performance metrics (`benchmark.py`).
 
-### Reinforcement Learning
+### Reinforcement Learning (*** WORKING ***)
 
-To train a reinforcement learning agent, you can use the code provided under [/pytorch_rl](/pytorch_rl). I recommend using the A2C or ACKTR algorithms. A sample command to launch training is:
-
-```
-python3 pytorch_rl/main.py --no-vis --env-name Duckietown-small_loop-v0 --algo a2c --lr 0.0002 --max-grad-norm 0.5 --num-steps 20
-```
-
-Then, to visualize the results of training, you can run the following command. Note that you can do this while the training process is still running. Also note that if you are running this through SSH, you will need to enable X forwarding to get a display:
+To train a reinforcement learning agent, you can use the code provided under [/learning/reinforcement/pytorch](/learning/reinforcement/pytorch). This training example uses DDPG algorithm.  A sample command to launch training with default parameters is:
 
 ```
-python3 pytorch_rl/enjoy.py --env-name Duckietown-small_loop-v0 --num-stack 1 --load-dir trained_models/a2c
+python3 learning/reinforcement/pytorch/train_reinforcement.py 
 ```
 
-### Imitation Learning
+To see a list of training parameters run:
+
+```
+python3 learning/reinforcement/pytorch/train_reinforcement.py -h
+```
+
+Then, to visualize the results of training, you can run the following command. Note that you can do this while the training process is still running (***UNSURE IF TRUE***). Also note that if you are running this through SSH, you will need to enable X forwarding to get a display:
+
+```
+python3 learning/reinforcement/pytorch/enjoy_reinforcement.py
+```
+
+### Imitation Learning (*** NOT YET WORKING & OUT OF DATE***)
+*** DIRECTORIES OUT OF DATE, NO EXPERIMENTS. IGNORE FOR NOW.
 
 There is a script in the `experiments` directory which automatically generates a dataset of synthetic demonstrations. It uses hillclimbing to optimize the reward obtained, and outputs a JSON file:
 
@@ -199,6 +220,8 @@ experiments/control_imitation.py --map-name loop_obstacles
 ```
 
 Note that it is possible to have `gen_demos.py` and `train_imitate.py` running simultaneously, so that training takes place while new demonstrations are being generated. You can also run `control_imitate.py` periodically during training to check on learning progress.
+
+## ***BELOW THIS HAS NOT BEEN EVALUATED AS WORKING YET***
 
 ## Design
 
