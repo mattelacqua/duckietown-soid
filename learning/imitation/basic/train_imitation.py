@@ -16,11 +16,11 @@ import numpy as np
 import torch
 import torch.optim as optim
 
-from utils.env import launch_env
-from utils.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper
-from utils.teacher import PurePursuitExpert
+from utilities.env import launch_env
+from utilities.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper
+from utilities.teacher import PurePursuitExpert
 
-from imitation.pytorch.model import Model
+from imitation.basic.model import Model
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

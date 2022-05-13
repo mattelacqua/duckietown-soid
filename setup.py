@@ -26,8 +26,7 @@ line = "daffy"
 install_requires = [
     "gym>=0.17.1",
     "numpy>=1.10.0",
-    "pyglet",
-    # 'pyglet',
+    "pyglet==1.5.11",
     "pyzmq>=16.0.0",
     "opencv-python>=3.4",
     "pyyaml>=3.11",
@@ -37,6 +36,7 @@ install_requires = [
     "zuper-commons-z6",
     "typing-extensions",
     "Pillow",
+    "torch",
 ]
 
 system_version = tuple(sys.version_info)[:3]
