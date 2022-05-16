@@ -224,6 +224,12 @@ To run the basic training run:
 python3 learning/imitation/basic/train_imitation.py
 ```
 
+To see a list of training parameters run:
+
+```
+python3 learning/imitation/basic/train_imitation.py -h
+```
+
 Then, to visualize the results of training, you can run the following command. Note that you can do this while the training process is still running (***UNSURE IF TRUE***). Also note that if you are running this through SSH, you will need to enable X forwarding to get a display:
 
 ```
