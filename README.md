@@ -226,13 +226,13 @@ There is are several different imitation learning examples. Those that are curre
 To run the basic training run:
 
 ```
-python3 learning/imitation/basic/train_reinforment.py
+python3 learning/imitation/basic/train_imitation.py
 ```
 
 Then, to visualize the results of training, you can run the following command. Note that you can do this while the training process is still running (***UNSURE IF TRUE***). Also note that if you are running this through SSH, you will need to enable X forwarding to get a display:
 
 ```
-python3 learning/imitation/basic/train_reinforcement.py
+python3 learning/imitation/basic/enjoy_imitation.py
 ```
 
 
