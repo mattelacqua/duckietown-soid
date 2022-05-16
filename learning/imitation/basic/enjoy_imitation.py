@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#/usr/bin/env python3
 
 """
 Control the simulator or Duckiebot using a model trained with imitation
@@ -19,7 +19,7 @@ from utilities.env import launch_env
 from utilities.wrappers import NormalizeWrapper, ImgWrapper, DtRewardWrapper, ActionWrapper, ResizeWrapper
 from utilities.teacher import PurePursuitExpert
 
-from imitation.pytorch.model import Model
+from imitation.basic.model import Model
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -28,7 +28,7 @@ def _enjoy():
     model = Model(action_dim=2, max_action=1.0)
 
     try:
-        state_dict = torch.load("trained_models/imitate.pt", map_location=device)
+        state_dict = torch.load("learning/imitation/basic/models/imitate.pt", map_location=device)
         model.load_state_dict(state_dict)
     except:
         print("failed to load model")

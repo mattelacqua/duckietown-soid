@@ -34,8 +34,13 @@ class PurePursuitExpert:
         while iterations < self.max_iterations:
             # Project a point ahead along the curve tangent,
             # then find the closest point to to that
-            follow_point = closest_point + closest_tangent * lookup_distance
-            curve_point, _ = self.env.closest_curve_point(follow_point, self.env.cur_angle)
+            print(lookup_distance)
+            print(closest_tangent)
+            if closest_tangent is not None and closest_point is not None:
+                follow_point = closest_point + closest_tangent * lookup_distance
+                curve_point, _ = self.env.closest_curve_point(follow_point, self.env.cur_angle)
+            else:
+                curve_point = None
 
             # If we have a valid point on the curve, stop
             if curve_point is not None:
@@ -45,7 +50,12 @@ class PurePursuitExpert:
             lookup_distance *= 0.5
 
         # Compute a normalized vector to the curve point
-        point_vec = curve_point - self.env.cur_pos
+        print("CURVE POINT")
+        print(curve_point)
+        if curve_point is not None:
+            point_vec = curve_point - self.env.cur_pos
+        else:
+            point_vec = self.env.cur_pos
         point_vec /= np.linalg.norm(point_vec)
 
         dot = np.dot(get_right_vec(self.env.cur_angle), point_vec)
