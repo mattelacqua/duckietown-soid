@@ -79,14 +79,17 @@ def _train(args):
         loss.backward()
         optimizer.step()
 
-        loss = loss.data[0]
+        print("LOSS")
+        print(loss.size())
+        #loss = loss.data[0]
+        loss = loss.item()
         avg_loss = avg_loss * 0.995 + loss * 0.005
 
         print("epoch %d, loss=%.3f" % (epoch, avg_loss))
 
         # Periodically save the trained model
         if epoch % 200 == 0:
-            torch.save(model.state_dict(), "imitation/pytorch/models/imitate.pt")
+            torch.save(model.state_dict(), "learning/imitation/basic/models/imitate.pt")
 
 
 if __name__ == "__main__":
