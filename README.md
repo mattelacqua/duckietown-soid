@@ -94,7 +94,7 @@ pip3 install -e .
 
 ### Installation Using Conda & Pip (***Working***)
 
-You can install all the dependencies, including PyTorch, using Conda as follows. For those trying to use this package on MILA machines, this is the way to go:
+You can install all the dependencies, including PyTorch, using Conda as follows. Using MiniConda3:
 
 ```
 git clone https://github.com/duckietown/gym-duckietown.git
@@ -104,7 +104,7 @@ conda develop .
 ```
 
 Please note that if you use Conda to install this package instead of pip, you will need to activate your Conda environment and add the package to your Python path before you can use it
-by running the following commands:
+by running the following commands (you may have to reshell first for conda to work):
 
 ```
 source activate gym-duckietown
@@ -125,8 +125,8 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`"
 ```
 
 ### Docker Image (***NOT YET ASSESSED, LIKELY NOT WORKING***)
-
-There is a pre-built Docker image available [on Docker Hub](https://hub.docker.com/r/duckietown/gym-duckietown), which also contains an installation of PyTorch.
+Not tested, using the conda build above. Markdown Hidden in Comment.
+<!-- There is a pre-built Docker image available [on Docker Hub](https://hub.docker.com/r/duckietown/gym-duckietown), which also contains an installation of PyTorch.
 
 Note that in order to get GPU acceleration, you should install and use [nvidia-docker 2.0](https://github.com/nvidia/nvidia-docker/wiki/Installation-(version-2.0)).*
 
@@ -165,7 +165,7 @@ docker build . \
        --network=host \
        --tag <YOUR_TAG_GOES_HERE>
 ```
-
+--->
 ## Usage
 
 ### Testing
@@ -198,8 +198,8 @@ Then, to visualize the results of training, you can run the following command. N
 python3 learning/reinforcement/pytorch/enjoy_reinforcement.py
 ```
 
-### Imitation Learning (*** NOT YET WORKING & OUT OF DATE***)
-*** DIRECTORIES OUT OF DATE, NO EXPERIMENTS. IGNORE FOR NOW.
+### Imitation Learning (*** In Progress ***)
+<!-- *** DIRECTORIES OUT OF DATE, NO EXPERIMENTS. IGNORE FOR NOW.
 
 There is a script in the `experiments` directory which automatically generates a dataset of synthetic demonstrations. It uses hillclimbing to optimize the reward obtained, and outputs a JSON file:
 
@@ -219,7 +219,22 @@ Finally, you can visualize what the trained model is doing with:
 experiments/control_imitation.py --map-name loop_obstacles
 ```
 
-Note that it is possible to have `gen_demos.py` and `train_imitate.py` running simultaneously, so that training takes place while new demonstrations are being generated. You can also run `control_imitate.py` periodically during training to check on learning progress.
+Note that it is possible to have `gen_demos.py` and `train_imitate.py` running simultaneously, so that training takes place while new demonstrations are being generated. You can also run `control_imitate.py` periodically during training to check on learning progress. -->
+
+There is are several different imitation learning examples. Those that are currently working are: ([basic](learning/imitation/basic))
+
+To run the basic training run:
+
+```
+python3 learning/imitation/basic/train_reinforment.py
+```
+
+Then, to visualize the results of training, you can run the following command. Note that you can do this while the training process is still running (***UNSURE IF TRUE***). Also note that if you are running this through SSH, you will need to enable X forwarding to get a display:
+
+```
+python3 learning/imitation/basic/train_reinforcement.py
+```
+
 
 ## ***BELOW THIS HAS NOT BEEN EVALUATED AS WORKING YET***
 
