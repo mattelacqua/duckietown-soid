@@ -87,10 +87,10 @@ cd gym-duckietown
 pip3 install -e .
 ```
 
-*** NO LONGER VALID:
+<!--- *** NO LONGER VALID:
 *** Reinforcement learning code forked from [this repository](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr)
 *** is included under [/pytorch_rl](/pytorch_rl). If you wish to use this code, you
-*** should install [PyTorch](http://pytorch.org/).
+*** should install [PyTorch](http://pytorch.org/). -->
 
 ### Installation Using Conda & Pip (***Working***)
 
@@ -111,17 +111,11 @@ source activate gym-duckietown
 export PYTHONPATH="${PYTHONPATH}:`pwd`"
 ```
 
-Finally, run pip install using the setup.py (run the following command)
+Finally, once in the conda environment for duckietown, run pip install using the setup.py (run the following command).
+*** Make sure that you install in the conda env. Might run into issues if using your machine env.
 
 ```
 pip3 install -e .
-```
-
-Please note that if you use Conda to install this package instead of pip, you will need to activate your Conda environment and add the package to your Python path before you can use it:
-
-```
-source activate gym-duckietown
-export PYTHONPATH="${PYTHONPATH}:`pwd`"
 ```
 
 ### Docker Image (***NOT YET ASSESSED, LIKELY NOT WORKING***)
@@ -176,7 +170,8 @@ There is a simple UI application which allows you to control the simulation or r
 ./manual_control.py --env-name Duckietown-udem1-v0
 ```
 
-(*** NOT WORKING***) There is also a script to run automated tests (`run_tests.py`) and a script to gather performance metrics (`benchmark.py`).
+run_tests.py not working. See comment in MD 
+<!--(*** NOT WORKING***) There is also a script to run automated tests (`run_tests.py`) and a script to gather performance metrics (`benchmark.py`).-->
 
 ### Reinforcement Learning (*** WORKING ***)
 
