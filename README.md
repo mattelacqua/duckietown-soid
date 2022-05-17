@@ -94,7 +94,7 @@ pip3 install -e .
 
 ### Installation Using Conda & Pip (***Working***)
 
-You can install all the dependencies, including PyTorch, using Conda as follows. Using MiniConda3:
+You can install all the dependencies, including PyTorch, using [Conda](https://docs.conda.io/en/latest/miniconda.html) as follows. Using MiniConda3:
 
 ```
 git clone https://github.com/duckietown/gym-duckietown.git
