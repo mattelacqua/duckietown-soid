@@ -1,7 +1,7 @@
-from .train import launch_env, teacher
-from .learner import NeuralNetworkPolicy
-from .model import Squeezenet
-from .algorithms import DAgger
+from train import launch_env, teacher
+from learner import NeuralNetworkPolicy
+from model import Squeezenet
+from algorithms import DAgger
 import argparse
 import os
 
@@ -28,6 +28,8 @@ if __name__ == "__main__":
     task_horizon = config.horizon
     task_episode = config.episode
 
+    print("MODEL PATH")
+    print (config.model_path)
     if not (os.path.isfile(config.model_path)):
         raise Exception("Model File not found")
 

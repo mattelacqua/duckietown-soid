@@ -37,6 +37,8 @@ install_requires = [
     "typing-extensions",
     "Pillow",
     "torch",
+    "torchvision",
+    "tensorboard",
 ]
 
 system_version = tuple(sys.version_info)[:3]
