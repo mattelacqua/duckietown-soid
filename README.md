@@ -1,4 +1,4 @@
-# Gym-Duckietown
+# Gym-Duckietown (Edited for ROSE Soid Project)
 
 [![Build Status](https://circleci.com/gh/duckietown/gym-duckietown/tree/master.svg?style=shield)](https://circleci.com/gh/duckietown/gym-duckietown/tree/master) [![Docker Hub](https://img.shields.io/docker/pulls/duckietown/gym-duckietown.svg)](https://hub.docker.com/r/duckietown/gym-duckietown)
 
