@@ -30,7 +30,7 @@ def _enjoy():
 
     # Initialize policy
     policy = DDPG(state_dim, action_dim, max_action, net_type="cnn")
-    policy.load(filename="ddpg", directory="reinforcement/pytorch/models")
+    policy.load(filename="ddpg", directory="learning/reinforcement/pytorch/models")
 
     obs = env.reset()
     done = False

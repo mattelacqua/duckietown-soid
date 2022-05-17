@@ -143,6 +143,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--replay_buffer_max_size", default=10000, type=int
     )  # Maximum number of steps to keep in the replay buffer
-    parser.add_argument("--model-dir", type=str, default="reinforcement/pytorch/models/")
+    parser.add_argument("--model-dir", type=str, default="learning/reinforcement/pytorch/models/")
 
     _train(parser.parse_args())
