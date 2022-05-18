@@ -83,7 +83,7 @@ Requirements:
 
 ```
 git clone git@github.com:mattelacqua/duckietown-soid.git
-cd gym-duckietown
+cd duckietown-soid
 pip3 install -e .
 ```
 
