@@ -82,7 +82,7 @@ Requirements:
 - PyTorch
 
 ```
-git clone https://github.com/duckietown/gym-duckietown.git
+git clone git@github.com:mattelacqua/duckietown-soid.git
 cd gym-duckietown
 pip3 install -e .
 ```
