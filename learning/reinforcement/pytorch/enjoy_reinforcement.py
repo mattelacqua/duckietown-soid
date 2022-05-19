@@ -31,6 +31,22 @@ def _enjoy():
     # Initialize policy
     policy = DDPG(state_dim, action_dim, max_action, net_type="cnn")
     policy.load(filename="ddpg", directory="learning/reinforcement/pytorch/models")
+    print("POLICY")
+    print("Flat:")
+    print(policy.flat)
+    print("Actor:")
+    print(policy.actor)
+    print("ActorTarget:")
+    print(policy.actor_target)
+    print("Critic:")
+    print(policy.critic)
+    print("CriticTarget:")
+    print(policy.critic_target)
+    print("Optimizer:")
+    print(policy.critic_optimizer)
+    print("StateDim:")
+    print(policy.state_dim)
+
 
     obs = env.reset()
     done = False

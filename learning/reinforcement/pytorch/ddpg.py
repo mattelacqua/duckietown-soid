@@ -223,16 +223,16 @@ class DDPG(object):
                 target_param.data.copy_(tau * param.data + (1 - tau) * target_param.data)
 
     def save(self, filename, directory):
-        print("Saving to {}/{}_[actor|critic].pth".format(directory, filename))
-        torch.save(self.actor.state_dict(), "{}/{}_actor.pth".format(directory, filename))
+        print("Saving to {}/{}_[actor|critic].pt".format(directory, filename))
+        torch.save(self.actor.state_dict(), "{}/{}_actor.pt".format(directory, filename))
         print("Saved Actor")
-        torch.save(self.critic.state_dict(), "{}/{}_critic.pth".format(directory, filename))
+        torch.save(self.critic.state_dict(), "{}/{}_critic.pt".format(directory, filename))
         print("Saved Critic")
 
     def load(self, filename, directory):
         self.actor.load_state_dict(
-            torch.load("{}/{}_actor.pth".format(directory, filename), map_location=device)
+            torch.load("{}/{}_actor.pt".format(directory, filename), map_location=device)
         )
         self.critic.load_state_dict(
-            torch.load("{}/{}_critic.pth".format(directory, filename), map_location=device)
+            torch.load("{}/{}_critic.pt".format(directory, filename), map_location=device)
         )
