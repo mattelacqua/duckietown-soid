@@ -111,6 +111,7 @@ source activate gym-duckietown
 export PYTHONPATH="${PYTHONPATH}:`pwd`"
 cd learning
 export PYTHONPATH="${PYTHONPATH}:`pwd`"
+cd ..
 ```
 
 Finally, once in the conda environment for duckietown, run pip install using the setup.py (run the following command).
