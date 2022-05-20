@@ -769,6 +769,8 @@ class Simulator(gym.Env):
 
         map_name = "maps/" + map_name
         # Store the map name
+        print(map_name)
+        print(os.path.exists(map_name))
         if os.path.exists(map_name) and os.path.isfile(map_name):
             # if env is loaded using gym's register function, we need to extract the map name from the complete url
             map_name = os.path.basename(map_name)

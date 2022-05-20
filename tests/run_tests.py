@@ -7,7 +7,14 @@ from gym_duckietown.envs import DuckietownEnv, MultiMapEnv
 from gym_duckietown.simulator import get_agent_corners
 from gym_duckietown.wrappers import PyTorchObsWrapper
 
-env = gym.make("Duckietown-udem1-v0")
+#env = gym.make("Duckietown-udem1-v0")
+env = DuckietownEnv(
+    seed=1,
+    map_name="udem1",
+    frame_skip=1,
+    distortion=False,
+    camera_rand=False,
+)
 env.reset()
 # Try stepping a few times
 for i in range(0, 10):
@@ -56,3 +63,4 @@ env = DuckietownEnv(map_name="udem1", draw_bbox=True)
 env.render("rgb_array")
 env = DuckietownEnv(map_name="loop_obstacles", draw_bbox=True)
 env.render("rgb_array")
+
