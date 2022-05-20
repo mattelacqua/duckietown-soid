@@ -165,18 +165,24 @@ docker build . \
 --->
 ## Usage
 
-### Testing
+### Agents (No Deep Learning)
 
 There is a simple UI application which allows you to control the simulation or real robot manually. The `manual_control.py` application will launch the Gym environment, display camera images and send actions (keyboard commands) back to the simulator or robot. You can specify which map file to load with the `--map-name` argument:
 
 ```
-./manual_control.py --env-name Duckietown-udem1-v0
+python3 agents/manual_control.py --env-name Duckietown-udem1-v0
 ```
 
-run_tests.py not working. See comment in MD 
-<!--(*** NOT WORKING***) There is also a script to run automated tests (`run_tests.py`) and a script to gather performance metrics (`benchmark.py`).-->
+There is a lazy agent that will just move forwards until an obstacle is reached (add the --cam_mode top_down for a top down view) :
 
-### Reinforcement Learning (*** WORKING ***)
+```
+python3 agents/lazy_agent.py --env-name Duckietown-udem1-v0
+```
+
+
+
+
+### Reinforcement Learning Agents 
 
 To train a reinforcement learning agent, you can use the code provided under [/learning/reinforcement/pytorch](/learning/reinforcement/pytorch). This training example uses DDPG algorithm.  A sample command to launch training with default parameters is:
 
@@ -190,34 +196,13 @@ To see a list of training parameters run:
 python3 learning/reinforcement/pytorch/train_reinforcement.py -h
 ```
 
-Then, to visualize the results of training, you can run the following command. Note that you can do this while the training process is still running (***UNSURE IF TRUE***). Also note that if you are running this through SSH, you will need to enable X forwarding to get a display:
+Then, to visualize the results of training, you can run the following command. Note that you can do this while the training process is still running. Also note that if you are running this through SSH, you will need to enable X forwarding to get a display:
 
 ```
 python3 learning/reinforcement/pytorch/enjoy_reinforcement.py
 ```
 
 ### Imitation Learning (*** In Progress ***)
-<!-- *** DIRECTORIES OUT OF DATE, NO EXPERIMENTS. IGNORE FOR NOW.
-
-There is a script in the `experiments` directory which automatically generates a dataset of synthetic demonstrations. It uses hillclimbing to optimize the reward obtained, and outputs a JSON file:
-
-```
-experiments/gen_demos.py --map-name loop_obstacles
-```
-
-Then you can start training an imitation learning model (conv net) with:
-
-```
-experiments/train_imitation.py --map-name loop_obstacles
-```
-
-Finally, you can visualize what the trained model is doing with:
-
-```
-experiments/control_imitation.py --map-name loop_obstacles
-```
-
-Note that it is possible to have `gen_demos.py` and `train_imitate.py` running simultaneously, so that training takes place while new demonstrations are being generated. You can also run `control_imitate.py` periodically during training to check on learning progress. -->
 
 There is are several different imitation learning examples. Those that are currently working are: ([basic](learning/imitation/basic))
 
