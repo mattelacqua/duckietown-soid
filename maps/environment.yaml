@@ -1,0 +1,7 @@
+name: duckietown
+channels:
+    - pytorch
+    - defaults
+dependencies:
+    - python=3.9
+    - conda-build

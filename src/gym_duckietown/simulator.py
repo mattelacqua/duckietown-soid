@@ -767,6 +767,7 @@ class Simulator(gym.Env):
         Load the map layout from a YAML file
         """
 
+        map_name = "maps/" + map_name
         # Store the map name
         if os.path.exists(map_name) and os.path.isfile(map_name):
             # if env is loaded using gym's register function, we need to extract the map name from the complete url

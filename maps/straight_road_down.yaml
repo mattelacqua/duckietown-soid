@@ -1,0 +1,14 @@
+# Linear stretch of road. Basic test case.
+tiles:
+- [curve_left/N]
+- [straight/N]
+- [straight/N]
+- [straight/N]
+- [straight/N]
+- [straight/N]
+- [straight/N]
+- [straight/N]
+
+start_tile: [1, 0]
+
+tile_size: 0.585
