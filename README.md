@@ -98,7 +98,7 @@ You can install all the dependencies, including PyTorch, using [Conda](https://d
 
 ```
 git clone https://github.com/duckietown/gym-duckietown.git
-cd gym-duckietown
+cd duckietown-soid
 conda env create -f environment.yaml
 conda develop .
 ```
