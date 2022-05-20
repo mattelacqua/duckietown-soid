@@ -100,7 +100,7 @@ You can install all the dependencies, including PyTorch, using [Conda](https://d
 git clone https://github.com/duckietown/gym-duckietown.git
 cd duckietown-soid
 conda env create -f environment.yaml
-conda develop .
+
 ```
 
 Please note that if you use Conda to install this package instead of pip, you will need to activate your Conda environment and add the package to your Python path before you can use it
@@ -112,6 +112,7 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`"
 cd learning
 export PYTHONPATH="${PYTHONPATH}:`pwd`"
 cd ..
+conda develop .
 ```
 
 Finally, once in the conda environment for duckietown, run pip install using the setup.py (run the following command).
