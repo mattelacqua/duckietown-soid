@@ -29,6 +29,7 @@ parser.add_argument("--domain-rand", action="store_true", help="enable domain ra
 parser.add_argument("--dynamics_rand", action="store_true", help="enable dynamics randomization")
 parser.add_argument("--frame-skip", default=1, type=int, help="number of frames to skip")
 parser.add_argument("--seed", default=1, type=int, help="seed")
+parser.add_argument("--cam-mode", default="human", help="Camera modes: human, top_down, free_cam, rgb_array")
 args = parser.parse_args()
 
 if args.env_name and args.env_name.find("Duckietown") != -1:
@@ -47,7 +48,7 @@ else:
     env = gym.make(args.env_name)
 
 env.reset()
-env.render()
+env.render(args.cam_mode)
 
 
 # Recursive function for undoing an action
@@ -64,7 +65,7 @@ def undo_action(forward_step, direction, action, done):
 
         # reevaluate step function, rerender, recursive call
         obs, reward, done, info = env.step(action)
-        env.render()
+        env.render(args.cam_mode)
         undo_action(forward_step, direction, action, done)
         
 
@@ -116,7 +117,7 @@ def update(dt, direction):
         # Call with the new direction
         pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate, direction=direction*-1)
 
-    env.render()
+    env.render(args.cam_mode)
 
 
 pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate, direction=1.0)
