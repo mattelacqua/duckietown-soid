@@ -142,7 +142,7 @@ There is a pinball agent that will go forward until it hits an obstacle, then go
 The camera mode top down is optional, but you can use this to see from above what the simulator is doing.
 
 ```
-python3 agents/pinball_agent.py --env-name Duckietown-straight_road-v0 --map-name straight_road.yaml --cam_mode top_down
+python3 agents/pinball_agent.py --env-name Duckietown-straight_road-v0 --map-name straight_road.yaml --cam-mode top_down
 ```
 
 
