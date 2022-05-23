@@ -771,21 +771,26 @@ class Simulator(gym.Env):
         # Store the map name
         print(map_name)
         print(os.path.exists(map_name))
+        print(os.path.isfile(map_name))
         if os.path.exists(map_name) and os.path.isfile(map_name):
             # if env is loaded using gym's register function, we need to extract the map name from the complete url
-            map_name = os.path.basename(map_name)
+            #map_name = os.path.basename(map_name)
             assert map_name.endswith(".yaml")
             map_name = ".".join(map_name.split(".")[:-1])
         self.map_name = map_name
 
         # Get the full map file path
+        print("Here")
         self.map_file_path = get_resource_path(f"{map_name}.yaml")
+        print("1")
 
         logger.debug(f'loading map file "{self.map_file_path}"')
+        print("2")
 
         with open(self.map_file_path, "r") as f:
             self.map_data = yaml.load(f, Loader=yaml.Loader)
 
+        print("3")
         self._interpret_map(self.map_data)
 
     def _interpret_map(self, map_data: MapFormat1):
