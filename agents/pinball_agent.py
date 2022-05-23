@@ -50,48 +50,44 @@ env.reset()
 env.render()
 
 
-@env.unwrapped.window.event
-def on_key_press(symbol, modifiers):
-    """
-    This handler processes keyboard commands that
-    control the simulation
-    """
+# Recursive function for undoing an action
+def undo_action(forward_step, direction, action, done):
+    # base case
+    if done == False:
+        return
+    else:
+        # If forward move back, if backward move forward
+        if direction == 1.0:
+            action[0] -= forward_step
+        else:
+            action[0] += forward_step
 
-    if symbol == key.BACKSPACE or symbol == key.SLASH:
-        print("RESET")
-        env.reset()
+        # reevaluate step function, rerender, recursive call
+        obs, reward, done, info = env.step(action)
         env.render()
-    elif symbol == key.PAGEUP:
-        env.unwrapped.cam_angle[0] = 0
-    elif symbol == key.ESCAPE:
-        env.close()
-        sys.exit(0)
-
-    # Take a screenshot
-    # UNCOMMENT IF NEEDED - Skimage dependency
-    # elif symbol == key.RETURN:
-    #     print('saving screenshot')
-    #     img = env.render('rgb_array')
-    #     save_img('screenshot.png', img)
+        undo_action(forward_step, direction, action, done)
+        
 
 
-# Register a keyboard handler
-key_handler = key.KeyStateHandler()
-env.unwrapped.window.push_handlers(key_handler)
-
-
-def update(dt):
+def update(dt, direction):
     """
     This function is called at every frame to handle
     movement/stepping and redrawing
     """
     wheel_distance = 0.102
     min_rad = 0.08
+    forward_step = 0.44
+    turn_step = 1.0
 
     action = np.array([0.0, 0.0])
 
-    ## Only move forward
-    action += np.array([0.44, 0.0])
+    ## Get Direction and if its forward move forward, if backwards move back.
+    if direction == 1.0:
+        print("Forward Step")
+        action += np.array([forward_step, 0.0])
+    else:
+        print("Backward Step")
+        action -= np.array([forward_step, 0.0])
 
     v1 = action[0]
     v2 = action[1]
@@ -106,19 +102,29 @@ def update(dt):
     action[1] = v2
 
     obs, reward, done, info = env.step(action)
+    print(done)
     print("step_count = %s, reward=%.3f" % (env.unwrapped.step_count, reward))
 
+    # If we hit something
     if done:
-        print("done!")
-        env.reset()
-        env.render()
+        # Stop the schedule saying going forward
+        pyglet.clock.unschedule(update)
+
+        # undo the last action so we don't get stuck looping on a single error
+        undo_action(forward_step, direction, action, done)
+
+        # Call with the new direction
+        pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate, direction=direction*-1)
 
     env.render()
 
 
-pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate)
+pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate, direction=1.0)
 
 # Enter main event loop
 pyglet.app.run()
 
 env.close()
+
+
+    
