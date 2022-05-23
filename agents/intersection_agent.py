@@ -44,6 +44,7 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
         distortion=args.distortion,
         camera_rand=args.camera_rand,
         dynamics_rand=args.dynamics_rand,
+        full_transparency=True
     )
 else:
     env = gym.make(args.env_name)
@@ -52,27 +53,7 @@ env.reset()
 print("MADE IT HERE")
 env.render(args.cam_mode)
 
-
-# Recursive function for undoing an action
-def undo_action(forward_step, direction, action, done):
-    # base case
-    if done == False:
-        return
-    else:
-        # If forward move back, if backward move forward
-        if direction == 1.0:
-            action[0] -= forward_step
-        else:
-            action[0] += forward_step
-
-        # reevaluate step function, rerender, recursive call
-        obs, reward, done, info = env.step(action)
-        env.render(args.cam_mode)
-        undo_action(forward_step, direction, action, done)
-        
-
-
-def update(dt, direction):
+def update():
     """
     This function is called at every frame to handle
     movement/stepping and redrawing
@@ -84,13 +65,9 @@ def update(dt, direction):
 
     action = np.array([0.0, 0.0])
 
-    ## Get Direction and if its forward move forward, if backwards move back.
-    if direction == 1.0:
-        print("Forward Step")
-        action += np.array([forward_step, 0.0])
-    else:
-        print("Backward Step")
-        action -= np.array([forward_step, 0.0])
+    # Move Forward
+    print("Forward Step")
+    action += np.array([forward_step, 0.0])
 
     v1 = action[0]
     v2 = action[1]
@@ -105,27 +82,24 @@ def update(dt, direction):
     action[1] = v2
 
     obs, reward, done, info = env.step(action)
+    print("Current Information on Agent")
+    print(env.get_agent_info())
+    exit()
     print(done)
     print("step_count = %s, reward=%.3f" % (env.unwrapped.step_count, reward))
 
     # If we hit something
     if done:
-        # Stop the schedule saying going forward
-        pyglet.clock.unschedule(update)
-
-        # undo the last action so we don't get stuck looping on a single error
-        undo_action(forward_step, direction, action, done)
-
-        # Call with the new direction
-        pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate, direction=direction*-1)
-
-    env.render(args.cam_mode)
-
-
-pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate, direction=1.0)
+        env.reset()
+        return False
+    else:
+        env.render(args.cam_mode)
+        return True
 
 # Enter main event loop
-pyglet.app.run()
+keep_going = True
+while keep_going:
+    keep_going = update()
 
 env.close()
 
