@@ -41,6 +41,26 @@ def right_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, ar
         info = env.get_agent_info()
         curr_angle = info['Simulator']['cur_angle']
 
+# Take a left turn
+def left_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, args):
+    # Get state information
+    info = env.get_agent_info()
+    curr_angle = info['Simulator']['cur_angle']
+
+    # Made up the values for loop guard and turn step... May change on direction
+    while curr_angle < 2.9:
+        action = np.array([0.0, 0.0])
+        action += np.array([forward_step, 0.0])
+        action += np.array([0.0, 1.45])
+        obs, reward, done, info = env.step(action)
+        print("step_count = %s, reward=%.3f" % (env.unwrapped.step_count, reward))
+        render_step(done, env, args)
+
+        # Check new angle
+        info = env.get_agent_info()
+        curr_angle = info['Simulator']['cur_angle']
+
+
 # Move forward through tile
 def move_through_tile(wheel_distance, min_rad, forward_step, turn_step, action, env, args):
     # Get current tile
@@ -67,7 +87,10 @@ def handle_intersection(wheel_distance, min_rad, forward_step, turn_step, action
     stop_vehicle(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
 
     # Right Turn
-    right_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
+    #right_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
+
+    # Left Turn
+    left_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
 
     # Move Straight till next tile
     move_through_tile(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
@@ -90,7 +113,7 @@ def intersection_detected(wheel_distance, min_rad, forward_step, turn_step, acti
         return True
     elif direction == 'S' and curr_z > stop_z and approaching_intersection(env, args):
         return True
-    elif direction == 'W' and curr_x > stop_x and approaching_intersection(enve, args):
+    elif direction == 'W' and curr_x > stop_x and approaching_intersection(env, args):
         return True
     else:
         return False
@@ -145,17 +168,27 @@ def approaching_intersection(env, args):
     direction = get_direction(env, args)
 
     # Based on direction, check if the next tile is an intersection
-    if direction == 'N' and env._get_tile(tile_x, tile_z-1)['kind'] == '4way':
+    if direction == 'N' and intersection_tile(tile_x, tile_z-1, env):
         return True
-    elif direction == 'W' and env._get_tile(tile_x-1, tile_z)['kind'] == '4way':
+    elif direction == 'W' and intersection_tile(tile_x-1, tile_z, env):
         return True
-    elif direction == 'S' and env._get_tile(tile_x, tile_z+1)['kind'] == '4way':
+    elif direction == 'S' and intersection_tile(tile_x, tile_z+1, env):
         return True
-    elif direction == 'E' and env._get_tile(tile_x+1, tile_z)['kind'] == '4way':
+    elif direction == 'E' and intersection_tile(tile_x+1, tile_z, env):
         return True
     else:
         return False
 
+# Check if a tile is an intersection tile
+def intersection_tile(tile_x, tile_z, env):
+    if tile_x >= 0 and tile_z >= 0:
+        tile_kind = env._get_tile(tile_x, tile_z)['kind']
+        if tile_kind == '4way':
+            return True
+        else:
+            return False
+    else:
+        return False
 
 # function for limiting radius of curvature
 def limit_rad_curvature(wheel_distance, min_rad, forward_step, turn_step, action, env, args):
