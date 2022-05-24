@@ -5,22 +5,30 @@ Contains functions for moving agent in ite world scenarios.
 
 # Stop the vehicle
 def stop_vehicle(wheel_distance, min_rad, forward_step, turn_step, action, env, args):
+    # Get state information
     info = env.get_agent_info()
     curr_speed = info['Simulator']['robot_speed']
+
+    # While still moving Slow down
     while curr_speed > 0.0009:
         action = np.array([0.0, 0.0])
         action = limit_rad_curvature(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
         obs, reward, done, info = env.step(action)
         print("step_count = %s, reward=%.3f" % (env.unwrapped.step_count, reward))
         render_step(done, env, args)
+
+        # Check new speed
         info = env.get_agent_info()
         curr_speed = info['Simulator']['robot_speed']
 
+
 # Take a right turn
 def right_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, args):
+    # Get state information
     info = env.get_agent_info()
     curr_angle = info['Simulator']['cur_angle']
-    print(curr_angle)
+
+    # While the current angle of the wheel is > 45 degs, keep turning it
     while curr_angle > 1.5079/2:
         action = np.array([0.0, 0.0])
         action += np.array([forward_step, 0.0])
@@ -29,6 +37,7 @@ def right_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, ar
         print("step_count = %s, reward=%.3f" % (env.unwrapped.step_count, reward))
         render_step(done, env, args)
 
+        # Check new angle
         info = env.get_agent_info()
         curr_angle = info['Simulator']['cur_angle']
 
@@ -38,6 +47,8 @@ def move_through_tile(wheel_distance, min_rad, forward_step, turn_step, action, 
     info = env.get_agent_info()
     original_tile = info['Simulator']['tile_coords']
     current_tile = original_tile
+
+    # While still on same tile, move forward the rest of the way
     while current_tile == original_tile:
         action = np.array([0.0, 0.0])
         action += np.array([0.44, 0.0])
@@ -46,6 +57,7 @@ def move_through_tile(wheel_distance, min_rad, forward_step, turn_step, action, 
         print("step_count = %s, reward=%.3f" % (env.unwrapped.step_count, reward))
         render_step(done, env, args)
 
+        # Check tile
         info = env.get_agent_info()
         current_tile = info['Simulator']['tile_coords']
 
@@ -85,8 +97,11 @@ def intersection_detected(wheel_distance, min_rad, forward_step, turn_step, acti
 
 # Get current direction
 def get_direction(env, args):
+    # Get state information
     info = env.get_agent_info()
     curr_angle = info['Simulator']['cur_angle']
+
+    # Based on the current angle of the agent return a direction it is moving
     if curr_angle > 0 and curr_angle <= 1.5708:
         return 'N'
     elif curr_angle > 1.5708 and curr_angle <= 3.14159:
@@ -129,8 +144,8 @@ def approaching_intersection(env, args):
     tile_x, tile_z = info['Simulator']['tile_coords']
     direction = get_direction(env, args)
 
+    # Based on direction, check if the next tile is an intersection
     if direction == 'N' and env._get_tile(tile_x, tile_z-1)['kind'] == '4way':
-        print("HERE")
         return True
     elif direction == 'W' and env._get_tile(tile_x-1, tile_z)['kind'] == '4way':
         return True
@@ -157,6 +172,8 @@ def limit_rad_curvature(wheel_distance, min_rad, forward_step, turn_step, action
 
 # Render if possible, otherwise end if invalid
 def render_step(done, env, args):
+    # if hit obstacle, return and stop
+    # otherwise, keep going and render in the proper cam mode
     if done:
         env.reset()
         return False
