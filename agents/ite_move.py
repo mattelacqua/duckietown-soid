@@ -1,3 +1,4 @@
+import random
 import numpy as np
 """
 Contains functions for moving agent in ite world scenarios.
@@ -86,11 +87,17 @@ def handle_intersection(wheel_distance, min_rad, forward_step, turn_step, action
     # Stop
     stop_vehicle(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
 
-    # Right Turn
-    #right_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
+    # Choose a random option
+    choices = ['Right', 'Left', 'Straight'] 
+    choice = random.choice(choices)
 
-    # Left Turn
-    left_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
+    # Move based on choice
+    if choice == 'Right':
+        right_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
+    elif choice == 'Left':
+        left_turn(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
+    elif choice == 'Straight':
+        move_through_tile(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
 
     # Move Straight till next tile
     move_through_tile(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
