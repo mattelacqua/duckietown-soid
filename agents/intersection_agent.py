@@ -2,8 +2,7 @@
 # manual
 
 """
-This script allows you to manually control the simulator or Duckiebot
-using the keyboard arrows.
+This script uses the ite_move library to make a right turn through an intersection
 """
 from PIL import Image
 import argparse
@@ -15,6 +14,9 @@ import pyglet
 from pyglet.window import key
 
 from gym_duckietown.envs import DuckietownEnv
+
+# Includes all important moving functions for if then else agents
+from ite_move import *
 
 # from experiments.utils import save_img
 
@@ -50,9 +52,9 @@ else:
     env = gym.make(args.env_name)
 
 env.reset()
-print("MADE IT HERE")
 env.render(args.cam_mode)
 
+    
 def update():
     """
     This function is called at every frame to handle
@@ -65,36 +67,25 @@ def update():
 
     action = np.array([0.0, 0.0])
 
-    # Move Forward
-    print("Forward Step")
-    action += np.array([forward_step, 0.0])
+    info = env.get_agent_info()
+    tile_coords = info['Simulator']['tile_coords']
+    current_tile = env._get_tile(tile_coords[0], tile_coords[1])
 
-    v1 = action[0]
-    v2 = action[1]
-    # Limit radius of curvature
-    if v1 == 0 or abs(v2 / v1) > (min_rad + wheel_distance / 2.0) / (min_rad - wheel_distance / 2.0):
-        # adjust velocities evenly such that condition is fulfilled
-        delta_v = (v2 - v1) / 2 - wheel_distance / (4 * min_rad) * (v1 + v2)
-        v1 += delta_v
-        v2 -= delta_v
+     # If we are at a 4 way
+    if intersection_detected(wheel_distance, min_rad, forward_step, turn_step, action, env, args):
+        handle_intersection(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
+    else:
+        # Otherwise go straight
+        action += np.array([forward_step, 0.0])
 
-    action[0] = v1
-    action[1] = v2
-
+    # Refine action and do step
+    action = limit_rad_curvature(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
     obs, reward, done, info = env.step(action)
-    print("Current Information on Agent")
-    print(env.get_agent_info())
-    exit()
-    print(done)
     print("step_count = %s, reward=%.3f" % (env.unwrapped.step_count, reward))
 
-    # If we hit something
-    if done:
-        env.reset()
-        return False
-    else:
-        env.render(args.cam_mode)
-        return True
+    # If we hit something fail, otherwise render
+    return render_step(done, env, args)
+
 
 # Enter main event loop
 keep_going = True

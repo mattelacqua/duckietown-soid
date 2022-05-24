@@ -20,3 +20,5 @@ objects:
     optional: true
 
 tile_size: 0.585
+start_tile: [1,2]
+start_pose: [[0.425, 0, 0.40], 1.5708]
