@@ -149,6 +149,12 @@ python3 agents/pinball_agent.py --env-name Duckietown-straight_road-v0 --map-nam
 python3 agents/pinball_agent.py --env-name Duckietown-udem1-v0 --cam-mode top_down
 ```
 
+The intersection agent will go appproach an intersection, stop before it, turn right, and continue on until the road and simulation end.
+This makes use of several [if then else agent functions](/agents/ite_move.py) that can be used in other agents.
+
+```
+python3 agents/intersection_agent.py --env-name Duckietown-4way-v0 --map-name 4way_small.yaml --cam-mode top_down
+```
 
 
 
