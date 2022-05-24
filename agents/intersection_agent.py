@@ -51,6 +51,7 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
 else:
     env = gym.make(args.env_name)
 
+# Start up env
 env.reset()
 env.render(args.cam_mode)
 
@@ -73,7 +74,7 @@ def update():
 
      # If we are at a 4 way
     if intersection_detected(wheel_distance, min_rad, forward_step, turn_step, action, env, args):
-        handle_intersection(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
+        handle_intersection(wheel_distance, min_rad, forward_step, turn_step, action, env, args, None)
     else:
         # Otherwise go straight
         action += np.array([forward_step, 0.0])

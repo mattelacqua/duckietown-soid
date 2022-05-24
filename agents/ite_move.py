@@ -83,13 +83,14 @@ def move_through_tile(wheel_distance, min_rad, forward_step, turn_step, action, 
         current_tile = info['Simulator']['tile_coords']
 
 # Handle an intersection by turning right (default)
-def handle_intersection(wheel_distance, min_rad, forward_step, turn_step, action, env, args):
+def handle_intersection(wheel_distance, min_rad, forward_step, turn_step, action, env, args, choice):
     # Stop
     stop_vehicle(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
 
     # Choose a random option
     choices = ['Right', 'Left', 'Straight'] 
-    choice = random.choice(choices)
+    if choice == None:
+        choice = random.choice(choices)
 
     # Move based on choice
     if choice == 'Right':
