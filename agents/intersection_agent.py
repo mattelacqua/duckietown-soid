@@ -74,9 +74,11 @@ def update():
 
      # If we are at a 4 way
     if intersection_detected(wheel_distance, min_rad, forward_step, turn_step, action, env, args):
-        handle_intersection(wheel_distance, min_rad, forward_step, turn_step, action, env, args, None)
+        handle_intersection(wheel_distance, min_rad, forward_step, turn_step, action, env, args, 'Left')
     else:
         # Otherwise go straight
+        # Add code here to stay straight - Take an action and based on the current angle / direction adjust to be straight
+        print("Forward")
         action += np.array([forward_step, 0.0])
 
     # Refine action and do step
