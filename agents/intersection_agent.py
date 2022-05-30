@@ -76,6 +76,7 @@ def update():
      # If we are at a 4 way
     if move.intersection_detected(env):
         return move.handle_intersection(env, forward_step, speed_limit, 'Right')
+        #return move.handle_intersection(env, forward_step, speed_limit, 'Left')
     else:
         # Otherwise go straight
         # Add code here to stay straight - Take an action and based on the current angle / direction adjust to be straight

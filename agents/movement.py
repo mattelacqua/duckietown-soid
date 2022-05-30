@@ -30,14 +30,140 @@ def move_forward(env, forward_step, speed_limit):
         action = np.array([0.0, 0.0])
         assert render_step(env, action), "Failed Moving Forward Over Speed Limit"
     else:
-        action = np.array([0.0, 0.0])
-        action += np.array([forward_step, 0.0])
-        assert render_step(env, action), "Failed Moving Forward Under Speed Limit"
+        straighten_out(env, forward_step)
+
+# Check if close enough to center to correct
+def close_to_center(env, curr_x, curr_z, goal_x, goal_z):
+    direction = get_direction(env)
+    x_diff = abs(curr_x - goal_x)
+    z_diff = abs(goal_z - goal_z)
+    diff_val = .03
+    if (direction == 'N' or direction == 'S') and x_diff > diff_val:
+        return False
+    elif (direction == 'E' or direction == 'W') and z_diff > diff_val:
+        return False
+    else:
+        return True
+        
 
 # Straighten out TODO
-def straighten_out(env):
-    print("Straightening out")
+def straighten_out(env, forward_step):
+    # Get Information
+    curr_angle = get_curr_angle(env)
+    curr_x, curr_z = get_curr_pos(env)
+    goal_x, goal_z = get_center_right_lane(env)
+    turn_rate = .9 
+    direction = get_direction(env)
 
+    #print("Current {0} , {1}".format(curr_x, curr_z))
+    #print("Goal {0} , {1}".format(goal_x, goal_z))
+    #print("Curr angle {0}".format(curr_angle))
+    # For each direction
+    if direction == 'N':
+        # See how bad our current angle is
+        angle_dif = abs(curr_angle - 90)
+        # adjust based on if its too far away from good spot or angle
+        if curr_x > goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or \
+            angle_dif > 3 and curr_angle < 90:
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            action += np.array([0.0, turn_rate])
+            assert render_step(env, action), "Failed Straightening Counter Clockwise"
+        elif curr_x < goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or\
+            angle_dif > 3 and curr_angle > 90:
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            action -= np.array([0.0, turn_rate])
+            assert render_step(env, action), "Failed Straightening Clockwise"
+        else:
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            assert render_step(env, action), "Failed Stepping Forward"
+    elif direction == 'S':
+        # See how bad our current angle is
+        angle_dif = abs(curr_angle - 270)
+        # adjust based on if its too far away from good spot or angle
+        if curr_x > goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or \
+            angle_dif > 3 and curr_angle > 270:
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            action -= np.array([0.0, turn_rate])
+            assert render_step(env, action), "Failed Straightening Counter Clockwise"
+        elif curr_x < goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or\
+            angle_dif > 3 and curr_angle < 270:
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            action += np.array([0.0, turn_rate])
+            assert render_step(env, action), "Failed Straightening Clockwise"
+        else:
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            assert render_step(env, action), "Failed Stepping Forward"
+    elif direction == 'W':
+        # See how bad our current angle is
+        angle_dif = abs(curr_angle - 180)
+        # adjust based on if its too far away from good spot or angle
+        if curr_z > goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or \
+            angle_dif > 3 and curr_angle > 180:
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            action -= np.array([0.0, turn_rate])
+            assert render_step(env, action), "Failed Straightening Counter Clockwise"
+        elif curr_z < goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or\
+            angle_dif > 3 and curr_angle < 180:
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            action += np.array([0.0, turn_rate])
+            assert render_step(env, action), "Failed Straightening Clockwise"
+        else:
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            assert render_step(env, action), "Failed Stepping Forward"
+    elif direction == 'E':
+        # See how bad our current angle is (different because east is 315 - 45 degs)
+        turning_right = None
+        angle_dif = 0
+        if curr_angle > 315:
+            turning_right = True
+            angle_dif = abs(curr_angle - 360)
+        else:
+            turning_right = False
+            angle_dif = abs(curr_angle - 0)
+        # adjust based on if its too far away from good spot or angle
+        if (curr_z > goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z)) or \
+            (angle_dif > 3 and turning_right):
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            action += np.array([0.0, turn_rate])
+            assert render_step(env, action), "Failed Straightening Counter Clockwise"
+        elif (curr_z < goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z)) or \
+            (angle_dif > 3 and not turning_right):
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            action -= np.array([0.0, turn_rate])
+            assert render_step(env, action), "Failed Straightening Clockwise"
+        else:
+            action = np.array([0.0, 0.0])
+            action += np.array([forward_step, 0.0])
+            assert render_step(env, action), "Failed Stepping Forward"
+
+# Get the center of the right lane ( Where we want to be driving
+def get_center_right_lane(env):
+    tile_x, tile_z = get_curr_tile(env)['coords']
+    tile_size = env.road_tile_size
+    direction = get_direction(env)
+    goal_x, goal_z = 0, 0
+
+    if direction == 'N':
+        goal_x = (tile_x + 1) * tile_size - (tile_size/4) 
+    elif direction == 'S':
+        goal_x = tile_x * tile_size + (tile_size/3)            # plus a little [..] [x] 
+    elif direction == 'E':
+        goal_z = (tile_z + 1) * tile_size - (tile_size/3)  
+    elif direction == 'W':
+        goal_z = tile_z * tile_size + (tile_size/3) * 2
+
+    return goal_x, goal_z
 # Take a right turn
 def right_turn(env, forward_step):
     print("Taking a right turn")
@@ -55,7 +181,7 @@ def right_turn(env, forward_step):
         turn_count += 1
 
     # Straighten Out
-    straighten_out(env)
+    straighten_out(env, forward_step)
 
 # Take a left turn
 def left_turn(env, forward_step):
@@ -74,22 +200,7 @@ def left_turn(env, forward_step):
         turn_count += 1   
 
     # Turn this amount 
-    straighten_out(env)
-
-
-# Move forward through tile
-def move_through_tile(env, forward_step, speed_limit):
-    # Get current tile
-    original_tile = get_current_tile(env)
-    current_tile = original_tile
-
-    # While still on same tile, move forward the rest of the way
-    while current_tile == original_tile:
-        # Move Straight
-        move_forward(env, forward_step, speed_limit)
-
-        # Check tile
-        current_tile = get_current_tile(env) 
+    straighten_out(env, forward_step)
 
 # Handle an intersection by turning right (default)
 def handle_intersection(env, forward_step, speed_limit, choice):
@@ -109,7 +220,10 @@ def handle_intersection(env, forward_step, speed_limit, choice):
     elif choice == 'Left':
         left_turn(env, forward_step)
     elif choice == 'Straight':
-        move_forward(env, forward_step, speed_limit)
+        forward_steps = 0
+        while forward_steps < 30:
+            move_forward(env, forward_step, speed_limit)
+            forward_steps += 1
 
 # Detect if there is an intersection
 def intersection_detected(env):
@@ -191,10 +305,10 @@ def get_direction(env):
     # Based on the current angle of the agent return a direction it is moving
     if curr_angle > 45 and curr_angle <= 135:
         return 'N'
-    elif curr_angle > 225  and curr_angle <= 315:
-        return 'S'
     elif curr_angle > 135   and curr_angle <= 225:
         return 'W'
+    elif curr_angle > 225  and curr_angle <= 315:
+        return 'S'
     else:
         return 'E'
 
