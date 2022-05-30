@@ -16,7 +16,7 @@ from pyglet.window import key
 from gym_duckietown.envs import DuckietownEnv
 
 # Includes all important moving functions for if then else agents
-from ite_move import *
+import movement as move
 
 # from experiments.utils import save_img
 
@@ -35,10 +35,10 @@ parser.add_argument("--cam-mode", default="human", help="Camera modes: human, to
 args = parser.parse_args()
 
 if args.env_name and args.env_name.find("Duckietown") != -1:
-    print("HERE")
     env = DuckietownEnv(
         seed=args.seed,
         map_name=args.map_name,
+        cam_mode=args.cam_mode,
         draw_curve=args.draw_curve,
         draw_bbox=args.draw_bbox,
         domain_rand=args.domain_rand,
@@ -64,6 +64,7 @@ def update():
     wheel_distance = 0.102
     min_rad = 0.08
     forward_step = 0.44
+    speed_limit = .35
     turn_step = 1.0
 
     action = np.array([0.0, 0.0])
@@ -73,27 +74,18 @@ def update():
     current_tile = env._get_tile(tile_coords[0], tile_coords[1])
 
      # If we are at a 4 way
-    if intersection_detected(wheel_distance, min_rad, forward_step, turn_step, action, env, args):
-        handle_intersection(wheel_distance, min_rad, forward_step, turn_step, action, env, args, 'Left')
+    if move.intersection_detected(env):
+        return move.handle_intersection(env, forward_step, speed_limit, 'Right')
     else:
         # Otherwise go straight
         # Add code here to stay straight - Take an action and based on the current angle / direction adjust to be straight
-        print("Forward")
-        action += np.array([forward_step, 0.0])
+        return move.move_forward(env, forward_step, speed_limit)
 
-    # Refine action and do step
-    action = limit_rad_curvature(wheel_distance, min_rad, forward_step, turn_step, action, env, args)
-    obs, reward, done, info = env.step(action)
-    print("step_count = %s, reward=%.3f" % (env.unwrapped.step_count, reward))
-
-    # If we hit something fail, otherwise render
-    return render_step(done, env, args)
 
 
 # Enter main event loop
-keep_going = True
-while keep_going:
-    keep_going = update()
+while True:
+    update()
 
 env.close()
 

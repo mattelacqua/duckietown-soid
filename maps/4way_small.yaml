@@ -25,13 +25,13 @@ tile_size: 0.585
 #start_pose: [[0.425, 0, 0.4], 1.5708]
 
 # South
-#start_tile: [1,0]
-#start_pose: [[0.155, 0, 0.2], 4.71239]
+start_tile: [1,0]
+start_pose: [[0.155, 0, 0.2], 4.71239]
 
 # East
 #start_tile: [0,1]
 #start_pose: [[0.225, 0, 0.4], 0]
 #
 # West 
-start_tile: [2,1]
-start_pose: [[0.4, 0, 0.15], 3.14159] 
+#start_tile: [2,1]
+#start_pose: [[0.4, 0, 0.15], 3.14159] 

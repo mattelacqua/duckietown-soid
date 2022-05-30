@@ -211,6 +211,7 @@ def get_direction(env, args):
         return 'W'
 
 
+
 # Get the stopping points (~3/4 through the tile)
 def get_stop_check(env, args):
     # Get state information

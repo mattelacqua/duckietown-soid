@@ -101,6 +101,7 @@ WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 
 # Camera image size
+DEFAULT_CAM_MODE = "top_down" 
 DEFAULT_CAMERA_WIDTH = 640
 DEFAULT_CAMERA_HEIGHT = 480
 
@@ -206,6 +207,7 @@ class Simulator(gym.Env):
 
     def __init__(
         self,
+        cam_mode: str = DEFAULT_CAM_MODE,
         map_name: str = DEFAULT_MAP_NAME,
         max_steps: int = DEFAULT_MAX_STEPS,
         draw_curve: bool = False,
@@ -232,6 +234,7 @@ class Simulator(gym.Env):
     ):
         """
 
+        :param cam_mode:
         :param map_name:
         :param max_steps:
         :param draw_curve:
@@ -308,6 +311,7 @@ class Simulator(gym.Env):
         # Two-tuple of wheel torques, each in the range [-1, 1]
         self.action_space = spaces.Box(low=-1, high=1, shape=(2,), dtype=np.float32)
 
+        self.cam_mode = cam_mode 
         self.camera_width = camera_width
         self.camera_height = camera_height
 
