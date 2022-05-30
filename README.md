@@ -153,7 +153,7 @@ The intersection agent will go appproach an intersection, stop before it, turn r
 This makes use of several [if then else agent functions](/agents/ite_move.py) that can be used in other agents.
 
 ```
-python3 agents/intersection_agent.py --env-name Duckietown-4way-v0 --map-name 4way_small.yaml --cam-mode top_down
+python3 agents/intersection_agent.py --env-name Duckietown-4way_large-v0 --map-name 4way_large.yaml --cam-mode top_down
 ```
 
 
