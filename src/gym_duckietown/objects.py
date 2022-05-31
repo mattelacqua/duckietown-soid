@@ -19,6 +19,16 @@ from .collision import (
 from .graphics import load_texture, rotate_point
 from .objmesh import ObjMesh
 
+from duckietown_world import (
+    get_DB18_nominal,
+    get_DB18_uncalibrated,
+    get_texture_file,
+    MapFormat1,
+    MapFormat1Constants,
+    MapFormat1Constants as MF1C,
+    MapFormat1Object,
+    SE2Transform,
+)
 
 class WorldObj:
     visible: bool
@@ -41,10 +51,13 @@ class WorldObj:
         self.color = (0, 0, 0, 1)
         # maybe have an abstract method is_visible, get_color()
 
+        self.speed = 0 
         self.name = obj["name"]
         self.kind = obj["kind"]
         self.mesh = obj["mesh"]
-        self.pos = obj["pos"]
+        self.pos = np.array(obj["pos"])
+        self.cur_pos = self.pos 
+        self.prev_pos = self.pos 
         self.scale = obj["scale"]
         # self.y_rot =
         self.optional = obj["optional"]
@@ -67,7 +80,7 @@ class WorldObj:
 
         self.x_rot = 0  # Niki-added
         self.z_rot = 0  # Niki-added
-
+        
 
     def render_mesh(self, segment: bool, enable_leds: bool):
         self.mesh.render(segment=segment)
@@ -191,6 +204,31 @@ class WorldObj:
 
         return info
 
+    def add_action(self, action):
+        self.actions.append(action)
+
+    def get_actions(self):
+        if self.actions:
+            return self.actions
+        else:
+            return None 
+
+    def get_pos(self):
+        return self.pos
+
+    def set_prev_pos(self, pos):
+        self.prev_pos = pos
+
+    def set_curr_pos(self, pos):
+        self.curr_pos = pos
+
+    def get_speed(self, delta_time):
+        delta_pos = self.cur_pos - self.prev_pos
+        self.speed = np.linalg.norm(delta_pos) / delta_time
+
+        return self.speed
+
+
 
 class DuckiebotObj(WorldObj):
     leds_color: Dict[str, Tuple[float, float, float]]
@@ -241,7 +279,6 @@ class DuckiebotObj(WorldObj):
         self.k = k
         self.limit = limit
 
-
     # FIXME: this does not follow the same signature as WorldOb
     def step_duckiebot(self, delta_time, closest_curve_point, objects):
         """
@@ -278,6 +315,17 @@ class DuckiebotObj(WorldObj):
         steering = self.gain * -dot
 
         self._update_pos([self.velocity, steering], delta_time)
+    
+    def step_duckiebot_agent(self, delta_time, objects):
+        """
+        Take a step, implemented using agent controls 
+        """
+
+        self.prev_pos = self.pos
+        if self.get_actions() != None:
+            self._update_pos(self.get_actions()[0], delta_time)
+        self.curr_pos = self.pos
+
 
     def check_collision(self, agent_corners, agent_norm):
         """
@@ -298,7 +346,7 @@ class DuckiebotObj(WorldObj):
 
     def _update_pos(self, action, deltaTime):
         # Pop the first action from actions
-        if self.actions:
+        if len(self.actions) > 0:
             self.actions.pop(0)
 
         vel, angle = action
@@ -354,8 +402,8 @@ class DuckiebotObj(WorldObj):
         self.obj_corners = agent_boundbox(
             self.pos, self.robot_width, self.robot_length, get_dir_vec(self.angle), get_right_vec(self.angle)
         )
-
-
+    
+        
 class DuckieObj(WorldObj):
     def __init__(self, obj, domain_rand: bool, safety_radius_mult: float, walk_distance: float):
         WorldObj.__init__(self, obj, domain_rand, safety_radius_mult)

@@ -773,9 +773,6 @@ class Simulator(gym.Env):
 
         map_name = "maps/" + map_name
         # Store the map name
-        print(map_name)
-        print(os.path.exists(map_name))
-        print(os.path.isfile(map_name))
         if os.path.exists(map_name) and os.path.isfile(map_name):
             # if env is loaded using gym's register function, we need to extract the map name from the complete url
             #map_name = os.path.basename(map_name)
@@ -784,17 +781,13 @@ class Simulator(gym.Env):
         self.map_name = map_name
 
         # Get the full map file path
-        print("Here")
         self.map_file_path = get_resource_path(f"{map_name}.yaml")
-        print("1")
 
         logger.debug(f'loading map file "{self.map_file_path}"')
-        print("2")
 
         with open(self.map_file_path, "r") as f:
             self.map_data = yaml.load(f, Loader=yaml.Loader)
 
-        print("3")
         self._interpret_map(self.map_data)
 
     def _interpret_map(self, map_data: MapFormat1):
@@ -1598,9 +1591,11 @@ class Simulator(gym.Env):
 
                     if not obj.agent:
                         obj.step_duckiebot(delta_time, self.closest_curve_point, same_tile_obj)
-            else:
-                # print("stepping all objects")
-                obj.step(delta_time)
+                    elif obj.agent:
+                        obj.step_duckiebot_agent(delta_time, same_tile_obj)
+                else:
+                    # print("stepping all objects")
+                    obj.step(delta_time)
 
     def get_agent_info(self) -> dict:
         info = {}

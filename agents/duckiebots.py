@@ -2,6 +2,7 @@ import random
 import numpy as np
 import math
 import movement as move
+
 # Get object info
 def get_objects(env):
     objects = env.objects
@@ -10,26 +11,32 @@ def get_objects(env):
         print(vars(obj))
     exit()
 
-# Update each duckiebot position
-def update_duckiebots(env):
-    delta_time = env.delta_time
-    db_action_pairs = get_agent_duckiebot_moves(env)
-    for (duckiebot, action) in db_action_pairs:
-        duckiebot._update_pos(action, delta_time)
-
-
 # Get next move for each duckiebot, return list of actions
-def get_agent_duckiebot_moves(env):
+def update_duckiebots(env):
     duckiebots = get_agent_duckiebots(env)
     actions = []
     for duckiebot in duckiebots:
-        actions.append(get_agent_duckiebot_action(env, duckiebot))
+        next_action = get_next_duckiebot_action(env, duckiebot)
+        actions.append(next_action)
     return list(zip(duckiebots, actions))
 
-# Get next action for a single duckiebot
-def get_agent_duckiebot_action(env, duckiebot):
-    print("Pass")
-    return [0, 0]
+# Get the next action and perform it
+def get_next_duckiebot_action(env, duckiebot):
+    # Check if action to take
+    actions = duckiebot.get_actions()
+    if actions != None:
+        return actions[0]
+    else:
+        duckiebot_step(env, duckiebot)
+        return get_next_duckiebot_action(env, duckiebot)
+
+
+# General step for duckiebot
+def duckiebot_step(env, duckiebot): 
+    if move.intersection_detected(env, duckiebot=duckiebot):
+        move.handle_intersection(env, duckiebot=duckiebot, forward_step=0.1)
+    else:
+        move.move_forward(env, duckiebot=duckiebot, forward_step=0.1)
 
 
 # Get all controllable duckiebots from the objects

@@ -62,29 +62,17 @@ def update():
     This function is called at every frame to handle
     movement/stepping and redrawing
     """
-    wheel_distance = 0.102
-    min_rad = 0.08
-    forward_step = 0.44
-    speed_limit = .35
-    turn_step = 1.0
-
     action = np.array([0.0, 0.0])
 
-    info = env.get_agent_info()
-    tile_coords = info['Simulator']['tile_coords']
-    current_tile = env._get_tile(tile_coords[0], tile_coords[1])
-
-     # If we are at a 4 way
+    # If we are at a 4 way
     if move.intersection_detected(env):
-        return move.handle_intersection(env, forward_step, speed_limit, 'Right')
-        #return move.handle_intersection(env, forward_step, speed_limit, 'Left')
+        return move.handle_intersection(env,  'Right')
+        #return move.handle_intersection(env,  'Left')
     else:
         # Otherwise go straight
         # Add code here to stay straight - Take an action and based on the current angle / direction adjust to be straight
         #db.get_objects(env)
-        return move.move_forward(env, forward_step, speed_limit)
-
-
+        return move.move_forward(env)
 
 # Enter main event loop
 while True:

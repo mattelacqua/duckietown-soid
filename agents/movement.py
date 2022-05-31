@@ -7,33 +7,43 @@ Contains functions for moving agent in ite world scenarios.
 """
 
 # Stop the vehicle
-def stop_vehicle(env):
+def stop_vehicle(env, duckiebot=None):
     print("Stopping the Vehicle")
     stop_iterations = 0
 
     # While still moving Slow down
     while stop_iterations < 30:
         action = np.array([0.0, 0.0])
-        assert render_step(env, action), "Failed Stopping Vehicle"
+        if duckiebot == None:
+            assert render_step(env, action), "Failed Stopping Vehicle"
+        else:
+            print("Stopping object")
+            duckiebot.add_action(action)
         stop_iterations += 1
+
+    
 
 
 # Move Forwards at whatever angle we are at, not going faster than 30 mps
-def move_forward(env, forward_step, speed_limit):
+def move_forward(env, forward_step=.44, speed_limit=.35, duckiebot=None):
     # Get state information
-    curr_speed = get_curr_speed(env)
+    curr_speed = get_curr_speed(env, duckiebot)
     print("Moving Forwards at speed " + str(curr_speed))
 
     # While still moving Slow down
-    if curr_speed > speed_limit:
+    if curr_speed > speed_limit and duckiebot == None:
         action = np.array([0.0, 0.0])
-        assert render_step(env, action), "Failed Moving Forward Over Speed Limit"
+        if duckiebot == None:
+            assert render_step(env, action), "Failed Stopping Vehicle"
+        else:
+            direction = get_direction(env, duckiebot)
+            duckiebot.add_action(action)
     else:
-        straighten_out(env, forward_step)
+        straighten_out(env, forward_step, duckiebot)
 
 # Check if close enough to center to correct
-def close_to_center(env, curr_x, curr_z, goal_x, goal_z):
-    direction = get_direction(env)
+def close_to_center(env, curr_x, curr_z, goal_x, goal_z, duckiebot=None):
+    direction = get_direction(env, duckiebot)
     x_diff = abs(curr_x - goal_x)
     z_diff = abs(goal_z - goal_z)
     diff_val = .03
@@ -46,13 +56,13 @@ def close_to_center(env, curr_x, curr_z, goal_x, goal_z):
         
 
 # Straighten out TODO
-def straighten_out(env, forward_step):
+def straighten_out(env, forward_step=.44, duckiebot=None):
     # Get Information
-    curr_angle = get_curr_angle(env)
-    curr_x, curr_z = get_curr_pos(env)
-    goal_x, goal_z = get_center_right_lane(env)
+    curr_angle = get_curr_angle(env, duckiebot)
+    curr_x, curr_z = get_curr_pos(env, duckiebot)
+    goal_x, goal_z = get_center_right_lane(env, duckiebot)
     turn_rate = .9 
-    direction = get_direction(env)
+    direction = get_direction(env, duckiebot)
 
     #print("Current {0} , {1}".format(curr_x, curr_z))
     #print("Goal {0} , {1}".format(goal_x, goal_z))
@@ -62,62 +72,89 @@ def straighten_out(env, forward_step):
         # See how bad our current angle is
         angle_dif = abs(curr_angle - 90)
         # adjust based on if its too far away from good spot or angle
-        if curr_x > goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or \
+        if curr_x > goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z, duckiebot) or \
             angle_dif > 3 and curr_angle < 90:
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
             action += np.array([0.0, turn_rate])
-            assert render_step(env, action), "Failed Straightening Counter Clockwise"
-        elif curr_x < goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or\
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Straightening Counter Clockwise"
+            else:
+                duckiebot.add_action(action)
+        elif curr_x < goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z, duckiebot) or\
             angle_dif > 3 and curr_angle > 90:
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
             action -= np.array([0.0, turn_rate])
-            assert render_step(env, action), "Failed Straightening Clockwise"
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Straightening Clockwise"
+            else:
+                duckiebot.add_action(action)
         else:
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
-            assert render_step(env, action), "Failed Stepping Forward"
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Stepping Forward"
+            else:
+                duckiebot.add_action(action)
     elif direction == 'S':
         # See how bad our current angle is
         angle_dif = abs(curr_angle - 270)
         # adjust based on if its too far away from good spot or angle
-        if curr_x > goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or \
+        if curr_x > goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z, duckiebot) or \
             angle_dif > 3 and curr_angle > 270:
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
             action -= np.array([0.0, turn_rate])
-            assert render_step(env, action), "Failed Straightening Counter Clockwise"
-        elif curr_x < goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or\
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Straightening Counter Clockwise"
+            else:
+                duckiebot.add_action(action)
+        elif curr_x < goal_x and not close_to_center(env, curr_x, curr_z, goal_x, goal_z, duckiebot) or\
             angle_dif > 3 and curr_angle < 270:
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
             action += np.array([0.0, turn_rate])
-            assert render_step(env, action), "Failed Straightening Clockwise"
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Straightening Clockwise"
+            else:
+                duckiebot.add_action(action)
         else:
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
-            assert render_step(env, action), "Failed Stepping Forward"
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Stepping Forward"
+            else:
+                duckiebot.add_action(action)
     elif direction == 'W':
         # See how bad our current angle is
         angle_dif = abs(curr_angle - 180)
         # adjust based on if its too far away from good spot or angle
-        if curr_z > goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or \
+        if curr_z > goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z, duckiebot) or \
             angle_dif > 3 and curr_angle > 180:
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
             action -= np.array([0.0, turn_rate])
-            assert render_step(env, action), "Failed Straightening Counter Clockwise"
-        elif curr_z < goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z) or\
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Straightening Counter Clockwise"
+            else:
+                duckiebot.add_action(action)
+        elif curr_z < goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z, duckiebot) or\
             angle_dif > 3 and curr_angle < 180:
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
             action += np.array([0.0, turn_rate])
-            assert render_step(env, action), "Failed Straightening Clockwise"
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Straightening Clockwise"
+            else:
+                duckiebot.add_action(action)
         else:
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
-            assert render_step(env, action), "Failed Stepping Forward"
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Stepping Forward"
+            else:
+                duckiebot.add_action(action)
     elif direction == 'E':
         # See how bad our current angle is (different because east is 315 - 45 degs)
         turning_right = None
@@ -129,28 +166,37 @@ def straighten_out(env, forward_step):
             turning_right = False
             angle_dif = abs(curr_angle - 0)
         # adjust based on if its too far away from good spot or angle
-        if (curr_z > goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z)) or \
+        if (curr_z > goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z, duckiebot)) or \
             (angle_dif > 3 and turning_right):
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
             action += np.array([0.0, turn_rate])
-            assert render_step(env, action), "Failed Straightening Counter Clockwise"
-        elif (curr_z < goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z)) or \
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Straightening Counter Clockwise"
+            else:
+                duckiebot.add_action(action)
+        elif (curr_z < goal_z and not close_to_center(env, curr_x, curr_z, goal_x, goal_z, duckiebot)) or \
             (angle_dif > 3 and not turning_right):
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
             action -= np.array([0.0, turn_rate])
-            assert render_step(env, action), "Failed Straightening Clockwise"
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Straightening Clockwise"
+            else:
+                duckiebot.add_action(action)
         else:
             action = np.array([0.0, 0.0])
             action += np.array([forward_step, 0.0])
-            assert render_step(env, action), "Failed Stepping Forward"
+            if duckiebot == None:
+                assert render_step(env, action), "Failed Stepping Forward"
+            else:
+                duckiebot.add_action(action)
 
 # Get the center of the right lane ( Where we want to be driving
-def get_center_right_lane(env):
-    tile_x, tile_z = get_curr_tile(env)['coords']
+def get_center_right_lane(env, duckiebot=None):
+    tile_x, tile_z = get_curr_tile(env, duckiebot)['coords']
     tile_size = env.road_tile_size
-    direction = get_direction(env)
+    direction = get_direction(env, duckiebot)
     goal_x, goal_z = 0, 0
 
     if direction == 'N':
@@ -164,49 +210,54 @@ def get_center_right_lane(env):
 
     return goal_x, goal_z
 # Take a right turn
-def right_turn(env, forward_step):
+def right_turn(env, forward_step=.44, duckiebot=None):
     print("Taking a right turn")
     # Get state information
-    curr_angle = get_curr_angle(env)
+    curr_angle = get_curr_angle(env, duckiebot)
     turn_count = 0
-    direction = get_direction(env)
+    direction = get_direction(env, duckiebot)
 
     # Turn this amount 
     while turn_count < 26:          # Arbitrary turn count that works for speed limit?
         action = np.array([0.0, 0.0])
         action -= np.array([0.0, 4])
         action += np.array([forward_step, 0.0])
-        assert render_step(env, action), "Failed turning right"
+        if duckiebot == None:
+            assert render_step(env, action), "Failed turning right"
+        else:
+            duckiebot.add_action(action)
         turn_count += 1
 
     # Straighten Out
-    straighten_out(env, forward_step)
+    straighten_out(env, forward_step, duckiebot)
 
 # Take a left turn
-def left_turn(env, forward_step):
+def left_turn(env, forward_step=.44, duckiebot=None):
     print("Taking a right turn")
     # Get state information
-    curr_angle = get_curr_angle(env)
+    curr_angle = get_curr_angle(env, duckiebot)
     turn_count = 0
-    direction = get_direction(env)
+    direction = get_direction(env, duckiebot)
 
     # Turn this amount 
     while turn_count < 75:          # Arbitrary turn count that works for speed limit?
         action = np.array([0.0, 0.0])
         action += np.array([0.0, 1.5])
         action += np.array([forward_step, 0.0])
-        assert render_step(env, action), "Failed turning left"
+        if duckiebot == None:
+            assert render_step(env, action), "Failed turning left"
+        else:
+            duckiebot.add_action(action)
         turn_count += 1   
 
     # Turn this amount 
-    straighten_out(env, forward_step)
+    straighten_out(env, forward_step, duckiebot)
 
 # Handle an intersection by turning right (default)
-def handle_intersection(env, forward_step, speed_limit, choice):
-    info = env.get_agent_info()
+def handle_intersection(env, forward_step=.44, speed_limit=.33, choice=None, duckiebot=None):
 
     # Stop
-    stop_vehicle(env)
+    stop_vehicle(env, duckiebot)
 
     # Choose a random option if one not given
     choices = ['Right', 'Left', 'Straight'] 
@@ -215,41 +266,41 @@ def handle_intersection(env, forward_step, speed_limit, choice):
 
     # Move based on choice
     if choice == 'Right':
-        right_turn(env, forward_step)
+        right_turn(env, forward_step, duckiebot)
     elif choice == 'Left':
-        left_turn(env, forward_step)
+        left_turn(env, forward_step, duckiebot)
     elif choice == 'Straight':
         forward_steps = 0
         while forward_steps < 30:
-            move_forward(env, forward_step, speed_limit)
+            move_forward(env, forward_step, speed_limit, duckiebot)
             forward_steps += 1
 
 # Detect if there is an intersection
-def intersection_detected(env):
+def intersection_detected(env, duckiebot=None):
     # Get relevant state information
-    curr_x, curr_z = get_curr_pos(env)
-    stop_x, stop_z = get_stop_pos(env)
-    direction = get_direction(env)
+    curr_x, curr_z = get_curr_pos(env, duckiebot)
+    stop_x, stop_z = get_stop_pos(env, duckiebot)
+    direction = get_direction(env, duckiebot)
 
     # Based on direction check intersection
-    if direction == 'N' and curr_z < stop_z and approaching_intersection(env):
+    if direction == 'N' and curr_z < stop_z and approaching_intersection(env, duckiebot):
         return True
-    elif direction == 'W' and curr_x < stop_x and approaching_intersection(env):
+    elif direction == 'W' and curr_x < stop_x and approaching_intersection(env, duckiebot):
         return True
-    elif direction == 'S' and curr_z > stop_z and approaching_intersection(env):
+    elif direction == 'S' and curr_z > stop_z and approaching_intersection(env, duckiebot):
         return True
-    elif direction == 'E' and curr_x > stop_x and approaching_intersection(env):
+    elif direction == 'E' and curr_x > stop_x and approaching_intersection(env, duckiebot):
         return True
     else:
         return False
 
 # Get the stopping points (~3/4 through the tile)
-def get_stop_pos(env):
+def get_stop_pos(env, duckiebot=None):
     # Get state information
-    tile_x, tile_z = get_curr_tile(env)['coords']
+    tile_x, tile_z = get_curr_tile(env, duckiebot)['coords']
     tile_size = env.road_tile_size
-    curr_x, curr_z = get_curr_pos(env)
-    direction = get_direction(env)
+    curr_x, curr_z = get_curr_pos(env, duckiebot)
+    direction = get_direction(env, duckiebot)
 
     # get the 2/3ish length of tile to go through
     if direction == 'N':
@@ -268,25 +319,25 @@ def get_stop_pos(env):
     return stop_x, stop_z
 
 # Check if approaching an intersection
-def approaching_intersection(env):
+def approaching_intersection(env, duckiebot=None):
     # Get state information
-    tile_x, tile_z = get_curr_tile(env)['coords']
-    direction = get_direction(env)
+    tile_x, tile_z = get_curr_tile(env, duckiebot)['coords']
+    direction = get_direction(env, duckiebot)
 
     # Based on direction, check if the next tile is an intersection
-    if direction == 'N' and intersection_tile(env, tile_x, tile_z-1):
+    if direction == 'N' and intersection_tile(env, tile_x, tile_z-1, duckiebot):
         return True
-    elif direction == 'W' and intersection_tile(env, tile_x-1, tile_z):
+    elif direction == 'W' and intersection_tile(env, tile_x-1, tile_z, duckiebot):
         return True
-    elif direction == 'S' and intersection_tile(env, tile_x, tile_z+1):
+    elif direction == 'S' and intersection_tile(env, tile_x, tile_z+1, duckiebot):
         return True
-    elif direction == 'E' and intersection_tile(env, tile_x+1, tile_z):
+    elif direction == 'E' and intersection_tile(env, tile_x+1, tile_z, duckiebot):
         return True
     else:
         return False
 
 # Check if a tile is an intersection tile
-def intersection_tile(env, tile_x, tile_z):
+def intersection_tile(env, tile_x, tile_z, duckiebot=None):
     if tile_x >= 0 and tile_z >= 0 and tile_x < env.grid_width and tile_z < env.grid_height:
         tile_kind = get_tile(env, tile_x, tile_z)['kind']
         if tile_kind == '4way':
@@ -297,9 +348,9 @@ def intersection_tile(env, tile_x, tile_z):
         return False
 
 # Get current direction
-def get_direction(env):
+def get_direction(env, duckiebot):
     # Get state information
-    curr_angle = get_curr_angle(env)
+    curr_angle = get_curr_angle(env, duckiebot)
 
     # Based on the current angle of the agent return a direction it is moving
     if curr_angle > 45 and curr_angle <= 135:
@@ -312,26 +363,37 @@ def get_direction(env):
         return 'E'
 
 # Get current angle degrees
-def get_curr_angle(env):
-    info = env.get_agent_info()
-    curr_angle = round(math.degrees(info['Simulator']['cur_angle']))
+def get_curr_angle(env, duckiebot=None):
+    if duckiebot == None:
+        info = env.get_agent_info()
+        curr_angle = round(math.degrees(info['Simulator']['cur_angle']))
+    else:
+        info = duckiebot.get_object_info()
+        curr_angle = round(math.degrees(info['angle']))
     if curr_angle < 0:
         curr_angle = 360 - abs(curr_angle)
 
     return curr_angle
 
 # Get Current Speed
-def get_curr_speed(env):
-    info = env.get_agent_info()
-    return info['Simulator']['robot_speed']
+def get_curr_speed(env, duckiebot=None):
+    if duckiebot == None:
+        info = env.get_agent_info()
+        return info['Simulator']['robot_speed']
+    else:
+        return duckiebot.get_speed(env.delta_time)
 
 # Get current tile info
-def get_curr_tile(env):
-    info = env.get_agent_info()
-    tile_x, tile_z = info['Simulator']['tile_coords']
-    return env._get_tile(tile_x, tile_z)
-
-
+def get_curr_tile(env, duckiebot=None):
+    if duckiebot == None:
+        info = env.get_agent_info()
+        tile_x, tile_z = info['Simulator']['tile_coords']
+        return env._get_tile(tile_x, tile_z)
+    else:
+        info = duckiebot.get_object_info()
+        tile_size = env.road_tile_size
+        tile_x, tile_z = math.trunc(info['pos'][0]/tile_size), math.trunc(info['pos'][2]/tile_size)
+        return env._get_tile(tile_x, tile_z)
 
 
 # Get tile info
@@ -339,13 +401,19 @@ def get_tile(env, tile_x, tile_z):
     return env._get_tile(tile_x, tile_z)
 
 # Get current position
-def get_curr_pos(env):
-    info = env.get_agent_info()
-    tile_size = env.road_tile_size
-    current_tile = get_curr_tile(env)['coords']
-    curr_x = info['Simulator']['cur_pos'][0]
-    curr_z = info['Simulator']['cur_pos'][2]
-    return curr_x, curr_z
+def get_curr_pos(env, duckiebot=None):
+    if duckiebot == None:
+        info = env.get_agent_info()
+        current_tile = get_curr_tile(env, duckiebot)['coords']
+        curr_x = info['Simulator']['cur_pos'][0]
+        curr_z = info['Simulator']['cur_pos'][2]
+        return curr_x, curr_z
+    else:
+        info = duckiebot.get_object_info()
+        current_tile = get_curr_tile(env, duckiebot)['coords']
+        curr_x, curr_z = info['pos'][0], info['pos'][2]
+        return curr_x, curr_z
+
 
 # Render the step and call the inner return
 def render_step(env, action):
