@@ -944,6 +944,8 @@ class Simulator(gym.Env):
 
     def interpret_object(self, objname: str, desc: MapFormat1Object):
         kind = desc["kind"]
+        name = desc.get("name", objname)
+        actions = []
 
         W = self.grid_width
         tile_size = self.road_tile_size
@@ -995,6 +997,7 @@ class Simulator(gym.Env):
         assert not ("height" in desc and "scale" in desc), "cannot specify both height and scale"
 
         static = desc.get("static", True)
+        agent = desc.get("agent", False)
         # static = desc.get('static', False)
         # print('static is now', static)
 
@@ -1006,6 +1009,9 @@ class Simulator(gym.Env):
             "scale": scale,
             "optional": optional,
             "static": static,
+            "agent": agent,
+            "name": name,
+            "actions": actions,
         }
 
         if static:
@@ -1590,7 +1596,8 @@ class Simulator(gym.Env):
                         if tuple(self.get_grid_coords(o.pos)) == (obj_i, obj_j) and o != obj
                     ]
 
-                    obj.step_duckiebot(delta_time, self.closest_curve_point, same_tile_obj)
+                    if not obj.agent:
+                        obj.step_duckiebot(delta_time, self.closest_curve_point, same_tile_obj)
             else:
                 # print("stepping all objects")
                 obj.step(delta_time)

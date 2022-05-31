@@ -41,6 +41,7 @@ class WorldObj:
         self.color = (0, 0, 0, 1)
         # maybe have an abstract method is_visible, get_color()
 
+        self.name = obj["name"]
         self.kind = obj["kind"]
         self.mesh = obj["mesh"]
         self.pos = obj["pos"]
@@ -50,6 +51,8 @@ class WorldObj:
         self.min_coords = obj["mesh"].min_coords
         self.max_coords = obj["mesh"].max_coords
         self.static = obj["static"]
+        self.agent = obj["agent"] 
+        self.actions = obj["actions"] 
         self.safety_radius = safety_radius_mult * calculate_safety_radius(self.mesh, self.scale)
 
         self.domain_rand = domain_rand
@@ -64,6 +67,7 @@ class WorldObj:
 
         self.x_rot = 0  # Niki-added
         self.z_rot = 0  # Niki-added
+
 
     def render_mesh(self, segment: bool, enable_leds: bool):
         self.mesh.render(segment=segment)
@@ -176,6 +180,17 @@ class WorldObj:
         if not self.static:
             raise NotImplementedError
 
+    def get_object_info(self):
+        info = {}
+        info['pos'] = self.pos
+        info['kind'] = self.kind
+        info['angle'] = self.angle
+        info['agent'] = self.agent
+        info['name'] = self.name
+        info['actions'] = self.actions
+
+        return info
+
 
 class DuckiebotObj(WorldObj):
     leds_color: Dict[str, Tuple[float, float, float]]
@@ -225,6 +240,7 @@ class DuckiebotObj(WorldObj):
         # TODO: Make these DR as well
         self.k = k
         self.limit = limit
+
 
     # FIXME: this does not follow the same signature as WorldOb
     def step_duckiebot(self, delta_time, closest_curve_point, objects):
@@ -281,6 +297,10 @@ class DuckiebotObj(WorldObj):
         return min(0, score)
 
     def _update_pos(self, action, deltaTime):
+        # Pop the first action from actions
+        if self.actions:
+            self.actions.pop(0)
+
         vel, angle = action
 
         # assuming same motor constants k for both motors

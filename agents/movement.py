@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import duckiebots as db 
 import math
 """
 Contains functions for moving agent in ite world scenarios.
@@ -8,16 +9,14 @@ Contains functions for moving agent in ite world scenarios.
 # Stop the vehicle
 def stop_vehicle(env):
     print("Stopping the Vehicle")
-    # Get state information
-    curr_speed = get_curr_speed(env)
+    stop_iterations = 0
 
     # While still moving Slow down
-    while curr_speed > 0.0009:
+    while stop_iterations < 30:
         action = np.array([0.0, 0.0])
         assert render_step(env, action), "Failed Stopping Vehicle"
+        stop_iterations += 1
 
-        # Check new speed
-        curr_speed = get_curr_speed(env)
 
 # Move Forwards at whatever angle we are at, not going faster than 30 mps
 def move_forward(env, forward_step, speed_limit):
@@ -332,6 +331,9 @@ def get_curr_tile(env):
     tile_x, tile_z = info['Simulator']['tile_coords']
     return env._get_tile(tile_x, tile_z)
 
+
+
+
 # Get tile info
 def get_tile(env, tile_x, tile_z):
     return env._get_tile(tile_x, tile_z)
@@ -348,6 +350,7 @@ def get_curr_pos(env):
 # Render the step and call the inner return
 def render_step(env, action):
     obs, reward, done, info = env.step(action)
+    db.update_duckiebots(env)
     print("step_count = %s, reward=%.3f" % (env.unwrapped.step_count, reward))
     return render_step_inner(env, done)
 
