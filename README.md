@@ -81,12 +81,6 @@ Requirements:
 - PyYAML
 - PyTorch
 
-```
-git clone git@github.com:mattelacqua/duckietown-soid.git
-cd duckietown-soid
-pip3 install -e .
-```
-
 <!--- *** NO LONGER VALID:
 *** Reinforcement learning code forked from [this repository](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr)
 *** is included under [/pytorch_rl](/pytorch_rl). If you wish to use this code, you
@@ -156,6 +150,11 @@ This makes use of several [if then else agent functions](/agents/movement.py) th
 python3 agents/intersection_agent.py --env-name Duckietown-4way_large-v0 --map-name 4way_large.yaml --cam-mode top_down
 ```
 
+To test Duckiebot object movement using the [duckiebots.py](/agents/duckiebots.py)
+
+```
+python3 agents/duckie_intersection.py --env-name Duckietown-4way_duckies-v0 --map-name 4way_duckies.yaml --safety-factor 0.5 --cam-mode top_down
+```
 
 
 ### Reinforcement Learning Agents 
