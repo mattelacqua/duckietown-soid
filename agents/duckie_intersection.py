@@ -60,23 +60,42 @@ else:
 env.reset()
 env.render(args.cam_mode)
 
+agent0_actions = []
+agent1_actions = []
     
 def update(dt):
     """
     This function is called at every frame to handle
     movement/stepping and redrawing
     """
+    global agent0_actions
+    global agent1_actions
     action = np.array([0.0, 0.0])
 
     # If we are at a 4 way
-    if move.intersection_detected(env, env.agents[0]):
-        move.handle_intersection(env, choice='Right', duckiebot=env.agents[0])
-    else: 
-        move.move_forward(env, forward_step=0.44, duckiebot=env.agents[0])
-    if move.intersection_detected(env, env.agents[1]):
-        move.handle_intersection(env, choice='Right', duckiebot=env.agents[1])
-    else:
-        move.move_forward(env, forward_step=0.44, duckiebot=env.agents[1])
+    print(agent0_actions)
+    if not agent0_actions:
+        if move.intersection_detected(env, env.agents[0]):
+            agent0_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[0]))
+        else: 
+            agent0_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[0]))
+    if not agent1_actions:
+        if move.intersection_detected(env, env.agents[1]):
+            agent1_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[1]))
+        else:
+            agent1_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[1]))
+
+    # HERE WE CAN DO A CHECK
+    """print("AGENT 0 ACTIONS")
+    print(agent0_actions)
+    print("AGENT 1 ACTIONS")
+    print(agent1_actions)"""
+    move.render_step(env,  agent0_actions.pop(0), env.agents[0])
+    move.render_step(env,  agent1_actions.pop(0), env.agents[1])
+    """print("AGENT 0 ACTIONS POST POP")
+    print(agent0_actions)
+    print("AGENT 1 ACTIONS POST POP")
+    print(agent1_actions)"""
     env.render(env.cam_mode)
 
 # Enter main event loop
