@@ -33,6 +33,8 @@ parser.add_argument("--dynamics_rand", action="store_true", help="enable dynamic
 parser.add_argument("--frame-skip", default=1, type=int, help="number of frames to skip")
 parser.add_argument("--seed", default=1, type=int, help="seed")
 parser.add_argument("--cam-mode", default="human", help="Camera modes: human, top_down, free_cam, rgb_array")
+parser.add_argument("--safety-factor", default=1.0, type=float, help="Minimum distance before collision detection")
+parser.add_argument("--num-agents", default=1.0, type=int, help="Number of Agents")
 args = parser.parse_args()
 
 if args.env_name and args.env_name.find("Duckietown") != -1:
@@ -40,6 +42,8 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
         seed=args.seed,
         map_name=args.map_name,
         cam_mode=args.cam_mode,
+        safety_factor=args.safety_factor,
+        num_agents=args.num_agents,
         draw_curve=args.draw_curve,
         draw_bbox=args.draw_bbox,
         domain_rand=args.domain_rand,
@@ -57,7 +61,7 @@ env.reset()
 env.render(args.cam_mode)
 
     
-def update():
+def update(dt):
     """
     This function is called at every frame to handle
     movement/stepping and redrawing
@@ -65,18 +69,21 @@ def update():
     action = np.array([0.0, 0.0])
 
     # If we are at a 4 way
-    if move.intersection_detected(env):
-        return move.handle_intersection(env,  'Right')
-        #return move.handle_intersection(env,  'Left')
+    if move.intersection_detected(env, env.agents[0]):
+        move.handle_intersection(env, choice='Right', duckiebot=env.agents[0])
+    else: 
+        move.move_forward(env, forward_step=0.44, duckiebot=env.agents[0])
+    if move.intersection_detected(env, env.agents[1]):
+        move.handle_intersection(env, choice='Right', duckiebot=env.agents[1])
     else:
-        # Otherwise go straight
-        # Add code here to stay straight - Take an action and based on the current angle / direction adjust to be straight
-        #db.get_objects(env)
-        return move.move_forward(env)
+        move.move_forward(env, forward_step=0.44, duckiebot=env.agents[1])
+    env.render(env.cam_mode)
 
 # Enter main event loop
-while True:
-    update()
+pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate)
+pyglet.app.run()
+#while True:
+#    update()
 
 env.close()
 

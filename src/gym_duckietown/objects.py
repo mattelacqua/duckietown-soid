@@ -226,7 +226,7 @@ class WorldObj:
         delta_pos = self.cur_pos - self.prev_pos
         self.speed = np.linalg.norm(delta_pos) / delta_time
 
-        return self.speed
+        return self.velocity
 
 
 

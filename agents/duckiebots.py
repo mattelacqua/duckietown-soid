@@ -30,14 +30,12 @@ def get_next_duckiebot_action(env, duckiebot):
         duckiebot_step(env, duckiebot)
         return get_next_duckiebot_action(env, duckiebot)
 
-
 # General step for duckiebot
 def duckiebot_step(env, duckiebot): 
     if move.intersection_detected(env, duckiebot=duckiebot):
-        move.handle_intersection(env, duckiebot=duckiebot, forward_step=0.1)
+        move.handle_intersection(env, duckiebot=duckiebot, forward_step=0.1, turn_rate=0.15, choice="Left")
     else:
-        move.move_forward(env, duckiebot=duckiebot, forward_step=0.1)
-
+        move.move_forward(env, duckiebot=duckiebot, forward_step=0.1, turn_rate=0.15)
 
 # Get all controllable duckiebots from the objects
 def get_agent_duckiebots(env):

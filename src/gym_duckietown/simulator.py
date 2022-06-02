@@ -26,14 +26,17 @@ from gym.utils import seeding
 from numpy.random.mtrand import RandomState
 from pyglet import gl, image, window
 
-from duckietown_world import (
-    get_DB18_nominal,
-    get_DB18_uncalibrated,
-    get_texture_file,
+from .map_format import(
     MapFormat1,
     MapFormat1Constants,
     MapFormat1Constants as MF1C,
     MapFormat1Object,
+)
+
+from duckietown_world import (
+    get_DB18_nominal,
+    get_DB18_uncalibrated,
+    get_texture_file,
     SE2Transform,
 )
 from duckietown_world.gltf.export import get_duckiebot_color_from_colorname
@@ -163,19 +166,23 @@ MIN_SPAWN_OBJ_DIST = 0.25
 DEFAULT_ROBOT_SPEED = 1.20
 # approx 2 tiles/second
 
-DEFAULT_FRAMERATE = 30
+DEFAULT_FRAMERATE = 30 
 
 DEFAULT_MAX_STEPS = 1500
 
 DEFAULT_MAP_NAME = "udem1"
 
-DEFAULT_FRAME_SKIP = 1
+DEFAULT_FRAME_SKIP = 1 
 
 DEFAULT_ACCEPT_START_ANGLE_DEG = 60
 
 REWARD_INVALID_POSE = -1000
 
 MAX_SPAWN_ATTEMPTS = 5000
+
+DEFAULT_SAFETY_FACTOR=1.0
+
+DEFAULT_NUM_AGENTS=2
 
 LanePosition0 = namedtuple("LanePosition", "dist dot_dir angle_deg angle_rad")
 
@@ -185,7 +192,43 @@ class LanePosition(LanePosition0):
         """Serialization-friendly format."""
         return dict(dist=self.dist, dot_dir=self.dot_dir, angle_deg=self.angle_deg, angle_rad=self.angle_rad)
 
+class Agent():
+    cur_pos: np.ndarray
+    cur_angle: np.ndarray
+    last_action: np.ndarray
+    wheelsVels: np.ndarray
+    step_count: int
+    start_tile: List[int] 
+    start_pose: List[Union[List[Union[float, int]], Union[float, int]]] 
+    speed: float 
+    timestamp: float 
+    agent_id: str 
 
+
+    def __init__(self,
+        cur_pos=[0.0, 0.0, 0.0],
+        cur_angle=0.0,
+        start_tile=(0, 0),
+        start_pose=[[0.0, 0.0, 0.0], 0.0],
+        agent_id="ID",
+        color="red"):
+        
+        self.cur_pos = cur_pos
+        self.cur_angle = cur_angle
+        self.start_tile = start_pose
+        self.speed = 0.0
+        self.agent_id = agent_id 
+        self.last_action = np.array([0, 0])
+        self.wheelVels = np.array([0, 0])
+        self.timestamp = 0.0
+        self.start_tile = start_tile
+        self.start_pose = start_pose
+        self.state = None
+        self.mesh = get_duckiebot_mesh(color)
+        self.step_count = 0
+
+
+   
 class Simulator(gym.Env):
     """
     Simple road simulator to test RL training.
@@ -195,18 +238,18 @@ class Simulator(gym.Env):
 
     metadata = {"render.modes": ["human", "rgb_array", "app"], "video.frames_per_second": 30}
 
-    cur_pos: np.ndarray
+    agents: List[Agent]
     cam_offset: np.ndarray
     road_tile_size: float
     grid_width: int
     grid_height: int
-    step_count: int
     timestamp: float
     np_random: RandomState
     grid: List[TileDict]
 
     def __init__(
         self,
+        safety_factor: float = DEFAULT_SAFETY_FACTOR,
         cam_mode: str = DEFAULT_CAM_MODE,
         map_name: str = DEFAULT_MAP_NAME,
         max_steps: int = DEFAULT_MAX_STEPS,
@@ -220,7 +263,6 @@ class Simulator(gym.Env):
         robot_speed: float = DEFAULT_ROBOT_SPEED,
         accept_start_angle_deg=DEFAULT_ACCEPT_START_ANGLE_DEG,
         full_transparency: bool = False,
-        user_tile_start=None,
         seed: int = None,
         distortion: bool = False,
         dynamics_rand: bool = False,
@@ -231,10 +273,14 @@ class Simulator(gym.Env):
         color_sky: Sequence[float] = BLUE_SKY,
         style: str = "photos",
         enable_leds: bool = False,
+        num_agents: int = DEFAULT_NUM_AGENTS
     ):
         """
 
+        :param duckie_bots:
         :param cam_mode:
+        :param num_agents:
+        :param safety_factor:
         :param map_name:
         :param max_steps:
         :param draw_curve:
@@ -311,6 +357,8 @@ class Simulator(gym.Env):
         # Two-tuple of wheel torques, each in the range [-1, 1]
         self.action_space = spaces.Box(low=-1, high=1, shape=(2,), dtype=np.float32)
 
+        self.safety_factor = safety_factor 
+        self.num_agents = num_agents 
         self.cam_mode = cam_mode 
         self.camera_width = camera_width
         self.camera_height = camera_height
@@ -349,6 +397,9 @@ class Simulator(gym.Env):
         # allowed angle in lane for starting position
         self.accept_start_angle_deg = accept_start_angle_deg
 
+        # Initialize Agents
+        self.agents = []
+
         # Load the map
         self._load_map(map_name)
 
@@ -367,8 +418,6 @@ class Simulator(gym.Env):
         # Dynamics randomization
         self.dynamics_rand = dynamics_rand
 
-        # Start tile
-        self.user_tile_start = user_tile_start
 
         self.style = style
 
@@ -384,8 +433,6 @@ class Simulator(gym.Env):
         # Initialize the state
         self.reset()
 
-        self.last_action = np.array([0, 0])
-        self.wheelVels = np.array([0, 0])
 
     def _init_vlists(self):
 
@@ -536,11 +583,11 @@ class Simulator(gym.Env):
         """
 
         # Step count since episode start
-        self.step_count = 0
         self.timestamp = 0.0
 
         # Robot's current speed
-        self.speed = 0.0
+        for agent in self.agents:
+            agent.speed = 0.0
 
         if self.randomize_maps_on_reset:
             map_name = self.np_random.choice(self.map_names)
@@ -660,105 +707,97 @@ class Simulator(gym.Env):
                 obj.visible = True
 
         # If the map specifies a starting tile
-        if self.user_tile_start:
-            logger.info(f"using user tile start: {self.user_tile_start}")
-            i, j = self.user_tile_start
-            tile = self._get_tile(i, j)
-            if tile is None:
-                msg = "The tile specified does not exist."
-                raise Exception(msg)
-            logger.debug(f"tile: {tile}")
-        else:
-            if self.start_tile is not None:
-                tile = self.start_tile
+        for agent in self.agents: 
+            if agent.start_tile:
+                tile = self._get_tile(agent.start_tile[0], agent.start_tile[1])
             else:
                 # Select a random drivable tile to start on
                 if not self.drivable_tiles:
-                    msg = "There are no drivable tiles. Use start_tile or self.user_tile_start"
+                    msg = "There are no drivable tiles. Use start_tile or agent.start_tile"
                     raise Exception(msg)
                 tile_idx = self.np_random.randint(0, len(self.drivable_tiles))
                 tile = self.drivable_tiles[tile_idx]
 
-        # If the map specifies a starting pose
-        if self.start_pose is not None:
-            logger.info(f"using map pose start: {self.start_pose}")
+            # If the map specifies a starting pose
+            if agent.start_pose:
+                logger.info(f"using map pose start for agent {agent.agent_id}: {agent.start_pose}")
 
-            i, j = tile["coords"]
-            x = i * self.road_tile_size + self.start_pose[0][0]
-            z = j * self.road_tile_size + self.start_pose[0][2]
-            propose_pos = np.array([x, 0, z])
-            propose_angle = self.start_pose[1]
-
-            logger.info(f"Using map pose start. \n Pose: {propose_pos}, Angle: {propose_angle}")
-
-        else:
-            # Keep trying to find a valid spawn position on this tile
-            for _ in range(MAX_SPAWN_ATTEMPTS):
                 i, j = tile["coords"]
-
-                # Choose a random position on this tile
-                x = self.np_random.uniform(i, i + 1) * self.road_tile_size
-                z = self.np_random.uniform(j, j + 1) * self.road_tile_size
+                x = i * self.road_tile_size + agent.start_pose[0][0]
+                z = j * self.road_tile_size + agent.start_pose[0][2]
                 propose_pos = np.array([x, 0, z])
+                propose_angle = agent.start_pose[1]
 
-                # Choose a random direction
-                propose_angle = self.np_random.uniform(0, 2 * math.pi)
+                logger.info(f"Using map pose start for agent {agent.agent_id}. \n Pose: {propose_pos}, Angle: {propose_angle}")
 
-                # logger.debug('Sampled %s %s angle %s' % (propose_pos[0],
-                #                                          propose_pos[1],
-                #                                          np.rad2deg(propose_angle)))
-
-                # If this is too close to an object or not a valid pose, retry
-                inconvenient = self._inconvenient_spawn(propose_pos)
-
-                if inconvenient:
-                    # msg = 'The spawn was inconvenient.'
-                    # logger.warning(msg)
-                    continue
-
-                invalid = not self._valid_pose(propose_pos, propose_angle, safety_factor=1.3)
-                if invalid:
-                    # msg = 'The spawn was invalid.'
-                    # logger.warning(msg)
-                    continue
-
-                # If the angle is too far away from the driving direction, retry
-                try:
-                    lp = self.get_lane_pos2(propose_pos, propose_angle)
-                except NotInLane:
-                    continue
-                M = self.accept_start_angle_deg
-                ok = -M < lp.angle_deg < +M
-                if not ok:
-                    continue
-                # Found a valid initial pose
-                break
             else:
-                msg = f"Could not find a valid starting pose after {MAX_SPAWN_ATTEMPTS} attempts"
-                logger.warn(msg)
-                propose_pos = np.array([1, 0, 1])
-                propose_angle = 1
+                # Keep trying to find a valid spawn position on this tile
+                for _ in range(MAX_SPAWN_ATTEMPTS):
+                    i, j = tile["coords"]
 
-                # raise Exception(msg)
+                    # Choose a random position on this tile
+                    x = self.np_random.uniform(i, i + 1) * self.road_tile_size
+                    z = self.np_random.uniform(j, j + 1) * self.road_tile_size
+                    propose_pos = np.array([x, 0, z])
 
-        self.cur_pos = propose_pos
-        self.cur_angle = propose_angle
+                    # Choose a random direction
+                    propose_angle = self.np_random.uniform(0, 2 * math.pi)
 
-        init_vel = np.array([0, 0])
+                    # logger.debug('Sampled %s %s angle %s' % (propose_pos[0],
+                    #                                          propose_pos[1],
+                    #                                          np.rad2deg(propose_angle)))
 
-        # Initialize Dynamics model
-        if self.dynamics_rand:
-            trim = 0 + self.randomization_settings["trim"][0]
-            p = get_DB18_uncalibrated(delay=0.15, trim=trim)
-        else:
-            p = get_DB18_nominal(delay=0.15)
+                    # If this is too close to an object or not a valid pose, retry
+                    inconvenient = self._inconvenient_spawn(propose_pos)
 
-        q = self.cartesian_from_weird(self.cur_pos, self.cur_angle)
-        v0 = geometry.se2_from_linear_angular(init_vel, 0)
-        c0 = q, v0
-        self.state = p.initialize(c0=c0, t0=0)
+                    if inconvenient:
+                        # msg = 'The spawn was inconvenient.'
+                        # logger.warning(msg)
+                        continue
 
-        logger.info(f"Starting at {self.cur_pos} {self.cur_angle}")
+                    invalid = not self._valid_pose(propose_pos, propose_angle, safety_factor=1.3)
+                    if invalid:
+                        # msg = 'The spawn was invalid.'
+                        # logger.warning(msg)
+                        continue
+
+                    # If the angle is too far away from the driving direction, retry
+                    try:
+                        lp = self.get_lane_pos2(propose_pos, propose_angle)
+                    except NotInLane:
+                        continue
+                    M = self.accept_start_angle_deg
+                    ok = -M < lp.angle_deg < +M
+                    if not ok:
+                        continue
+                    # Found a valid initial pose
+                    break
+                else:
+                    msg = f"Could not find a valid starting pose after {MAX_SPAWN_ATTEMPTS} attempts"
+                    logger.warn(msg)
+                    propose_pos = np.array([1, 0, 1])
+                    propose_angle = 1
+
+                    # raise Exception(msg)
+
+            agent.cur_pos = propose_pos
+            agent.cur_angle = propose_angle
+
+            init_vel = np.array([0, 0])
+
+            # Initialize Dynamics model
+            if self.dynamics_rand:
+                trim = 0 + self.randomization_settings["trim"][0]
+                p = get_DB18_uncalibrated(delay=0.15, trim=trim)
+            else:
+                p = get_DB18_nominal(delay=0.15)
+
+            q = self.cartesian_from_weird(agent.cur_pos, agent.cur_angle)
+            v0 = geometry.se2_from_linear_angular(init_vel, 0)
+            c0 = q, v0
+            agent.state = p.initialize(c0=c0, t0=0)
+
+            logger.info(f"Starting agent {agent.agent_id} at {agent.cur_pos} {agent.cur_angle}")
 
         # Generate the first camera image
         obs = self.render_obs(segment=segment)
@@ -864,24 +903,25 @@ class Simulator(gym.Env):
                         tile["curves"] = self._get_curve(i, j)
                         self.drivable_tiles.append(tile)
 
-            default_color = "red"
-
-            self.mesh = get_duckiebot_mesh(default_color)
             self._load_objects(map_data)
+            self._load_agents(map_data)
 
+            # Load agents
             # Get the starting tile from the map, if specified
-            self.start_tile = None
-            if "start_tile" in map_data:
-                coords = map_data["start_tile"]
-                self.start_tile = self._get_tile(*coords)
-
-            # Get the starting pose from the map, if specified
-            self.start_pose = None
-            if "start_pose" in map_data:
-                self.start_pose = map_data["start_pose"]
+        
         except Exception as e:
             msg = "Cannot load map data"
             raise InvalidMapException(msg, map_data=map_data)
+
+    # Load each of the agents from the map
+    def _load_agents(self, map_data: MapFormat1):
+        agents = map_data["agents"]
+        print(agents)
+        for agent_id, desc in agents.items():
+            new_agent = Agent(cur_pos=desc["start_pose"][0], cur_angle=desc["start_pose"][1], start_tile=desc["start_tile"], start_pose=desc["start_pose"], agent_id=agent_id, color=desc["color"])
+            self.agents.append(new_agent)
+
+        print(self.agents)
 
     def _load_objects(self, map_data: MapFormat1):
         # Create the objects array
@@ -1502,7 +1542,7 @@ class Simulator(gym.Env):
         # No collision with any object
         return False
 
-    def _valid_pose(self, pos: g.T3value, angle: float, safety_factor: float = 1.0) -> bool:
+    def _valid_pose(self, pos: g.T3value, angle: float, safety_factor: float = DEFAULT_SAFETY_FACTOR) -> bool:
         """
         Check that the agent is in a valid pose
 
@@ -1555,28 +1595,27 @@ class Simulator(gym.Env):
                 return True
         return False
 
-    cur_pose: np.ndarray
-    cur_angle: float
-    speed: float
+    #cur_pose: np.ndarray
+    #cur_angle: float
+    #speed: float
 
-    def update_physics(self, action, delta_time: float = None):
+    def update_physics(self, action, agent, delta_time: float = None):
         # print("updating physics")
         if delta_time is None:
             delta_time = self.delta_time
-        self.wheelVels = action * self.robot_speed * 1
-        prev_pos = self.cur_pos
 
         # Update the robot's position
-        self.cur_pos, self.cur_angle = _update_pos(self, action)
-
-        self.step_count += 1
-        self.timestamp += delta_time
-
-        self.last_action = action
+        prev_pos = agent.cur_pos
+        agent.wheelVels = action * self.robot_speed * 1
+        agent.cur_pos, agent.cur_angle = self._update_pos(action, agent)
+        agent.last_action = action
 
         # Compute the robot's speed
-        delta_pos = self.cur_pos - prev_pos
-        self.speed = np.linalg.norm(delta_pos) / delta_time
+        delta_pos = agent.cur_pos - prev_pos
+        agent.speed = np.linalg.norm(delta_pos) / delta_time
+
+        agent.step_count += 1
+        agent.timestamp += delta_time
 
         # Update world objects
         for obj in self.objects:
@@ -1597,49 +1636,7 @@ class Simulator(gym.Env):
                     # print("stepping all objects")
                     obj.step(delta_time)
 
-    def get_agent_info(self) -> dict:
-        info = {}
-        pos = self.cur_pos
-        angle = self.cur_angle
-        # Get the position relative to the right lane tangent
-
-        info["action"] = list(self.last_action)
-        if self.full_transparency:
-            #             info['desc'] = """
-            #
-            # cur_pos, cur_angle ::  simulator frame (non cartesian)
-            #
-            # egovehicle_pose_cartesian :: cartesian frame
-            #
-            #     the map goes from (0,0) to (grid_height, grid_width)*self.road_tile_size
-            #
-            # """
-            try:
-                lp = self.get_lane_pos2(pos, angle)
-                info["lane_position"] = lp.as_json_dict()
-            except NotInLane:
-                pass
-
-            info["robot_speed"] = self.speed
-            info["proximity_penalty"] = self.proximity_penalty2(pos, angle)
-            info["cur_pos"] = [float(pos[0]), float(pos[1]), float(pos[2])]
-            info["cur_angle"] = float(angle)
-            info["wheel_velocities"] = [self.wheelVels[0], self.wheelVels[1]]
-
-            # put in cartesian coordinates
-            # (0,0 is bottom left)
-            # q = self.cartesian_from_weird(self.cur_pos, self.)
-            # info['cur_pos_cartesian'] = [float(p[0]), float(p[1])]
-            # info['egovehicle_pose_cartesian'] = {'~SE2Transform': {'p': [float(p[0]), float(p[1])],
-            #                                                        'theta': angle}}
-
-            info["timestamp"] = self.timestamp
-            info["tile_coords"] = list(self.get_grid_coords(pos))
-            # info['map_data'] = self.map_data
-        misc = {}
-        misc["Simulator"] = info
-        return misc
-
+    
     def cartesian_from_weird(self, pos, angle) -> np.ndarray:
         gx, gy, gz = pos
         grid_height = self.grid_height
@@ -1680,32 +1677,32 @@ class Simulator(gym.Env):
             reward = +1.0 * speed * lp.dot_dir + -10 * np.abs(lp.dist) + +40 * col_penalty
         return reward
 
-    def step(self, action: np.ndarray):
+    def step(self, action: np.ndarray, agent):
         action = np.clip(action, -1, 1)
         # Actions could be a Python list
         action = np.array(action)
         for _ in range(self.frame_skip):
-            self.update_physics(action)
+            self.update_physics(action, agent)
 
         # Generate the current camera image
         obs = self.render_obs()
-        misc = self.get_agent_info()
+        misc = self.get_agent_info(agent)
 
-        d = self._compute_done_reward()
-        misc["Simulator"]["msg"] = d.done_why
+        d = self._compute_done_reward(agent)
+        #misc["Simulator"]["msg"] = d.done_why
 
         return obs, d.reward, d.done, misc
 
-    def _compute_done_reward(self) -> DoneRewardInfo:
+    def _compute_done_reward(self, agent) -> DoneRewardInfo:
         # If the agent is not in a valid pose (on drivable tiles)
-        if not self._valid_pose(self.cur_pos, self.cur_angle):
+        if not self._valid_pose(agent.cur_pos, agent.cur_angle, self.safety_factor):
             msg = "Stopping the simulator because we are at an invalid pose."
             # logger.info(msg)
             reward = REWARD_INVALID_POSE
             done_code = "invalid-pose"
             done = True
         # If the maximum time step count is reached
-        elif self.step_count >= self.max_steps:
+        elif agent.step_count >= self.max_steps:
             msg = "Stopping the simulator because we reached max_steps = %s" % self.max_steps
             # logger.info(msg)
             done = True
@@ -1713,7 +1710,7 @@ class Simulator(gym.Env):
             done_code = "max-steps-reached"
         else:
             done = False
-            reward = self.compute_reward(self.cur_pos, self.cur_angle, self.robot_speed)
+            reward = self.compute_reward(agent.cur_pos, agent.cur_angle, self.robot_speed)
             msg = ""
             done_code = "in-progress"
         return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
@@ -1776,8 +1773,8 @@ class Simulator(gym.Env):
 
         # Set modelview matrix
         # Note: we add a bit of noise to the camera position for data augmentation
-        pos = self.cur_pos
-        angle = self.cur_angle
+        pos = self.agents[0].cur_pos
+        angle = self.agents[0].cur_angle
         # logger.info('Pos: %s angle %s' % (self.cur_pos, self.cur_angle))
         if self.domain_rand:
             pos = pos + self.randomization_settings["camera_noise"]
@@ -1921,27 +1918,30 @@ class Simulator(gym.Env):
             obj.render(draw_bbox=self.draw_bbox, segment=segment, enable_leds=self.enable_leds)
 
         # Draw the agent's own bounding box
-        if self.draw_bbox:
-            corners = get_agent_corners(pos, angle)
-            gl.glColor3f(1, 0, 0)
-            gl.glBegin(gl.GL_LINE_LOOP)
-            gl.glVertex3f(corners[0, 0], 0.01, corners[0, 1])
-            gl.glVertex3f(corners[1, 0], 0.01, corners[1, 1])
-            gl.glVertex3f(corners[2, 0], 0.01, corners[2, 1])
-            gl.glVertex3f(corners[3, 0], 0.01, corners[3, 1])
-            gl.glEnd()
+        for agent in self.agents:
+            pos = agent.cur_pos
+            angle = agent.cur_angle
+            if self.draw_bbox:
+                corners = get_agent_corners(pos, angle)
+                gl.glColor3f(1, 0, 0)
+                gl.glBegin(gl.GL_LINE_LOOP)
+                gl.glVertex3f(corners[0, 0], 0.01, corners[0, 1])
+                gl.glVertex3f(corners[1, 0], 0.01, corners[1, 1])
+                gl.glVertex3f(corners[2, 0], 0.01, corners[2, 1])
+                gl.glVertex3f(corners[3, 0], 0.01, corners[3, 1])
+                gl.glEnd()
 
-        if top_down:
-            gl.glPushMatrix()
-            gl.glTranslatef(*self.cur_pos)
-            gl.glScalef(1, 1, 1)
-            gl.glRotatef(self.cur_angle * 180 / np.pi, 0, 1, 0)
-            # glColor3f(*self.color)
-            self.mesh.render()
-            gl.glPopMatrix()
-        draw_xyz_axes = False
-        if draw_xyz_axes:
-            draw_axes()
+            if top_down:
+                gl.glPushMatrix()
+                gl.glTranslatef(*agent.cur_pos)
+                gl.glScalef(1, 1, 1)
+                gl.glRotatef(agent.cur_angle * 180 / np.pi, 0, 1, 0)
+                # glColor3f(*self.color)
+                agent.mesh.render()
+                gl.glPopMatrix()
+            draw_xyz_axes = False
+            if draw_xyz_axes:
+                draw_axes()
         # Resolve the multisampled frame buffer into the final frame buffer
         gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, multi_fbo)
         gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, final_fbo)
@@ -2053,11 +2053,11 @@ class Simulator(gym.Env):
 
         # Display position/state information
         if mode != "free_cam":
-            x, y, z = self.cur_pos
+            x, y, z = self.agents[0].cur_pos
             self.text_label.text = (
                 f"pos: ({x:.2f}, {y:.2f}, {z:.2f}), angle: "
-                f"{np.rad2deg(self.cur_angle):.1f} deg, steps: {self.step_count}, "
-                f"speed: {self.speed:.2f} m/s"
+                f"{np.rad2deg(self.agents[0].cur_angle):.1f} deg, steps: {self.agents[0].step_count}, "
+                f"speed: {self.agents[0].speed:.2f} m/s"
             )
             self.text_label.draw()
 
@@ -2065,6 +2065,47 @@ class Simulator(gym.Env):
         gl.glFlush()
 
         return img
+
+    def get_agent_info(self, agent: Agent) -> dict:
+        info = {}
+        pos = agent.cur_pos
+        angle = agent.cur_angle
+        # Get the position relative to the right lane tangent
+
+        info["agent_id"] = agent.agent_id 
+        info["action"] = list(agent.last_action)
+        """try:
+            lp = Simulator.get_lane_pos2(pos, angle)
+            info["lane_position"] = lp.as_json_dict()
+        except NotInLane:
+            pass"""
+
+        info["robot_speed"] = agent.speed
+        #info["proximity_penalty"] = self.proximity_penalty2(pos, angle)
+        info["cur_pos"] = [float(pos[0]), float(pos[1]), float(pos[2])]
+        info["cur_angle"] = float(angle)
+        info["wheel_velocities"] = [agent.wheelVels[0], agent.wheelVels[1]]
+        info["tile_coords"] = list(self.get_grid_coords(pos))
+        # info['map_data'] = self.map_data
+        misc = {}
+        misc["Agent"] = info
+        return misc
+
+    def _update_pos(self, action, agent):
+        """
+        Update the position of the robot, simulating differential drive
+
+        returns pos, angle
+        """
+
+        action = DynamicsInfo(motor_left=action[0], motor_right=action[1])
+        agent.state = agent.state.integrate(self.delta_time, action)
+        q = agent.state.TSE2_from_state()[0]
+        pos, angle = self.weird_from_cartesian(q)
+        pos = np.asarray(pos)
+        return pos, angle
+
+
 
 
 def get_dir_vec(cur_angle: float) -> np.ndarray:
@@ -2087,19 +2128,7 @@ def get_right_vec(cur_angle: float) -> np.ndarray:
     return np.array([x, 0, z])
 
 
-def _update_pos(self, action):
-    """
-    Update the position of the robot, simulating differential drive
 
-    returns pos, angle
-    """
-
-    action = DynamicsInfo(motor_left=action[0], motor_right=action[1])
-    self.state = self.state.integrate(self.delta_time, action)
-    q = self.state.TSE2_from_state()[0]
-    pos, angle = self.weird_from_cartesian(q)
-    pos = np.asarray(pos)
-    return pos, angle
 
 
 def get_duckiebot_mesh(color: str) -> ObjMesh:
@@ -2129,7 +2158,7 @@ def get_agent_corners(pos, angle):
     )
     return agent_corners
 
-
+    
 class FrameBufferMemory:
     multi_fbo: int
     final_fbo: int

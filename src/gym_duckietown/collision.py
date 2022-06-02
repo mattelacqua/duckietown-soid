@@ -183,6 +183,7 @@ def intersects_single_obj(duckie, obj, duckie_norm, norm):
         return False
 
     # All projection intervals overlap, collision with an object
+    print("INTERSECTION FAIL")
     return True
 
 
