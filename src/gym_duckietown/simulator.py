@@ -51,6 +51,7 @@ from .collision import (
     safety_circle_intersection,
     safety_circle_overlap,
     tile_corners,
+    intersects_single_obj,
 )
 from .distortion import Distortion
 from .exceptions import InvalidMapException, NotInLane
@@ -201,6 +202,7 @@ class Agent():
     start_tile: List[int] 
     start_pose: List[Union[List[Union[float, int]], Union[float, int]]] 
     speed: float 
+    color: str 
     timestamp: float 
     agent_id: str 
 
@@ -755,7 +757,7 @@ class Simulator(gym.Env):
                         # logger.warning(msg)
                         continue
 
-                    invalid = not self._valid_pose(propose_pos, propose_angle, safety_factor=1.3)
+                    invalid = not self._valid_pose(propose_pos, propose_angle, agent, safety_factor=1.3)
                     if invalid:
                         # msg = 'The spawn was invalid.'
                         # logger.warning(msg)
@@ -1540,12 +1542,12 @@ class Simulator(gym.Env):
         ]
         return np.any(results)
 
-    def _collision(self, agent_corners):
+    def _collision(self, this_agent_corners, this_agent):
         """
         Tensor-based OBB Collision detection
         """
         # Generate the norms corresponding to each face of BB
-        agent_norm = generate_norm(agent_corners)
+        this_agent_norm = generate_norm(this_agent_corners)
 
         # Check collisions with Static Objects
         if len(self.collidable_corners) > 0:
@@ -1555,13 +1557,21 @@ class Simulator(gym.Env):
 
         # Check collisions with Dynamic Objects
         for obj in self.objects:
-            if obj.check_collision(agent_corners, agent_norm):
+            if obj.check_collision(this_agent_corners, this_agent_norm):
                 return True
 
+        # Check collisions with Agents
+        for agent in self.agents:
+            if agent != this_agent:
+                pos = _actual_center(agent.cur_pos, agent.cur_angle)
+                agent_corners = get_agent_corners(pos, agent.cur_angle)
+                agent_norm = generate_norm(agent_corners)
+                if intersects_single_obj(this_agent_corners, agent_corners.T, this_agent_norm, agent_norm):
+                    return True
         # No collision with any object
         return False
 
-    def _valid_pose(self, pos: g.T3value, angle: float, safety_factor: float = DEFAULT_SAFETY_FACTOR) -> bool:
+    def _valid_pose(self, pos: g.T3value, angle: float, agent: Agent, safety_factor: float = DEFAULT_SAFETY_FACTOR) -> bool:
         """
         Check that the agent is in a valid pose
 
@@ -1589,7 +1599,7 @@ class Simulator(gym.Env):
 
         # Recompute the bounding boxes (BB) for the agent
         agent_corners = get_agent_corners(pos, angle)
-        no_collision = not self._collision(agent_corners)
+        no_collision = not self._collision(agent_corners, agent)
 
         res = no_collision and all_drivable
 
@@ -1714,7 +1724,7 @@ class Simulator(gym.Env):
 
     def _compute_done_reward(self, agent) -> DoneRewardInfo:
         # If the agent is not in a valid pose (on drivable tiles)
-        if not self._valid_pose(agent.cur_pos, agent.cur_angle, self.safety_factor):
+        if not self._valid_pose(agent.cur_pos, agent.cur_angle, agent, self.safety_factor):
             msg = "Stopping the simulator because we are at an invalid pose."
             # logger.info(msg)
             reward = REWARD_INVALID_POSE
@@ -1940,6 +1950,7 @@ class Simulator(gym.Env):
         for agent in self.agents:
             pos = agent.cur_pos
             angle = agent.cur_angle
+     
             if self.draw_bbox:
                 corners = get_agent_corners(pos, angle)
                 gl.glColor3f(1, 0, 0)
@@ -1950,14 +1961,14 @@ class Simulator(gym.Env):
                 gl.glVertex3f(corners[3, 0], 0.01, corners[3, 1])
                 gl.glEnd()
 
-            if top_down:
-                gl.glPushMatrix()
-                gl.glTranslatef(*agent.cur_pos)
-                gl.glScalef(1, 1, 1)
-                gl.glRotatef(agent.cur_angle * 180 / np.pi, 0, 1, 0)
-                # glColor3f(*self.color)
-                agent.mesh.render()
-                gl.glPopMatrix()
+
+            gl.glPushMatrix()
+            gl.glTranslatef(*agent.cur_pos)
+            gl.glScalef(1, 1, 1)
+            gl.glRotatef(agent.cur_angle * 180 / np.pi, 0, 1, 0)
+            agent.mesh.render()
+            gl.glPopMatrix()
+
             draw_xyz_axes = False
             if draw_xyz_axes:
                 draw_axes()

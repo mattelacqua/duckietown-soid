@@ -63,6 +63,8 @@ env.render(args.cam_mode)
 # Global holders for each agents actions
 agent0_actions = []
 agent1_actions = []
+agent2_actions = []
+agent3_actions = []
     
 def update(dt):
     """
@@ -72,6 +74,8 @@ def update(dt):
     # Use global action lists
     global agent0_actions
     global agent1_actions
+    global agent2_actions
+    global agent3_actions
 
     # If we are not handling a sequence already, try for agent 0
     if not agent0_actions:
@@ -80,12 +84,27 @@ def update(dt):
         else: 
             agent0_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[0]))
 
-    # If we are not handling a sequence already, try for agent 2
+    # If we are not handling a sequence already, try for agent 1
     if not agent1_actions:
         if move.intersection_detected(env, env.agents[1]):
             agent1_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[1]))
         else:
             agent1_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[1]))
+
+    # If we are not handling a sequence already, try for agent 2
+    if not agent2_actions:
+        if move.intersection_detected(env, env.agents[2]):
+            agent2_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[2]))
+        else: 
+            agent2_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[2]))
+
+    # If we are not handling a sequence already, try for agent 3
+    if not agent3_actions:
+        if move.intersection_detected(env, env.agents[3]):
+            agent3_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[3]))
+        else:
+            agent3_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[3]))
+
 
     # HERE WE CAN DO A CHECK TO SEE IF WE CHANGE THE SEQUENCES OR NOT BASED ON CURRENT STATE.
         #TODO:
@@ -93,6 +112,8 @@ def update(dt):
     # Render each agent's next move
     move.render_step(env,  agent0_actions.pop(0), env.agents[0])
     move.render_step(env,  agent1_actions.pop(0), env.agents[1])
+    move.render_step(env,  agent2_actions.pop(0), env.agents[2])
+    move.render_step(env,  agent3_actions.pop(0), env.agents[3])
    
     # render the cam
     env.render(env.cam_mode)

@@ -31,27 +31,29 @@ objects:
 tile_size: 0.585
 
 agents:
-  agent1:
+  agent0:
     # North
     start_tile: [2,4]
     start_pose: [[0.425, 0, 0.4], 1.4]
     color: "blue" 
     #start_pose: [[0.425, 0, 0.4], 1.5708]
-  agent2:
+  agent1:
     # West 
     start_tile: [4,2]
     start_pose: [[0.4, 0, 0.15], 3.24] 
     color: "red" 
     #start_pose: [[0.4, 0, 0.15], 3.14159] 
-    
-# South
-#start_tile: [2,0]
-#start_pose: [[0.155, 0, 0.2], 4.8]
-#start_pose: [[0.155, 0, 0.2], 4.71239]
-
-# East
-#start_tile: [0,2]
-#start_pose: [[0.225, 0, .4], 0.15]
-#start_pose: [[0.225, 0, 0.4], 0]
+  agent2:
+    #South
+    start_tile: [2,0]
+    start_pose: [[0.155, 0, 0.2], 4.8]
+    color: "green" 
+    #start_pose: [[0.155, 0, 0.2], 4.71239]
+  agent3:
+    # East
+    start_tile: [0,2]
+    start_pose: [[0.225, 0, .4], 0.15]
+    color: "grey" 
+    #start_pose: [[0.225, 0, 0.4], 0]
 
 
