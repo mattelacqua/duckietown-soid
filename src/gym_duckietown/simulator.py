@@ -915,13 +915,32 @@ class Simulator(gym.Env):
 
     # Load each of the agents from the map
     def _load_agents(self, map_data: MapFormat1):
-        agents = map_data["agents"]
-        print(agents)
-        for agent_id, desc in agents.items():
-            new_agent = Agent(cur_pos=desc["start_pose"][0], cur_angle=desc["start_pose"][1], start_tile=desc["start_tile"], start_pose=desc["start_pose"], agent_id=agent_id, color=desc["color"])
-            self.agents.append(new_agent)
+        agents = []
+        try:
+            agents = map_data["agents"]
+        except KeyError:
+            pass
 
-        print(self.agents)
+        if agents:
+            for agent_id, desc in agents.items():
+                new_agent = Agent(cur_pos=desc["start_pose"][0], cur_angle=desc["start_pose"][1], start_tile=desc["start_tile"], start_pose=desc["start_pose"], agent_id=agent_id, color=desc["color"])
+                self.agents.append(new_agent)
+        else:
+            # Retroactive Support
+            if map_data["start_pose"] and map_data["start_tile"]:
+                new_agent = Agent(cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_tile=map_data["start_tile"], start_pose=map_data["start_pose"], agent_id="agent0")
+                self.agents.append(new_agent)
+            elif map_data["start_pose"]:
+                new_agent = Agent(cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_pose=map_data["start_pose"], agent_id="agent0")
+                self.agents.append(new_agent)
+            elif map_data["start_tile"]:
+                new_agent = Agent(start_tile=desc["start_tile"], agent_id="agent0")
+                self.agents.append(new_agent)
+            else:
+                new_agent = Agent(agent_id="agent0")
+                self.agents.append(new_agent)
+            
+
 
     def _load_objects(self, map_data: MapFormat1):
         # Create the objects array

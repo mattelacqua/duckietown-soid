@@ -61,4 +61,7 @@ class MapFormat1(TypedDict, total=False):
     tile_size: float
     # [[0.480, 0, 0.2925], 0]
     objects: Dict[str, MapFormat1Object]
-    agents: Dict[str, MapFormat1Object]
+    agents: Dict[str, MapFormat1Agent]
+    start_tile: List[int]
+    start_pose: List[Union[List[Union[float, int]], Union[float, int]]]
+    color: str

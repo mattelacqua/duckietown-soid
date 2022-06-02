@@ -60,6 +60,7 @@ else:
 env.reset()
 env.render(args.cam_mode)
 
+# Global holders for each agents actions
 agent0_actions = []
 agent1_actions = []
     
@@ -68,41 +69,37 @@ def update(dt):
     This function is called at every frame to handle
     movement/stepping and redrawing
     """
+    # Use global action lists
     global agent0_actions
     global agent1_actions
-    action = np.array([0.0, 0.0])
 
-    # If we are at a 4 way
-    print(agent0_actions)
+    # If we are not handling a sequence already, try for agent 0
     if not agent0_actions:
         if move.intersection_detected(env, env.agents[0]):
             agent0_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[0]))
         else: 
             agent0_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[0]))
+
+    # If we are not handling a sequence already, try for agent 2
     if not agent1_actions:
         if move.intersection_detected(env, env.agents[1]):
             agent1_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[1]))
         else:
             agent1_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[1]))
 
-    # HERE WE CAN DO A CHECK
-    """print("AGENT 0 ACTIONS")
-    print(agent0_actions)
-    print("AGENT 1 ACTIONS")
-    print(agent1_actions)"""
+    # HERE WE CAN DO A CHECK TO SEE IF WE CHANGE THE SEQUENCES OR NOT BASED ON CURRENT STATE.
+        #TODO:
+    
+    # Render each agent's next move
     move.render_step(env,  agent0_actions.pop(0), env.agents[0])
     move.render_step(env,  agent1_actions.pop(0), env.agents[1])
-    """print("AGENT 0 ACTIONS POST POP")
-    print(agent0_actions)
-    print("AGENT 1 ACTIONS POST POP")
-    print(agent1_actions)"""
+   
+    # render the cam
     env.render(env.cam_mode)
 
 # Enter main event loop
 pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate)
 pyglet.app.run()
-#while True:
-#    update()
 
 env.close()
 
