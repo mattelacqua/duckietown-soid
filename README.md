@@ -91,7 +91,7 @@ Requirements:
 You can install all the dependencies, including PyTorch, using [Conda](https://docs.conda.io/en/latest/miniconda.html) as follows. Using MiniConda3:
 
 ```
-git clone https://github.com/duckietown/gym-duckietown.git
+git clone git@github.com:mattelacqua/duckietown-soid.git
 cd duckietown-soid
 conda env create -f environment.yaml
 
@@ -150,7 +150,11 @@ This makes use of several [if then else agent functions](/agents/movement.py) th
 python3 agents/intersection_agent.py --env-name Duckietown-4way_large-v0 --map-name 4way_large.yaml --cam-mode top_down
 ```
 
-To test Duckiebot object movement using the [duckiebots.py](/agents/duckiebots.py)
+### MultiAgent Scenarios
+
+The simulator has been modified to treat other duckiebots as alternative agents as opposed to dynamic objects. An example using the new map format can be found at [maps/4way_duckies](/maps/4way_duckies.yaml)
+
+To test this, run the following command:
 
 ```
 python3 agents/duckie_intersection.py --env-name Duckietown-4way_duckies-v0 --map-name 4way_duckies.yaml --safety-factor 0.5 --cam-mode top_down
