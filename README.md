@@ -144,7 +144,7 @@ python3 agents/pinball_agent.py --env-name Duckietown-udem1-v0 --cam-mode top_do
 ```
 
 The intersection agent will go appproach an intersection, stop before it, turn right/left or go straight randomly (can change the choice argument in handlle_intersection from None to one of 'Right', 'Left', 'Straight' for deterministic choice) and continue on until the road and simulation end.
-This makes use of several [if then else agent functions](/agents/movement.py) that can be used in other agents.
+This makes use of several [if then else agent functions](/src/gym_duckietown/agents.py) that can be used in other agents.
 
 ```
 python3 agents/intersection_agent.py --env-name Duckietown-4way_large-v0 --map-name 4way_large.yaml --cam-mode top_down
