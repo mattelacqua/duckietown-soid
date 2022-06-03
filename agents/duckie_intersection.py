@@ -16,8 +16,10 @@ from pyglet.window import key
 from gym_duckietown.envs import DuckietownEnv
 
 # Includes all important moving functions for if then else agents
-import movement as move
+#import movement as move
 import duckiebots as db 
+import gym_duckietown.agents
+import logging
 
 # from experiments.utils import save_img
 
@@ -65,7 +67,7 @@ agent0_actions = []
 agent1_actions = []
 agent2_actions = []
 agent3_actions = []
-    
+
 def update(dt):
     """
     This function is called at every frame to handle
@@ -77,43 +79,49 @@ def update(dt):
     global agent2_actions
     global agent3_actions
 
+    # Get the agents
+    agent0 = env.agents[0] 
+    agent1 = env.agents[1] 
+    agent2 = env.agents[2] 
+    agent3 = env.agents[3] 
+
     # If we are not handling a sequence already, try for agent 0
     if not agent0_actions:
-        if move.intersection_detected(env, env.agents[0]):
-            agent0_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[0]))
+        if agent0.intersection_detected(env):
+            agent0_actions.extend(agent0.handle_intersection(env, choice='Right'))
         else: 
-            agent0_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[0]))
+            agent0_actions.extend(agent0.move_forward(env, forward_step=0.44))
 
     # If we are not handling a sequence already, try for agent 1
     if not agent1_actions:
-        if move.intersection_detected(env, env.agents[1]):
-            agent1_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[1]))
-        else:
-            agent1_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[1]))
+        if agent1.intersection_detected(env):
+            agent1_actions.extend(agent1.handle_intersection(env, choice='Right'))
+        else: 
+            agent1_actions.extend(agent1.move_forward(env, forward_step=0.44))
 
     # If we are not handling a sequence already, try for agent 2
     if not agent2_actions:
-        if move.intersection_detected(env, env.agents[2]):
-            agent2_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[2]))
+        if agent2.intersection_detected(env):
+            agent2_actions.extend(agent2.handle_intersection(env, choice='Right'))
         else: 
-            agent2_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[2]))
+            agent2_actions.extend(agent2.move_forward(env, forward_step=0.44))
 
     # If we are not handling a sequence already, try for agent 3
     if not agent3_actions:
-        if move.intersection_detected(env, env.agents[3]):
-            agent3_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[3]))
-        else:
-            agent3_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[3]))
+        if agent3.intersection_detected(env):
+            agent3_actions.extend(agent3.handle_intersection(env, choice='Right'))
+        else: 
+            agent3_actions.extend(agent3.move_forward(env, forward_step=0.44))
 
-
+   
     # HERE WE CAN DO A CHECK TO SEE IF WE CHANGE THE SEQUENCES OR NOT BASED ON CURRENT STATE.
         #TODO:
     
     # Render each agent's next move
-    move.render_step(env,  agent0_actions.pop(0), env.agents[0])
-    move.render_step(env,  agent1_actions.pop(0), env.agents[1])
-    move.render_step(env,  agent2_actions.pop(0), env.agents[2])
-    move.render_step(env,  agent3_actions.pop(0), env.agents[3])
+    agent0.render_step(env, agent0_actions.pop(0))
+    agent1.render_step(env, agent1_actions.pop(0))
+    agent2.render_step(env, agent2_actions.pop(0))
+    agent3.render_step(env, agent3_actions.pop(0))
    
     # render the cam
     env.render(env.cam_mode)

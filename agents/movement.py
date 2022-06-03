@@ -20,6 +20,7 @@ def stop_vehicle(env, forward_step: float=0.44, duckiebot=None):
         action = np.array([0.0, 0.0])
         #assert render_step(env, action, duckiebot), "Failed Stopping Vehicle " + duckiebot.agent_id
         action_seq.append(action)
+        duckiebot.turn_on_light("center")
         stop_iterations += 1
 
     return action_seq
@@ -370,7 +371,7 @@ def get_direction(env, duckiebot):
 
 # Get current angle degrees
 def get_curr_angle(env, duckiebot=None):
-    info = env.get_agent_info(duckiebot)
+    info = duckiebot.get_info(env)
     curr_angle = round(math.degrees(info['Agent']['cur_angle']))
     if curr_angle < 0:
         curr_angle = 360 - abs(curr_angle)
@@ -379,12 +380,12 @@ def get_curr_angle(env, duckiebot=None):
 
 # Get Current Speed
 def get_curr_speed(env, duckiebot=None):
-    info = env.get_agent_info(duckiebot)
+    info = duckiebot.get_info(env)
     return info['Agent']['robot_speed']
 
 # Get current tile info
 def get_curr_tile(env, duckiebot=None):
-    info = env.get_agent_info(duckiebot)
+    info = duckiebot.get_info(env)
     tile_x, tile_z = info['Agent']['tile_coords']
     return env._get_tile(tile_x, tile_z)
 
@@ -395,7 +396,7 @@ def get_tile(env, tile_x, tile_z):
 
 # Get current position
 def get_curr_pos(env, duckiebot=None):
-    info = env.get_agent_info(duckiebot)
+    info = duckiebot.get_info(env)
     current_tile = get_curr_tile(env, duckiebot)['coords']
     curr_x = info['Agent']['cur_pos'][0]
     curr_z = info['Agent']['cur_pos'][2]

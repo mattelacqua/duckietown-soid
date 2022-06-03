@@ -25,6 +25,7 @@ from gym import spaces
 from gym.utils import seeding
 from numpy.random.mtrand import RandomState
 from pyglet import gl, image, window
+from pyglet.gl import gluSphere, gluNewQuadric
 
 from .map_format import(
     MapFormat1,
@@ -69,6 +70,8 @@ from .objects import CheckerboardObj, DuckiebotObj, DuckieObj, TrafficLightObj, 
 from .objmesh import get_mesh, MatInfo, ObjMesh
 from .randomization import Randomizer
 from .utils import get_subdir_path
+
+from .agents import *
 
 DIM = 0.5
 
@@ -123,7 +126,7 @@ GREEN = (0.0, 1.0, 0.0)
 # Angle at which the camera is pitched downwards
 CAMERA_ANGLE = 19.15
 
-# Camera field of view angle in the Y direction
+# Camera field of view
 # Note: robot uses Raspberri Pi camera module V1.3
 # https://www.raspberrypi.org/documentation/hardware/camera/README.md
 CAMERA_FOV_Y = 75
@@ -193,43 +196,6 @@ class LanePosition(LanePosition0):
         """Serialization-friendly format."""
         return dict(dist=self.dist, dot_dir=self.dot_dir, angle_deg=self.angle_deg, angle_rad=self.angle_rad)
 
-class Agent():
-    cur_pos: np.ndarray
-    cur_angle: np.ndarray
-    last_action: np.ndarray
-    wheelsVels: np.ndarray
-    step_count: int
-    start_tile: List[int] 
-    start_pose: List[Union[List[Union[float, int]], Union[float, int]]] 
-    speed: float 
-    color: str 
-    timestamp: float 
-    agent_id: str 
-
-
-    def __init__(self,
-        cur_pos=[0.0, 0.0, 0.0],
-        cur_angle=0.0,
-        start_tile=(0, 0),
-        start_pose=[[0.0, 0.0, 0.0], 0.0],
-        agent_id="ID",
-        color="red"):
-        
-        self.cur_pos = cur_pos
-        self.cur_angle = cur_angle
-        self.start_tile = start_pose
-        self.speed = 0.0
-        self.agent_id = agent_id 
-        self.last_action = np.array([0, 0])
-        self.wheelVels = np.array([0, 0])
-        self.timestamp = 0.0
-        self.start_tile = start_tile
-        self.start_pose = start_pose
-        self.state = None
-        self.mesh = get_duckiebot_mesh(color)
-        self.step_count = 0
-
-
    
 class Simulator(gym.Env):
     """
@@ -274,7 +240,7 @@ class Simulator(gym.Env):
         color_ground: Sequence[float] = (0.15, 0.15, 0.15),
         color_sky: Sequence[float] = BLUE_SKY,
         style: str = "photos",
-        enable_leds: bool = False,
+        enable_leds: bool = True,
         num_agents: int = DEFAULT_NUM_AGENTS
     ):
         """
@@ -1715,7 +1681,7 @@ class Simulator(gym.Env):
 
         # Generate the current camera image
         obs = self.render_obs()
-        misc = self.get_agent_info(agent)
+        misc = agent.get_info(self)
 
         d = self._compute_done_reward(agent)
         #misc["Simulator"]["msg"] = d.done_why
@@ -1967,6 +1933,49 @@ class Simulator(gym.Env):
             gl.glScalef(1, 1, 1)
             gl.glRotatef(agent.cur_angle * 180 / np.pi, 0, 1, 0)
             agent.mesh.render()
+            
+            # Handle lights
+            if self.enable_leds:
+                # attrs =
+                # gl.glPushAttrib(gl.GL_ALL_ATTRIB_BITS)
+                s_main = 0.01  # 1 cm sphere
+                # LIGHT_MULT_MAIN = 10
+                s_halo = 0.04
+                
+                colors = {
+                    "center": (1, 1, 0),
+                    "front_left": (1, 1, 0),
+                    "front_right": (1, 1, 0),
+                    "back_left": (1, 1, 0),
+                    "back_right": (1, 1, 0),
+                }
+                for light_name, (px, py, pz, led_on) in agent.lights.items():
+                    if led_on:
+                        color = np.clip(colors[light_name], 0, +1)
+                        color_intensity = float(np.mean(color))
+                        gl.glPushMatrix()
+
+                        gl.glTranslatef(px, pz, py)
+
+                        gl.glEnable(gl.GL_BLEND)
+                        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
+
+                        sphere = gluNewQuadric()
+
+                        gl.glColor4f(color[0], color[1], color[2], 1.0)
+                        gluSphere(sphere, s_main, 10, 10)
+
+                        gl.glColor4f(color[0], color[1], color[2], 0.2)
+
+                        s_halo_effective = color_intensity * s_halo
+
+                        gluSphere(sphere, s_halo_effective, 10, 10)
+
+                        gl.glColor4f(1.0, 1.0, 1.0, 1.0)
+                        gl.glBlendFunc(gl.GL_ONE, gl.GL_ZERO)
+                        gl.glDisable(gl.GL_BLEND)
+
+                        gl.glPopMatrix()      
             gl.glPopMatrix()
 
             draw_xyz_axes = False
@@ -2096,31 +2105,6 @@ class Simulator(gym.Env):
 
         return img
 
-    def get_agent_info(self, agent: Agent) -> dict:
-        info = {}
-        pos = agent.cur_pos
-        angle = agent.cur_angle
-        # Get the position relative to the right lane tangent
-
-        info["agent_id"] = agent.agent_id 
-        info["action"] = list(agent.last_action)
-        """try:
-            lp = Simulator.get_lane_pos2(pos, angle)
-            info["lane_position"] = lp.as_json_dict()
-        except NotInLane:
-            pass"""
-
-        info["robot_speed"] = agent.speed
-        #info["proximity_penalty"] = self.proximity_penalty2(pos, angle)
-        info["cur_pos"] = [float(pos[0]), float(pos[1]), float(pos[2])]
-        info["cur_angle"] = float(angle)
-        info["wheel_velocities"] = [agent.wheelVels[0], agent.wheelVels[1]]
-        info["tile_coords"] = list(self.get_grid_coords(pos))
-        # info['map_data'] = self.map_data
-        misc = {}
-        misc["Agent"] = info
-        return misc
-
     def _update_pos(self, action, agent):
         """
         Update the position of the robot, simulating differential drive
@@ -2160,16 +2144,6 @@ def get_right_vec(cur_angle: float) -> np.ndarray:
 
 
 
-
-def get_duckiebot_mesh(color: str) -> ObjMesh:
-    change_materials: Dict[str, MatInfo]
-
-    color = np.array(get_duckiebot_color_from_colorname(color))[:3]
-    change_materials = {
-        "gkmodel0_chassis_geom0_mat_001-material": {"Kd": color},
-        "gkmodel0_chassis_geom0_mat_001-material.001": {"Kd": color},
-    }
-    return get_mesh("duckiebot", change_materials=change_materials)
 
 
 def _actual_center(pos, angle):
