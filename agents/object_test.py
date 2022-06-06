@@ -105,7 +105,7 @@ def update(dt):
     env.render(env.cam_mode)
 
 # Enter main event loop
-pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate)
+pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
 pyglet.app.run()
 
 env.close()

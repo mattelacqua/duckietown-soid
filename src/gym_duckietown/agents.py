@@ -431,6 +431,16 @@ class Agent():
         self.get_obstacles(env, tile_x-1, tile_z) 
         self.get_obstacles(env, tile_x, tile_z+1) 
 
+        # Corners
+        self.get_obstacles(env, tile_x+1, tile_z+1) 
+        self.get_obstacles(env, tile_x-1, tile_z+1) 
+        self.get_obstacles(env, tile_x+1, tile_z-1) 
+        self.get_obstacles(env, tile_x-1, tile_z-1) 
+
+        # This one
+        self.get_obstacles(env, tile_x, tile_z) 
+
+
     # Return a list of objects and a list of agents present on the tile
     def get_obstacles(self, env, tile_x, tile_z):
         for obj in env.objects:
