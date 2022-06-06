@@ -62,71 +62,44 @@ env.reset()
 env.render(args.cam_mode)
 
 # Global holders for each agents actions
-agent0_actions = []
-agent1_actions = []
-agent2_actions = []
-agent3_actions = []
 
 def update(dt):
     """
     This function is called at every frame to handle
     movement/stepping and redrawing
     """
-    # Use global action lists
-    global agent0_actions
-    global agent1_actions
-    global agent2_actions
-    global agent3_actions
-
     # Get the agents
     agent0 = env.agents[0] 
     agent1 = env.agents[1] 
-    agent2 = env.agents[2] 
-    agent3 = env.agents[3] 
 
     # If we are not handling a sequence already, try for agent 0
-    if not agent0_actions:
+    if not agent0.actions:
         if agent0.intersection_detected(env):
-            agent0_actions.extend(agent0.handle_intersection(env, choice='Right'))
+            agent0.add_actions(agent0.handle_intersection(env, choice='Right'))
         else: 
-            agent0_actions.extend(agent0.move_forward(env, forward_step=0.44))
+            agent0.add_actions(agent0.move_forward(env, forward_step=0.44))
 
-    # If we are not handling a sequence already, try for agent 1
-    if not agent1_actions:
-        if agent1.intersection_detected(env):
-            agent1_actions.extend(agent1.handle_intersection(env, choice='Right'))
-        else: 
-            agent1_actions.extend(agent1.move_forward(env, forward_step=0.44))
-
-    # If we are not handling a sequence already, try for agent 2
-    if not agent2_actions:
-        if agent2.intersection_detected(env):
-            agent2_actions.extend(agent2.handle_intersection(env, choice='Right'))
-        else: 
-            agent2_actions.extend(agent2.move_forward(env, forward_step=0.44))
-
-    # If we are not handling a sequence already, try for agent 3
-    if not agent3_actions:
-        if agent3.intersection_detected(env):
-            agent3_actions.extend(agent3.handle_intersection(env, choice='Right'))
-        else: 
-            agent3_actions.extend(agent3.move_forward(env, forward_step=0.44))
-
+    # Move agent through intersection to test objects
+    if not agent1.actions:
+        agent1.add_actions(agent1.move_forward(env, forward_step=0.44))
    
-    # HERE WE CAN DO A CHECK TO SEE IF WE CHANGE THE SEQUENCES OR NOT BASED ON CURRENT STATE.
-        #TODO:
-
+    # Check and handle nearby agents
     for agent in env.agents:
-        objects, other_agents = agent.get_next_tile_objects(env)
-        print("Objects: {0} \n Agents: {1}".format(objects, other_agents))
+        agent.reset_obstacles(env)
+        agent.get_nearby_obstacles(env)
 
-    exit()
-    
+        if agent.nearby_objects:
+            # Handle objects, if it is a traffic light, do certain things etc.
+            agent.handle_objects(env)
+
+        if agent.nearby_agents:
+            agent.handle_agents(env)
+        print("{0}: \nNearby Objects: {1} \nNearbyAgents: {2}".format(agent.agent_id, agent.nearby_objects, agent.nearby_agents))
+
+        
     # Render each agent's next move
-    agent0.render_step(env, agent0_actions.pop(0))
-    agent1.render_step(env, agent1_actions.pop(0))
-    agent2.render_step(env, agent2_actions.pop(0))
-    agent3.render_step(env, agent3_actions.pop(0))
+    agent0.render_step(env, agent0.get_next_action())
+    agent1.render_step(env, agent1.get_next_action())
    
     # render the cam
     env.render(env.cam_mode)

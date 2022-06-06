@@ -196,6 +196,7 @@ class WorldObj:
     def get_object_info(self):
         info = {}
         info['pos'] = self.pos
+        info['cur_pos'] = self.cur_pos
         info['kind'] = self.kind
         info['angle'] = self.angle
         info['agent'] = self.agent

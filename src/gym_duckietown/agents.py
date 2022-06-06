@@ -6,6 +6,7 @@ import random
 import numpy as np
 import math
 from . import logger
+from gym_duckietown import objects
 
 """
 Contains functions for moving agent in ite world scenarios.
@@ -14,6 +15,7 @@ class Agent():
     cur_pos: np.ndarray
     cur_angle: np.ndarray
     last_action: np.ndarray
+    actions: List[np.ndarray]
     wheelsVels: np.ndarray
     step_count: int
     start_tile: List[int] 
@@ -22,7 +24,8 @@ class Agent():
     color: str 
     timestamp: float 
     agent_id: str 
-
+    nearby_objects: List[objects.WorldObj]         # Keep track of nearby objects and agents
+    nearby_agents: List
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -44,6 +47,9 @@ class Agent():
         self.start_pose = start_pose
         self.state = None
         self.mesh = get_duckiebot_mesh(color)
+        self.nearby_objects = []          # Keep track of nearby objects and agents
+        self.nearby_agents = []
+        self.actions = []
         self.step_count = 0
         height = 0.05
         self.lights =   {
@@ -67,7 +73,7 @@ class Agent():
         self.lights[light][3] = False
 
     # Stop the vehicle
-    def stop_vehicle(self, env, forward_step: float=0.44):
+    def stop_vehicle(self, env, choice, wrong_light: bool=False, forward_step: float=0.44):
         logger.info(self.agent_id + ": Stopping")
         stop_iterations = 0
         stop_point = (forward_step * 100)
@@ -79,7 +85,19 @@ class Agent():
         while stop_iterations < stop_point:
             action = np.array([0.0, 0.0])
             action_seq.append(action)
-            self.turn_on_light("center")
+            # Turn on respective turn signals
+            if choice == "Right" and not wrong_light:
+                self.turn_on_light("front_right")
+                self.turn_on_light("back_right")
+            elif choice == "Left" and not wrong_light:
+                self.turn_on_light("front_left")
+                self.turn_on_light("back_left")
+            elif choice == "Right" and wrong_light:
+                self.turn_on_light("front_left")
+                self.turn_on_light("back_left")
+            elif choice == "Left" and wrong_light:
+                self.turn_on_light("front_right")
+                self.turn_on_light("back_right")
             stop_iterations += 1
 
         return action_seq
@@ -103,6 +121,12 @@ class Agent():
             action_seq.append(action)
         else:
             action_seq.extend(self.straighten_out(env, forward_step, turn_rate))
+
+        # Turn off all lights because moving straight (either initially or after turning)
+        self.turn_off_light("front_right")
+        self.turn_off_light("back_right")
+        self.turn_off_light("front_left")
+        self.turn_off_light("back_left")
 
         return action_seq
 
@@ -301,20 +325,23 @@ class Agent():
 # Intersections 
 #--------------------------
 
-    # Handle an intersection by turning right (default)
-    def handle_intersection(self, env, forward_step=.44, speed_limit=.33, turn_rate=0.9, choice=None):
+    # Handle an intersection
+    # wrong_light=False, so agent behaves good and turns on correct signal lights
+        # wrong_light=True, agent behaves bad and turns on wrong signal lights
+    def handle_intersection(self, env, forward_step=.44, speed_limit=.33, turn_rate=0.9, choice=None, wrong_light=False):
 
         # Initialize action sequence
         action_seq = []
-
-        # Stop
-        action_seq.extend(self.stop_vehicle(env, forward_step))
 
         # Choose a random option if one not given
         choices = ['Right', 'Left', 'Straight'] 
         if choice == None:
             choice = random.choice(choices)
 
+        # Stop
+        action_seq.extend(self.stop_vehicle(env, choice, wrong_light=wrong_light, forward_step=forward_step))
+
+    
         # Move based on choice
         if choice == 'Right':
             action_seq.extend(self.right_turn(env, forward_step, turn_rate))
@@ -347,6 +374,25 @@ class Agent():
         else:
             return False
 
+    # Check if approaching an intersection
+    def approaching_intersection(self, env):
+        # Get state information
+        tile_x, tile_z = self.get_curr_tile(env)['coords']
+        direction = self.get_direction(env)
+
+        # Based on direction, check if the next tile is an intersection
+        if direction == 'N' and intersection_tile(env, tile_x, tile_z-1):
+            return True
+        elif direction == 'W' and intersection_tile(env, tile_x-1, tile_z):
+            return True
+        elif direction == 'S' and intersection_tile(env, tile_x, tile_z+1):
+            return True
+        elif direction == 'E' and intersection_tile(env, tile_x+1, tile_z):
+            return True
+        else:
+            return False
+
+
     # Get the stopping points (~3/4 through the tile)
     def get_stop_pos(self, env):
         # Get state information
@@ -371,23 +417,48 @@ class Agent():
 
         return stop_x, stop_z
 
-    # Check if approaching an intersection
-    def approaching_intersection(self, env):
-        # Get state information
-        tile_x, tile_z = self.get_curr_tile(env)['coords']
-        direction = self.get_direction(env)
+#--------------------------
+# Object Checking
+#--------------------------
 
-        # Based on direction, check if the next tile is an intersection
-        if direction == 'N' and intersection_tile(env, tile_x, tile_z-1):
-            return True
-        elif direction == 'W' and intersection_tile(env, tile_x-1, tile_z):
-            return True
-        elif direction == 'S' and intersection_tile(env, tile_x, tile_z+1):
-            return True
-        elif direction == 'E' and intersection_tile(env, tile_x+1, tile_z):
-            return True
-        else:
-            return False
+    # Get information on objects / agents in the next square
+    def get_nearby_obstacles(self, env):
+        tile_x, tile_z = self.get_curr_tile(env)['coords']
+
+        # Based on direction, get surrounding objects and agents
+        self.get_obstacles(env, tile_x, tile_z-1) 
+        self.get_obstacles(env, tile_x+1, tile_z) 
+        self.get_obstacles(env, tile_x-1, tile_z) 
+        self.get_obstacles(env, tile_x, tile_z+1) 
+
+    # Return a list of objects and a list of agents present on the tile
+    def get_obstacles(self, env, tile_x, tile_z):
+        for obj in env.objects:
+            info = obj.get_object_info()
+            obj_x, obj_z = env.get_grid_coords(info['cur_pos'])
+            if obj_x == tile_x and obj_z == tile_z:
+                self.nearby_objects.append(obj)
+
+        for agent in env.agents:
+            info = agent.get_info(env)
+            agent_x, agent_z = env.get_grid_coords(info['Agent']['cur_pos'])
+            if agent != self and agent_x == tile_x and agent_z == tile_z:
+                self.nearby_agents.append(agent)
+    
+    # Reset the obstacles before getting new ones in each time step
+    def reset_obstacles(self, env):
+        self.nearby_objects = []
+        self.nearby_agents = []
+
+    # Handle each object differently
+    def handle_objects(self, env):
+        for obj in self.nearby_objects:
+            info = obj.get_object_info()
+
+    # Handle each agent differently
+    def handle_agents(self, env):
+        for agent in self.nearby_agents:
+            info = agent.get_info(env)
 
 #--------------------------
 # Rendering  / Stepping
@@ -411,6 +482,13 @@ class Agent():
             #env.render(env.cam_mode)
             return True
 
+    # Get next action
+    def get_next_action(self):
+        return self.actions.pop(0)
+    
+    # Get next action
+    def add_actions(self, actions):
+        return self.actions.extend(actions)
 #--------------------------
 # Agent Information
 #--------------------------
@@ -430,6 +508,7 @@ class Agent():
         info["wheel_velocities"] = [self.wheelVels[0], self.wheelVels[1]]
         info["tile_coords"] = list(env.get_grid_coords(pos))
         info["lights"] = self.lights 
+        info["actions"] = self.actions 
         misc = {}
         misc["Agent"] = info
         return misc
