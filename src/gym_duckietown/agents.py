@@ -36,6 +36,7 @@ class Agent():
         color="red"):
         
         self.cur_pos = cur_pos
+        self.prev_pos = cur_pos
         self.cur_angle = cur_angle
         self.start_tile = start_pose
         self.speed = 0.0
@@ -443,17 +444,35 @@ class Agent():
 
     # Return a list of objects and a list of agents present on the tile
     def get_obstacles(self, env, tile_x, tile_z):
+        # Get our direction
+        self_direction = self.get_direction(env)
+
         for obj in env.objects:
             info = obj.get_object_info()
             obj_x, obj_z = env.get_grid_coords(info['cur_pos'])
-            if obj_x == tile_x and obj_z == tile_z:
+            prev_distance = env.pos_distance(self.get_prev_pos(env, matrix=True), \
+                                             obj.get_curr_pos())
+            curr_distance = env.pos_distance(self.get_curr_pos(env, matrix=True), \
+                                             obj.get_curr_pos())
+            # NOT GETTING TRAFFIC POS RIGHT FOR SOME REASON. WILL HAVE TO FIX
+            if obj_x == tile_x and obj_z == tile_z and prev_distance > curr_distance:
+                print("{0} and {1} are getting closer.".format(self.agent_id, info['name']))
                 self.nearby_objects.append(obj)
 
         for agent in env.agents:
             info = agent.get_info(env)
-            agent_x, agent_z = env.get_grid_coords(info['Agent']['cur_pos'])
-            if agent != self and agent_x == tile_x and agent_z == tile_z:
-                self.nearby_agents.append(agent)
+            agent_direction = agent.get_direction(env)
+            agent_x, agent_z = env.get_grid_coords(info['cur_pos'])
+            prev_distance = env.pos_distance(self.get_prev_pos(env, matrix=True), \
+                                             agent.get_prev_pos(env, matrix=True))
+            curr_distance = env.pos_distance(self.get_curr_pos(env, matrix=True), \
+                                             agent.get_curr_pos(env, matrix=True))
+            # If it is in the radius we are checking and we are getting closer to it
+            if agent != self and agent_x == tile_x and agent_z == tile_z and prev_distance > curr_distance:
+                # Check if getting closer
+                if prev_distance > curr_distance:
+                    print("{0} and {1} are getting closer.".format(self.agent_id, agent.agent_id))
+                    self.nearby_agents.append(agent)
     
     # Reset the obstacles before getting new ones in each time step
     def reset_obstacles(self, env):
@@ -464,11 +483,17 @@ class Agent():
     def handle_objects(self, env):
         for obj in self.nearby_objects:
             info = obj.get_object_info()
+            if info['kind'] == 'trafficlight':
+                print("{0}: Handling Traffic light".format(self.agent_id))
+                if not obj.is_green(direction='S'):
+                    print("Light is Red")
 
     # Handle each agent differently
     def handle_agents(self, env):
+        self_direction = self.get_direction(env)
         for agent in self.nearby_agents:
             info = agent.get_info(env)
+            print("{0}: Handling Agent".format(self.agent_id))
 
 #--------------------------
 # Rendering  / Stepping
@@ -487,6 +512,7 @@ class Agent():
         if done:
             logger.error(self.agent_id + ": Failed. Check Log")
             env.reset()
+            # TODO: ADD AGENT RESETS.
             return False
         else:
             #env.render(env.cam_mode)
@@ -513,15 +539,14 @@ class Agent():
         info["agent_id"] = self.agent_id 
         info["action"] = list(self.last_action)
         info["robot_speed"] = self.speed
+        info["prev_pos"] = [float(self.prev_pos[0]), float(self.prev_pos[1]), float(self.prev_pos[2])]
         info["cur_pos"] = [float(pos[0]), float(pos[1]), float(pos[2])]
         info["cur_angle"] = float(angle)
         info["wheel_velocities"] = [self.wheelVels[0], self.wheelVels[1]]
         info["tile_coords"] = list(env.get_grid_coords(pos))
         info["lights"] = self.lights 
         info["actions"] = self.actions 
-        misc = {}
-        misc["Agent"] = info
-        return misc
+        return info
 
     # Get current direction
     def get_direction(self, env):
@@ -541,7 +566,7 @@ class Agent():
     # Get current angle degrees
     def get_curr_angle(self, env):
         info = self.get_info(env)
-        curr_angle = round(math.degrees(info['Agent']['cur_angle']))
+        curr_angle = round(math.degrees(info['cur_angle']))
         if curr_angle < 0:
             curr_angle = 360 - abs(curr_angle)
 
@@ -550,21 +575,34 @@ class Agent():
     # Get Current Speed
     def get_curr_speed(self, env):
         info = self.get_info(env)
-        return info['Agent']['robot_speed']
+        return info['robot_speed']
 
     # Get current tile info
     def get_curr_tile(self, env):
         info = self.get_info(env)
-        tile_x, tile_z = info['Agent']['tile_coords']
+        tile_x, tile_z = info['tile_coords']
         return env._get_tile(tile_x, tile_z)
 
     # Get current position
-    def get_curr_pos(self, env):
+    def get_curr_pos(self, env, matrix=False):
         info = self.get_info(env)
-        current_tile = self.get_curr_tile(env)['coords']
-        curr_x = info['Agent']['cur_pos'][0]
-        curr_z = info['Agent']['cur_pos'][2]
-        return curr_x, curr_z
+        if matrix:
+            return np.array(info['cur_pos'])
+        else:
+            curr_x = info['cur_pos'][0]
+            curr_z = info['cur_pos'][2]
+            return curr_x, curr_z
+
+    # Get previous position
+    def get_prev_pos(self, env, matrix=False):
+        info = self.get_info(env)
+        if matrix:
+            return np.array(info['prev_pos'])
+        else:
+            curr_x = info['prev_pos'][0]
+            curr_z = info['prev_pos'][2]
+            return curr_x, curr_z
+
 
 # Get duckiebot mesh
 def get_duckiebot_mesh(color: str) -> ObjMesh:

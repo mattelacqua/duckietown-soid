@@ -1517,7 +1517,7 @@ class Simulator(gym.Env):
 
         # Check collisions with Static Objects
         if len(self.collidable_corners) > 0:
-            collision = intersects(agent_corners, self.collidable_corners, agent_norm, self.collidable_norms)
+            collision = intersects(this_agent_corners, self.collidable_corners, this_agent_norm, self.collidable_norms)
             if collision:
                 return True
 
@@ -1600,13 +1600,13 @@ class Simulator(gym.Env):
             delta_time = self.delta_time
 
         # Update the robot's position
-        prev_pos = agent.cur_pos
+        agent.prev_pos = agent.cur_pos
         agent.wheelVels = action * self.robot_speed * 1
         agent.cur_pos, agent.cur_angle = self._update_pos(action, agent)
         agent.last_action = action
 
         # Compute the robot's speed
-        delta_pos = agent.cur_pos - prev_pos
+        delta_pos = agent.cur_pos - agent.prev_pos
         agent.speed = np.linalg.norm(delta_pos) / delta_time
 
         agent.step_count += 1
@@ -1627,11 +1627,15 @@ class Simulator(gym.Env):
                         obj.step_duckiebot(delta_time, self.closest_curve_point, same_tile_obj)
                     elif obj.agent:
                         obj.step_duckiebot_agent(delta_time, same_tile_obj)
-                else:
-                    # print("stepping all objects")
-                    obj.step(delta_time)
+            else:
+                # print("stepping all objects")
+                obj.step(delta_time)
 
     
+    # Get position distance
+    def pos_distance(self, pos1, pos2):
+        return np.linalg.norm(pos1-pos2) 
+
     def cartesian_from_weird(self, pos, angle) -> np.ndarray:
         gx, gy, gz = pos
         grid_height = self.grid_height
@@ -2202,3 +2206,4 @@ def draw_axes():
     gl.glEnd()
 
     gl.glPopMatrix()
+

@@ -20,6 +20,17 @@ objects:
     #    rotate: 45
     height: 0.4
     optional: true
+  sign1:
+    kind: sign_left_T_intersect
+    pos: [3.425, 0, 3.0]
+    rotate: 90
+    height: 0.18
+  sign2:
+    kind: sign_right_T_intersect
+    pos: [3.425, 0, 3.4]
+    rotate: 90
+    height: 0.18
+
 
 tile_size: 0.585
 

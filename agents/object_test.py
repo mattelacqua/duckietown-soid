@@ -94,7 +94,7 @@ def update(dt):
 
         if agent.nearby_agents:
             agent.handle_agents(env)
-        print("{0}: \nNearby Objects: {1} \nNearbyAgents: {2}".format(agent.agent_id, agent.nearby_objects, agent.nearby_agents))
+        #print("{0}: \nNearby Objects: {1} \nNearbyAgents: {2}".format(agent.agent_id, agent.nearby_objects, agent.nearby_agents))
 
         
     # Render each agent's next move

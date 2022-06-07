@@ -205,6 +205,9 @@ class WorldObj:
 
         return info
 
+    def get_curr_pos(self):
+        return self.cur_pos
+
     def add_action(self, action):
         self.actions.append(action)
 
