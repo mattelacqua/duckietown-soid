@@ -26,6 +26,8 @@ class Agent():
     agent_id: str 
     nearby_objects: List[objects.WorldObj]         # Keep track of nearby objects and agents
     nearby_agents: List
+    follow_dist: float
+    max_iterations: int
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -52,6 +54,8 @@ class Agent():
         self.nearby_agents = []
         self.actions = []
         self.step_count = 0
+        self.follow_dist = 0.3
+        self.max_iterations = 1000
         height = 0.05
         self.lights =   {
                         "front_left": [0.1, -0.05, height, False],
@@ -77,7 +81,7 @@ class Agent():
     def stop_vehicle(self, env, choice, wrong_light: bool=False, forward_step: float=0.44):
         logger.info(self.agent_id + ": Stopping")
         stop_iterations = 0
-        stop_point = (forward_step * 100)
+        stop_point = 30
 
         # Initialize action sequence
         action_seq = []
@@ -103,12 +107,13 @@ class Agent():
 
         return action_seq
 
+    
 #--------------------------
 # Movement
 #--------------------------
 
     # Move Forwards at whatever angle we are at, not going faster than 30 mps
-    def move_forward(self, env, forward_step=0.44, speed_limit=0.35, turn_rate=0.9):
+    def move_forward(self, env, forward_step=0.44, speed_limit=1.0):
         # Get state information
         curr_speed = self.get_curr_speed(env)
         logger.info(self.agent_id + ": Moving Forwards at speed " + str(curr_speed))
@@ -121,7 +126,7 @@ class Agent():
             action = np.array([0.0, 0.0])
             action_seq.append(action)
         else:
-            action_seq.extend(self.straighten_out(env, forward_step, turn_rate))
+            action_seq.extend(self.straighten_out(env, forward_step=forward_step))
 
         # Turn off all lights because moving straight (either initially or after turning)
         self.turn_off_light("front_right")
@@ -131,197 +136,140 @@ class Agent():
 
         return action_seq
 
-    # Check if close enough to center to correct
-    def close_to_center(self, env, curr_x, curr_z, goal_x, goal_z):
+    # Straighten out and follow curve
+    def straighten_out(self, env, forward_step: float=0.44):
+        from .simulator import get_right_vec
+        actions = []
+        turn_limit = math.pow((forward_step * 10), 1.5)
+
+        # Find the curve point closest to the agent, and the tangent at that point
+        closest_point, closest_tangent = env.closest_curve_point(self.cur_pos, self.cur_angle)
+        if closest_point is None or closest_tangent is None:
+            msg = f"Cannot find closest point/tangent from {self.cur_pos}, {self.cur_angle} "
+            raise Exception(msg)
+
+        iterations = 0
+        lookup_distance = self.follow_dist
+        curve_point = None
+        while iterations < self.max_iterations:
+            # Project a point ahead along the curve tangent,
+            # then find the closest point to to that
+            follow_point = closest_point + closest_tangent * lookup_distance
+            curve_point, _ = env.closest_curve_point(follow_point, self.cur_angle)
+            # If we have a valid point on the curve, stop
+            if curve_point is not None:
+                break
+
+            iterations += 1
+            lookup_distance *= 0.5
+
+        # Compute a normalized vector to the curve point
+        point_vec = curve_point - self.cur_pos
+        point_vec /= np.linalg.norm(point_vec)
+        dot = np.dot(get_right_vec(self.cur_angle), point_vec)
+        steering = (forward_step/2.0 * 10) * -dot
+        actions.append([forward_step, steering])
+        return actions
+
+    # TO DO LATER TO SEPARATE NP Python STUFF FROM C CALLBACKS
+    def get_curve_point(self):
+        print("NOTHING")
+    
+
+    # If not perfectly straight when stopping, get a factor by which we must increase
+    # the amount of turning we do
+    def get_turn_overcomp(self, env):
         direction = self.get_direction(env)
-        x_diff = abs(curr_x - goal_x)
-        z_diff = abs(curr_z - goal_z)
-        diff_val = .03
-        if (direction == 'N' or direction == 'S') and x_diff > diff_val:
-           return False
-        elif (direction == 'E' or direction == 'W') and z_diff > diff_val:
-            return False
+        angle = self.get_curr_angle(env)
+        if direction == 'N' and angle > 90:
+            overcomp_factor = abs(90-angle)
+        elif direction == 'N' and angle < 90:
+            overcomp_factor = 90-angle
+        elif direction == 'W' and angle > 180:
+            overcomp_factor = abs(180-angle)
+        elif direction == 'W' and angle < 180:
+            overcomp_factor = 180-angle
+        elif direction == 'S' and angle > 270:
+            overcomp_factor = abs(270-angle)
+        elif direction == 'S' and angle < 270:
+            overcomp_factor = 270-angle
+        elif direction == 'E' and angle > 0 and angle < 315:
+            overcomp_factor = abs(0-angle)
+        elif direction == 'E' and angle > 315:
+            overcomp_factor = 360-angle
         else:
-            return True
-            
+            overcomp_factor = 0
 
-    # Straighten out TODO
-    def straighten_out(self, env, forward_step: float=0.44, turn_rate: float=0.8):
-        # Get Information
-        curr_angle = self.get_curr_angle(env)
-        curr_x, curr_z = self.get_curr_pos(env)
-        goal_x, goal_z = self.get_center_right_lane(env)
-        direction = self.get_direction(env)
-
-        #if duckiebot != None:
-        #    logger.debug("Current {0} , {1}".format(curr_x, curr_z))
-        #    logger.debug("Goal {0} , {1}".format(goal_x, goal_z))
-        #    logger.debug("Curr angle {0}".format(curr_angle))
-
-        # Initialize action sequence
-        action_seq = []
-
-        # For each direction
-        if direction == 'N':
-            # See how bad our current angle is
-            angle_dif = abs(curr_angle - 90)
-            # adjust based on if its too far away from good spot or angle
-            if curr_x > goal_x and not self.close_to_center(env, curr_x, curr_z, goal_x, goal_z) or \
-                angle_dif > 3 and curr_angle < 90:
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                action += np.array([0.0, turn_rate])
-                action_seq.append(action)
-            elif curr_x < goal_x and not self.close_to_center(env, curr_x, curr_z, goal_x, goal_z) or\
-                angle_dif > 3 and curr_angle > 90:
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                action -= np.array([0.0, turn_rate])
-                action_seq.append(action)
-            else:
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                action_seq.append(action)
-        elif direction == 'S':
-            # See how bad our current angle is
-            angle_dif = abs(curr_angle - 270)
-            # adjust based on if its too far away from good spot or angle
-            if curr_x > goal_x and not self.close_to_center(env, curr_x, curr_z, goal_x, goal_z) or \
-                angle_dif > 3 and curr_angle > 270:
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                action -= np.array([0.0, turn_rate])
-                action_seq.append(action)
-            elif curr_x < goal_x and not self.close_to_center(env, curr_x, curr_z, goal_x, goal_z) or\
-                angle_dif > 3 and curr_angle < 270:
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                action += np.array([0.0, turn_rate])
-                action_seq.append(action)
-            else:
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                #assert render_step(env, action, duckiebot), "Failed Stepping Forward " + duckiebot.agent_id
-                action_seq.append(action)
-        elif direction == 'W':
-            # See how bad our current angle is
-            angle_dif = abs(curr_angle - 180)
-            # adjust based on if its too far away from good spot or angle
-            if curr_z > goal_z and not self.close_to_center(env, curr_x, curr_z, goal_x, goal_z) or \
-                angle_dif > 3 and curr_angle > 180:
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                action -= np.array([0.0, turn_rate])
-                #assert render_step(env, action, duckiebot), "Failed Straightening Counter Clockwise " + duckiebot.agent_id
-                action_seq.append(action)
-            elif curr_z < goal_z and not self.close_to_center(env, curr_x, curr_z, goal_x, goal_z) or\
-                angle_dif > 3 and curr_angle < 180:
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                action += np.array([0.0, turn_rate])
-                #assert render_step(env, action, duckiebot), "Failed Straightening Clockwise " + duckiebot.agent_id
-                action_seq.append(action)
-            else:
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                #assert render_step(env, action, duckiebot), "Failed Stepping Forward " + duckiebot.agent_id
-                action_seq.append(action)
-        elif direction == 'E':
-            # See how bad our current angle is (different because east is 315 - 45 degs)
-            turning_right = None
-            angle_dif = 0
-            if curr_angle > 315:
-                turning_right = True
-                angle_dif = abs(curr_angle - 360)
-            else:
-                turning_right = False
-                angle_dif = abs(curr_angle - 0)
-            # adjust based on if its too far away from good spot or angle
-            if (curr_z > goal_z and not self.close_to_center(env, curr_x, curr_z, goal_x, goal_z)) or \
-                (angle_dif > 3 and turning_right):
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                action += np.array([0.0, turn_rate])
-                action_seq.append(action)
-            elif (curr_z < goal_z and not self.close_to_center(env, curr_x, curr_z, goal_x, goal_z)) or \
-                (angle_dif > 3 and not turning_right):
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                action -= np.array([0.0, turn_rate])
-                action_seq.append(action)
-            else:
-                action = np.array([0.0, 0.0])
-                action += np.array([forward_step, 0.0])
-                action_seq.append(action)
-
-        return action_seq
-
-    # Get the center of the right lane ( Where we want to be driving
-    def get_center_right_lane(self, env):
-        tile_x, tile_z = self.get_curr_tile(env)['coords']
-        tile_size = env.road_tile_size
-        direction = self.get_direction(env)
-        goal_x, goal_z = 0, 0
-
-        if direction == 'N':
-            goal_x = (tile_x + 1) * tile_size - (tile_size/4) 
-        elif direction == 'S':
-            goal_x = tile_x * tile_size + (tile_size/3)            # plus a little [..] [x] 
-        elif direction == 'E':
-            goal_z = (tile_z + 1) * tile_size - (tile_size/3)  
-        elif direction == 'W':
-            goal_z = tile_z * tile_size + (tile_size/3) 
-
-        return goal_x, goal_z
+        return overcomp_factor
 
     # Take a right turn
-    def right_turn(self, env, forward_step: float=.44, turn_rate: float=0.9):
+    def right_turn(self, env, forward_step: float=.44):
         logger.info(self.agent_id + ": Taking a right turn")
+
         # Get state information
         curr_angle = self.get_curr_angle(env)
         turn_count = 0
-        direction = self.get_direction(env)
-        turn_factor = 4 
+        speed = self.speed
+        turn_step = forward_step
+
+        # Slow down for good turning
+        if speed > 0.30:
+            speed = 0.30
+            turn_step = 0.44
+
+        turn_factor = (speed * 10) 
+        turn_overcomp = round((float(self.get_turn_overcomp(env)))/turn_factor)
+        turn_stop =  (10.0/speed) + turn_overcomp  
 
         # Initialize action sequence
         action_seq = []
         
         # Turn this amount 
-        while turn_count < 30:          # Arbitrary turn count that works for speed limit?
+        while turn_count < turn_stop:          # Arbitrary turn count that works for speed limit?
             action = np.array([0.0, 0.0])
             action -= np.array([0.0, turn_factor])
-            action += np.array([forward_step, 0.0])
+            action += np.array([turn_step, 0.0])
             action_seq.append(action)
             turn_count += 1
 
         # Straighten Out
-        action_seq.extend(self.straighten_out(env, forward_step, turn_rate))
+        action_seq.extend(self.straighten_out(env, forward_step=forward_step))
         return action_seq
 
     # Take a left turn
-    def left_turn(self, env, forward_step: float=0.44, turn_rate: float=0.9):
+    def left_turn(self, env, forward_step: float=0.44):
         logger.info(self.agent_id + ": Taking a left turn: ")
+
         # Get state information
         curr_angle = self.get_curr_angle(env)
         turn_count = 0
-        turn_factor = 1.5 
-        direction = self.get_direction(env)
+        speed = self.speed
+        turn_step = forward_step
 
+        # Slow down for good turning
+        if speed > 0.30:
+            speed = 0.30
+            turn_step = 0.44
+
+        turn_factor = (speed * 10) / 2.0
+        turn_overcomp = round((float(self.get_turn_overcomp(env)))/turn_factor)
+        turn_stop =  (20.0/speed) + turn_overcomp  
+        
         # Initialize action sequence
         action_seq = []
 
         # Turn this amount 
-        while turn_count < 71:          # Arbitrary turn count that works for speed limit?
+        while turn_count < turn_stop:          # Arbitrary turn count that works for speed limit?
             action = np.array([0.0, 0.0])
             action += np.array([0.0, turn_factor])
-            action += np.array([forward_step, 0.0])
+            action += np.array([turn_step, 0.0])
             action_seq.append(action)
             turn_count += 1   
 
         # Turn this amount 
-        action_seq.extend(self.straighten_out(env, forward_step, turn_rate))
+        action_seq.extend(self.straighten_out(env, forward_step=forward_step))
         return action_seq
-
+        
 #--------------------------
 # Intersections 
 #--------------------------
@@ -329,7 +277,7 @@ class Agent():
     # Handle an intersection
     # wrong_light=False, so agent behaves good and turns on correct signal lights
         # wrong_light=True, agent behaves bad and turns on wrong signal lights
-    def handle_intersection(self, env, forward_step=.44, speed_limit=.33, turn_rate=0.9, choice=None, wrong_light=False):
+    def handle_intersection(self, env, forward_step=.44, speed_limit=1.0, choice=None, wrong_light=False):
 
         # Initialize action sequence
         action_seq = []
@@ -342,17 +290,15 @@ class Agent():
         # Stop
         action_seq.extend(self.stop_vehicle(env, choice, wrong_light=wrong_light, forward_step=forward_step))
 
-    
-        # Move based on choice
         if choice == 'Right':
-            action_seq.extend(self.right_turn(env, forward_step, turn_rate))
+            action_seq.extend(self.right_turn(env, forward_step=forward_step))
         elif choice == 'Left':
-            action_seq.extend(self.left_turn(env, forward_step, turn_rate))
-        elif choice == 'Straight':
+            action_seq.extend(self.left_turn(env, forward_step=forward_step))
+        else:
             forward_steps = 0
             while forward_steps < 30:
-                action_seq.extend(self.move_forward(env, forward_step, speed_limit, turn_rate))
-                forward_steps += 1
+                action_seq.extend(self.move_forward(env, forward_step=forward_step, speed_limit=speed_limit))
+                forward_steps += 1 
 
         return action_seq
 
@@ -393,7 +339,6 @@ class Agent():
         else:
             return False
 
-
     # Get the stopping points (~3/4 through the tile)
     def get_stop_pos(self, env):
         # Get state information
@@ -401,19 +346,27 @@ class Agent():
         tile_size = env.road_tile_size
         curr_x, curr_z = self.get_curr_pos(env)
         direction = self.get_direction(env)
+        # Adjust stop point based on speed
 
-        # get the 2/3ish length of tile to go through
+        # Treat agents above .30 as the same. Its just how it goes.
+        speed = self.speed
+        if speed > 0.30:
+            speed = 0.30
+
+        stop_portion = speed * tile_size
+
+        # get the 2/3ish length of tile to go through (base on speed under 30 mps)
         if direction == 'N':
             stop_x = (tile_x * tile_size) - (tile_size/2)
-            stop_z = ((tile_z + 1) * tile_size) - (tile_size/4) * 3           # split tile up into 3, subtract 2 from bottom since we are going up
+            stop_z = ((tile_z + 1) * tile_size) - (tile_size - stop_portion) 
         elif direction == 'W': 
-            stop_x = ((tile_x + 1) * tile_size) - (tile_size/4) * 3         # split tile up into 3, subtract 2 from bottom since we are going up
+            stop_x = ((tile_x + 1) * tile_size) - (tile_size - stop_portion)         
             stop_z = (tile_z * tile_size) - (tile_size/2)
         elif direction == 'S': 
             stop_x = (tile_x * tile_size) + (tile_size/2) 
-            stop_z = (tile_z * tile_size) + (tile_size/4) * 3
+            stop_z = (tile_z * tile_size) + (tile_size - stop_portion)
         elif direction == 'E': 
-            stop_x = (tile_x * tile_size) + (tile_size/4) * 3 
+            stop_x = (tile_x * tile_size) + (tile_size - stop_portion) 
             stop_z = (tile_z * tile_size) + (tile_size/2)
 
         return stop_x, stop_z
@@ -467,7 +420,7 @@ class Agent():
                                              agent.get_prev_pos(env, matrix=True))
             curr_distance = env.pos_distance(self.get_curr_pos(env, matrix=True), \
                                              agent.get_curr_pos(env, matrix=True))
-            # If it is in the radius we are checking and we are getting closer to it
+            # If it is in the radius we are checking and we are ge Mac and cheesetting closer to it
             if agent != self and agent_x == tile_x and agent_z == tile_z and prev_distance > curr_distance:
                 # Check if getting closer
                 if prev_distance > curr_distance:

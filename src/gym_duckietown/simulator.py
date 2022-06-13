@@ -553,9 +553,21 @@ class Simulator(gym.Env):
         # Step count since episode start
         self.timestamp = 0.0
 
-        # Robot's current speed
+        # Reset each agent
         for agent in self.agents:
             agent.speed = 0.0
+            agent.actions = []
+            agent.nearby_objects = []
+            agent.nearby_agents = []
+            agent.timestamp = 0.0
+            agent.last_action = np.array([0.0, 0.0]) 
+            agent.wheelVels = np.array([0.0, 0.0]) 
+            agent.state = None
+            agent.lights["front_left"][3] = False
+            agent.lights["front_right"][3] = False
+            agent.lights["back_left"][3] = False
+            agent.lights["back_right"][3] = False
+            agent.lights["center"][3] = False
 
         if self.randomize_maps_on_reset:
             map_name = self.np_random.choice(self.map_names)
