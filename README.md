@@ -1,8 +1,26 @@
 # Gym-Duckietown (Edited for ROSE Soid Project)
+# Table of contents
+1. [Introduction](#introduction)
+2. [Soid](#soid)
+3. [Installation](#installation)
+    1. [Conda & Pip](#conda_pip)
+4. [Usage](#usage)
+    1. [Agents](#agents_basic)
+      1. [Actions](#actions)
+      2. [Single Agent Scenarios](#single_agent)
+      3. [Multi Agent Scenarios](#multi_agent)
+    2. [Neural Approaches](#neural)
+      1. [Reinforcement](#reinforcement)
+      2. [Imitation](#imitation)
+      3. [Observation](#observation)
+      4. [Reward](#reward)
+5. [Design](#design)
+  1. [Map Format](#map_format)
+  2. [Map Information](#map_notes)
+6. [Troubleshooting](#troubleshooting)
 
-[![Build Status](https://circleci.com/gh/duckietown/gym-duckietown/tree/master.svg?style=shield)](https://circleci.com/gh/duckietown/gym-duckietown/tree/master) [![Docker Hub](https://img.shields.io/docker/pulls/duckietown/gym-duckietown.svg)](https://hub.docker.com/r/duckietown/gym-duckietown)
-
-
+<details>
+  <summary> **Original Project Citation Information** </summary>
 [Duckietown](http://duckietown.org/) self-driving car simulator environments for OpenAI Gym.
 
 Please use this bibtex if you want to cite this repository in your publications:
@@ -27,8 +45,9 @@ This simulator was created as part of work done at [Mila](https://mila.quebec/).
 <h2 align="center">
 Welcome to <b>Duckietown</b>!
 </h2>
+</details>
 
-## Introduction
+## Introduction <a name="introduction"></a>
 
 Gym-Duckietown is a simulator for the [Duckietown](https://duckietown.org) Universe, written in pure Python/OpenGL (Pyglet). It places your agent, a Duckiebot, inside of an instance of a Duckietown: a loop of roads with turns, intersections, obstacles, Duckie pedestrians, and other Duckiebots. It can be a pretty hectic place!
 
@@ -71,7 +90,19 @@ repository on your Duckiebot.
 Duckiebot-v0
 </p>
 
-## Installation
+## Soid Project for ROSE Lab <a name="soid"></a>
+The `Duckietown` project has been modified extensively to be used as a demonstration of the Soid tool's efficacy. Changes from the original repository include:
+
+- Agent Structure Change
+- Map Format Changes (multi-agent support, object parameter changes)
+- Simulator Changes (multi-agent support)
+- Movement Libraries for Agents
+- GUI (currently in development)
+- Callouts to C binarys for symbolic execution (currently in development)
+
+Because of this, some of the information in this README may be out of date, or slightly incorrect. Submit issues to repository or ping me (Matt) on Slack / email (matt.elacqua@yale.edu) with any questions.
+
+## Installation <a name="installation"></a>
 
 Requirements:
 - Python 3.9
@@ -81,12 +112,7 @@ Requirements:
 - PyYAML
 - PyTorch
 
-<!--- *** NO LONGER VALID:
-*** Reinforcement learning code forked from [this repository](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr)
-*** is included under [/pytorch_rl](/pytorch_rl). If you wish to use this code, you
-*** should install [PyTorch](http://pytorch.org/). -->
-
-### Installation Using Conda & Pip (***Working***)
+### Installation Using Conda & Pip <a name="conda_pip"></a>
 
 You can install all the dependencies, including PyTorch, using [Conda](https://docs.conda.io/en/latest/miniconda.html) as follows. Using MiniConda3:
 
@@ -116,41 +142,43 @@ Finally, once in the conda environment for duckietown, run pip install using the
 pip3 install -e .
 ```
 
-## Usage
+## Usage <a name="usage"></a>
 
-### Agents (No Deep Learning)
+### Agents (No Deep Learning) <a name="agents_basic"></a>
+
+Agents work using the new [Agent class] (/src/gymduckietown/agents.py). Essentially, the pipeline for creating an agent example is as follows:
+
+Define the agent in the map file.
+  For example, the [turning test] (/maps/turning_test.yaml) agent to test turning.
+  Each agent in the agent section needs a name, followed by a start_tile, start_pose (position and angle relative to start tile), and a color.
+  
+To write a program and control agent movement, actions must be added to the agent's action stack using the method `add_actions`.
+This can be done using several different methods in the Agent class, and several examples of this are provided in the [agents directory] (/agents). Details about actions can be found [here](#actions).
+
+Each agent is then stepped, updating the physics of the environement, and then render_step must be called to render the changes in the pyglet display.
+
+If using any sort of intersection, object, or other agent detection, we must do checks before stepping, so that we can adjust each agent's action stack accordingly.
+
+### Actions <a name="actions"></a>
+
+The simulator uses continuous actions by default. Actions passed to the `step()` function should be numpy arrays containining two numbers between -1 and 1. These two numbers correspond to forward velocity, and a steering angle, respectively. A positive velocity makes the robot go forward, and a positive steering angle makes the robot turn left. Use methods in the new [Agent class] (/src/gymduckietown/agents.py) for discrete actions such as "move forward", "turn left", "stop", etc.
+
+#### Single-Agent Scenarios <a name="single_agent"></a>
 
 There is a simple UI application which allows you to control the simulation or real robot manually. The `manual_control.py` application will launch the Gym environment, display camera images and send actions (keyboard commands) back to the simulator or robot. You can specify which map file to load with the `--map-name` argument:
 
 ```
-python3 agents/manual_control.py --env-name Duckietown-udem1-v0
+python3 agents/manual_control.py --env-name Duckietown-4way_duckies-v0 --map-name 4way_duckies.yaml --cam-mode human
 ```
 
-There is a lazy agent that will just move forwards until an obstacle is reached (add the --cam_mode top_down for a top down view) :
-
-```
-python3 agents/lazy_agent.py --env-name Duckietown-udem1-v0
-```
-
-There is a pinball agent that will go forward until it hits an obstacle, then go back until it hits one, then forward etc.
-The camera mode top down is optional, but you can use this to see from above what the simulator is doing.
-
-```
-python3 agents/pinball_agent.py --env-name Duckietown-straight_road-v0 --map-name straight_road.yaml 
-```
-
-```
-python3 agents/pinball_agent.py --env-name Duckietown-udem1-v0 --cam-mode top_down
-```
-
-The intersection agent will go appproach an intersection, stop before it, turn right/left or go straight randomly (can change the choice argument in handlle_intersection from None to one of 'Right', 'Left', 'Straight' for deterministic choice) and continue on until the road and simulation end.
+The intersection agent will go appproach an intersection, stop before it, turn right/left or go straight randomly (can change the choice argument in handle_intersection from None to one of 'Right', 'Left', 'Straight' for deterministic choice) and continue on until the road and simulation end.
 This makes use of several [if then else agent functions](/src/gym_duckietown/agents.py) that can be used in other agents.
 
 ```
 python3 agents/intersection_agent.py --env-name Duckietown-4way_large-v0 --map-name 4way_large.yaml --cam-mode top_down
 ```
 
-### MultiAgent Scenarios
+#### Multi-Agent Scenarios <a name="multi_agent"></a>
 
 The simulator has been modified to treat other duckiebots as alternative agents as opposed to dynamic objects. An example using the new map format can be found at [maps/4way_duckies](/maps/4way_duckies.yaml)
 
@@ -160,8 +188,11 @@ To test this, run the following command:
 python3 agents/duckie_intersection.py --env-name Duckietown-4way_duckies-v0 --map-name 4way_duckies.yaml --safety-factor 0.5 --cam-mode top_down
 ```
 
+## Neural Approaches (Not Relevant for Soid Yet) <a name="neural"></a>
 
-### Reinforcement Learning Agents 
+### Reinforcement Learning Agents <a name="reinforcement"></a>
+<details>
+  <summary> Not Relevant For Soid Yet. </summary>
 
 To train a reinforcement learning agent, you can use the code provided under [/learning/reinforcement/pytorch](/learning/reinforcement/pytorch). This training example uses DDPG algorithm.  A sample command to launch training with default parameters is:
 
@@ -180,11 +211,12 @@ Then, to visualize the results of training, you can run the following command. N
 ```
 python3 learning/reinforcement/pytorch/enjoy_reinforcement.py
 ```
+</details>
 
-### Imitation Learning (*** In Progress ***)
-
+### Imitation Learning <a name="imitation"></a>
+<details>
+  <summary> Not Relevant For Soid Yet. </summary>
 There is are several different imitation learning examples. Those that are currently working are: ([basic](learning/imitation/basic))
-
 To run the basic training run:
 
 ```
@@ -202,15 +234,27 @@ Then, to visualize the results of training, you can run the following command. N
 ```
 python3 learning/imitation/basic/enjoy_imitation.py
 ```
+</details>
 
+### Observations <a name="observation"></a>
+<details>
+  <summary> Not Relevant For Soid Yet. </summary>
+The observations are single camera images, as numpy arrays of size (120, 160, 3). These arrays contain unsigned 8-bit integer values in the [0, 255] range.
+This image size was chosen because it is exactly one quarter of the 640x480 image resolution provided by the camera, which makes it fast and easy to scale down
+the images. The choice of 8-bit integer values over floating-point values was made because the resulting images are smaller if stored on disk and faster to send over a networked connection.
+</details>
 
-## ***BELOW THIS HAS NOT BEEN EVALUATED AS WORKING YET***
+### Reward Function <a name="reward"></a>
+<details>
+  <summary> Not Relevant For Soid Yet. </summary>
+The default reward function tries to encourage the agent to drive forward along the right lane in each tile. Each tile has an associated bezier curve defining the path the agent is expected to follow. The agent is rewarded for being as close to the curve as possible, and also for facing the same direction as the curve's tangent. The episode is terminated if the agent gets too far outside of a drivable tile, or if the `max_steps` parameter is exceeded. 
+</details>
 
-## Design
+## Design <a name="design"></a>
 
-### Map File Format
+### Map File Format <a name="map_format"></a>
 
-The simulator supports a YAML-based file format which is designed to be easy to hand edit. See the [maps subdirectory](/maps) for examples. Each map file has two main sections: a two-dimensional array of tiles, and a listing of objects to be placed around the map. The tiles are based on the [Duckietown appearance specification](https://docs.duckietown.org/daffy/opmanual_duckietown/out/duckietown_specs.html).
+The simulator supports a YAML-based file format which is designed to be easy to hand edit. See the [maps subdirectory](/maps) for examples. Each map file has two main sections: a two-dimensional array of tiles, and a listing of objects to be placed around the map. The tiles are based on basic road structures and each have curve points associated with ideal positioning of agents on them. 
 
 The available tile types are:
 - empty
@@ -228,34 +272,38 @@ The available object types are:
 - barrier
 - cone (traffic cone)
 - duckie
-- duckiebot (model of a Duckietown robot)
+- duckiebot (model of a Duckietown robot - obselete with new multiagent support)
 - tree
 - house
 - truck (delivery-style truck)
 - bus
 - building (multi-floor building)
-- sign_stop, sign_T_intersect, sign_yield, etc. (see [meshes subdirectory](https://github.com/duckietown/gym-duckietown/blob/master/gym_duckietown/meshes)) **** THIS LINK BROKEN? BELIEVE ITS IN LIBRARIES.
+- sign_stop, sign_T_intersect, sign_yield, etc. (see [meshes subdirectory]([(https://github.com/duckietown/duckietown-world/tree/daffy/src/duckietown_world/data/gd1)]) 
 
 Although the environment is rendered in 3D, the map is essentially two-dimensional. As such, objects coordinates are specified along two axes. The coordinates are rescaled based on the tile size, such that coordinates [0.5, 1.5] would mean middle of the first column of tiles, middle of the second row. Objects can have an `optional` flag set, which means that they randomly may or may not appear during training, as a form of domain randomization.
 
-### Observations
+#### Map Notes: <a name="map_notes"></a>
+Many of the map files have been broken due to changes in the map format for multiagent support. The basic fix is as follows:
+Where you see "start_tile:" (old code for single agent usage), transform to:
+    
+```
+agents: 
+  agent0: 
+    start_tile: [x, z] 
+    start_pose: [[pos_in_tile_x, 0, pos_in_tile_z],  rotation_angle] 
+    color: "red"
+```
+    
+Also, keep in mind that multiagent support is available.
 
-The observations are single camera images, as numpy arrays of size (120, 160, 3). These arrays contain unsigned 8-bit integer values in the [0, 255] range.
-This image size was chosen because it is exactly one quarter of the 640x480 image resolution provided by the camera, which makes it fast and easy to scale down
-the images. The choice of 8-bit integer values over floating-point values was made because the resulting images are smaller if stored on disk and faster to send over a networked connection.
 
-### Actions
 
-The simulator uses continuous actions by default. Actions passed to the `step()` function should be numpy arrays containining two numbers between -1 and 1. These two numbers correspond to forward velocity, and a steering angle, respectively. A positive velocity makes the robot go forward, and a positive steering angle makes the robot turn left. There is also a [Gym wrapper class](https://github.com/duckietown/gym-duckietown/blob/master/gym_duckietown/wrappers.py) named `DiscreteWrapper` which allows you to use discrete actions (turn left, move forward, turn right) instead of continuous actions if you prefer.
+## Troubleshooting (Has not been updated for Soid) <a name="troubleshooting"></a>
 
-### Reward Function
+If you run into problems of any kind, don't hesitate to [open an issue](https://github.com/mattelacqua/duckietown-soid/issues) on this repository. It's quite possible that you've run into some bug we aren't aware of. Please make sure to give some details about your system configuration (ie: PC or Max, operating system), and to paste the command you used to run the simulator, as well as the complete error message that was produced, if any.
 
-The default reward function tries to encourage the agent to drive forward along the right lane in each tile. Each tile has an associated bezier curve defining the path the agent is expected to follow. The agent is rewarded for being as close to the curve as possible, and also for facing the same direction as the curve's tangent. The episode is terminated if the agent gets too far outside of a drivable tile, or if the `max_steps` parameter is exceeded. See the `step` function in [this source file](https://github.com/duckietown/gym-duckietown/blob/master/gym_duckietown/envs/simplesim_env.py).
-
-## Troubleshooting
-
-If you run into problems of any kind, don't hesitate to [open an issue](https://github.com/duckietown/gym-duckietown/issues) on this repository. It's quite possible that you've run into some bug we aren't aware of. Please make sure to give some details about your system configuration (ie: PC or Max, operating system), and to paste the command you used to run the simulator, as well as the complete error message that was produced, if any.
-
+<details>
+  <summary> Click to open anyways. </summary>
 ### ImportError: Library "GLU" not found
 
 You may need to manually install packaged needed by Pyglet or OpenAI Gym on your system. The command you need to use will vary depending which OS you are running. For example, to install the glut package on Ubuntu:
@@ -360,3 +408,4 @@ conda install -c conda-forge ffmpeg
 ```
 
 Alternatively, screencasting programs such as [Kazam](https://launchpad.net/kazam) can be used to record the graphical output of a single window.
+</details>
