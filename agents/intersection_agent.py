@@ -15,9 +15,6 @@ from pyglet.window import key
 
 from gym_duckietown.envs import DuckietownEnv
 
-# Includes all important moving functions for if then else agents
-import movement as move
-
 # from experiments.utils import save_img
 
 parser = argparse.ArgumentParser()
@@ -55,32 +52,36 @@ else:
 env.reset()
 env.render(args.cam_mode)
 
-
-agent0_actions = []
-    
 def update(dt):
     """
     This function is called at every frame to handle
     movement/stepping and redrawing
     """
-    global agent0_actions
-    action = np.array([0.0, 0.0])
+    # Get the agents
+    agent0 = env.agents[0] 
 
-    # If we are at a 4 way
-    if not agent0_actions:
-        if move.intersection_detected(env, env.agents[0]):
-            agent0_actions.extend(move.handle_intersection(env, choice='Right', duckiebot=env.agents[0]))
+    speed0 = 0.4
+    turn = None # Set to 'Right' 'Left' 'Straight' or None for nodeterminism 
+
+    # If we are not handling a sequence already, try for agent 0
+    if not agent0.actions:
+        if agent0.intersection_detected(env):
+            agent0.add_actions(agent0.handle_intersection(env, choice=turn, forward_step=speed0))
         else: 
-            agent0_actions.extend(move.move_forward(env, forward_step=0.44, duckiebot=env.agents[0]))
+            agent0.add_actions(agent0.move_forward(env, forward_step=speed0))
 
-    # HERE WE CAN DO A CHECK
-    move.render_step(env,  agent0_actions.pop(0), env.agents[0])
+    # Render each agent's next move
+    if agent0.actions:
+        agent0.render_step(env, agent0.get_next_action())  
+
+        # render the cam
     env.render(env.cam_mode)
 
 # Enter main event loop
-pyglet.clock.schedule_interval(update, 1.0 / env.unwrapped.frame_rate)
+pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
 pyglet.app.run()
 
 env.close()
 
-   
+
+
