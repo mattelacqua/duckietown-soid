@@ -39,6 +39,7 @@ install_requires = [
     "torch",
     "torchvision",
     "tensorboard",
+    'pyglet-gui @ git+https://github.com/jorgecarleitao/pyglet-gui.git',
 ]
 
 system_version = tuple(sys.version_info)[:3]
@@ -56,6 +57,7 @@ setup(
     keywords="duckietown, environment, agent, rl, openaigym, openai-gym, gym",
     include_package_data=True,
     install_requires=install_requires,
+    
     entry_points={
         "console_scripts": [
             "dt-check-gpu=gym_duckietown.check_hw:main",
