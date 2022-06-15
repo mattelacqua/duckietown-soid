@@ -7,11 +7,12 @@ This script uses the ite_move library to make a right turn through an intersecti
 from PIL import Image
 import argparse
 import sys
+import time
 
 import gym
 import numpy as np
 import pyglet
-from pyglet.window import key
+from pyglet.window import key, mouse
 
 from gym_duckietown.envs import DuckietownEnv
 
@@ -57,18 +58,60 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
 else:
     env = gym.make(args.env_name)
 
+
 # Start up env
 env.reset()
 env.render(args.cam_mode)
 
-# Global holders for each agents actions
+# Gui Stuff
+@env.unwrapped.window.event
+def on_key_press(symbol, modifiers):
+    """
+    This handler processes keyboard commands that
+    control the simulation
+    """
 
-from pyglet_gui.theme import Theme
+    if symbol == key.BACKSPACE or symbol == key.SLASH:
+        print("RESET")
+        env.reset()
+        env.render()
+    elif symbol == key.PAGEUP:
+        env.unwrapped.cam_angle[0] = 0
+    elif symbol == key.ESCAPE:
+        env.close()
+        sys.exit(0)
 
-theme = Theme({"font": "Lucida Grande",
-               "font_size": 12,
-               "text_color": [255, 0, 0, 255]}, resources_path='')
+@env.unwrapped.window.event
+def on_mouse_press(x, y, button, modifiers):
+    """
+    This handler processes keyboard commands that
+    control the simulation
+    """
+    print("Mouse clicked at {0}, {1}".format(x, y))
+    pyglet.clock.unschedule(update)
+    pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
 
+
+    # Take a screenshot
+    # UNCOMMENT IF NEEDED - Skimage dependency
+    # elif symbol == key.RETURN:
+    #     print('saving screenshot')
+    #     img = env.render('rgb_array')
+    #     save_img('screenshot.png', img)
+
+
+# Register a keyboard handler
+key_handler = key.KeyStateHandler()
+mouse_handler = mouse.MouseStateHandler()
+env.unwrapped.window.push_handlers(key_handler)
+
+# Pause on space, can enter gui here and change things maybe????
+def pause(dt):
+    if key_handler[key.SPACE]:
+        print("Unpausing")
+        pyglet.clock.unschedule(pause)
+        pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
+          
 
 def update(dt):
     """
@@ -87,6 +130,12 @@ def update(dt):
     speed3 = 0.4
     turn = 'Left'
 
+    # Pause on Space
+    if key_handler[key.SPACE]:
+        print("Pausing")
+        pyglet.clock.unschedule(update)
+        pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
+            
     # If we are not handling a sequence already, try for agent 0
     if not agent0.actions:
         if agent0.intersection_detected(env):

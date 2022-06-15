@@ -2078,7 +2078,6 @@ class Simulator(gym.Env):
             self.window = window.Window(
                 width=WINDOW_WIDTH, height=WINDOW_HEIGHT, resizable=False, config=config
             )
-
         self.window.clear()
         self.window.switch_to()
         self.window.dispatch_events()
@@ -2115,6 +2114,7 @@ class Simulator(gym.Env):
                 f"speed: {self.agents[0].speed:.2f} m/s"
             )
             self.text_label.draw()
+        
 
         # Force execution of queued commands
         gl.glFlush()

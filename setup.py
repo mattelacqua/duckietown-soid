@@ -39,7 +39,6 @@ install_requires = [
     "torch",
     "torchvision",
     "tensorboard",
-    'pyglet-gui @ git+https://github.com/jorgecarleitao/pyglet-gui.git',
 ]
 
 system_version = tuple(sys.version_info)[:3]
