@@ -1808,11 +1808,15 @@ class Simulator(gym.Env):
         if top_down:
             a = (self.grid_width * self.road_tile_size) / 2
             b = (self.grid_height * self.road_tile_size) / 2
+
+
+            
             fov_y_deg = self.cam_fov_y
             fov_y_rad = np.deg2rad(fov_y_deg)
-            H_to_fit = max(a, b) + 0.1  # borders
+            H_to_fit = max(a, b) + 0.0  # borders
 
-            H_FROM_FLOOR = H_to_fit / (np.tan(fov_y_rad / 2))
+            H_FROM_FLOOR = H_to_fit / (np.tan(fov_y_rad / 2)) 
+            print(H_FROM_FLOOR)
 
             look_from = a, H_FROM_FLOOR, b
             look_at = a, 0.0, b - 0.01
@@ -1870,6 +1874,7 @@ class Simulator(gym.Env):
                 # gl.glLightfv(li, gl.GL_LINEAR_ATTENUATION, (gl.GLfloat * 1)(0.1))
                 gl.glLightfv(li, gl.GL_QUADRATIC_ATTENUATION, (gl.GLfloat * 1)(0.2))
                 gl.glEnable(li)
+
 
         # For each grid tile
         for i, j in itertools.product(range(self.grid_width), range(self.grid_height)):
@@ -2135,6 +2140,12 @@ class Simulator(gym.Env):
         pos = np.asarray(pos)
         return pos, angle
 
+    # Get a pixel point to lineup to grid position:
+    def pixel_to_pos(self, pixel_x, pixel_y):
+        grid_x, grid_y = 0, 0
+
+
+        return grid_x, grid_y
 
 
 

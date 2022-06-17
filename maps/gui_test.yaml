@@ -6,6 +6,9 @@ tiles:
   - [straight/W, straight/W , 4way            , straight/E  , straight/E]
   - [asphalt, asphalt       , straight/S      , asphalt     , asphalt]
   - [asphalt, asphalt       ,  straight/S     , asphalt     , asphalt]
+  - [asphalt, asphalt       ,  straight/S     , asphalt     , asphalt]
+  - [asphalt, asphalt       ,  straight/S     , asphalt     , asphalt]
+  - [asphalt, asphalt       ,  straight/S     , asphalt     , asphalt]
 
 objects:
   trafficlight:
@@ -42,7 +45,8 @@ tile_size: 0.585
 agents:
   agent0:
     # North
-    start_tile: [2,4]
+    #start_tile: [2,4]
+    start_tile: [2,3]
     start_pose: [[0.425, 0, 0.4], 1.4]
     color: "blue" 
     #start_pose: [[0.425, 0, 0.4], 1.5708]

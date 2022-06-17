@@ -88,6 +88,8 @@ def on_mouse_press(x, y, button, modifiers):
     control the simulation
     """
     print("Mouse clicked at {0}, {1}".format(x, y))
+    grid_x, grid_y = env.pixel_to_pos(x, y)
+    print("Grid position is {0}, {1}".format(grid_x, grid_y))
     pyglet.clock.unschedule(update)
     pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
 
