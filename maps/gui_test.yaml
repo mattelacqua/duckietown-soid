@@ -1,14 +1,11 @@
 # 5x5 counter-clockwise loop with a 4-way intersection in the middle
 # Designed to test the 4-way intersection tile and traffic light
 tiles:
-  - [asphalt, asphalt       , straight/N      , asphalt     , asphalt]
-  - [asphalt, asphalt       , straight/N      , asphalt     , asphalt]
-  - [straight/W, straight/W , 4way            , straight/E  , straight/E]
-  - [asphalt, asphalt       , straight/S      , asphalt     , asphalt]
-  - [asphalt, asphalt       ,  straight/S     , asphalt     , asphalt]
-  - [asphalt, asphalt       ,  straight/S     , asphalt     , asphalt]
-  - [asphalt, asphalt       ,  straight/S     , asphalt     , asphalt]
-  - [asphalt, asphalt       ,  straight/S     , asphalt     , asphalt]
+  - [asphalt, asphalt       , straight/N      , asphalt    , asphalt  , asphalt]
+  - [asphalt, asphalt       , straight/N      , asphalt    , asphalt , asphalt]
+  - [straight/W, straight/W , 4way            , straight/E , straight/E , straight/E]
+  - [asphalt, asphalt       , straight/S      , asphalt    , asphalt, asphalt]
+  - [asphalt, asphalt       ,  straight/S     , asphalt    , asphalt, asphalt]
 
 objects:
   trafficlight:
@@ -45,8 +42,8 @@ tile_size: 0.585
 agents:
   agent0:
     # North
-    #start_tile: [2,4]
-    start_tile: [2,3]
+    start_tile: [2,4]
+    #start_tile: [2,3]
     start_pose: [[0.425, 0, 0.4], 1.4]
     color: "blue" 
     #start_pose: [[0.425, 0, 0.4], 1.5708]

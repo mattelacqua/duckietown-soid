@@ -1808,33 +1808,64 @@ class Simulator(gym.Env):
         if top_down:
             a = (self.grid_width * self.road_tile_size) / 2
             b = (self.grid_height * self.road_tile_size) / 2
-
-
             
             fov_y_deg = self.cam_fov_y
             fov_y_rad = np.deg2rad(fov_y_deg)
-            H_to_fit = max(a, b) + 0.0  # borders
+            H_to_fit = max(a, b) + 0.1  # borders
 
             H_FROM_FLOOR = H_to_fit / (np.tan(fov_y_rad / 2)) 
-            print(H_FROM_FLOOR)
 
             look_from = a, H_FROM_FLOOR, b
-            look_at = a, 0.0, b - 0.01
+            #look_at = a, 0.0, b - 0.01
+            look_at = a, 0.0, b - 0.0000001
             up_vector = 0.0, 1.0, 0
             gl.gluLookAt(*look_from, *look_at, *up_vector)
+            print("A {0}  B {1}".format(a, b))
+            print("Look from: {0} \nLook at: {1} \nUp Vector: {2}".format(look_from, look_at, up_vector))
         else:
             look_from = x, y, z
             look_at = x + dx, y + dy, z + dz
             up_vector = 0.0, 1.0, 0.0
             gl.gluLookAt(*look_from, *look_at, *up_vector)
+            print("Look from: {0} \nLook at: {1} \nUp Vector: {2}".format(look_from, look_at, up_vector))
 
         # Draw the ground quad
         gl.glDisable(gl.GL_TEXTURE_2D)
         # background is magenta when segmenting for easy isolation of main map image
-        gl.glColor3f(*self.ground_color if not segment else [255, 0, 255])  # XXX
+        #gl.glColor3f(*self.ground_color if not segment else [255, 0, 255])  # XXX
+        gl.glColor3f(255, 0, 255)  # XXX
         gl.glPushMatrix()
-        gl.glScalef(50, 0.01, 50)
+        #gl.glScalef(50, 0.01, 50)
+        gl.glScalef(.3, 0.01, .3)
         self.ground_vlist.draw(gl.GL_QUADS)
+        ground = self.ground_vlist
+        #print("Ground")
+        #print(vars(ground))
+        domain = self.ground_vlist.get_domain()
+        #print("Domain")
+        #print(vars(domain))
+        attributes = domain.attributes
+        #print("attributes")
+        #print(attributes)
+        t_coords = list(ground.vertices)
+        print("t_coords")
+        print(t_coords)
+
+        a = (gl.GLfloat * 16)()
+        b = (gl.GLfloat * 16)()
+        gl.glGetFloatv(gl.GL_MODELVIEW_MATRIX, a)
+        gl.glGetFloatv(gl.GL_PROJECTION_MATRIX, b)
+        print("Modelview")
+        print(list(a))
+        print(np.array(a).reshape(4,4).T)
+        print("Projection")
+        print(list(b))
+        print(np.array(b).reshape(4,4).T)
+
+
+
+
+
         gl.glPopMatrix()
 
         # Draw the ground/noise triangles
@@ -1876,6 +1907,7 @@ class Simulator(gym.Env):
                 gl.glEnable(li)
 
 
+        #draw_axes()
         # For each grid tile
         for i, j in itertools.product(range(self.grid_width), range(self.grid_height)):
 
@@ -1897,6 +1929,10 @@ class Simulator(gym.Env):
             gl.glPushMatrix()
             TS = self.road_tile_size
             gl.glTranslatef((i + 0.5) * TS, 0, (j + 0.5) * TS)
+            """if i > 1:
+                print("TRANSLATION FOR ROAD")
+                print((i + 0.5) * TS, 0, (j + 0.5) * TS)
+                exit()"""
             gl.glRotatef(angle * 90 + 180, 0, 1, 0)
 
             # gl.glEnable(gl.GL_BLEND)
@@ -1906,7 +1942,22 @@ class Simulator(gym.Env):
             texture.bind(segment)
 
             self.road_vlist.draw(gl.GL_QUADS)
+            road = list(self.road_vlist.vertices)
+
+            #print("Domain")
+            #domain = (self.road_vlist.get_domain())
+            #print(domain)
             # gl.glDisable(gl.GL_BLEND)
+            a = (gl.GLfloat * 16)()
+            b = (gl.GLfloat * 16)()
+            gl.glGetFloatv(gl.GL_MODELVIEW_MATRIX, a)
+            gl.glGetFloatv(gl.GL_PROJECTION_MATRIX, b)
+            print("Modelview")
+            print(np.array(a).reshape(4,4).T)
+            #print("Projection")
+            #print(list(b))
+            #print(np.array(b).reshape(4,4).T)
+
 
             gl.glPopMatrix()
 
@@ -1954,7 +2005,6 @@ class Simulator(gym.Env):
             gl.glScalef(1, 1, 1)
             gl.glRotatef(agent.cur_angle * 180 / np.pi, 0, 1, 0)
             agent.mesh.render()
-            
             # Handle lights
             if self.enable_leds:
                 # attrs =
@@ -1999,9 +2049,10 @@ class Simulator(gym.Env):
                         gl.glPopMatrix()      
             gl.glPopMatrix()
 
-            draw_xyz_axes = False
+            draw_xyz_axes = True
             if draw_xyz_axes:
                 draw_axes()
+            exit()
         # Resolve the multisampled frame buffer into the final frame buffer
         gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, multi_fbo)
         gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, final_fbo)
@@ -2070,6 +2121,7 @@ class Simulator(gym.Env):
             top_down=top_down,
             segment=segment,
         )
+        print(self.img_array_human)
 
         # self.undistort - for UndistortWrapper
         if self.distortion and not self.undistort and mode != "free_cam":
@@ -2081,7 +2133,7 @@ class Simulator(gym.Env):
         if self.window is None:
             config = gl.Config(double_buffer=False)
             self.window = window.Window(
-                width=WINDOW_WIDTH, height=WINDOW_HEIGHT, resizable=False, config=config
+                width=WINDOW_WIDTH, height=WINDOW_HEIGHT, resizable=True, config=config
             )
         self.window.clear()
         self.window.switch_to()
@@ -2212,9 +2264,33 @@ def draw_axes():
     gl.glPushMatrix()
     gl.glLineWidth(4.0)
     gl.glTranslatef(0.0, 0.0, 0.0)
-
+    print("Modelview AXES")
+    a = (gl.GLdouble * 16)()
+    b = (gl.GLdouble * 16)()
+    c = (gl.GLint * 16)()
+    gl.glGetDoublev(gl.GL_MODELVIEW_MATRIX, a)
+    print(np.array(a).reshape(4,4).T)
+    print("PRROJECTION AXES")
+    gl.glGetDoublev(gl.GL_PROJECTION_MATRIX, b)
+    print(np.array(b).reshape(4,4).T)
+    print("VIEWPORT AXES")
+    gl.glGetIntegerv(gl.GL_VIEWPORT, c)
+    print(np.array(c).reshape(4,4).T)
     gl.glBegin(gl.GL_LINES)
-    L = 0.3
+
+
+    x = (gl.GLdouble * 16)()
+    y = (gl.GLdouble * 16)()
+    z = (gl.GLdouble * 16)()
+    gl.gluUnProject(100, 0, 100, a, b, c, x, y ,z)
+    print("POSITION X")
+    print(np.array(x).reshape(4,4).T)
+    print("POSITION Y")
+    print(np.array(y).reshape(4,4).T)
+    print("POSITION Z")
+    print(np.array(z).reshape(4,4).T)
+    L = 1.0
+
     gl.glColor3f(1.0, 0.0, 0.0)
     gl.glVertex3f(0.0, 0.0, 0.0)
     gl.glVertex3f(L, 0.0, 0.0)
@@ -2226,6 +2302,7 @@ def draw_axes():
     gl.glColor3f(0.0, 0.0, 1.0)
     gl.glVertex3f(0.0, 0.0, 0.0)
     gl.glVertex3f(0.0, 0.0, L)
+
     gl.glEnd()
 
     gl.glPopMatrix()
