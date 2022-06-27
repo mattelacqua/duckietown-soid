@@ -1816,38 +1816,24 @@ class Simulator(gym.Env):
             H_FROM_FLOOR = H_to_fit / (np.tan(fov_y_rad / 2)) 
 
             look_from = a, H_FROM_FLOOR, b
-            #look_at = a, 0.0, b - 0.01
             look_at = a, 0.0, b - 0.0000001
             up_vector = 0.0, 1.0, 0
             gl.gluLookAt(*look_from, *look_at, *up_vector)
-            #print("A {0}  B {1}".format(a, b))
-            #print("Look from: {0} \nLook at: {1} \nUp Vector: {2}".format(look_from, look_at, up_vector))
             
         else:
             look_from = x, y, z
             look_at = x + dx, y + dy, z + dz
             up_vector = 0.0, 1.0, 0.0
             gl.gluLookAt(*look_from, *look_at, *up_vector)
-            #print("Look from: {0} \nLook at: {1} \nUp Vector: {2}".format(look_from, look_at, up_vector))
 
         # Draw the ground quad
         gl.glDisable(gl.GL_TEXTURE_2D)
         # background is magenta when segmenting for easy isolation of main map image
         gl.glColor3f(*self.ground_color if not segment else [255, 0, 255])  # XXX
-        #gl.glColor3f(255, 0, 255)  # XXX
         gl.glPushMatrix()
         gl.glScalef(50, 0.01, 50)
         self.ground_vlist.draw(gl.GL_QUADS)
         ground = self.ground_vlist
-        #print("Ground")
-        #print(vars(ground))
-        #domain = self.ground_vlist.get_domain()
-        #print("Domain")
-        #print(vars(domain))
-        #attributes = domain.attributes
-        #print("attributes")
-        #print(attributes)
-        #t_coords = list(ground.vertices)
 
         gl.glPopMatrix()
 
@@ -2089,7 +2075,6 @@ class Simulator(gym.Env):
             top_down=top_down,
             segment=segment,
         )
-        #print(self.img_array_human)
 
         # self.undistort - for UndistortWrapper
         if self.distortion and not self.undistort and mode != "free_cam":
@@ -2167,78 +2152,6 @@ class Simulator(gym.Env):
         pos = np.asarray(pos)
         return pos, angle
 
-    def pixel_to_pos(self, xpix, ypix, agent_num):
-        # init matrices
-        a = (gl.GLdouble * 16)()
-        b = (gl.GLdouble * 16)()
-        c = (gl.GLint * 16)()
-        gl.glGetDoublev(gl.GL_MODELVIEW_MATRIX, a)
-        gl.glGetDoublev(gl.GL_PROJECTION_MATRIX, b)
-        gl.glGetIntegerv(gl.GL_VIEWPORT, c)
-
-        # Adjust pixel to window
-        xClip = gl.GLdouble((xpix + 0.5) / 400.0 - 1.0)
-        yClip = gl.GLdouble(1.0 - (ypix + 0.5) / 300.0)
-        x = (gl.GLdouble * 1)()
-        y = (gl.GLdouble * 1)()
-        z = (gl.GLdouble * 1)()
-
-        # Unproject and print
-        gl.gluUnProject(xClip, yClip, 10.0, a, b, c, x, y ,z)
-        print("Agent {0} Current Pos: {1}".format(agent_num, self.agents[agent_num].cur_pos))
-        print("Agent {0} POSITION X: {1}".format(agent_num, list(x)))
-        print("Agent {0} POSITION Y: {1}".format(agent_num, list(y)))
-        print("Agent {0} POSITION Z: {1}".format(agent_num, list(z)))
-        
-    def pos_to_pixel(self, agent_num, agent_pos):
-        # init matrices
-        a = (gl.GLdouble * 16)()
-        b = (gl.GLdouble * 16)()
-        c = (gl.GLint * 16)()
-        gl.glGetDoublev(gl.GL_MODELVIEW_MATRIX, a)
-        gl.glGetDoublev(gl.GL_PROJECTION_MATRIX, b)
-        gl.glGetIntegerv(gl.GL_VIEWPORT, c)
-
-        # Init position
-        x, y, z = gl.GLdouble(agent_pos[0]), gl.GLdouble(agent_pos[1]), gl.GLdouble(agent_pos[2])
-        window_x = (gl.GLdouble * 1)()
-        window_y = (gl.GLdouble * 1)()
-        window_z = (gl.GLdouble * 1)()
-
-
-
-        # Project and print
-        gl.gluProject(x, z, y, a, b, c, window_x, window_y, window_z)
-        print("Agent {0} Current Pos: {1}".format(agent_num, self.agents[agent_num].cur_pos))
-        print("Agent {0} Window Position X: {1}".format(agent_num, list(window_x)))
-        print("Agent {0} Window Position Y: {1}".format(agent_num, list(window_y)))
-        print("Agent {0} Window Position Z: {1}".format(agent_num, list(window_z)))
-        
-    def pixel_to_pos_new(self, xpix, ypix, agent_num):
-        # init matrices
-        modelview = (gl.GLdouble * 16)()
-        projection = (gl.GLdouble * 16)()
-        viewport = (gl.GLint * 16)()
-        gl.glGetDoublev(gl.GL_MODELVIEW_MATRIX, a)
-        gl.glGetDoublev(gl.GL_PROJECTION_MATRIX, b)
-        gl.glGetIntegerv(gl.GL_VIEWPORT, c)
-
-        viewport = projection.inverse()
-
-        # Adjust pixel to window
-        xClip = gl.GLdouble((xpix + 0.5) / 400.0 - 1.0)
-        yClip = gl.GLdouble(1.0 - (ypix + 0.5) / 300.0)
-        x = (gl.GLdouble * 1)()
-        y = (gl.GLdouble * 1)()
-        z = (gl.GLdouble * 1)()
-
-        # Unproject and print
-        gl.gluUnProject(xClip, yClip, 0.0, a, b, c, x, y ,z)
-        print("Agent {0} Current Pos: {1}".format(agent_num, self.agents[agent_num].cur_pos))
-        print("Agent {0} POSITION X: {1}".format(agent_num, list(x)))
-        print("Agent {0} POSITION Y: {1}".format(agent_num, list(y)))
-        print("Agent {0} POSITION Z: {1}".format(agent_num, list(z)))
-     
 
 def get_dir_vec(cur_angle: float) -> np.ndarray:
     """
