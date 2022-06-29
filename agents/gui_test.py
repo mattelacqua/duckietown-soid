@@ -16,10 +16,15 @@ from pyglet.window import key, mouse
 
 from gym_duckietown.envs import DuckietownEnv
 
+from flask import Flask
+
 # Includes all important moving functions for if then else agents
 #import movement as move
 import gym_duckietown.agents
 import logging
+
+
+
 
 # from experiments.utils import save_img
 
@@ -37,6 +42,7 @@ parser.add_argument("--seed", default=1, type=int, help="seed")
 parser.add_argument("--cam-mode", default="human", help="Camera modes: human, top_down, free_cam, rgb_array")
 parser.add_argument("--safety-factor", default=1.0, type=float, help="Minimum distance before collision detection")
 parser.add_argument("--num-agents", default=1.0, type=int, help="Number of Agents")
+parser.add_argument("run", help="Run")
 args = parser.parse_args()
 
 if args.env_name and args.env_name.find("Duckietown") != -1:
@@ -58,12 +64,14 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
 else:
     env = gym.make(args.env_name)
 
-
 # Start up env
 env.reset()
 env.render(args.cam_mode)
 
+# Start up Flask web env
+app = Flask(__name__)
 # Gui Stuff
+
 @env.unwrapped.window.event
 def on_key_press(symbol, modifiers):
     """
@@ -117,6 +125,13 @@ def pause(dt):
         pyglet.clock.unschedule(pause)
         pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
           
+
+@app.route('/')
+def hello():
+    return "Hello, World."
+
+
+
 
 def update(dt):
     """
@@ -183,11 +198,18 @@ def update(dt):
     # render the cam
     env.render(env.cam_mode)
 
-# Enter main event loop
-pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
-pyglet.app.run()
+if __name__ == '__main__':
+    # Test the web server
+    print(__name__)
+    hello()
 
-env.close()
+    app.run(debug=True)
+
+    # Enter main event loop
+    pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
+    pyglet.app.run()
+
+    env.close()
 
 
-    
+        

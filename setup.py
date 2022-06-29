@@ -37,6 +37,7 @@ install_requires = [
     "typing-extensions",
     "Pillow",
     "torch",
+    "flask",
     "torchvision",
     "tensorboard",
 ]
