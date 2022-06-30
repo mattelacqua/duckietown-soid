@@ -16,18 +16,13 @@ from pyglet.window import key, mouse
 
 from gym_duckietown.envs import DuckietownEnv
 
-from flask import Flask
-
 # Includes all important moving functions for if then else agents
 #import movement as move
 import gym_duckietown.agents
 import logging
+import os
 
-
-
-
-# from experiments.utils import save_img
-
+# Args
 parser = argparse.ArgumentParser()
 parser.add_argument("--env-name", default=None)
 parser.add_argument("--map-name", default="udem1")
@@ -42,9 +37,9 @@ parser.add_argument("--seed", default=1, type=int, help="seed")
 parser.add_argument("--cam-mode", default="human", help="Camera modes: human, top_down, free_cam, rgb_array")
 parser.add_argument("--safety-factor", default=1.0, type=float, help="Minimum distance before collision detection")
 parser.add_argument("--num-agents", default=1.0, type=int, help="Number of Agents")
-parser.add_argument("run", help="Run")
 args = parser.parse_args()
 
+# Build Env
 if args.env_name and args.env_name.find("Duckietown") != -1:
     env = DuckietownEnv(
         seed=args.seed,
@@ -68,10 +63,7 @@ else:
 env.reset()
 env.render(args.cam_mode)
 
-# Start up Flask web env
-app = Flask(__name__)
 # Gui Stuff
-
 @env.unwrapped.window.event
 def on_key_press(symbol, modifiers):
     """
@@ -96,11 +88,6 @@ def on_mouse_press(x, y, button, modifiers):
     control the simulation
     """
     print("Mouse clicked at {0}, {1}".format(x, y))
-    grid_x, grid_y = env.pixel_to_pos(x, y)
-    a = (pyglet.gl.GLuint * 1)(0)
-    pyglet.gl.glReadPixels(x, y, 1, 1, pyglet.gl.GL_RGB, pyglet.gl.GL_UNSIGNED_INT, a)
-    print(a)
-    print("Grid position is {0}, {1}".format(grid_x, grid_y))
     pyglet.clock.unschedule(update)
     pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
 
@@ -118,20 +105,22 @@ key_handler = key.KeyStateHandler()
 mouse_handler = mouse.MouseStateHandler()
 env.unwrapped.window.push_handlers(key_handler)
 
+# Webserver handler
+f = open('webserver.out', 'r', os.O_NONBLOCK)
+
 # Pause on space, can enter gui here and change things maybe????
 def pause(dt):
+    global f
+    for line in f:
+        print("READING")
+        print(line)
+
     if key_handler[key.SPACE]:
         print("Unpausing")
         pyglet.clock.unschedule(pause)
         pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
+
           
-
-@app.route('/')
-def hello():
-    return "Hello, World."
-
-
-
 
 def update(dt):
     """
@@ -159,7 +148,6 @@ def update(dt):
     # If we are not handling a sequence already, try for agent 0
     if not agent0.actions:
         if agent0.intersection_detected(env):
-            print("HIT THIS CASE")
             agent0.add_actions(agent0.handle_intersection(env, choice=turn, forward_step=speed0))
         else: 
             agent0.add_actions(agent0.move_forward(env, forward_step=speed0))
@@ -201,9 +189,7 @@ def update(dt):
 if __name__ == '__main__':
     # Test the web server
     print(__name__)
-    hello()
 
-    app.run(debug=True)
 
     # Enter main event loop
     pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
