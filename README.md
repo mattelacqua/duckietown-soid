@@ -10,14 +10,22 @@
         - [Actions](#actions)  
         - [Single Agent Scenarios](#single_agent)  
         - [Multi Agent Scenarios](#multi_agent)  
+  
   - [Neural Approaches](#neural)  
         - [Reinforcement](#reinforcement)  
         - [Imitation](#imitation)  
         - [Observation](#observation)  
-        - [Reward](#reward)        
+        - [Reward](#reward)    
 - [Design](#design)  
   - [Map Format](#map_format)  
   - [Map Information](#map_notes)  
+- [Web-Gui](#webgui)  
+  - [Overview](#webgui_overview)  
+  - [Front End](#front_end)  
+        - [HTML](#html)  
+  - [Back End](#back_end)  
+        - [Flask Files](#flask)  
+        - [Using Pipes](#pipes)  
 - [Troubleshooting](#troubleshooting)  
 
 <details>
@@ -189,6 +197,9 @@ To test this, run the following command:
 python3 agents/duckie_intersection.py --env-name Duckietown-4way_duckies-v0 --map-name 4way_duckies.yaml --safety-factor 0.5 --cam-mode top_down
 ```
 
+
+
+
 ## Neural Approaches (Not Relevant for Soid Yet) <a name="neural"></a>
 
 ### Reinforcement Learning Agents <a name="reinforcement"></a>
@@ -297,6 +308,54 @@ agents:
     
 Also, keep in mind that multiagent support is available.
 
+## Web-Gui (Using Flask and Pipes) <a name="webgui"></a>
+
+### Overview <a name="webgui_overview"></a>
+The GUI we are using is based off of HTML, Javascript, and is webserver based. We are using the python Flask library to start a basic localhost webserver at [127.0.0.1:5000](http://127.0.0.1:5000/). (This can be a little wonky, sometimes you have to refresh a bunch or clear cookies / incognito mode - not sure why.) The pipeline is as follows:
+
+1. Startup [Flask Server](webserver/server.py)
+```
+python3 webserver/server.py
+```
+
+2. Run your agent program.
+```
+python3 agents/gui_test.py --env-name Duckietown-gui_test-v0 --map-name gui_test.yaml --cam-mode top_down
+```
+
+What happens here is the webserver will begin, and based on what happens on the webserver, it will write information to a [pipe in the webserver directory](webserver/webserver.out). The agent program will then read from this file at given points (during the pause cycle for [this example](agents/gui_test)). 
+*** STILL WORK IN PROGRESS FOR BACK END OF THIS
+
+Not yet implemented:
+The agent program will then take into account the information it reads in from the webserver pipe and adjust the server accordingly. 
+The simulator will then give the new information to the webserver.
+
+### Front End <a name="front_end"></a>
+The front end development is done using HTML.
+
+#### HTML <a name="html"></a>
+The [HTML file](webserver/html/index.html) used in [this example](webserver/server.py) uses bootstrap and java script to create a slider. 
+
+Take a look at this to see how in the body it creates the Responsive Slider, and after it, there is a script to display the value as well as a socketio script to send the 'update' function with the value on the slider through the socket in the webserver [flask file](webserver/server.py). 
+
+### Back End <a name="back_end"></a>
+The back end of the webserver is handled in Flask and using pipes for interprocess communication
+
+#### Flask <a name="flask"></a>
+The [flask file](webserver/server.py) is a basic example of creating a flaskapp with sockets to communicate with programs.
+The @app.route("/") is the base webserver html templet that gets rendered.
+
+The socketio uses the app to open a socket for communication that gets pinged every second or so for updates.
+
+The update function takes the information from the socket, and writes to the pipe under certain conditions (used right now in testing).
+
+
+#### Pipes <a name="pipes"></a>
+We are using FIFO pipe text files for communication between the webserver and simulator. These are located in the [webserver](webserver) directory. 
+
+The [webserver.out](webserver.out) pipe is used for any information recieved on the webserver that we would like to write and give to the simulator. The [webserver.in](webserver.in) is used for interprocess communication in the other direction, Simulator -> Webserver.
+
+*** Still determining the format of how this will work, and actually getting it to work, but will update this once i figure thigns out.
 
 
 ## Troubleshooting (Has not been updated for Soid) <a name="troubleshooting"></a>
