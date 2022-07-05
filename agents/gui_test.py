@@ -106,14 +106,12 @@ mouse_handler = mouse.MouseStateHandler()
 env.unwrapped.window.push_handlers(key_handler)
 
 # Webserver handler
-f = open('webserver.out', 'r', os.O_NONBLOCK)
+f = open('webserver/webserver.out', 'r', os.O_NONBLOCK)
 
 # Pause on space, can enter gui here and change things maybe????
 def pause(dt):
-    global f
-    for line in f:
-        print("READING")
-        print(line)
+    data = f.readline()
+    print(data)
 
     if key_handler[key.SPACE]:
         print("Unpausing")

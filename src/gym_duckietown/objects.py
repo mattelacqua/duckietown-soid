@@ -202,6 +202,7 @@ class WorldObj:
         info['agent'] = self.agent
         info['name'] = self.name
         info['actions'] = self.actions
+        info['scale'] = self.scale
 
         return info
 
