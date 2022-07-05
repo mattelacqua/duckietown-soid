@@ -2001,7 +2001,8 @@ class Simulator(gym.Env):
             
                 gl.glPopMatrix()
 
-            draw_xyz_axes = True
+            draw_xyz_axes = False
+            #draw_xyz_axes = True
             if draw_xyz_axes:
                 draw_axes()
 
