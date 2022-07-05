@@ -323,6 +323,8 @@ python3 webserver/server.py
 python3 agents/gui_test.py --env-name Duckietown-gui_test-v0 --map-name gui_test.yaml --cam-mode top_down
 ```
 
+*** The webserver will not open and work until there is someone listening on the other end of the pipe. This should get fixed once I background run this.
+
 What happens here is the webserver will begin, and based on what happens on the webserver, it will write information to a [pipe in the webserver directory](webserver/webserver.out). The agent program will then read from this file at given points (during the pause cycle for [this example](agents/gui_test)). 
 *** STILL WORK IN PROGRESS FOR BACK END OF THIS
 
