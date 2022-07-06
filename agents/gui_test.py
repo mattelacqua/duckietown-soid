@@ -17,10 +17,15 @@ from pyglet.window import key, mouse
 from gym_duckietown.envs import DuckietownEnv
 
 # Includes all important moving functions for if then else agents
-#import movement as move
 import gym_duckietown.agents
-import logging
+
+# Web gui stuff
 import os
+import subprocess
+
+# Logging
+from gym_duckietown import logger 
+
 
 # Args
 parser = argparse.ArgumentParser()
@@ -37,6 +42,7 @@ parser.add_argument("--seed", default=1, type=int, help="seed")
 parser.add_argument("--cam-mode", default="human", help="Camera modes: human, top_down, free_cam, rgb_array")
 parser.add_argument("--safety-factor", default=1.0, type=float, help="Minimum distance before collision detection")
 parser.add_argument("--num-agents", default=1.0, type=int, help="Number of Agents")
+parser.add_argument("--verbose", action="store_true", help="Log agent information")
 args = parser.parse_args()
 
 # Build Env
@@ -54,14 +60,20 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
         distortion=args.distortion,
         camera_rand=args.camera_rand,
         dynamics_rand=args.dynamics_rand,
-        full_transparency=True
+        full_transparency=True,
+        verbose=args.verbose
     )
 else:
     env = gym.make(args.env_name)
 
+# Verbose
+verbose = args.verbose
 # Start up env
 env.reset()
 env.render(args.cam_mode)
+
+# Start up the webserver
+subprocess.Popen(["python3","webserver/server.py"])
 
 # Gui Stuff
 @env.unwrapped.window.event
@@ -72,7 +84,6 @@ def on_key_press(symbol, modifiers):
     """
 
     if symbol == key.BACKSPACE or symbol == key.SLASH:
-        print("RESET")
         env.reset()
         env.render()
     elif symbol == key.PAGEUP:

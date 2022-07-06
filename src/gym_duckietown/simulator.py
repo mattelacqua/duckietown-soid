@@ -241,7 +241,8 @@ class Simulator(gym.Env):
         color_sky: Sequence[float] = BLUE_SKY,
         style: str = "photos",
         enable_leds: bool = True,
-        num_agents: int = DEFAULT_NUM_AGENTS
+        num_agents: int = DEFAULT_NUM_AGENTS,
+        verbose: bool = False 
     ):
         """
 
@@ -269,6 +270,7 @@ class Simulator(gym.Env):
         :param randomize_maps_on_reset: If true, randomizes the map on reset (Slows down training)
         :param style: String that represent which tiles will be loaded. One of ["photos", "synthetic"]
         :param enable_leds: Enables LEDs drawing.
+        :param verbose: Enables Logging.
         """
         self.enable_leds = enable_leds
         information = get_graphics_information()
@@ -397,6 +399,9 @@ class Simulator(gym.Env):
                 _map for _map in self.map_names if not _map.startswith(("calibration", "regress"))
             ]
             self.map_names = [mapfile.replace(".yaml", "") for mapfile in self.map_names]
+
+        # Logging
+        self.verbose = verbose
 
         # Initialize the state
         self.reset()
@@ -1811,7 +1816,7 @@ class Simulator(gym.Env):
             
             fov_y_deg = self.cam_fov_y
             fov_y_rad = np.deg2rad(fov_y_deg)
-            H_to_fit = max(a, b) + 0.1  # borders
+            H_to_fit = max(a, b) + 0.3  # borders
 
             H_FROM_FLOOR = H_to_fit / (np.tan(fov_y_rad / 2)) 
 

@@ -1,7 +1,6 @@
 from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Union
 from .objmesh import get_mesh, MatInfo, ObjMesh
 import numpy as np
-from duckietown_world.gltf.export import get_duckiebot_color_from_colorname
 import random
 import numpy as np
 import math
@@ -79,7 +78,8 @@ class Agent():
 
     # Stop the vehicle
     def stop_vehicle(self, env, choice, wrong_light: bool=False, forward_step: float=0.44):
-        logger.info(self.agent_id + ": Stopping")
+        if env.verbose:
+            logger.info(self.agent_id + ": Stopping")
         stop_iterations = 0
         stop_point = 30
 
@@ -116,7 +116,8 @@ class Agent():
     def move_forward(self, env, forward_step=0.44, speed_limit=1.0):
         # Get state information
         curr_speed = self.get_curr_speed(env)
-        logger.info(self.agent_id + ": Moving Forwards at speed " + str(curr_speed))
+        if env.verbose:
+            logger.info(self.agent_id + ": Moving Forwards at speed " + str(curr_speed))
 
         # Initialize action sequence
         action_seq = []
@@ -204,7 +205,8 @@ class Agent():
 
     # Take a right turn
     def right_turn(self, env, forward_step: float=.44):
-        logger.info(self.agent_id + ": Taking a right turn")
+        if env.verbose:
+            logger.info(self.agent_id + ": Taking a right turn")
 
         # Get state information
         curr_angle = self.get_curr_angle(env)
@@ -238,7 +240,8 @@ class Agent():
 
     # Take a left turn
     def left_turn(self, env, forward_step: float=0.44):
-        logger.info(self.agent_id + ": Taking a left turn: ")
+        if env.verbose:
+            logger.info(self.agent_id + ": Taking a left turn: ")
 
         # Get state information
         curr_angle = self.get_curr_angle(env)
@@ -454,7 +457,8 @@ class Agent():
     # Render the step and call the inner return
     def render_step(self, env, action):
         obs, reward, done, info = env.step(action, self)
-        logger.info(self.agent_id +": step_count = %s, reward=%.3f" % (self.step_count, reward))
+        if env.verbose:
+            logger.info(self.agent_id +": step_count = %s, reward=%.3f" % (self.step_count, reward))
         return self.render_step_inner(env, done)
 
 
@@ -583,3 +587,19 @@ def intersection_tile(env, tile_x, tile_z):
 # Get tile info
 def get_tile(env, tile_x, tile_z):
     return env._get_tile(tile_x, tile_z)
+
+# Get color
+def get_duckiebot_color_from_colorname(color: str) -> List[float]:
+    colors = {
+        "green": [0, 0.5, 0, 1],
+        "red": [0.6, 0, 0, 1],
+        "grey": [0.3, 0.3, 0.3, 1],
+        "blue": [0, 0, 0.5, 1],
+        "cyan": [0, 0.9, 0.9, 1],
+        "yellow": [0.8, 0.8, 0.0, 1],
+        "orange": [0.9, 0.5, 0.0, 1],
+        "midnight": [0.3, 0.0, 0.3, 1],
+    }
+    color = colors[color]
+    return color
+
