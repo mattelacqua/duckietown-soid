@@ -26,6 +26,7 @@ import subprocess
 # Logging
 from gym_duckietown import logger 
 from webserver.gui_utils import unserialize
+import webbrowser
 
 
 # Args
@@ -71,10 +72,13 @@ else:
 verbose = args.verbose
 # Start up env
 env.reset()
-env.render(args.cam_mode)
 
 # Start up the webserver
 subprocess.Popen(["python3","webserver/server.py"])
+
+# Render
+env.render(args.cam_mode)
+
 
 # Gui Stuff
 @env.unwrapped.window.event
@@ -99,7 +103,7 @@ def on_mouse_press(x, y, button, modifiers):
     This handler processes keyboard commands that
     control the simulation
     """
-    print("Mouse clicked at {0}, {1}".format(x, y))
+    webbrowser.open('http://127.0.0.1:5000', new=1)
     pyglet.clock.unschedule(update)
     pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
 
