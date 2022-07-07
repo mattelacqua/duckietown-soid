@@ -2,7 +2,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 import os
-from webserver.gui_utils import guiInput
+from webserver.gui_utils import guiInput, read_init, serialize
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -13,7 +13,14 @@ template_dir = os.path.abspath('webserver/html/')
 app = Flask(__name__, template_folder=template_dir)
 socketio = SocketIO(app,cors_allowed_origins="*")
 fifo_out = 'webserver/webserver.out'
+fifo_in = 'webserver/webserver.in'
 out = open(fifo_out, "wb", os.O_NONBLOCK)
+inp = open(fifo_in, "rb", os.O_NONBLOCK)
+
+print("HERE")
+agent_list = read_init(inp)
+print("AGENT LIST AGENT LIST\n\n\n\n")
+print(agent_list)
 
 
 # Home page for website
@@ -28,9 +35,7 @@ def update(data):
     global out
     value = int(data['value'])
     agent_change = guiInput(agent=True, agent_id="agent0", cur_pos=[0, 0, 0], cur_angle=value)
-    pickled = agent_change.serialize()
-    out.write(pickled)
-    out.flush()
+    serialize(agent_change, out)
         
 
 @socketio.on("hello")

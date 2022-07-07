@@ -35,8 +35,6 @@ class guiInput():
         self.tile_pos = tile_pos
 
 
-    def serialize(self):
-        return pickle.dumps(self)
 
     def handle_input(self, env):
         if self.agent:
@@ -50,6 +48,10 @@ class guiInput():
                     agent.cur_angle = cur_angle
 
 
+def serialize(obj, fifo):
+    pickled =  pickle.dumps(obj)
+    fifo.write(pickled)
+    fifo.flush()
 
 def unserialize(fifo):
     while True:
@@ -59,6 +61,34 @@ def unserialize(fifo):
             break
         else:
             return o
+
+# Init agents in server
+def init_server(fifo, agents=[], objs=[]):
+    agent_list = []
+    obj_list = []
+
+    if agents:
+        for agent in agents:
+            gui_agent = guiInput(agent=True, 
+                                 agent_id=agent.agent_id, 
+                                 cur_pos=agent.cur_pos,
+                                 cur_angle=agent.cur_angle)
+            agent_list.append(gui_agent)
+    serialize(agent_list, fifo)
+
+# Read initial positions
+def read_init(fifo):
+    agent_list = []
+    agents = unserialize(fifo)
+    for agent in agents:
+        agent_list.append({
+                            "agent_id" : agent.agent_id,
+                            "cur_pos" : agent.cur_pos,
+                            "cur_angle" : agent.cur_angle,
+                          })
+    print(agent_list)
+    return agent_list
+
 
     
     

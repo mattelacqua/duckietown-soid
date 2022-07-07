@@ -25,7 +25,7 @@ import subprocess
 
 # Logging
 from gym_duckietown import logger 
-from webserver.gui_utils import unserialize
+from webserver.gui_utils import unserialize, init_server
 import webbrowser
 
 
@@ -123,7 +123,12 @@ env.unwrapped.window.push_handlers(key_handler)
 
 # Webserver handler
 fifo_in = 'webserver/webserver.out'
+fifo_out = 'webserver/webserver.in'
 inp = open(fifo_in, 'rb', os.O_NONBLOCK)
+out = open(fifo_out, 'wb', os.O_NONBLOCK)
+
+# Feed agent information to webserver
+init_server(out, agents=env.agents, objs=env.objects)
 
 # Pause on space, can enter gui here and change things maybe????
 def pause(dt):
