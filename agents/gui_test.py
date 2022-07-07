@@ -124,10 +124,12 @@ inp = open(fifo_in, 'rb', os.O_NONBLOCK)
 # Pause on space, can enter gui here and change things maybe????
 def pause(dt):
     global inp
-    print("data")
-    print("Unserializing")
     gui_input = unserialize(inp)
-    print("UNPICKLED : {0}".format(vars(gui_input)))
+    gui_input.handle_input(env)
+
+    # Render any changes
+    env.render(env.cam_mode)
+
 
 
     if key_handler[key.SPACE]:
@@ -145,13 +147,9 @@ def update(dt):
     # Get the agents
     agent0 = env.agents[0] 
     agent1 = env.agents[1] 
-    agent2 = env.agents[2] 
-    agent3 = env.agents[3] 
 
-    speed0 = 0.2
-    speed1 = 0.1
-    speed2 = 0.8
-    speed3 = 0.4
+    speed0 = 0.4
+    speed1 = 0.2
     turn = 'Left'
 
     # Pause on Space
@@ -174,30 +172,12 @@ def update(dt):
         else: 
             agent1.add_actions(agent1.move_forward(env, forward_step=speed1))
 
-    # If we are not handling a sequence already, try for agent 1
-    if not agent2.actions:
-        if agent2.intersection_detected(env):
-            agent2.add_actions(agent2.handle_intersection(env, choice=turn, forward_step=speed2))
-        else: 
-            agent2.add_actions(agent2.move_forward(env, forward_step=speed2))
-
-     # If we are not handling a sequence already, try for agent 1
-    if not agent3.actions:
-        if agent3.intersection_detected(env):
-            agent3.add_actions(agent3.handle_intersection(env, choice=turn, forward_step=speed3))
-        else: 
-            agent3.add_actions(agent3.move_forward(env, forward_step=speed3))
-          
     # Render each agent's next move
     if agent0.actions:
         agent0.render_step(env, agent0.get_next_action())
     if agent1.actions:
         agent1.render_step(env, agent1.get_next_action())
-    if agent2.actions:
-        agent2.render_step(env, agent2.get_next_action())
-    if agent3.actions:
-        agent3.render_step(env, agent3.get_next_action())
-   
+       
     # render the cam
     env.render(env.cam_mode)
 

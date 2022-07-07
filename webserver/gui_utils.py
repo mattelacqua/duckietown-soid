@@ -38,14 +38,28 @@ class guiInput():
     def serialize(self):
         return pickle.dumps(self)
 
+    def handle_input(self, env):
+        if self.agent:
+            agent_id = self.agent_id
+            cur_pos = self.cur_pos
+            cur_angle = math.radians(self.cur_angle)
+
+            for agent in env.agents:
+                if agent.agent_id == agent_id:
+                    #print("Changing {0}'s current angle from {1} to {2}".format(agent.agent_id, agent.cur_angle, cur_angle))
+                    agent.cur_angle = cur_angle
+
+
+
 def unserialize(fifo):
     while True:
-        print("HERE")
         try:
             o = pickle.load(fifo)
-        except EOFERROR:
+        except EOFError:
             break
         else:
             return o
+
+    
     
 
