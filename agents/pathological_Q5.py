@@ -75,7 +75,7 @@ def update(dt):
     # If we are not handling a sequence already, try for agent 0
     if not agent0.actions:
         if agent0.intersection_detected(env):
-                agent0.actions = agent0.stop_vehicle(env, "Straight", stop_point=28) + agent0.actions
+                agent0.actions = agent0.stop_vehicle(env, "Straight", stop_point=60) + agent0.actions
                 agent0.add_actions(agent0.handle_intersection(env, choice='Straight'))
         else: 
             agent0.add_actions(agent0.move_forward(env, forward_step=0.44))
@@ -104,8 +104,10 @@ def update(dt):
 
         
     # Render each agent's next move
-    agent0.render_step(env, agent0.get_next_action())
-    agent1.render_step(env, agent1.get_next_action())
+    if agent0.actions:
+        agent0.render_step(env, agent0.get_next_action())
+    if agent1.actions:
+        agent1.render_step(env, agent1.get_next_action())
    
     # render the cam
     env.render(env.cam_mode)

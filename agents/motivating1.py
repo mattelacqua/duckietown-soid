@@ -75,7 +75,7 @@ def update(dt):
     # If we are not handling a sequence already, try for agent 0
     if not agent0.actions:
         if agent0.intersection_detected(env):
-            agent0.add_actions(agent0.handle_intersection(env, choice='Straight'))
+            agent0.add_actions(agent0.handle_intersection(env, choice='Straight', stop_point=50))
         else: 
             agent0.add_actions(agent0.move_forward(env, forward_step=0.44))
 
@@ -89,23 +89,11 @@ def update(dt):
         else: 
             agent1.add_actions(agent1.move_forward(env, forward_step=0.44))
    
-    # # Check and handle nearby agents
-    # for agent in env.agents:
-    #     agent.reset_obstacles(env)
-    #     agent.get_nearby_obstacles(env)
-
-    #     if agent.nearby_objects:
-    #         # Handle objects, if it is a traffic light, do certain things etc.
-    #         agent.handle_objects(env)
-
-    #     if agent.nearby_agents:
-    #         agent.handle_agents(env)
-    #     #print("{0}: \nNearby Objects: {1} \nNearbyAgents: {2}".format(agent.agent_id, agent.nearby_objects, agent.nearby_agents))
-
-        
     # Render each agent's next move
-    agent0.render_step(env, agent0.get_next_action())
-    agent1.render_step(env, agent1.get_next_action())
+    if agent0.actions:
+        agent0.render_step(env, agent0.get_next_action())
+    if agent1.actions:
+        agent1.render_step(env, agent1.get_next_action())
    
     # render the cam
     env.render(env.cam_mode)

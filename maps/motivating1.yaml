@@ -28,7 +28,7 @@ agents:
     # south-north
     start_tile: [2,4]
     start_pose: [[0.4, 0, .1], 1.4]
-    color: "red" 
+    color: "blue" 
 
   agent2:
     # west-east

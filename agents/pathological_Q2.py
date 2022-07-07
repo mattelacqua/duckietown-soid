@@ -75,7 +75,7 @@ def update(dt):
     # If we are not handling a sequence already, try for agent 0
     if not agent0.actions:
         if agent0.intersection_detected(env):
-            agent0.add_actions(agent0.handle_intersection(env, choice='Straight'))
+            agent0.add_actions(agent0.handle_intersection(env, choice='Straight', stop_point=40))
         else: 
             agent0.add_actions(agent0.move_forward(env, forward_step=0.44))
 

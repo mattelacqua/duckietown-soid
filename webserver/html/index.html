@@ -29,12 +29,38 @@
           document.getElementById(val_id).innerHTML = val;
         }
     </script>
+    <h1 style="text-align:center">Responsive Slider 2</h1>
+
+    <div style="margin:100px">
+        <input type="range" min="0" max="100" value="0" class="form-range" id="myRange2" name="myRange2" oninput="display2(this.value, this.id)">
+        <span>Value: </span>
+        <span id="display1">0</span>
+    </div>
+
+    <script>
+        function display(val, id) {
+          var str = id;
+          var c = str.charAt(str.length - 1)
+          var val_id = "display" + c
+          document.getElementById(val_id).innerHTML = val;
+        }
+    </script>
+    <script>
+        function display2(val, id) {
+          var str = id;
+          var c = str.charAt(str.length - 1)
+          var val_id = "display" + c
+          document.getElementById(val_id).innerHTML = val;
+        }
+    </script>
     <script type="text/javascript">
         var socket = io()
 
         function send(){
             socket.emit('update',
-            {'value':$('#myRange1').val()})
+            {'value':$('#myRange1').val()},
+            {'value':$('#myRange2').val()})
+            socket.emit('hello')
         }
 
         sending = setInterval(send, 1000);

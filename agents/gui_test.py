@@ -25,6 +25,7 @@ import subprocess
 
 # Logging
 from gym_duckietown import logger 
+from webserver.gui_utils import unserialize
 
 
 # Args
@@ -117,12 +118,17 @@ mouse_handler = mouse.MouseStateHandler()
 env.unwrapped.window.push_handlers(key_handler)
 
 # Webserver handler
-f = open('webserver/webserver.out', 'r', os.O_NONBLOCK)
+fifo_in = 'webserver/webserver.out'
+inp = open(fifo_in, 'rb', os.O_NONBLOCK)
 
 # Pause on space, can enter gui here and change things maybe????
 def pause(dt):
-    data = f.readline()
-    print(data)
+    global inp
+    print("data")
+    print("Unserializing")
+    gui_input = unserialize(inp)
+    print("UNPICKLED : {0}".format(vars(gui_input)))
+
 
     if key_handler[key.SPACE]:
         print("Unpausing")

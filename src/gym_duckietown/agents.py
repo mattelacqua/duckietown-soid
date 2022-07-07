@@ -77,11 +77,10 @@ class Agent():
         self.lights[light][3] = False
 
     # Stop the vehicle
-    def stop_vehicle(self, env, choice, wrong_light: bool=False, forward_step: float=0.44):
+    def stop_vehicle(self, env, choice, wrong_light: bool=False, stop_point: int=30,forward_step: float=0.44):
         if env.verbose:
             logger.info(self.agent_id + ": Stopping")
         stop_iterations = 0
-        stop_point = 30
 
         # Initialize action sequence
         action_seq = []
@@ -280,7 +279,7 @@ class Agent():
     # Handle an intersection
     # wrong_light=False, so agent behaves good and turns on correct signal lights
         # wrong_light=True, agent behaves bad and turns on wrong signal lights
-    def handle_intersection(self, env, forward_step=.44, speed_limit=1.0, choice=None, wrong_light=False):
+    def handle_intersection(self, env, forward_step=.44, speed_limit=1.0, choice=None, wrong_light=False, stop_point=30):
 
         # Initialize action sequence
         action_seq = []
@@ -291,7 +290,7 @@ class Agent():
             choice = random.choice(choices)
 
         # Stop
-        action_seq.extend(self.stop_vehicle(env, choice, wrong_light=wrong_light, forward_step=forward_step))
+        action_seq.extend(self.stop_vehicle(env, choice, wrong_light=wrong_light, forward_step=forward_step, stop_point=stop_point))
 
         if choice == 'Right':
             action_seq.extend(self.right_turn(env, forward_step=forward_step))
@@ -329,6 +328,7 @@ class Agent():
         # Get state information
         tile_x, tile_z = self.get_curr_tile(env)['coords']
         direction = self.get_direction(env)
+        print(self.agent_id, direction, self.cur_pos, tile_x, tile_z)
 
         # Based on direction, check if the next tile is an intersection
         if direction == 'N' and intersection_tile(env, tile_x, tile_z-1):
@@ -594,7 +594,7 @@ def get_duckiebot_color_from_colorname(color: str) -> List[float]:
         "green": [0, 0.5, 0, 1],
         "red": [0.6, 0, 0, 1],
         "grey": [0.3, 0.3, 0.3, 1],
-        "blue": [0, 0, 0.5, 1],
+        "blue": [0.0, 0.1, 0.6, 1],
         "cyan": [0, 0.9, 0.9, 1],
         "yellow": [0.8, 0.8, 0.0, 1],
         "orange": [0.9, 0.5, 0.0, 1],

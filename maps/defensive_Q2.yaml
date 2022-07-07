@@ -29,12 +29,12 @@ agents:
 
     start_tile: [2,4]
     start_pose: [[0.4, 0, .1], 1.4]
-    color: "yellow" 
+    color: "blue" 
 
   agent2:
     # west-east
     start_tile: [0,2]
-    color: "blue" 
+    color: "yellow" 
     start_pose: [[0.625, 0, 0.4], 0] 
     #start_pose: [[0.225, 0, 0.4], 0]
 

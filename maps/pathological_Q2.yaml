@@ -28,13 +28,13 @@ agents:
     # south-north
 
     start_tile: [2,4]
-    start_pose: [[0.4, 0, .1], 1.4]
-    color: "grey" 
+    start_pose: [[0.4, 0, .2], 1.4]
+    color: "red" 
 
   agent2:
     # west-east
     start_tile: [0,2]
-    color: "blue" 
+    color: "yellow" 
     start_pose: [[0.625, 0, 0.4], 0] 
     #start_pose: [[0.225, 0, 0.4], 0]
 

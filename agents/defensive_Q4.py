@@ -62,8 +62,9 @@ env.reset()
 env.render(args.cam_mode)
 
 # Global holders for each agents actions
-
+a0fs = .44
 def update(dt):
+    global a0fs
     """
     This function is called at every frame to handle
     movement/stepping and redrawing
@@ -75,34 +76,22 @@ def update(dt):
     # If we are not handling a sequence already, try for agent 0
     if not agent0.actions:
         if agent0.intersection_detected(env):
-                agent0.actions = agent0.stop_vehicle(env, "Straight", stop_point=65) + agent0.actions
-                agent0.add_actions(agent0.handle_intersection(env, choice='Straight'))
+            a0fs = .44
+            agent0.actions = agent0.stop_vehicle(env, "Straight", stop_point=10) + agent0.actions
+            agent0.add_actions(agent0.handle_intersection(env, choice='Straight'))
         else: 
-            agent0.add_actions(agent0.move_forward(env, forward_step=0.44))
+            agent0.add_actions(agent0.move_forward(env, forward_step=a0fs))
 
     # Move agent through intersection to test objects
     if not agent1.actions:
         if agent1.intersection_detected(env):
+            a0fs = .27
             agent1.add_actions(agent1.handle_intersection(env, choice='Left'))
-
 
         else: 
             agent1.add_actions(agent1.move_forward(env, forward_step=0.44))
    
-    # # Check and handle nearby agents
-    # for agent in env.agents:
-    #     agent.reset_obstacles(env)
-    #     agent.get_nearby_obstacles(env)
-
-    #     if agent.nearby_objects:
-    #         # Handle objects, if it is a traffic light, do certain things etc.
-    #         agent.handle_objects(env)
-
-    #     if agent.nearby_agents:
-    #         agent.handle_agents(env)
-    #     #print("{0}: \nNearby Objects: {1} \nNearbyAgents: {2}".format(agent.agent_id, agent.nearby_objects, agent.nearby_agents))
-
-        
+   
     # Render each agent's next move
     agent0.render_step(env, agent0.get_next_action())
     agent1.render_step(env, agent1.get_next_action())
