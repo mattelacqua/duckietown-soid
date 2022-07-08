@@ -48,6 +48,7 @@ class Agent():
         self.start_tile = start_tile
         self.start_pose = start_pose
         self.state = None
+        self.color = color
         self.mesh = get_duckiebot_mesh(color)
         self.nearby_objects = []          # Keep track of nearby objects and agents
         self.nearby_agents = []

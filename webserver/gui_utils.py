@@ -23,6 +23,7 @@ class guiInput():
         tile = False,
         cur_pos = [],
         cur_angle = 0.0,
+        color = "",
         tile_pos = []):
 
         self.agent = agent
@@ -33,6 +34,7 @@ class guiInput():
         self.cur_pos = cur_pos
         self.cur_angle = cur_angle
         self.tile_pos = tile_pos
+        self.color = color
 
 
 
@@ -72,7 +74,8 @@ def init_server(fifo, agents=[], objs=[]):
             gui_agent = guiInput(agent=True, 
                                  agent_id=agent.agent_id, 
                                  cur_pos=agent.cur_pos,
-                                 cur_angle=agent.cur_angle)
+                                 cur_angle=agent.cur_angle,
+                                 color=html_color(agent.color))
             agent_list.append(gui_agent)
     serialize(agent_list, fifo)
 
@@ -85,11 +88,24 @@ def read_init(fifo):
                             "agent_id" : agent.agent_id,
                             "cur_pos" : agent.cur_pos,
                             "cur_angle" : agent.cur_angle,
+                            "color" : agent.color
                           })
-    print(agent_list)
     return agent_list
 
 
-    
+# Get html color
+def html_color(color: str):
+    colors = {
+        "green": "Green",
+        "red": "FireBrick",
+        "grey": "DimGray",
+        "blue": "DarkBlue",
+        "cyan": "Cyan",
+        "yellow": "Gold",
+        "orange": "Orange",
+        "midnight": "Indigo"
+    }
+    color = colors[color]
+    return color
     
 

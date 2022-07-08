@@ -12,23 +12,21 @@
     <title>Agent1 Angle</title>
   </head>
   
-  <body>
-    <h1 style="text-align:center">Agent 1 Angle</h1>
-
-    <div style="margin:100px">
-        <input type="range" min="0" max="360" value="0" class="form-range" id="myRange1" name="myRange1" oninput="display(this.value, this.id)">
-        <span>Value: </span>
-        <span id="display1">0</span>
+  <body style="background-color:SandDollar">
+    {% for agent in agent_list %}
+    <p style="text-align:center;color:{{agent.color}};font-size:200%"><b>{{agent.agent_id}}</b>:</p>
+    <div class="d-flex justify-content-center my-4">
+        <span class="font-weight-bold indigo-text mr-2 mt-1">0&nbsp;&nbsp;</span>
+        <form class="range-field w-50">
+        <input type="range" min="0" max="360" value="0" class="form-range" id={{agent.agent_id}} name={{agent.agent_id}} oninput="display(this.value, this.id)" onchange="send(this, this.id)">
+        </form>
+        <span class="font-weight-bold indigo-text mr-2 mt-1">&nbsp;&nbsp;360</span>
     </div>
-
-    <script>
-        function display(val, id) {
-          var str = id;
-          var c = str.charAt(str.length - 1)
-          var val_id = "display" + c
-          document.getElementById(val_id).innerHTML = val;
-        }
-    </script>
+    <div class="d-flex justify-content-center my-4">
+        <span>{{agent.agent_id}} angle is set to:&nbsp;&nbsp; </span>
+        <span id="display{{loop.index0}}"><b>0</b></span>
+    </div>
+    {% endfor %}
     <script>
         function display(val, id) {
           var str = id;
@@ -39,13 +37,13 @@
     </script>
     <script type="text/javascript">
         var socket = io()
-
-        function send(){
+        function send(slider, id){
             socket.emit('update',
-            {'value':$('#myRange1').val()})
+                        {
+                            'id':id,
+                            'value':$(slider).val()
+                        })
         }
-
-        sending = setInterval(send, 1000);
     </script>
   </body>
 </html>

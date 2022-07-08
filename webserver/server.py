@@ -22,19 +22,19 @@ agent_list = read_init(inp)
 print("AGENT LIST AGENT LIST\n\n\n\n")
 print(agent_list)
 
-
 # Home page for website
 @app.route("/")
 def index():
     #return render_template("index.html")
-    return render_template("test.html")
+    return render_template("test.html", agent_list=agent_list)
 
 # On socket update,
 @socketio.on("update")
 def update(data):
     global out
+    a_id = str(data['id'])
     value = int(data['value'])
-    agent_change = guiInput(agent=True, agent_id="agent0", cur_pos=[0, 0, 0], cur_angle=value)
+    agent_change = guiInput(agent=True, agent_id=a_id, cur_pos=[0, 0, 0], cur_angle=value)
     serialize(agent_change, out)
         
 
