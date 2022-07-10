@@ -97,6 +97,7 @@ def on_key_press(symbol, modifiers):
         env.close()
         sys.exit(0)
 
+
 @env.unwrapped.window.event
 def on_mouse_press(x, y, button, modifiers):
     """
@@ -104,8 +105,9 @@ def on_mouse_press(x, y, button, modifiers):
     control the simulation
     """
     webbrowser.open('http://127.0.0.1:5000', new=1)
+    print("MOUSE PRESS")
     pyglet.clock.unschedule(update)
-    pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
+    pyglet.clock.schedule_once(pause, 0.0)
 
 
     # Take a screenshot
@@ -133,20 +135,18 @@ init_server(out, agents=env.agents, objs=env.objects)
 # Pause on space, can enter gui here and change things maybe????
 def pause(dt):
     global inp
-    gui_input = unserialize(inp)
-    gui_input.handle_input(env)
+    unpause = False
+    while not unpause:
+        gui_input = unserialize(inp)
+        unpause = gui_input.handle_input(env)
 
-    # Render any changes
-    env.render(env.cam_mode)
+        # Render any changes
+        env.reset(webserver_reset=True)
+        env.render(env.cam_mode)
 
-
-
-    if key_handler[key.SPACE]:
-        print("Unpausing")
-        pyglet.clock.unschedule(pause)
-        pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
-
-          
+    print("BREAKING FREE")
+    pyglet.clock.unschedule(pause)
+    pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
 
 def update(dt):
     """
@@ -161,12 +161,6 @@ def update(dt):
     speed1 = 0.2
     turn = 'Left'
 
-    # Pause on Space
-    if key_handler[key.SPACE]:
-        print("Pausing")
-        pyglet.clock.unschedule(update)
-        pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
-            
     # If we are not handling a sequence already, try for agent 0
     if not agent0.actions:
         if agent0.intersection_detected(env):

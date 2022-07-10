@@ -549,7 +549,7 @@ class Simulator(gym.Env):
         ]
         self.ground_vlist = pyglet.graphics.vertex_list(4, ("v3f", verts))
 
-    def reset(self, segment: bool = False):
+    def reset(self, segment: bool = False, webserver_reset: bool = False):
         """
         Reset the simulation at the start of a new episode
         This also randomizes many environment parameters (domain randomization)
@@ -704,7 +704,11 @@ class Simulator(gym.Env):
                 tile = self.drivable_tiles[tile_idx]
 
             # If the map specifies a starting pose
-            if agent.start_pose:
+            if webserver_reset:
+                propose_pos = agent.cur_pos 
+                propose_angle = agent.cur_angle
+
+            elif agent.start_pose:
                 logger.info(f"using map pose start for agent {agent.agent_id}: {agent.start_pose}")
 
                 i, j = tile["coords"]

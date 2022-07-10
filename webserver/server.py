@@ -29,8 +29,8 @@ def index():
     return render_template("test.html", agent_list=agent_list)
 
 # On socket update,
-@socketio.on("update")
-def update(data):
+@socketio.on("agent_angle")
+def agent_angle(data):
     global out
     a_id = str(data['id'])
     value = int(data['value'])
@@ -38,9 +38,11 @@ def update(data):
     serialize(agent_change, out)
         
 
-@socketio.on("hello")
-def hello():
-    return
+@socketio.on("resume_simulation")
+def resume_simulation():
+    global out
+    to_send = guiInput(done=True)
+    serialize(to_send, out)
 
 
 

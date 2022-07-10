@@ -18,7 +18,7 @@
     <div class="d-flex justify-content-center my-4">
         <span class="font-weight-bold indigo-text mr-2 mt-1">0&nbsp;&nbsp;</span>
         <form class="range-field w-50">
-        <input type="range" min="0" max="360" value="0" class="form-range" id={{agent.agent_id}} name={{agent.agent_id}} oninput="display(this.value, this.id)" onchange="send(this, this.id)">
+        <input type="range" min="0" max="360" value="0" class="form-range" id={{agent.agent_id}} name={{agent.agent_id}} oninput="display(this.value, this.id)" onchange="agent_angle(this, this.id)">
         </form>
         <span class="font-weight-bold indigo-text mr-2 mt-1">&nbsp;&nbsp;360</span>
     </div>
@@ -27,6 +27,15 @@
         <span id="display{{loop.index0}}"><b>0</b></span>
     </div>
     {% endfor %}
+    <div class="d-flex justify-content-center my-4">
+        <input type="button" class="btn btn-success" value="Resume Simulation" onclick="resume_simulation()"> 
+    </div>
+    <script>
+        var socket = io()
+        function resume_simulation(){
+            socket.emit('resume_simulation')
+        }
+    </script>
     <script>
         function display(val, id) {
           var str = id;
@@ -37,8 +46,8 @@
     </script>
     <script type="text/javascript">
         var socket = io()
-        function send(slider, id){
-            socket.emit('update',
+        function agent_angle(slider, id){
+            socket.emit('agent_angle',
                         {
                             'id':id,
                             'value':$(slider).val()

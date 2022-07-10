@@ -38,6 +38,8 @@ install_requires = [
     "Pillow",
     "torch",
     "flask",
+    "gevent",
+    "eventlet",
     "flask_socketio",
     "torchvision",
     "tensorboard",

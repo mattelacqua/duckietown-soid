@@ -14,6 +14,7 @@ class guiInput():
     cur_pos: List[float]
     cur_angle: float
     tile_pos: List[int]
+    done: bool
 
     def __init__(self,
         agent = False,
@@ -24,7 +25,8 @@ class guiInput():
         cur_pos = [],
         cur_angle = 0.0,
         color = "",
-        tile_pos = []):
+        tile_pos = [],
+        done = False):
 
         self.agent = agent
         self.agent_id = agent_id
@@ -35,10 +37,13 @@ class guiInput():
         self.cur_angle = cur_angle
         self.tile_pos = tile_pos
         self.color = color
+        self.done = done
 
 
 
     def handle_input(self, env):
+        if self.done:
+            return True
         if self.agent:
             agent_id = self.agent_id
             cur_pos = self.cur_pos
@@ -48,6 +53,10 @@ class guiInput():
                 if agent.agent_id == agent_id:
                     #print("Changing {0}'s current angle from {1} to {2}".format(agent.agent_id, agent.cur_angle, cur_angle))
                     agent.cur_angle = cur_angle
+                    
+                    #Resetting the actions for the agent
+                    agent.actions = []
+            return False
 
 
 def serialize(obj, fifo):
