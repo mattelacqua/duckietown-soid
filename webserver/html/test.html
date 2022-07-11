@@ -28,7 +28,7 @@
     </div>
     {% endfor %}
     <div class="d-flex justify-content-center my-4">
-        <input type="button" class="btn btn-primary active" value="Resume Simulation" onclick="resume_simulation();this.blur();"> 
+        <input type="button" class="btn btn-primary" value="Resume Simulation" onclick="resume_simulation();this.blur();"> 
     </div>
     <script>
         function display(val, id) {
@@ -37,12 +37,12 @@
           var val_id = "display" + c
           document.getElementById(val_id).innerHTML = val;
         }
-    </script> <script>
+    </script> 
+    <script>
         var socket = io()
         function resume_simulation(){
             socket.emit('resume_simulation');
             close();
-
         }
     </script>
     <script type="text/javascript">

@@ -41,6 +41,7 @@ def agent_angle(data):
 @socketio.on("resume_simulation")
 def resume_simulation():
     global out
+    print("\n\n\n HERE \n\n\n ")
     to_send = guiInput(done=True)
     serialize(to_send, out)
 
