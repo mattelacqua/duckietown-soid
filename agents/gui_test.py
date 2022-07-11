@@ -100,7 +100,6 @@ def pause(dt):
         # Render any changes
         env.render(env.cam_mode)
 
-    print("BREAKING FREE")
     env.reset(webserver_reset=True)
     env.render(env.cam_mode)
 
