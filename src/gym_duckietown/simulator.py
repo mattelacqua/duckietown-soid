@@ -555,6 +555,10 @@ class Simulator(gym.Env):
         This also randomizes many environment parameters (domain randomization)
         """
 
+        if self.window:
+            self.window.clear()
+            self.close()
+        
         # Step count since episode start
         self.timestamp = 0.0
 
@@ -601,11 +605,10 @@ class Simulator(gym.Env):
         if self.domain_rand:
             light_pos = self.randomization_settings["light_pos"]
         else:
-            # light_pos = [-40, 200, 100, 0.0]
-
+            #light_pos = [-40, 200, 100, 0.0]
             light_pos = [0.0, 3.0, 0.0, 1.0]
 
-        # DIM = 0.0
+        DIM = 1.0
         ambient = np.array([0.50 * DIM, 0.50 * DIM, 0.50 * DIM, 1])
         ambient = self._perturb(ambient, 0.3)
         diffuse = np.array([0.70 * DIM, 0.70 * DIM, 0.70 * DIM, 1])
@@ -623,7 +626,11 @@ class Simulator(gym.Env):
         # gl.glLightfv(gl.GL_LIGHT0, gl.GL_LINEAR_ATTENUATION, (gl.GLfloat * 1)(0.3))
         # gl.glLightfv(gl.GL_LIGHT0, gl.GL_QUADRATIC_ATTENUATION, (gl.GLfloat * 1)(0.1))
 
+        # Reset lighting
+        gl.glDisable(gl.GL_LIGHTING)
         gl.glEnable(gl.GL_LIGHTING)
+        gl.glDisable(gl.GL_LIGHTING)
+        
         gl.glEnable(gl.GL_COLOR_MATERIAL)
 
         # Ground color
@@ -1804,17 +1811,13 @@ class Simulator(gym.Env):
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
 
-        if self.draw_bbox:
-            y += 0.8
-            gl.glRotatef(90, 1, 0, 0)
-        elif not top_down:
+        if not top_down:
             y += self.cam_height
             gl.glRotatef(self.cam_angle[0], 1, 0, 0)
             gl.glRotatef(self.cam_angle[1], 0, 1, 0)
             gl.glRotatef(self.cam_angle[2], 0, 0, 1)
             gl.glTranslatef(0, 0, CAMERA_FORWARD_DIST)
-
-        if top_down:
+        elif top_down:
             a = (self.grid_width * self.road_tile_size) / 2
             b = (self.grid_height * self.road_tile_size) / 2
             
@@ -1949,13 +1952,13 @@ class Simulator(gym.Env):
             angle = agent.cur_angle
      
             if self.draw_bbox:
-                corners = get_agent_corners(pos, angle)
-                gl.glColor3f(1, 0, 0)
+                corners = get_agent_corners(pos, angle, bbox_offset_w=0, bbox_offset_l=0)
+                gl.glColor3f(0, .9, .9)
                 gl.glBegin(gl.GL_LINE_LOOP)
-                gl.glVertex3f(corners[0, 0], 0.01, corners[0, 1])
-                gl.glVertex3f(corners[1, 0], 0.01, corners[1, 1])
-                gl.glVertex3f(corners[2, 0], 0.01, corners[2, 1])
-                gl.glVertex3f(corners[3, 0], 0.01, corners[3, 1])
+                gl.glVertex3f(corners[0, 0], .01, corners[0, 1])
+                gl.glVertex3f(corners[1, 0], .01, corners[1, 1])
+                gl.glVertex3f(corners[2, 0], .01, corners[2, 1])
+                gl.glVertex3f(corners[3, 0], .01, corners[3, 1])
                 gl.glEnd()
             
             gl.glPushMatrix()
@@ -2197,9 +2200,9 @@ def _actual_center(pos, angle):
     return pos + (CAMERA_FORWARD_DIST - (ROBOT_LENGTH / 2)) * dir_vec
 
 
-def get_agent_corners(pos, angle):
+def get_agent_corners(pos, angle, bbox_offset_w = 0, bbox_offset_l = 0):
     agent_corners = agent_boundbox(
-        _actual_center(pos, angle), ROBOT_WIDTH, ROBOT_LENGTH, get_dir_vec(angle), get_right_vec(angle)
+        _actual_center(pos, angle), ROBOT_WIDTH + bbox_offset_w, ROBOT_LENGTH + bbox_offset_l, get_dir_vec(angle), get_right_vec(angle)
     )
     return agent_corners
 

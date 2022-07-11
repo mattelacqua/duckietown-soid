@@ -62,8 +62,10 @@ env.reset()
 env.render(args.cam_mode)
 
 # Global holders for each agents actions
+light = 0
 
 def update(dt):
+    global light
     """
     This function is called at every frame to handle
     movement/stepping and redrawing
@@ -88,6 +90,10 @@ def update(dt):
 
         else: 
             agent1.add_actions(agent1.move_forward(env, forward_step=0.44))
+            if light > 15:
+                agent1.turn_on_light("front_right")
+                agent1.turn_on_light("back_right")
+    light = light + 1
    
     # Render each agent's next move
     if agent0.actions:
