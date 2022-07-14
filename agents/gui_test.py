@@ -87,7 +87,7 @@ inp = open(fifo_in, 'rb', os.O_NONBLOCK)
 out = open(fifo_out, 'wb', os.O_NONBLOCK)
 
 # Feed agent information to webserver
-init_server(out, agents=env.agents, objs=env.objects)
+init_server(out, env)
 
 # Pause on space, can enter gui here and change things maybe????
 def pause(dt):

@@ -8,6 +8,15 @@
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <!--Import SocketIO-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.js"></script>
+    <style>
+        .range_v {
+          display: flex;
+        }
+        .range_v.space-between {  
+          width: 50;
+          justify-content: space-between;
+        }
+    </style>
     <meta charset="utf-8">
     <title>Agent1 Angle</title>
   </head>
@@ -15,21 +24,48 @@
   <body style="background-color:SandDollar">
     {% for agent in agent_list %}
     <p style="text-align:center;color:{{agent.color}};font-size:200%"><b>{{agent.agent_id}}</b>:</p>
-    <div class="d-flex justify-content-center my-4">
-        <span class="font-weight-bold indigo-text mr-2 mt-1">0&nbsp;&nbsp;</span>
-        <form class="range-field w-50">
-        <input type="range" min="0" max="360" value="0" class="form-range" id={{agent.agent_id}} name={{agent.agent_id}} oninput="display(this.value, this.id)" onchange="agent_angle(this, this.id)">
-        </form>
-        <span class="font-weight-bold indigo-text mr-2 mt-1">&nbsp;&nbsp;360</span>
+
+    <!-- HTML For NS EW INPUT -->
+    <div class="d-flex justify-content-center my-1">
+         <input type="button" class="btn btn-secondary" value="North" onclick="increment_pos('{{agent.agent_id}}', 'N');this.blur();"> 
     </div>
+    <div class="d-flex justify-content-center my-1">
+        <input type="button" class="btn btn-secondary" value="West" onclick="increment_pos('{{agent.agent_id}}', 'W');this.blur();"> 
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <input type="button" class="btn btn-secondary" value="East" onclick="increment_pos('{{agent.agent_id}}', 'E');this.blur();"> 
+    </div>
+    <div class="d-flex justify-content-center my-1">
+         <input type="button" class="btn btn-secondary" value="South" onclick="increment_pos('{{agent.agent_id}}', 'S');this.blur();"> 
+    </div>
+
+    <!-- HTML For Agent Angle Slider-->
+    <div class="d-flex justify-content-center my-1">
+        <form class="range-field w-100">
+            <input type="range" list="tickmarks" min="0" max="360" value="{{agent.cur_angle}}" class="form-range" id={{agent.agent_id}} name={{agent.agent_id}} oninput="display(this.value, this.id)" onchange="agent_angle(this, this.id)">
+            
+        </form>
+    </div>
+    <div class="range_v space-between">
+        <div>0</div>
+        <div>90</div>
+        <div>180</div>
+        <div>270</div>
+        <div>360</div>
+    </div>
+    <!-- HTML For Agent Angle Desc-->
     <div class="d-flex justify-content-center my-4">
         <span>{{agent.agent_id}} angle is set to:&nbsp;&nbsp; </span>
-        <span id="display{{loop.index0}}"><b>0</b></span>
+        <span id="display{{loop.index0}}">{{agent.cur_angle}}</span>
     </div>
     {% endfor %}
+
+    <!-- HTML For resume sim button -->
     <div class="d-flex justify-content-center my-4">
         <input type="button" class="btn btn-primary" value="Resume Simulation" onclick="resume_simulation();this.blur();"> 
     </div>
+
+
+    <!-- JS FOR Slider -->
     <script>
         function display(val, id) {
           var str = id;
@@ -38,6 +74,8 @@
           document.getElementById(val_id).innerHTML = val;
         }
     </script> 
+
+    <!-- JS FOR Resuming Simulation -->
     <script>
         var socket = io()
         function resume_simulation(){
@@ -45,6 +83,8 @@
             close();
         }
     </script>
+
+    <!-- JS FOR AGENT ANGLE -->
     <script type="text/javascript">
         var socket = io()
         function agent_angle(slider, id){
@@ -52,6 +92,18 @@
                         {
                             'id':id,
                             'value':$(slider).val()
+                        })
+        }
+    </script>
+
+    <!-- JS FOR AGENT POS -->
+    <script type="text/javascript">
+        var socket = io()
+        function increment_pos(id, direction){
+            socket.emit('increment_pos',
+                        {
+                            'id':id,
+                            'direction':direction
                         })
         }
     </script>
