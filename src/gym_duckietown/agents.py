@@ -172,10 +172,6 @@ class Agent():
         actions.append([forward_step, steering])
         return actions
 
-    # TO DO LATER TO SEPARATE NP Python STUFF FROM C CALLBACKS
-    def get_curve_point(self):
-        print("NOTHING")
-    
 
     # If not perfectly straight when stopping, get a factor by which we must increase
     # the amount of turning we do
@@ -329,7 +325,6 @@ class Agent():
         # Get state information
         tile_x, tile_z = self.get_curr_tile(env)['coords']
         direction = self.get_direction(env)
-        print(self.agent_id, direction, self.cur_pos, tile_x, tile_z)
 
         # Based on direction, check if the next tile is an intersection
         if direction == 'N' and intersection_tile(env, tile_x, tile_z-1):

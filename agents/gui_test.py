@@ -89,20 +89,25 @@ out = open(fifo_out, 'wb', os.O_NONBLOCK)
 # Feed agent information to webserver
 init_server(out, env)
 
-# Pause on space, can enter gui here and change things maybe????
+# Pause on space, keep trying to get info from webserver, render and update accordingly
 def pause(dt):
     global inp
     unpause = False
+    # While still getting input
     while not unpause:
         gui_input = unserialize(inp)
-        unpause = gui_input.handle_input(env)
+        # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
+        if gui_input:
+            unpause = gui_input.handle_input(env)
 
-        # Render any changes
+        # Render any changes from last thing serialized
         env.render(env.cam_mode)
 
+    # Reset with a webserver reset
     env.reset(webserver_reset=True)
     env.render(env.cam_mode)
 
+    # Unschedule pause and resume rendering
     pyglet.clock.unschedule(pause)
     pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
 
@@ -143,9 +148,6 @@ def update(dt):
     env.render(env.cam_mode)
 
 if __name__ == '__main__':
-    # Test the web server
-    print(__name__)
-
 
     # Enter main event loop
     pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))

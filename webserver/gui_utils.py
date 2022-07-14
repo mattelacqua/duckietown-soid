@@ -5,90 +5,95 @@ import math
 import pickle
 import io
 
-class guiInput():
-    agent: bool
-    agent_id: str 
-    pos: str 
-    obj: bool
-    obj_id: str
-    tile: bool
-    cur_pos: List[float]
-    cur_angle: float
-    tile_pos: List[int]
-    done: bool
+# Send information through guiEnv
+class guiEnv():
     max_NS: int
     max_EW: int
-    inc_direction: str
 
     def __init__(self,
-        agent = False,
-        agent_id = "",
-        change = "",
-        obj = False,
-        obj_id = "",
-        tile = False,
-        cur_pos = [],
-        cur_angle = -1.0,
-        color = "",
-        tile_pos = [],
-        done = False,
         max_NS = 0,
-        max_EW = 0,
-        inc_direction = ""):
+        max_EW = 0):
 
-        self.agent = agent
-        self.agent_id = agent_id
-        self.obj = obj
-        self.obj_id = obj_id
-        self.tile = tile
-        self.cur_pos = cur_pos
-        self.cur_angle = cur_angle
-        self.tile_pos = tile_pos
-        self.color = color
-        self.done = done
         self.max_NS = max_NS
         self.max_EW = max_EW
-        self.change = change
-        self.inc_direction = inc_direction
 
+# Check if Scene is all set
+class guiDone():
+    done: bool
 
+    def __init__(self,
+        done = False):
 
+        self.done = done
+
+    # If done return this so that in pause of our function we know what to do
     def handle_input(self, env):
         if self.done:
             return True
-        if self.agent:
-            agent_id = self.agent_id
-            cur_pos = self.cur_pos
-            cur_angle = math.radians(self.cur_angle)
-            change = self.change
 
-            for agent in env.agents:
-                if agent.agent_id == agent_id:
-                    #print("Changing {0}'s current angle from {1} to {2}".format(agent.agent_id, agent.cur_angle, cur_angle))
-                    if change == "angle":
-                        agent.cur_angle = cur_angle
-                    elif change == "pos":
-                        agent.cur_pos = cur_pos
-                    elif change == "inc_pos":
-                        if self.inc_direction == 'N':
-                            agent.cur_pos[2] -= 0.1
-                        elif self.inc_direction == 'S':
-                            agent.cur_pos[2] += 0.1
-                        elif self.inc_direction == 'E':
-                            agent.cur_pos[0] += 0.1
-                        elif self.inc_direction == 'W':
-                            agent.cur_pos[0] -= 0.1
-                    
-                    #Resetting the actions for the agent
-                    agent.actions = []
-            return False
+# Class for any agent changes
+class guiAgent():
+    change: str     # Should be 'angle' 'pos' 'inc_pos' 'inc_speed'
+    agent_id: str 
+    color: str
+    cur_pos: List[float]
+    cur_angle: float
+    inc_direction: str
+    
+    def __init__(self,
+        change = "",
+        agent_id = "",
+        cur_pos = [],
+        cur_angle = -1.0,
+        color = "",
+        inc_direction = ""):
+
+        self.change = change
+        self.agent_id = agent_id
+        self.color = color
+        self.cur_pos = cur_pos
+        self.cur_angle = cur_angle
+        self.inc_direction = inc_direction
 
 
+    # Handle agent input. Based on the kind of change, do xyz
+    def handle_input(self, env):
+        agent_id = self.agent_id
+        cur_pos = self.cur_pos
+        cur_angle = math.radians(self.cur_angle)
+        change = self.change
+
+        for agent in env.agents:
+            if agent.agent_id == agent_id:
+                #print("Changing {0}'s current angle from {1} to {2}".format(agent.agent_id, agent.cur_angle, cur_angle))
+                if change == "angle":
+                    agent.cur_angle = cur_angle
+                elif change == "pos":
+                    agent.cur_pos = cur_pos
+                elif change == "inc_pos":
+                    if self.inc_direction == 'N':
+                        agent.cur_pos[2] -= 0.1
+                    elif self.inc_direction == 'S':
+                        agent.cur_pos[2] += 0.1
+                    elif self.inc_direction == 'E':
+                        agent.cur_pos[0] += 0.1
+                    elif self.inc_direction == 'W':
+                        agent.cur_pos[0] -= 0.1
+                
+                #Resetting the actions for the agent
+                agent.actions = []
+
+        # Return false because not done command
+        return False
+
+
+# Serialize by pickling to fifo
 def serialize(obj, fifo):
     pickled =  pickle.dumps(obj)
     fifo.write(pickled)
     fifo.flush()
 
+# Unserialize from fifo
 def unserialize(fifo):
     while True:
         try:
@@ -101,38 +106,50 @@ def unserialize(fifo):
 # Init agents in server
 def init_server(fifo, env):
     agents = env.agents
-    objects = env.objects
-    
+    input_list = []
 
-    agent_list = []
-    obj_list = []
-
+    # Initialize the server with agent information
     if agents:
         for agent in agents:
-            gui_agent = guiInput(agent=True, 
-                                 agent_id=agent.agent_id, 
+            gui_agent = guiAgent(agent_id=agent.agent_id, 
                                  cur_pos=agent.cur_pos,
                                  cur_angle=round(math.degrees(agent.cur_angle)),
-                                 color=html_color(agent.color),
-                                 max_NS=env.grid_height*env.road_tile_size,
-                                 max_EW=env.grid_width*env.road_tile_size)
-            agent_list.append(gui_agent)
-    serialize(agent_list, fifo)
+                                 color=html_color(agent.color))
+            input_list.append(gui_agent)
 
-# Read initial positions
+    # Include information about the environment
+    gui_env = guiEnv(max_NS=env.grid_height*env.road_tile_size,
+                     max_EW=env.grid_width*env.road_tile_size)
+
+    input_list.append(gui_env)
+
+    # Serialize the input
+    serialize(input_list, fifo)
+    
+# Read initial positions and env info
 def read_init(fifo):
     agent_list = []
-    agents = unserialize(fifo)
-    for agent in agents:
-        agent_list.append({
-                            "agent_id" : agent.agent_id,
-                            "cur_pos" : agent.cur_pos,
-                            "cur_angle" : agent.cur_angle,
-                            "color" : agent.color
-                          })
     env_info = {}
-    env_info["max_NS"] = agents[0].max_NS
-    env_info["max_EW"] = agents[0].max_EW
+    inputs = unserialize(fifo)
+
+    # for each input from init server
+    for inp in inputs:
+        # if agent add relevant info for webserver to have
+        if isinstance(inp, guiAgent):
+            gui_agent = inp
+            agent_list.append({
+                                "agent_id" : gui_agent.agent_id,
+                                "cur_pos" : gui_agent.cur_pos,
+                                "cur_angle" : gui_agent.cur_angle,
+                                "color" : gui_agent.color
+                              })
+
+        # if env_info add relevant info for webserver to have
+        if isinstance(inp, guiEnv):
+            gui_env = inp
+            env_info["max_NS"] = gui_env.max_NS
+            env_info["max_EW"] = gui_env.max_EW
+
     return agent_list, env_info 
 
 
