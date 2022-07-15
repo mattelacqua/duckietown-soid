@@ -311,7 +311,8 @@ Also, keep in mind that multiagent support is available.
 ## Web-Gui (Using Flask and Pipes) <a name="webgui"></a>
 
 ### Overview <a name="webgui_overview"></a>
-The GUI we are using is based off of HTML, Javascript, and is webserver based. We are using the python Flask library to start a basic localhost webserver at [127.0.0.1:5000](http://127.0.0.1:5000/). (This can be a little wonky, sometimes you have to refresh a bunch or clear cookies / incognito mode - not sure why.) The pipeline is as follows:
+The GUI we are using is based off of HTML, Javascript, and is webserver based. We are using the python Flask library to start a basic localhost webserver at [127.0.0.1:5000](http://127.0.0.1:5000/). 
+The pipeline is as follows:
 
 1. Startup [Flask Server](webserver/server.py) in agent.py
 ```
@@ -324,20 +325,18 @@ python3 webserver/server.py
 python3 agents/gui_test.py --env-name Duckietown-gui_test-v0 --map-name gui_test.yaml --cam-mode top_down
 ```
 
-What happens here is the webserver will begin, and based on what happens on the webserver, it will write information to a [pipe in the webserver directory](webserver/webserver.out). The agent program will then read from this file at given points (during the pause cycle for [this example](agents/gui_test)). 
-*** STILL WORK IN PROGRESS FOR BACK END OF THIS
+What happens here is the webserver will begin and read the initial layout of the simulated scene. Based on this, the gui is presented on a mouse click using webbrowser.open (see [event_wrappers.py](src/gym_duckietown/event_wrappers.py). While the scene is paused, the user can interact with the gui which uses JS/sockets to communicate to webserver.py, which will write information to a [pipe in the webserver directory](webserver/webserver.out). The agent program will then read from this file during the pause cycle for [this example](agents/gui_test). Finally, the user will click the resume simulation button at the bottom to resume the agent's decision code based on the re-rendered scene.
 
-Not yet implemented:
-The agent program will then take into account the information it reads in from the webserver pipe and adjust the server accordingly. 
-The simulator will then give the new information to the webserver.
+*** STILL WORK IN PROGRESS FOR SPECIFICI AGENT ATTRIBUTES AND OBJECTS
+
 
 ### Front End <a name="front_end"></a>
 The front end development is done using HTML.
 
 #### HTML <a name="html"></a>
-The [HTML file](webserver/html/index.html) used in [this example](webserver/server.py) uses bootstrap and java script to create a slider. 
+The [HTML file](webserver/html/agents.html) used in [this example](webserver/server.py) uses bootstrap and java script to create several (currently poorly drawn) buttons and sliders to adjust agent angles and positions.. 
 
-Take a look at this to see how in the body it creates the Responsive Slider, and after it, there is a script to display the value as well as a socketio script to send the 'update' function with the value on the slider through the socket in the webserver [flask file](webserver/server.py). 
+Take a look at this to see how in the body it creates the Agent Angle Slider and NSEW buttons. For each of these, JS socketio function to send the 'update' function with the value on the slider / direction of button through the socket in the webserver [flask file](webserver/server.py). 
 
 ### Back End <a name="back_end"></a>
 The back end of the webserver is handled in Flask and using pipes for interprocess communication
@@ -356,8 +355,7 @@ We are using FIFO pipe text files for communication between the webserver and si
 
 The [webserver.out](webserver.out) pipe is used for any information recieved on the webserver that we would like to write and give to the simulator. The [webserver.in](webserver.in) is used for interprocess communication in the other direction, Simulator -> Webserver.
 
-*** Still determining the format of how this will work, and actually getting it to work, but will update this once i figure thigns out.
-
+We are using the Pickle library to serialize and unserialize several different sorts of gui input (each of these object classes can be found in [gui_utils.py](src/gym_duckietown/gui_utils.py).
 
 ## Troubleshooting (Has not been updated for Soid) <a name="troubleshooting"></a>
 
