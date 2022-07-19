@@ -1,0 +1,16 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.knob {
+  padding: 1rem;
+  margin: 0 auto;
+  width: 10rem;
+  height: 10rem;
+  background-position: 50% 50%;
+  border-radius: 100px;
+  background: #d9d9d9;
+  box-shadow: 6px 6px 15px #cacaca, -6px -6px 15px #e8e8e8;
+}
+

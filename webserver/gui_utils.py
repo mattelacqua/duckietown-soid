@@ -128,21 +128,24 @@ def init_server(fifo, env):
     
 # Read initial positions and env info
 def read_init(fifo):
-    agent_list = []
+    agent_list =[] 
     env_info = {}
     inputs = unserialize(fifo)
 
     # for each input from init server
+    id_no = 0
     for inp in inputs:
         # if agent add relevant info for webserver to have
         if isinstance(inp, guiAgent):
             gui_agent = inp
             agent_list.append({
+                                "id" : id_no,
                                 "agent_id" : gui_agent.agent_id,
-                                "cur_pos" : gui_agent.cur_pos,
+                                "cur_pos" : list(gui_agent.cur_pos),
                                 "cur_angle" : gui_agent.cur_angle,
                                 "color" : gui_agent.color
-                              })
+                                })
+            id_no += 1
 
         # if env_info add relevant info for webserver to have
         if isinstance(inp, guiEnv):

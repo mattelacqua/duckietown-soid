@@ -8,6 +8,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <!--Import SocketIO-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.js"></script>
+    <!-- Styles needed for pieces Range, Lightbox, ETC -->
     <style>
         .range_v {
           display: flex;
@@ -15,6 +16,37 @@
         .range_v.space-between {  
           width: 50;
           justify-content: space-between;
+        }
+        .lightbox-menu li label {
+            display: block;
+            padding: 3px 10px;
+            clear: both;
+            font-weight: normal;
+            line-height: 1.42857143;
+            color: #333;
+            white-space: nowrap;
+            margin:0;
+            transition: background-color .4s ease;
+        }
+        .lightbox-menu li input {
+            margin: 0px 5px;
+            top: 2px;
+            position: relative;
+        }
+
+        .lightbox-menu li.active label {
+            background-color: #cbcbff;
+            font-weight:bold;
+        }
+
+        .lightbox-menu li label:hover,
+        .lightbox-menu li label:focus {
+            background-color: #f5f5f5;
+        }
+
+        .lightbox-menu li.active label:hover,
+        .lightbox-menu li.active label:focus {
+            background-color: #b8b8ff;
         }
     </style>
     <meta charset="utf-8">

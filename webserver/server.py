@@ -7,9 +7,11 @@ import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
+import json
+
 
 # Start up Flask web env
-template_dir = os.path.abspath('webserver/html/')
+template_dir = os.path.abspath('webserver/old_html/')
 app = Flask(__name__, template_folder=template_dir)
 socketio = SocketIO(app,cors_allowed_origins="*")
 fifo_out = 'webserver/webserver.out'
@@ -17,20 +19,26 @@ fifo_in = 'webserver/webserver.in'
 out = open(fifo_out, "wb", os.O_NONBLOCK)
 inp = open(fifo_in, "rb", os.O_NONBLOCK)
 
-print("HERE")
+# Read initial positions of agents and info about the environment
 agent_list, env_info = read_init(inp)
-print("AGENT LIST AGENT LIST")
-print(agent_list)
-print("ENV INFO")
-print(env_info)
 
-# Home page for website
+
+print("AGENT LIST")
+print(agent_list)
+
+# Home page for website, has all information we want on it
+@app.route("/agents")
+def agents():
+    al_string = json.dumps(agent_list)
+    return al_string
+
+# Home page for website, has all information we want on it
 @app.route("/")
 def index():
     #return render_template("index.html")
-    return render_template("test.html", agent_list=agent_list, env_info=env_info)
+    return render_template("agents.html", agent_list=agent_list, env_info=env_info)
 
-# On socket update,
+# On socket update change agent angle
 @socketio.on("agent_angle")
 def agent_angle(data):
     global out
@@ -39,6 +47,7 @@ def agent_angle(data):
     agent_change = guiAgent(change="angle", agent_id=a_id, cur_angle=angle)
     serialize(agent_change, out)
  
+# On socket update change agent angle position (from text)
 @socketio.on("agent_pos")
 def agent_pos(data):
     global out
@@ -47,16 +56,16 @@ def agent_pos(data):
     agent_change = guiAgent(change="pos", agent_id=a_id, cur_pos=[pos[0], 0, pos[1]])
     serialize(agent_change, out)
 
+# On socket update change agent angle position (from button press)
 @socketio.on("increment_pos")
 def increment_pos(data):
     global out
-    print("CALLING INCREMENT POS")
     a_id = str(data['id'])
     direction = str(data['direction'])
     agent_change = guiAgent(change="inc_pos", agent_id=a_id, inc_direction=direction)
     serialize(agent_change, out)
 
-
+# On socket update resume simulation from button press
 @socketio.on("resume_simulation")
 def resume_simulation():
     global out
