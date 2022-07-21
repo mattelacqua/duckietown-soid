@@ -7,6 +7,9 @@ import AngleDial from './AngleDial.js'
 // Import Agent Info Screen
 import AgentInfo from './AgentInfo.js'
 
+// Import Agent Info Screen
+import LightDrop from './LightDrop.js'
+
 // Agent Component (gets rendered in app)
 class Agent extends React.Component {
 
@@ -17,23 +20,46 @@ class Agent extends React.Component {
       agent_id: props.agent_id,
       cur_pos: props.cur_pos,
       cur_angle: props.cur_angle,
-      color: props.color
+      color: props.color,
+      lights: props.lights
     };
+    this.angle_pass = this.angle_pass.bind(this); // Bind angle pass to this component
+    this.lights_pass = this.lights_pass.bind(this); // Bind angle pass to this component
   }
 
+  // Handler to pass to child to update the state of the agent, which forces a
+  // re-render. We call this in AgentDial when we update the dial so the text updates as well.
+  angle_pass(angle) {
+    this.setState({
+        cur_angle: angle
+    });
+  }
 
+  lights_pass(newLights) {
+    this.setState({
+        lights: newLights
+    });
+  }
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)
   render() {
     return (
               <div>
                   {/* Render a Dial */}
-                <AngleDial cur_angle={this.state.cur_angle} agent_id={this.state.agent_id} />
+                <AngleDial  cur_angle={this.state.cur_angle} 
+                            agent_id={this.state.agent_id} 
+                            agent_color={this.state.color} 
+                            angle_pass={this.angle_pass} />
 
                   {/* Render Agent Information */}
                 <AgentInfo    agent_id={this.state.agent_id}
                               cur_angle={this.state.cur_angle}
                               cur_pos= {this.state.cur_pos}
-                              color={this.state.color} />
+                              color={this.state.color} 
+                              lights={this.state.lights}/>
+      
+                <LightDrop  agent_id={this.state.agent_id} 
+                            lights={this.state.lights}
+                            lights_pass={this.lights_pass}/>
               </div>
           );
     }

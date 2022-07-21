@@ -9,10 +9,15 @@ log.setLevel(logging.ERROR)
 
 import json
 
+# Fix payload issue
+from engineio.payload import Payload
+Payload.max_decode_packets = 50
 
 # Start up Flask web env
 template_dir = os.path.abspath('webserver/old_html/')
 app = Flask(__name__, template_folder=template_dir)
+
+
 socketio = SocketIO(app,cors_allowed_origins="*")
 fifo_out = 'webserver/webserver.out'
 fifo_in = 'webserver/webserver.in'
@@ -65,6 +70,14 @@ def increment_pos(data):
     agent_change = guiAgent(change="inc_pos", agent_id=a_id, inc_direction=direction)
     serialize(agent_change, out)
 
+@socketio.on("lights")
+def lights(data):
+    global out
+    a_id = str(data['id'])
+    lights = data['lights']
+    agent_change = guiAgent(change="lights", agent_id=a_id, lights=lights)
+    serialize(agent_change, out)
+ 
 # On socket update resume simulation from button press
 @socketio.on("resume_simulation")
 def resume_simulation():

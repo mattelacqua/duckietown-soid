@@ -39,6 +39,7 @@ class guiAgent():
     cur_pos: List[float]
     cur_angle: float
     inc_direction: str
+    lights:  List
     
     def __init__(self,
         change = "",
@@ -46,7 +47,8 @@ class guiAgent():
         cur_pos = [],
         cur_angle = -1.0,
         color = "",
-        inc_direction = ""):
+        inc_direction = "",
+        lights = []):
 
         self.change = change
         self.agent_id = agent_id
@@ -54,6 +56,7 @@ class guiAgent():
         self.cur_pos = cur_pos
         self.cur_angle = cur_angle
         self.inc_direction = inc_direction
+        self.lights = lights
 
 
     # Handle agent input. Based on the kind of change, do xyz
@@ -79,6 +82,9 @@ class guiAgent():
                         agent.cur_pos[0] += 0.1
                     elif self.inc_direction == 'W':
                         agent.cur_pos[0] -= 0.1
+                elif change == "lights":
+                    for light in lights:
+                        agent.set_light(light[light], light[on])
                 
                 #Resetting the actions for the agent
                 agent.actions = []
@@ -111,10 +117,12 @@ def init_server(fifo, env):
     # Initialize the server with agent information
     if agents:
         for agent in agents:
+            agent_lights = agent.lights_to_dictlist()
             gui_agent = guiAgent(agent_id=agent.agent_id, 
                                  cur_pos=agent.cur_pos,
                                  cur_angle=round(math.degrees(agent.cur_angle)),
-                                 color=html_color(agent.color))
+                                 color=html_color(agent.color),
+                                 lights=agent_lights)
             input_list.append(gui_agent)
 
     # Include information about the environment
@@ -143,7 +151,8 @@ def read_init(fifo):
                                 "agent_id" : gui_agent.agent_id,
                                 "cur_pos" : list(gui_agent.cur_pos),
                                 "cur_angle" : gui_agent.cur_angle,
-                                "color" : gui_agent.color
+                                "color" : gui_agent.color,
+                                "lights" : gui_agent.lights
                                 })
             id_no += 1
 

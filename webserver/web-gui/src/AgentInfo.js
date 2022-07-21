@@ -12,18 +12,23 @@ class AgentInfo extends React.Component {
       cur_angle: props.cur_angle,
       cur_pos: props.cur_pos,
       color: props.color,
+      lights: props.lights,
     };
   }
 
   // Render the information to screen
   render() {
+    const color = this.props.color
     return (
-      <div>
+      <div style={{
+            color: color,
+      }}>
           {/* HTML FOR ALL THE INFORMATION */}
-          <p> Agent: {this.state.agent_id} </p>
-          <p> Current Angle: {this.state.cur_angle} </p>
-          <p> Current Pos: {this.state.cur_pos} </p>
-          <p> Color: {this.state.color} </p>
+          <h1> Agent: {this.props.agent_id} </h1>
+          <h1> Current Angle: {this.props.cur_angle} </h1>
+          <h1> Current Pos: {this.props.cur_pos} </h1>
+          <h1> Color: {this.props.color} </h1>
+          <h1> {JSON.stringify(this.props.lights)} </h1>
       </div>
       );
     }

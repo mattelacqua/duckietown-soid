@@ -57,7 +57,8 @@ class App extends React.Component{
                     <Agent agent_id={agent.agent_id} 
                            cur_angle={agent.cur_angle}
                            cur_pos={agent.cur_pos}
-                           color={agent.color} />
+                           color={agent.color} 
+                           lights={agent.lights} />
                 ))
             }
         </div>
