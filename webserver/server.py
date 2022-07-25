@@ -37,6 +37,11 @@ def agents():
     al_string = json.dumps(agent_list)
     return al_string
 
+@app.route("/envInfo")
+def envInfo():
+    envInfo_string = json.dumps(env_info)
+    return envInfo_string
+
 # Home page for website, has all information we want on it
 @app.route("/")
 def index():
@@ -57,8 +62,10 @@ def agent_angle(data):
 def agent_pos(data):
     global out
     a_id = str(data['id'])
-    pos = list(data['value'])
-    agent_change = guiAgent(change="pos", agent_id=a_id, cur_pos=[pos[0], 0, pos[1]])
+    x = data['x']
+    z = data['z']
+    agent_change = guiAgent(change="pos", agent_id=a_id, cur_pos=[x, 0, z])
+    print("AGENT CHange {0} {1} {2}".format(a_id, x, z))
     serialize(agent_change, out)
 
 # On socket update change agent angle position (from button press)

@@ -18,12 +18,7 @@ class LightDrop extends React.Component {
   constructor(props) {
     super(props);
     const lights = this.props.lights;
-    console.log("Prop Lights");
-    console.log(lights);
-    console.log(this.props.lights);
     const already_on = lights.filter(light => light.on);
-    console.log("already on");
-    console.log(already_on);
     this.state = {
         agent_id: this.props.agent_id,
         lights: lights,
@@ -34,25 +29,46 @@ class LightDrop extends React.Component {
   }
 
   
+  // When we select one we need to update parent and emit change to socket:
   onSelect(selectedList, selectedItem) {
-    console.log("Selected List");
-    console.log(selectedList);
-    console.log("Selected Item");
-    console.log(selectedItem);
-    // New light
+    // Instantiate var with selected 
+    const turn_on = selectedItem;
+
+    // Set it to be on
+    turn_on.on = true;
+
+    // Pass update change through parent function
+    this.props.lights_pass(turn_on);
+
+    // Get the updated list of lights and emit to socket
+    const old_lights = this.state.lights;
+    const new_lights = [turn_on];
+    const updated = old_lights.map(obj => new_lights.find(o=> o.light === obj.light) || obj);
+    socket.emit('lights',
+                    {
+                      'id':this.state.agent_id,
+                      'lights':updated
+                    });
   }
 
+  // Same as onSelect but for removing
   onRemove(selectedList, removedItem) {
-    console.log("Selected List");
-    console.log(selectedList);
-    console.log("Removed Item");
-    console.log(removedItem);
-  }
+    const turn_off = removedItem;
+    turn_off.on = false;
+    this.props.lights_pass(turn_off);
+    
+    // Get the updated list of lights and emit to socket
+    const old_lights = this.state.lights;
+    const new_lights = [turn_off];
+    const updated = old_lights.map(obj => new_lights.find(o=> o.light === obj.light) || obj);
+    socket.emit('lights',
+                    {
+                      'id':this.state.agent_id,
+                      'lights':updated
+                    });}
   
   // Render the Dial component from the react-dial-knob package
   render() {
-    console.log("VALUES IN RENDER");
-    console.log(this.state.selectedValues);
     return ( 
       <Multiselect
         options={this.state.lights} // Options to display in the dropdown

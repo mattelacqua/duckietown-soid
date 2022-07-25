@@ -35,9 +35,14 @@ class Agent extends React.Component {
     });
   }
 
-  lights_pass(newLights) {
+
+  // Pass the light change into agent state
+  lights_pass(newLight) {
+    const old_lights = this.state.lights;
+    const new_lights = [newLight];
+    const updated = old_lights.map(obj => new_lights.find(o => o.light === obj.light) || obj);
     this.setState({
-        lights: newLights
+        lights: updated
     });
   }
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)

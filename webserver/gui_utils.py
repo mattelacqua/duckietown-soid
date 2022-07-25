@@ -9,13 +9,16 @@ import io
 class guiEnv():
     max_NS: int
     max_EW: int
+    tile_size: int
 
     def __init__(self,
         max_NS = 0,
-        max_EW = 0):
+        max_EW = 0,
+        tile_size = 0):
 
         self.max_NS = max_NS
         self.max_EW = max_EW
+        self.tile_size = tile_size
 
 # Check if Scene is all set
 class guiDone():
@@ -44,7 +47,7 @@ class guiAgent():
     def __init__(self,
         change = "",
         agent_id = "",
-        cur_pos = [],
+        cur_pos = {},
         cur_angle = -1.0,
         color = "",
         inc_direction = "",
@@ -65,6 +68,7 @@ class guiAgent():
         cur_pos = self.cur_pos
         cur_angle = math.radians(self.cur_angle)
         change = self.change
+        lights = self.lights
 
         for agent in env.agents:
             if agent.agent_id == agent_id:
@@ -84,7 +88,7 @@ class guiAgent():
                         agent.cur_pos[0] -= 0.1
                 elif change == "lights":
                     for light in lights:
-                        agent.set_light(light[light], light[on])
+                        agent.set_light(light["light"], light["on"])
                 
                 #Resetting the actions for the agent
                 agent.actions = []
@@ -118,8 +122,10 @@ def init_server(fifo, env):
     if agents:
         for agent in agents:
             agent_lights = agent.lights_to_dictlist()
+            cur_pos_dict = {'x':round(agent.cur_pos[0], 3),
+                            'y':round(agent.cur_pos[2], 3)}
             gui_agent = guiAgent(agent_id=agent.agent_id, 
-                                 cur_pos=agent.cur_pos,
+                                 cur_pos=cur_pos_dict,
                                  cur_angle=round(math.degrees(agent.cur_angle)),
                                  color=html_color(agent.color),
                                  lights=agent_lights)
@@ -127,7 +133,8 @@ def init_server(fifo, env):
 
     # Include information about the environment
     gui_env = guiEnv(max_NS=env.grid_height*env.road_tile_size,
-                     max_EW=env.grid_width*env.road_tile_size)
+                     max_EW=env.grid_width*env.road_tile_size,
+                     tile_size=env.road_tile_size)
 
     input_list.append(gui_env)
 
@@ -149,7 +156,7 @@ def read_init(fifo):
             agent_list.append({
                                 "id" : id_no,
                                 "agent_id" : gui_agent.agent_id,
-                                "cur_pos" : list(gui_agent.cur_pos),
+                                "cur_pos" : gui_agent.cur_pos,
                                 "cur_angle" : gui_agent.cur_angle,
                                 "color" : gui_agent.color,
                                 "lights" : gui_agent.lights
@@ -161,6 +168,7 @@ def read_init(fifo):
             gui_env = inp
             env_info["max_NS"] = gui_env.max_NS
             env_info["max_EW"] = gui_env.max_EW
+            env_info["tile_size"] = gui_env.tile_size
 
     return agent_list, env_info 
 

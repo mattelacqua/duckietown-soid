@@ -26,7 +26,7 @@ class AgentInfo extends React.Component {
           {/* HTML FOR ALL THE INFORMATION */}
           <h1> Agent: {this.props.agent_id} </h1>
           <h1> Current Angle: {this.props.cur_angle} </h1>
-          <h1> Current Pos: {this.props.cur_pos} </h1>
+          <h1> Current Pos: {JSON.stringify(this.props.cur_pos)} </h1>
           <h1> Color: {this.props.color} </h1>
           <h1> {JSON.stringify(this.props.lights)} </h1>
       </div>
