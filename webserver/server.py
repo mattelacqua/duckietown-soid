@@ -1,5 +1,5 @@
 # Flask imports
-from flask import Flask, render_template
+from flask import Flask, render_template, send_file
 from flask_socketio import SocketIO
 import os
 from webserver.gui_utils import guiAgent, guiEnv, guiDone, read_init, serialize
@@ -41,6 +41,10 @@ def agents():
 def envInfo():
     envInfo_string = json.dumps(env_info)
     return envInfo_string
+
+@app.route("/mapImage")
+def mapImage():
+    return send_file("images/empty_map.jpg", mimetype='image/jpeg')
 
 # Home page for website, has all information we want on it
 @app.route("/")

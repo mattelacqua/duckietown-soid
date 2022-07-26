@@ -2,16 +2,17 @@ import React from 'react';
 import {
   Chart as ChartJS,
   LinearScale,
-  CategoryScale,
   PointElement,
   LineElement,
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Scatter, Line } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import 'chartjs-plugin-dragdata';
 
 import io from 'socket.io-client';
+
+import './AgentMap.css'
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
 
@@ -56,11 +57,36 @@ class AgentMap extends React.Component {
     }
 
   render() {
+    // Load background image
+    const image = new Image();
+    image.src = 'http://localhost:5000/mapImage';
+    console.log(image);
+
+    const map_background = {
+      beforeDraw: (chart) => {
+      if (image.complete) {
+          const ctx = chart.ctx;
+          const {top, left, width, height} = chart.chartArea;
+          console.log("chart");
+          console.log(chart.height);
+          console.log(chart.width);
+          const x = left;
+          const y = top;
+          console.log("COMPLETE");
+          ctx.drawImage(image, x, y, width, height);
+        } else {
+          image.onload = () => chart.draw();
+          console.log("DRAW");
+        }
+      }
+    };
+
     const options = {
+          aspectRatio: 1,
           // Elements
           elements : {
             point : {
-                radius : (10 * this.props.tile_size)
+                radius : (2 * (20 * this.props.tile_size))
             },
           },
           // Plugins
@@ -117,7 +143,12 @@ class AgentMap extends React.Component {
           
         }; // End options  
 
-     return <Line options={options} data={this.state.data} />;
+     return (
+        <div classname = "AgentMap">
+            <Line classname="agentMap" options={options} data={this.state.data} plugins={[map_background]} />;
+        </div>
+     )
+
   }
 }
 

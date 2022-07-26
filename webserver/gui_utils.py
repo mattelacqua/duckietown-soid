@@ -10,6 +10,7 @@ class guiEnv():
     max_NS: int
     max_EW: int
     tile_size: int
+    map_image: None
 
     def __init__(self,
         max_NS = 0,
@@ -115,6 +116,7 @@ def unserialize(fifo):
 
 # Init agents in server
 def init_server(fifo, env):
+    env.map_jpg()
     agents = env.agents
     input_list = []
 
