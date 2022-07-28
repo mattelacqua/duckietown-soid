@@ -23,23 +23,16 @@ class AngleDial extends React.Component {
     };
   }
 
-  // Once the dial gets mounted
-  componentDidMount() {
-    // Emit to the socket the angle every 2 seconds
-    setInterval(() => {
-      // This goes to webserver.py (@socketio.on("agent_angle")
-      socket.emit('agent_angle',
-                    {
-                        'id':this.state.id,         // Pass the agent_id stored in state
-                        'value':this.state.value    // Pass the cur_angle stored in state
-                    }); // End emit
-        }, 2000); // End Interval
-  } // End did mount
-
   // Update the dial state on new changes
   handleChange = (newValue) => {
     this.setState({value: newValue});
     this.props.angle_pass(newValue);
+    socket.emit('agent_angle',
+                {
+                    'id':this.state.id,         // Pass the agent_id stored in state
+                    'value':this.state.value    // Pass the cur_angle stored in state
+                }); // End emit
+
   };
   
 

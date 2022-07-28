@@ -719,7 +719,7 @@ class Simulator(gym.Env):
                 propose_angle = agent.cur_angle
 
             elif agent.start_pose:
-                logger.info(f"using map pose start for agent {agent.agent_id}: {agent.start_pose}")
+                #logger.info(f"using map pose start for agent {agent.agent_id}: {agent.start_pose}")
 
                 i, j = tile["coords"]
                 x = i * self.road_tile_size + agent.start_pose[0][0]
@@ -727,7 +727,7 @@ class Simulator(gym.Env):
                 propose_pos = np.array([x, 0, z])
                 propose_angle = agent.start_pose[1]
 
-                logger.info(f"Using map pose start for agent {agent.agent_id}. \n Pose: {propose_pos}, Angle: {propose_angle}")
+                #logger.info(f"Using map pose start for agent {agent.agent_id}. \n Pose: {propose_pos}, Angle: {propose_angle}")
 
             else:
                 # Keep trying to find a valid spawn position on this tile
@@ -1745,7 +1745,7 @@ class Simulator(gym.Env):
             done_code = "in-progress"
         return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
 
-    def map_jpg(self, segment: bool = False):
+    def map_jpg(self, segment: bool = False, background: bool = False):
         img = self._render_img(
             self.camera_width,
             self.camera_height,
@@ -1757,13 +1757,16 @@ class Simulator(gym.Env):
             only_map=True,
         )
 
-        print(f"Current working dir: {os.getcwd()}")
-
-        img = Image.fromarray(img, 'RGB')
-        nonwhite_positions = [(x,y) for x in range(img.size[0]) for y in range(img.size[1]) if img.getdata()[x+y*img.size[0]] != (255,0,255)]
-        rect = (min([x for x,y in nonwhite_positions]), min([y for x,y in nonwhite_positions]), max([x for x,y in nonwhite_positions]), max([y for x,y in nonwhite_positions]))
-        image_path = "webserver/images"
-        image = img.crop(rect).save(f"{image_path}/empty_map.jpg")
+        if not background:
+            img = Image.fromarray(img, 'RGB')
+            nonwhite_positions = [(x,y) for x in range(img.size[0]) for y in range(img.size[1]) if img.getdata()[x+y*img.size[0]] != (255,0,255)]
+            rect = (min([x for x,y in nonwhite_positions]), min([y for x,y in nonwhite_positions]), max([x for x,y in nonwhite_positions]), max([y for x,y in nonwhite_positions]))
+            image_path = "webserver/images"
+            image = img.crop(rect).save(f"{image_path}/empty_map.jpg")
+        else:
+            img = Image.fromarray(img, 'RGB')
+            image_path = "webserver/images"
+            image = img.save(f"{image_path}/empty_map_background.jpg")
 
         return image
 
@@ -2121,6 +2124,11 @@ class Simulator(gym.Env):
             top_down=top_down,
             segment=segment,
         )
+
+        # Save the image to the directory
+        web_img = Image.fromarray(img, 'RGB')
+        image_path = "webserver/images"
+        web_img.save(f"{image_path}/rendered_scene.jpg")
 
         # self.undistort - for UndistortWrapper
         if self.distortion and not self.undistort and mode != "free_cam":

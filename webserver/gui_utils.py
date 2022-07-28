@@ -116,7 +116,8 @@ def unserialize(fifo):
 
 # Init agents in server
 def init_server(fifo, env):
-    env.map_jpg()
+    env.map_jpg(background=True)
+    env.map_jpg(background=False)
     agents = env.agents
     input_list = []
 

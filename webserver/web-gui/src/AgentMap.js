@@ -35,14 +35,15 @@ class AgentMap extends React.Component {
     });
 
     this.update_agent_pos = this.update_agent_pos.bind(this);
+    this.update_point_size = this.update_point_size.bind(this);
     //
     // Init State
     this.state = {
       agents: this.props.agents,
 
       data:{datasets},
+      car_radius:0,
     }; // End state
-    console.log(this.state.data);
   }
 
   update_agent_pos(e, datasetIndex, index, value) {
@@ -56,37 +57,45 @@ class AgentMap extends React.Component {
       this.props.pos_pass("agent" + datasetIndex, value.x, value.y);
     }
 
+  update_point_size(chart, size){
+    const area = size.width*size.height;
+    const tile_area = this.props.tile_size * this.props.tile_size * 100000;
+    const tile_scale = area / tile_area;
+    const car_radius =  tile_scale * 1.5;
+    this.setState({car_radius: car_radius});
+  }
+
+
   render() {
     // Load background image
     const image = new Image();
     image.src = 'http://localhost:5000/mapImage';
-    console.log(image);
 
     const map_background = {
       beforeDraw: (chart) => {
       if (image.complete) {
           const ctx = chart.ctx;
           const {top, left, width, height} = chart.chartArea;
-          console.log("chart");
-          console.log(chart.height);
-          console.log(chart.width);
           const x = left;
           const y = top;
-          console.log("COMPLETE");
           ctx.drawImage(image, x, y, width, height);
         } else {
           image.onload = () => chart.draw();
-          console.log("DRAW");
         }
       }
     };
 
+
+
+
+    
     const options = {
           aspectRatio: 1,
+          onResize: this.update_point_size,
           // Elements
           elements : {
             point : {
-                radius : (2 * (20 * this.props.tile_size))
+                radius : this.state.car_radius, 
             },
           },
           // Plugins
@@ -143,8 +152,12 @@ class AgentMap extends React.Component {
           
         }; // End options  
 
+     const style = {
+       float: 'left',
+       width: '50%'
+     }
      return (
-        <div classname = "AgentMap">
+        <div classname = "AgentMap" style={style}>
             <Line classname="agentMap" options={options} data={this.state.data} plugins={[map_background]} />;
         </div>
      )

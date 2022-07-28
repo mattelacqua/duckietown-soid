@@ -27,10 +27,6 @@ inp = open(fifo_in, "rb", os.O_NONBLOCK)
 # Read initial positions of agents and info about the environment
 agent_list, env_info = read_init(inp)
 
-
-print("AGENT LIST")
-print(agent_list)
-
 # Home page for website, has all information we want on it
 @app.route("/agents")
 def agents():
@@ -45,6 +41,14 @@ def envInfo():
 @app.route("/mapImage")
 def mapImage():
     return send_file("images/empty_map.jpg", mimetype='image/jpeg')
+
+@app.route("/mapImageBackground")
+def mapImageBackground():
+    return send_file("images/empty_map_background.jpg", mimetype='image/jpeg')
+
+@app.route("/renderedScene")
+def renderedScene():
+    return send_file("images/rendered_scene.jpg", mimetype='image/jpeg')
 
 # Home page for website, has all information we want on it
 @app.route("/")

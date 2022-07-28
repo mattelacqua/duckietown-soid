@@ -12,6 +12,9 @@ import Environment from './Environment.js'
 
 // Import Agentmpa
 import AgentMap from './AgentMap.js'
+
+// Import RenderedScene
+import RenderedScene from './RenderedScene.js'
 // Our top level class (gets rendered in index.html)
 class App extends React.Component{
 
@@ -23,7 +26,10 @@ class App extends React.Component{
         this.state = {
             agents: [],
             env_info: [],
-            AgentsLoaded: false
+            AgentsLoaded: false,
+            EnvLoaded: false,
+            rendred_imgLoaded: false,
+            rendered_img: new Image(),
         };
         this.pos_pass = this.pos_pass.bind(this); // Bind angle pass to this component
     }
@@ -49,6 +55,14 @@ class App extends React.Component{
                     EnvLoaded: true
                 });
             });
+
+      // Get the rendered image
+      const image = new Image();
+      image.src = 'http://localhost:5000/renderedScene';
+      this.setState({
+        rendered_img: image,
+        rendered_imgLoaded: true
+      });
     }
    
     pos_pass(id, x, y) {
@@ -65,7 +79,7 @@ class App extends React.Component{
     render() {
         
         // Pull agents and the data loaded from our state (these were set in componentDidMount)
-        const { AgentsLoaded, EnvLoaded, agents, env_info} = this.state;
+        const { AgentsLoaded, EnvLoaded, rendered_imgLoaded, agents, env_info, rendered_img} = this.state;
         
         // If our data didn't load, lets write HTML that we are waiting 
         if (!AgentsLoaded) return <div>
@@ -74,12 +88,16 @@ class App extends React.Component{
         if (!EnvLoaded) return <div>
             <h1> Please wait some time to load Environmen information.... </h1> </div> ;
    
+        if (!rendered_imgLoaded) return <div>
+            <h1> Please wait some time to load Rendered Scene .... </h1> </div> ;
         // When our data is loaded, we want to return the HTML/REACT Calls for the APP
         return (
 
         // Div to clump app up into one component to render
         <div className = "App"> {/* Using app.css stylesheet */}
             {/* Header text */}
+            <h1> SCENE </h1> 
+          {/*<RenderedScene />*/}
             <h1> Fetch data from an api in reacts </h1> 
               <Environment  max_NS={env_info.max_NS} 
                             max_EW={env_info.max_EW} 

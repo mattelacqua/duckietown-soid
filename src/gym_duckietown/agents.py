@@ -88,8 +88,6 @@ class Agent():
     def lights_to_dictlist(self):
         light_list = []
         for light in self.lights.items():
-            print("DO WE SE A TRUE")
-            print(self.lights[light[0]][3])
             light_list.append({"light": light[0], "on":self.lights[light[0]][3]})
         return light_list
 
