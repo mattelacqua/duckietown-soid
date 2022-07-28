@@ -5,7 +5,6 @@
 This script uses the ite_move library to make a right turn through an intersection
 """
 from PIL import Image
-import argparse
 import sys
 import time
 
@@ -25,27 +24,14 @@ import subprocess
 
 # Logging
 from gym_duckietown import logger 
-from webserver.gui_utils import unserialize
-import webbrowser
+from webserver.gui_utils import unserialize, init_server
 
+# Utils / Event Wrappers
+import gym_duckietown.utils as utils
+import gym_duckietown.event_wrappers as event
 
-# Args
-parser = argparse.ArgumentParser()
-parser.add_argument("--env-name", default=None)
-parser.add_argument("--map-name", default="udem1")
-parser.add_argument("--distortion", default=False, action="store_true")
-parser.add_argument("--camera_rand", default=False, action="store_true")
-parser.add_argument("--draw-curve", action="store_true", help="draw the lane following curve")
-parser.add_argument("--draw-bbox", action="store_true", help="draw collision detection bounding boxes")
-parser.add_argument("--domain-rand", action="store_true", help="enable domain randomization")
-parser.add_argument("--dynamics_rand", action="store_true", help="enable dynamics randomization")
-parser.add_argument("--frame-skip", default=1, type=int, help="number of frames to skip")
-parser.add_argument("--seed", default=1, type=int, help="seed")
-parser.add_argument("--cam-mode", default="human", help="Camera modes: human, top_down, free_cam, rgb_array")
-parser.add_argument("--safety-factor", default=1.0, type=float, help="Minimum distance before collision detection")
-parser.add_argument("--num-agents", default=1.0, type=int, help="Number of Agents")
-parser.add_argument("--verbose", action="store_true", help="Log agent information")
-args = parser.parse_args()
+# Parse args
+args = utils.get_args_from_command_line()
 
 # Build Env
 if args.env_name and args.env_name.find("Duckietown") != -1:
@@ -70,6 +56,7 @@ else:
 
 # Verbose
 verbose = args.verbose
+
 # Start up env
 env.reset()
 
@@ -79,43 +66,15 @@ subprocess.Popen(["python3","webserver/server.py"])
 # Render
 env.render(args.cam_mode)
 
-
-# Gui Stuff
+# Handle Key Presses 
 @env.unwrapped.window.event
 def on_key_press(symbol, modifiers):
-    """
-    This handler processes keyboard commands that
-    control the simulation
-    """
-
-    if symbol == key.BACKSPACE or symbol == key.SLASH:
-        env.reset()
-        env.render()
-    elif symbol == key.PAGEUP:
-        env.unwrapped.cam_angle[0] = 0
-    elif symbol == key.ESCAPE:
-        env.close()
-        sys.exit(0)
+    event.on_key_press(symbol, modifiers, env)
 
 @env.unwrapped.window.event
 def on_mouse_press(x, y, button, modifiers):
-    """
-    This handler processes keyboard commands that
-    control the simulation
-    """
-    webbrowser.open('http://127.0.0.1:5000', new=1)
-    pyglet.clock.unschedule(update)
-    pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
-
-
-    # Take a screenshot
-    # UNCOMMENT IF NEEDED - Skimage dependency
-    # elif symbol == key.RETURN:
-    #     print('saving screenshot')
-    #     img = env.render('rgb_array')
-    #     save_img('screenshot.png', img)
-
-
+    event.on_mouse_press(x, y, button, modifiers, update, pause)
+    
 # Register a keyboard handler
 key_handler = key.KeyStateHandler()
 mouse_handler = mouse.MouseStateHandler()
@@ -123,25 +82,34 @@ env.unwrapped.window.push_handlers(key_handler)
 
 # Webserver handler
 fifo_in = 'webserver/webserver.out'
+fifo_out = 'webserver/webserver.in'
 inp = open(fifo_in, 'rb', os.O_NONBLOCK)
+out = open(fifo_out, 'wb', os.O_NONBLOCK)
 
-# Pause on space, can enter gui here and change things maybe????
+# Feed agent information to webserver
+init_server(out, env)
+
+# Pause on space, keep trying to get info from webserver, render and update accordingly
 def pause(dt):
     global inp
-    gui_input = unserialize(inp)
-    gui_input.handle_input(env)
+    unpause = False
+    # While still getting input
+    while not unpause:
+        gui_input = unserialize(inp)
+        # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
+        if gui_input:
+            unpause = gui_input.handle_input(env)
 
-    # Render any changes
+        # Render any changes from last thing serialized
+        env.render(env.cam_mode)
+
+    # Reset with a webserver reset
+    env.reset(webserver_reset=True)
     env.render(env.cam_mode)
 
-
-
-    if key_handler[key.SPACE]:
-        print("Unpausing")
-        pyglet.clock.unschedule(pause)
-        pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
-
-          
+    # Unschedule pause and resume rendering
+    pyglet.clock.unschedule(pause)
+    pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
 
 def update(dt):
     """
@@ -156,12 +124,6 @@ def update(dt):
     speed1 = 0.2
     turn = 'Left'
 
-    # Pause on Space
-    if key_handler[key.SPACE]:
-        print("Pausing")
-        pyglet.clock.unschedule(update)
-        pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
-            
     # If we are not handling a sequence already, try for agent 0
     if not agent0.actions:
         if agent0.intersection_detected(env):
@@ -186,9 +148,6 @@ def update(dt):
     env.render(env.cam_mode)
 
 if __name__ == '__main__':
-    # Test the web server
-    print(__name__)
-
 
     # Enter main event loop
     pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))

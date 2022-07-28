@@ -37,5 +37,12 @@ agents:
     start_pose: [[0.225, 0, .4], 0.15]
     color: "yellow" 
     #start_pose: [[0.225, 0, 0.4], 0]
+  agent2:
+    # East
+    start_tile: [0,3]
+    start_pose: [[0.225, 0, .4], 0.15]
+    color: "green" 
+    #start_pose: [[0.225, 0, 0.4], 0]
+
 
 

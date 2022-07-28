@@ -48,6 +48,7 @@ class Agent():
         self.start_tile = start_tile
         self.start_pose = start_pose
         self.state = None
+        self.color = color
         self.mesh = get_duckiebot_mesh(color)
         self.nearby_objects = []          # Keep track of nearby objects and agents
         self.nearby_agents = []
@@ -57,7 +58,7 @@ class Agent():
         self.max_iterations = 1000
         height = 0.05
         self.lights =   {
-                        "front_left": [0.1, -0.05, height, False],
+                        "front_left": [0.1, -0.05, height, True],
                         "front_right": [0.1, +0.05, height, False],
                         "center": [0.1, +0.0, height, False],
                         "back_left": [-0.1, -0.05, height, False],
@@ -75,6 +76,24 @@ class Agent():
     # Turn off Specific Light
     def turn_off_light(self, light):
         self.lights[light][3] = False
+
+    # Set light
+    def set_light(self, light, on):
+        if on:
+            self.lights[light][3] = True
+        else:
+            self.lights[light][3] = False
+
+    # Lights to Dict
+    def lights_to_dictlist(self):
+        light_list = []
+        for light in self.lights.items():
+            print("DO WE SE A TRUE")
+            print(self.lights[light[0]][3])
+            light_list.append({"light": light[0], "on":self.lights[light[0]][3]})
+        return light_list
+
+
 
     # Stop the vehicle
     def stop_vehicle(self, env, choice, wrong_light: bool=False, stop_point: int=30,forward_step: float=0.44):
@@ -171,10 +190,6 @@ class Agent():
         actions.append([forward_step, steering])
         return actions
 
-    # TO DO LATER TO SEPARATE NP Python STUFF FROM C CALLBACKS
-    def get_curve_point(self):
-        print("NOTHING")
-    
 
     # If not perfectly straight when stopping, get a factor by which we must increase
     # the amount of turning we do
@@ -328,7 +343,6 @@ class Agent():
         # Get state information
         tile_x, tile_z = self.get_curr_tile(env)['coords']
         direction = self.get_direction(env)
-        print(self.agent_id, direction, self.cur_pos, tile_x, tile_z)
 
         # Based on direction, check if the next tile is an intersection
         if direction == 'N' and intersection_tile(env, tile_x, tile_z-1):
