@@ -73,6 +73,9 @@ from .utils import get_subdir_path
 
 from .agents import *
 
+from PIL import Image
+import cv2
+
 DIM = 0.5
 
 TileKind = NewType("TileKind", str)
@@ -572,7 +575,7 @@ class Simulator(gym.Env):
             agent.last_action = np.array([0.0, 0.0]) 
             agent.wheelVels = np.array([0.0, 0.0]) 
             agent.state = None
-            agent.lights["front_left"][3] = False
+            agent.lights["front_left"][3] = True
             agent.lights["front_right"][3] = False
             agent.lights["back_left"][3] = False
             agent.lights["back_right"][3] = False
@@ -1742,6 +1745,31 @@ class Simulator(gym.Env):
             done_code = "in-progress"
         return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
 
+    def map_jpg(self, segment: bool = False):
+        img = self._render_img(
+            self.camera_width,
+            self.camera_height,
+            self.multi_fbo,
+            self.final_fbo,
+            self.img_array,
+            top_down=True,
+            segment=segment,
+            only_map=True,
+        )
+
+        print(f"Current working dir: {os.getcwd()}")
+
+        img = Image.fromarray(img, 'RGB')
+        nonwhite_positions = [(x,y) for x in range(img.size[0]) for y in range(img.size[1]) if img.getdata()[x+y*img.size[0]] != (255,0,255)]
+        rect = (min([x for x,y in nonwhite_positions]), min([y for x,y in nonwhite_positions]), max([x for x,y in nonwhite_positions]), max([y for x,y in nonwhite_positions]))
+        image_path = "webserver/images"
+        image = img.crop(rect).save(f"{image_path}/empty_map.jpg")
+
+        return image
+
+
+
+    
     def _render_img(
         self,
         width: int,
@@ -1751,6 +1779,7 @@ class Simulator(gym.Env):
         img_array,
         top_down: bool = True,
         segment: bool = False,
+        only_map: bool = False,
     ) -> np.ndarray:
         """
         Render an image of the environment into a frame buffer
@@ -1841,7 +1870,10 @@ class Simulator(gym.Env):
         # Draw the ground quad
         gl.glDisable(gl.GL_TEXTURE_2D)
         # background is magenta when segmenting for easy isolation of main map image
-        gl.glColor3f(*self.ground_color if not segment else [255, 0, 255])  # XXX
+        if not only_map:
+            gl.glColor3f(*self.ground_color if not segment else [255, 0, 255])  # XXX
+        else:
+            gl.glColor3f(255, 0, 255)  # XXX
         gl.glPushMatrix()
         gl.glScalef(50, 0.01, 50)
         self.ground_vlist.draw(gl.GL_QUADS)
@@ -1942,81 +1974,82 @@ class Simulator(gym.Env):
                         continue
                     bezier_draw(pt, n=20)
 
-        # For each object
-        for obj in self.objects:
-            obj.render(draw_bbox=self.draw_bbox, segment=segment, enable_leds=self.enable_leds)
+        if not only_map:
+            # For each object
+            for obj in self.objects:
+                obj.render(draw_bbox=self.draw_bbox, segment=segment, enable_leds=self.enable_leds)
 
-        # Draw the agent's own bounding box
-        for agent in self.agents:
-            pos = agent.cur_pos
-            angle = agent.cur_angle
-     
-            if self.draw_bbox:
-                corners = get_agent_corners(pos, angle, bbox_offset_w=0, bbox_offset_l=0)
-                gl.glColor3f(0, .9, .9)
-                gl.glBegin(gl.GL_LINE_LOOP)
-                gl.glVertex3f(corners[0, 0], .01, corners[0, 1])
-                gl.glVertex3f(corners[1, 0], .01, corners[1, 1])
-                gl.glVertex3f(corners[2, 0], .01, corners[2, 1])
-                gl.glVertex3f(corners[3, 0], .01, corners[3, 1])
-                gl.glEnd()
-            
-            gl.glPushMatrix()
-            gl.glTranslatef(*agent.cur_pos)
-            gl.glScalef(1, 1, 1)
-            gl.glRotatef(agent.cur_angle * 180 / np.pi, 0, 1, 0)
-            agent.mesh.render()
-
-
-            # Handle lights
-            if self.enable_leds:
-                # attrs =
-                # gl.glPushAttrib(gl.GL_ALL_ATTRIB_BITS)
-                s_main = 0.01  # 1 cm sphere
-                # LIGHT_MULT_MAIN = 10
-                s_halo = 0.04
+            # Draw the agent's own bounding box
+            for agent in self.agents:
+                pos = agent.cur_pos
+                angle = agent.cur_angle
+         
+                if self.draw_bbox:
+                    corners = get_agent_corners(pos, angle, bbox_offset_w=0, bbox_offset_l=0)
+                    gl.glColor3f(0, .9, .9)
+                    gl.glBegin(gl.GL_LINE_LOOP)
+                    gl.glVertex3f(corners[0, 0], .01, corners[0, 1])
+                    gl.glVertex3f(corners[1, 0], .01, corners[1, 1])
+                    gl.glVertex3f(corners[2, 0], .01, corners[2, 1])
+                    gl.glVertex3f(corners[3, 0], .01, corners[3, 1])
+                    gl.glEnd()
                 
-                colors = {
-                    "center": (1, 1, 0),
-                    "front_left": (1, 1, 0),
-                    "front_right": (1, 1, 0),
-                    "back_left": (1, 1, 0),
-                    "back_right": (1, 1, 0),
-                }
-                for light_name, (px, py, pz, led_on) in agent.lights.items():
-                    if led_on:
-                        color = np.clip(colors[light_name], 0, +1)
-                        color_intensity = float(np.mean(color))
-                        gl.glPushMatrix()
+                gl.glPushMatrix()
+                gl.glTranslatef(*agent.cur_pos)
+                gl.glScalef(1, 1, 1)
+                gl.glRotatef(agent.cur_angle * 180 / np.pi, 0, 1, 0)
+                agent.mesh.render()
 
-                        gl.glTranslatef(px, pz, py)
 
-                        gl.glEnable(gl.GL_BLEND)
-                        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
+                # Handle lights
+                if self.enable_leds:
+                    # attrs =
+                    # gl.glPushAttrib(gl.GL_ALL_ATTRIB_BITS)
+                    s_main = 0.01  # 1 cm sphere
+                    # LIGHT_MULT_MAIN = 10
+                    s_halo = 0.04
+                    
+                    colors = {
+                        "center": (1, 1, 0),
+                        "front_left": (1, 1, 0),
+                        "front_right": (1, 1, 0),
+                        "back_left": (1, 1, 0),
+                        "back_right": (1, 1, 0),
+                    }
+                    for light_name, (px, py, pz, led_on) in agent.lights.items():
+                        if led_on:
+                            color = np.clip(colors[light_name], 0, +1)
+                            color_intensity = float(np.mean(color))
+                            gl.glPushMatrix()
 
-                        sphere = gluNewQuadric()
+                            gl.glTranslatef(px, pz, py)
 
-                        gl.glColor4f(color[0], color[1], color[2], 1.0)
-                        gluSphere(sphere, s_main, 10, 10)
+                            gl.glEnable(gl.GL_BLEND)
+                            gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
 
-                        gl.glColor4f(color[0], color[1], color[2], 0.2)
+                            sphere = gluNewQuadric()
 
-                        s_halo_effective = color_intensity * s_halo
+                            gl.glColor4f(color[0], color[1], color[2], 1.0)
+                            gluSphere(sphere, s_main, 10, 10)
 
-                        gluSphere(sphere, s_halo_effective, 10, 10)
+                            gl.glColor4f(color[0], color[1], color[2], 0.2)
 
-                        gl.glColor4f(1.0, 1.0, 1.0, 1.0)
-                        gl.glBlendFunc(gl.GL_ONE, gl.GL_ZERO)
-                        gl.glDisable(gl.GL_BLEND)
+                            s_halo_effective = color_intensity * s_halo
 
-                        gl.glPopMatrix()      
-            
-                gl.glPopMatrix()
+                            gluSphere(sphere, s_halo_effective, 10, 10)
 
-            draw_xyz_axes = False
-            #draw_xyz_axes = True
-            if draw_xyz_axes:
-                draw_axes()
+                            gl.glColor4f(1.0, 1.0, 1.0, 1.0)
+                            gl.glBlendFunc(gl.GL_ONE, gl.GL_ZERO)
+                            gl.glDisable(gl.GL_BLEND)
+
+                            gl.glPopMatrix()      
+                
+                    gl.glPopMatrix()
+
+                draw_xyz_axes = False
+                #draw_xyz_axes = True
+                if draw_xyz_axes:
+                    draw_axes()
 
         
                                 # Resolve the multisampled frame buffer into the final frame buffer
@@ -2129,11 +2162,6 @@ class Simulator(gym.Env):
         )
         img_data.blit(0, 0, 0, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
 
-        # CODE FOR GETTING PIXEL POSITION
-        #self.pixel_to_pos(568, 321, 0)
-        #self.pixel_to_pos(374, 83, 1)
-        #self.pos_to_pixel(0, self.agents[0].cur_pos)
-        #self.pos_to_pixel(1, self.agents[1].cur_pos)
        
         # Display position/state information
         if mode != "free_cam":

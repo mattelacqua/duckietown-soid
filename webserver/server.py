@@ -1,5 +1,5 @@
 # Flask imports
-from flask import Flask, render_template
+from flask import Flask, render_template, send_file
 from flask_socketio import SocketIO
 import os
 from webserver.gui_utils import guiAgent, guiEnv, guiDone, read_init, serialize
@@ -9,10 +9,15 @@ log.setLevel(logging.ERROR)
 
 import json
 
+# Fix payload issue
+from engineio.payload import Payload
+Payload.max_decode_packets = 50
 
 # Start up Flask web env
 template_dir = os.path.abspath('webserver/old_html/')
 app = Flask(__name__, template_folder=template_dir)
+
+
 socketio = SocketIO(app,cors_allowed_origins="*")
 fifo_out = 'webserver/webserver.out'
 fifo_in = 'webserver/webserver.in'
@@ -31,6 +36,15 @@ print(agent_list)
 def agents():
     al_string = json.dumps(agent_list)
     return al_string
+
+@app.route("/envInfo")
+def envInfo():
+    envInfo_string = json.dumps(env_info)
+    return envInfo_string
+
+@app.route("/mapImage")
+def mapImage():
+    return send_file("images/empty_map.jpg", mimetype='image/jpeg')
 
 # Home page for website, has all information we want on it
 @app.route("/")
@@ -52,8 +66,10 @@ def agent_angle(data):
 def agent_pos(data):
     global out
     a_id = str(data['id'])
-    pos = list(data['value'])
-    agent_change = guiAgent(change="pos", agent_id=a_id, cur_pos=[pos[0], 0, pos[1]])
+    x = data['x']
+    z = data['z']
+    agent_change = guiAgent(change="pos", agent_id=a_id, cur_pos=[x, 0, z])
+    print("AGENT CHange {0} {1} {2}".format(a_id, x, z))
     serialize(agent_change, out)
 
 # On socket update change agent angle position (from button press)
@@ -65,6 +81,14 @@ def increment_pos(data):
     agent_change = guiAgent(change="inc_pos", agent_id=a_id, inc_direction=direction)
     serialize(agent_change, out)
 
+@socketio.on("lights")
+def lights(data):
+    global out
+    a_id = str(data['id'])
+    lights = data['lights']
+    agent_change = guiAgent(change="lights", agent_id=a_id, lights=lights)
+    serialize(agent_change, out)
+ 
 # On socket update resume simulation from button press
 @socketio.on("resume_simulation")
 def resume_simulation():

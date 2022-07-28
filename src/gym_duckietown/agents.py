@@ -58,7 +58,7 @@ class Agent():
         self.max_iterations = 1000
         height = 0.05
         self.lights =   {
-                        "front_left": [0.1, -0.05, height, False],
+                        "front_left": [0.1, -0.05, height, True],
                         "front_right": [0.1, +0.05, height, False],
                         "center": [0.1, +0.0, height, False],
                         "back_left": [-0.1, -0.05, height, False],
@@ -76,6 +76,24 @@ class Agent():
     # Turn off Specific Light
     def turn_off_light(self, light):
         self.lights[light][3] = False
+
+    # Set light
+    def set_light(self, light, on):
+        if on:
+            self.lights[light][3] = True
+        else:
+            self.lights[light][3] = False
+
+    # Lights to Dict
+    def lights_to_dictlist(self):
+        light_list = []
+        for light in self.lights.items():
+            print("DO WE SE A TRUE")
+            print(self.lights[light[0]][3])
+            light_list.append({"light": light[0], "on":self.lights[light[0]][3]})
+        return light_list
+
+
 
     # Stop the vehicle
     def stop_vehicle(self, env, choice, wrong_light: bool=False, stop_point: int=30,forward_step: float=0.44):

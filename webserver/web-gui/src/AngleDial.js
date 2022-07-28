@@ -19,6 +19,7 @@ class AngleDial extends React.Component {
     this.state = {
       value: props.cur_angle, // Value of the the angle is
       id: props.agent_id,     // Which agent
+      color: props.agent_color,     // Which agent
     };
   }
 
@@ -38,11 +39,13 @@ class AngleDial extends React.Component {
   // Update the dial state on new changes
   handleChange = (newValue) => {
     this.setState({value: newValue});
+    this.props.angle_pass(newValue);
   };
   
 
   // Render the Dial component from the react-dial-knob package
   render() {
+    const color = this.state.color
     return (<Basic
           diameter={200}
           min={0}
@@ -51,7 +54,7 @@ class AngleDial extends React.Component {
           value={this.state.value} // Set its value to the state value
           theme={{
               defaultColor: '#333',
-              activeColor: '#3f3'
+              activeColor: color,
           }}
           style={{
             position: 'relative',
