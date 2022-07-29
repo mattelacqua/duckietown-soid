@@ -22,18 +22,22 @@ class guiEnv():
         self.tile_size = tile_size
 
 # Check if Scene is all set
-class guiDone():
-    done: bool
+class guiState():
+    state: str
 
     def __init__(self,
-        done = False):
+        state = "running"):
 
-        self.done = done
+        self.state = state
 
     # If done return this so that in pause of our function we know what to do
     def handle_input(self, env):
-        if self.done:
-            return True
+        if self.state == "run":
+            return "run"
+        elif self.state == "pause":
+            return "pause"
+        elif self.state == "quit":
+            return "quit"
 
 # Class for any agent changes
 class guiAgent():
@@ -95,7 +99,7 @@ class guiAgent():
                 agent.actions = []
 
         # Return false because not done command
-        return False
+        return "pause"
 
 
 # Serialize by pickling to fifo

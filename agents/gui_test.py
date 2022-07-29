@@ -21,6 +21,7 @@ import gym_duckietown.agents
 # Web gui stuff
 import os
 import subprocess
+import multiprocessing
 
 # Logging
 from gym_duckietown import logger 
@@ -61,7 +62,7 @@ verbose = args.verbose
 env.reset()
 
 # Start up the webserver
-subprocess.Popen(["python3","webserver/server.py"])
+webserver = subprocess.Popen(["python3","webserver/server.py"])
 
 # Render
 env.render(args.cam_mode)
@@ -92,14 +93,21 @@ init_server(out, env)
 # Pause on space, keep trying to get info from webserver, render and update accordingly
 def pause(dt):
     global inp
-    unpause = False
+    state = "pause"
     # While still getting input
-    while not unpause:
+    while state == "pause":
         gui_input = unserialize(inp)
         # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
         if gui_input:
-            unpause = gui_input.handle_input(env)
+            state = gui_input.handle_input(env)
+            if state == "quit":
+                print("Killing Webserver")
+                webserver.kill()
+                print("Killing Simulator")
+                exit()
 
+            elif state == "run":
+                print("Resuming Simulationr")
         # Render any changes from last thing serialized
         env.render(env.cam_mode)
 
@@ -116,6 +124,23 @@ def update(dt):
     This function is called at every frame to handle
     movement/stepping and redrawing
     """
+
+    # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
+    """gui_input = multiprocessing.Process(target=unserialize, args=(inp))
+    gui_input.start()
+    gui_input.join(timeout=1)
+    gui_input.terminate()
+
+    if gui_input:
+        state = gui_input.handle_input(env)
+        if state == "quit":
+            print("Killing Webserver")
+            webserver.kill()
+            print("Killing Simulator")
+            exit()"""
+
+
+
     # Get the agents
     agent0 = env.agents[0] 
     agent1 = env.agents[1] 

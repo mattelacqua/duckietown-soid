@@ -15,6 +15,10 @@ import AgentMap from './AgentMap.js'
 
 // Import RenderedScene
 import RenderedScene from './RenderedScene.js'
+
+// Import RenderedScene
+import Buttons from './Buttons.js'
+
 // Our top level class (gets rendered in index.html)
 class App extends React.Component{
 
@@ -30,8 +34,10 @@ class App extends React.Component{
             EnvLoaded: false,
             rendred_imgLoaded: false,
             rendered_img: new Image(),
+            sim_state: "run",
         };
-        this.pos_pass = this.pos_pass.bind(this); // Bind angle pass to this component
+        this.pos_pass = this.pos_pass.bind(this); // Bind pos pass to this component
+        this.sim_state_pass = this.sim_state_pass.bind(this); // Bind pos pass to this component
     }
 
     // When we renderour App, fetch the agent information
@@ -75,6 +81,11 @@ class App extends React.Component{
       console.log(this.state.agents);
     }
 
+    sim_state_pass(state) {
+      this.setState({sim_state: state});
+      console.log("Sim State:", this.state.state);
+    }
+  
     // Render Our App Component ( calls to Agent subchildren)
     render() {
         
@@ -97,11 +108,17 @@ class App extends React.Component{
         <div className = "App"> {/* Using app.css stylesheet */}
             {/* Header text */}
             <h1> SCENE </h1> 
+
+            <Buttons sim_state={this.state.sim_state} 
+                     sim_state_pass={this.sim_state_pass}/>
+
             <RenderedScene />
+
             <h1> Fetch data from an api in reacts </h1> 
               <Environment  max_NS={env_info.max_NS} 
                             max_EW={env_info.max_EW} 
                             tile_size={env_info.tile_size}/>
+                            sim_state={this.state.sim_state}/>
               <AgentMap agents={agents} 
                         max_NS={env_info.max_NS} 
                         max_EW={env_info.max_EW} 

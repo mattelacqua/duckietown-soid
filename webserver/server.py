@@ -2,7 +2,7 @@
 from flask import Flask, render_template, send_file
 from flask_socketio import SocketIO
 import os
-from webserver.gui_utils import guiAgent, guiEnv, guiDone, read_init, serialize
+from webserver.gui_utils import guiAgent, guiEnv, guiState, read_init, serialize
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -94,10 +94,11 @@ def lights(data):
     serialize(agent_change, out)
  
 # On socket update resume simulation from button press
-@socketio.on("resume_simulation")
-def resume_simulation():
+@socketio.on("sim_state")
+def sim_state(data):
     global out
-    to_send = guiDone(done=True)
+    state = str(data['state'])
+    to_send = guiState(state=state)
     serialize(to_send, out)
 
 
