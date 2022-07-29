@@ -97,7 +97,7 @@ class App extends React.Component{
         <div className = "App"> {/* Using app.css stylesheet */}
             {/* Header text */}
             <h1> SCENE </h1> 
-          {/*<RenderedScene />*/}
+            <RenderedScene />
             <h1> Fetch data from an api in reacts </h1> 
               <Environment  max_NS={env_info.max_NS} 
                             max_EW={env_info.max_EW} 
