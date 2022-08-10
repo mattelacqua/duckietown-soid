@@ -20,12 +20,13 @@ import gym_duckietown.agents
 
 # Web gui stuff
 import os
+import signal
 import subprocess
 import multiprocessing
 
 # Logging
 from gym_duckietown import logger 
-from webserver.gui_utils import unserialize, init_server
+from webserver.gui_utils import unserialize, init_server, start_webserver
 
 # Utils / Event Wrappers
 import gym_duckietown.utils as utils
@@ -61,8 +62,6 @@ verbose = args.verbose
 # Start up env
 env.reset()
 
-# Start up the webserver
-webserver = subprocess.Popen(["python3","webserver/server.py"])
 
 # Render
 env.render(args.cam_mode)
@@ -84,8 +83,15 @@ env.unwrapped.window.push_handlers(key_handler)
 # Webserver handler
 fifo_in = 'webserver/webserver.out'
 fifo_out = 'webserver/webserver.in'
-inp = open(fifo_in, 'rb', os.O_NONBLOCK)
 out = open(fifo_out, 'wb', os.O_NONBLOCK)
+
+# Start up the webserver before reading so that it clears write file
+start_webserver()
+
+
+
+inp = open(fifo_in, 'wb', os.O_NONBLOCK).close()
+inp = open(fifo_in, 'rb', os.O_NONBLOCK)
 
 # Feed agent information to webserver
 init_server(out, env)
@@ -94,6 +100,12 @@ init_server(out, env)
 def pause(dt):
     global inp
     state = "pause"
+
+    # Feed agent information to webserver
+    print("Init Server")
+    init_server(out, env)
+    print("Updated for pause")
+
     # While still getting input
     while state == "pause":
         gui_input = unserialize(inp)
@@ -105,7 +117,6 @@ def pause(dt):
                 webserver.kill()
                 print("Killing Simulator")
                 exit()
-
             elif state == "run":
                 print("Resuming Simulationr")
         # Render any changes from last thing serialized
@@ -126,10 +137,8 @@ def update(dt):
     """
 
     # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
-    """gui_input = multiprocessing.Process(target=unserialize, args=(inp))
-    gui_input.start()
-    gui_input.join(timeout=1)
-    gui_input.terminate()
+    gui_input = unserialize(inp)
+    print("Update sim")
 
     if gui_input:
         state = gui_input.handle_input(env)
@@ -137,8 +146,12 @@ def update(dt):
             print("Killing Webserver")
             webserver.kill()
             print("Killing Simulator")
-            exit()"""
-
+            exit()
+        elif state == "pause":
+            # Unschedule pause and resume rendering
+            print("Pausing the Simulator")
+            pyglet.clock.unschedule(update)
+            pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
 
 
     # Get the agents
@@ -171,6 +184,7 @@ def update(dt):
        
     # render the cam
     env.render(env.cam_mode)
+
 
 if __name__ == '__main__':
 

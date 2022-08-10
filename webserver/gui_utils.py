@@ -4,6 +4,9 @@ import numpy as np
 import math
 import pickle
 import io
+import subprocess
+import os
+import signal
 
 # Send information through guiEnv
 class guiEnv():
@@ -32,12 +35,7 @@ class guiState():
 
     # If done return this so that in pause of our function we know what to do
     def handle_input(self, env):
-        if self.state == "run":
-            return "run"
-        elif self.state == "pause":
-            return "pause"
-        elif self.state == "quit":
-            return "quit"
+        return self.state 
 
 # Class for any agent changes
 class guiAgent():
@@ -48,6 +46,8 @@ class guiAgent():
     cur_angle: float
     inc_direction: str
     lights:  List
+    state: str
+    
     
     def __init__(self,
         change = "",
@@ -56,7 +56,8 @@ class guiAgent():
         cur_angle = -1.0,
         color = "",
         inc_direction = "",
-        lights = []):
+        lights = [],
+        state = ""):
 
         self.change = change
         self.agent_id = agent_id
@@ -65,6 +66,7 @@ class guiAgent():
         self.cur_angle = cur_angle
         self.inc_direction = inc_direction
         self.lights = lights
+        self.state = state
 
 
     # Handle agent input. Based on the kind of change, do xyz
@@ -74,6 +76,8 @@ class guiAgent():
         cur_angle = math.radians(self.cur_angle)
         change = self.change
         lights = self.lights
+        color = self.color
+        state = self.state
 
         for agent in env.agents:
             if agent.agent_id == agent_id:
@@ -99,7 +103,7 @@ class guiAgent():
                 agent.actions = []
 
         # Return false because not done command
-        return "pause"
+        return state 
 
 
 # Serialize by pickling to fifo
@@ -112,6 +116,7 @@ def serialize(obj, fifo):
 def unserialize(fifo):
     while True:
         try:
+            fifo.flush()
             o = pickle.load(fifo)
         except EOFError:
             break
@@ -152,33 +157,56 @@ def init_server(fifo, env):
 def read_init(fifo):
     agent_list =[] 
     env_info = {}
+    
     inputs = unserialize(fifo)
 
     # for each input from init server
     id_no = 0
-    for inp in inputs:
-        # if agent add relevant info for webserver to have
-        if isinstance(inp, guiAgent):
-            gui_agent = inp
-            agent_list.append({
-                                "id" : id_no,
-                                "agent_id" : gui_agent.agent_id,
-                                "cur_pos" : gui_agent.cur_pos,
-                                "cur_angle" : gui_agent.cur_angle,
-                                "color" : gui_agent.color,
-                                "lights" : gui_agent.lights
-                                })
-            id_no += 1
+    if inputs:
+        for inp in inputs:
+            # if agent add relevant info for webserver to have
+            if isinstance(inp, guiAgent):
+                gui_agent = inp
+                agent_list.append({
+                                    "id" : id_no,
+                                    "agent_id" : gui_agent.agent_id,
+                                    "cur_pos" : gui_agent.cur_pos,
+                                    "cur_angle" : gui_agent.cur_angle,
+                                    "color" : gui_agent.color,
+                                    "lights" : gui_agent.lights
+                                    })
+                id_no += 1
 
-        # if env_info add relevant info for webserver to have
-        if isinstance(inp, guiEnv):
-            gui_env = inp
-            env_info["max_NS"] = gui_env.max_NS
-            env_info["max_EW"] = gui_env.max_EW
-            env_info["tile_size"] = gui_env.tile_size
+            # if env_info add relevant info for webserver to have
+            if isinstance(inp, guiEnv):
+                gui_env = inp
+                env_info["max_NS"] = gui_env.max_NS
+                env_info["max_EW"] = gui_env.max_EW
+                env_info["tile_size"] = gui_env.tile_size
+    else:
+        return None, None
 
-    return agent_list, env_info 
+    if agent_list and env_info:
+        return agent_list, env_info
+    elif agent_list:
+        return agent_list, None
+    elif env_info:
+        return None, env_info
 
+# Kill old webserver if it exists, otherwise start new subprocess.
+def start_webserver():
+    cmd = ['pgrep -f .*python3.*webserver/server.py']
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE)
+    my_pid, err = process.communicate()
+
+    if len(my_pid.splitlines()) >0:
+       print("Old webserver running. Killing old and starting up new")
+       os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
+    else:
+      print("Old webserver not Running, Starting up new")
+
+    webserver = subprocess.Popen(["python3","webserver/server.py"])
 
 # Get html color
 def html_color(color: str):

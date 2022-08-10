@@ -23,10 +23,15 @@ class Buttons extends React.Component {
       sim_state: state,
     });
     this.props.sim_state_pass(this.state.sim_state);
+    if (state === 'pause') {
+        socket.emit('update_sim_info');
+        setTimeout(this.props.update_from_sim(), 1000);
+    }
     socket.emit('sim_state',
                 {
                     'state':state,
                 });
+
   }
   
   // Render the information to screen

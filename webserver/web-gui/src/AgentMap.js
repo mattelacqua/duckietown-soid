@@ -54,7 +54,7 @@ class AgentMap extends React.Component {
           'x': value.x,
           'z': value.y,
       });
-      this.props.pos_pass("agent" + datasetIndex, value.x, value.y);
+      this.props.pos_pass(datasetIndex, value.x, value.y);
     }
 
   update_point_size(chart, size){
