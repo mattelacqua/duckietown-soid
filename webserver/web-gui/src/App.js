@@ -51,6 +51,7 @@ class App extends React.Component{
           .then((res) => res.json()) // Result becomes a json
           .then((json) => { // take the json and set the state vars with it
               let new_ref = json; // Set a new reference so that it will recognize change and update in children.
+              console.log("FETCHING AGENTS: ", new_ref);
               if (!_.isEqual(new_ref, this.state.agents)) {
                 console.log("NEW Agents INFO", new_ref);
                 this.setState({
@@ -87,7 +88,7 @@ class App extends React.Component{
     }
     // When we renderour App, fetch the agent information
     componentDidMount() {
-      this.interval = setInterval(() => this.update_from_sim(), 5000);
+      this.interval = setInterval(() => this.update_from_sim(), 1000);
     }
    
     sim_state_pass(state) {

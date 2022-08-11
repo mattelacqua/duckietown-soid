@@ -26,7 +26,8 @@ import multiprocessing
 
 # Logging
 from gym_duckietown import logger 
-from webserver.gui_utils import unserialize, init_server, start_webserver
+import webserver.gui_utils as gu 
+from threading import Thread
 
 # Utils / Event Wrappers
 import gym_duckietown.utils as utils
@@ -83,18 +84,21 @@ env.unwrapped.window.push_handlers(key_handler)
 # Webserver handler
 fifo_in = 'webserver/webserver.out'
 fifo_out = 'webserver/webserver.in'
-out = open(fifo_out, 'wb', os.O_NONBLOCK)
+
+# CLEAR OLD STUFF
+out = open(fifo_in, 'w', os.O_NONBLOCK).close()
+inp = open(fifo_out, 'w', os.O_NONBLOCK).close()
+
+# Write new stuff
+out = open(fifo_out, 'r+', os.O_NONBLOCK)
+inp = open(fifo_in, 'r+', os.O_NONBLOCK)
 
 # Start up the webserver before reading so that it clears write file
-start_webserver()
+webserver = gu.start_webserver()
 
-
-
-inp = open(fifo_in, 'wb', os.O_NONBLOCK).close()
-inp = open(fifo_in, 'rb', os.O_NONBLOCK)
 
 # Feed agent information to webserver
-init_server(out, env)
+gu.init_server(0, out, env)
 
 # Pause on space, keep trying to get info from webserver, render and update accordingly
 def pause(dt):
@@ -103,12 +107,12 @@ def pause(dt):
 
     # Feed agent information to webserver
     print("Init Server")
-    init_server(out, env)
+    pyglet.clock.schedule_once(gu.init_server, 0, out, env)
     print("Updated for pause")
 
     # While still getting input
     while state == "pause":
-        gui_input = unserialize(inp)
+        gui_input = gu.unserialize(inp)
         # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
         if gui_input:
             state = gui_input.handle_input(env)
@@ -137,7 +141,7 @@ def update(dt):
     """
 
     # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
-    gui_input = unserialize(inp)
+    gui_input = gu.unserialize(inp)
     print("Update sim")
 
     if gui_input:
@@ -185,6 +189,8 @@ def update(dt):
     # render the cam
     env.render(env.cam_mode)
 
+    if agent0.step_count % 50 == 0:
+        pyglet.clock.schedule_once(gu.init_server, 0, out, env)
 
 if __name__ == '__main__':
 

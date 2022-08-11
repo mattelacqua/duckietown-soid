@@ -21,13 +21,14 @@ app = Flask(__name__, template_folder=template_dir)
 socketio = SocketIO(app,cors_allowed_origins="*")
 fifo_out = 'webserver/webserver.out'
 fifo_in = 'webserver/webserver.in'
-out = open(fifo_out, "wb")
-inp = open(fifo_in, "rb")
+out = open(fifo_out, "r+")
+inp = open(fifo_in, "r+")
 
 # Read initial positions of agents and info about the environment
 agent_list, env_info = None, None
 while not agent_list or not env_info:
     agent_list, env_info = read_init(inp)
+
 
 # Global var to keep track of simulator state
 state = "run"
@@ -116,7 +117,6 @@ def sim_state(data):
     global out, state
     state = str(data['state'])
     to_send = guiState(state=state)
-    print("New State {0}".format(state))
     serialize(to_send, out)
 
 

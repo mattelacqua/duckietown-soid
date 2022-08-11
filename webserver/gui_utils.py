@@ -3,10 +3,12 @@ from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Un
 import numpy as np
 import math
 import pickle
+import json
 import io
 import subprocess
 import os
 import signal
+import time
 
 # Send information through guiEnv
 class guiEnv():
@@ -38,6 +40,7 @@ class guiState():
         return self.state 
 
 # Class for any agent changes
+# IF ADDING ANYTHING MAKE SU?RE TO ADD IT TO UNSERIALIZE TOO
 class guiAgent():
     change: str     # Should be 'angle' 'pos' 'inc_pos' 'inc_speed'
     agent_id: str 
@@ -108,23 +111,58 @@ class guiAgent():
 
 # Serialize by pickling to fifo
 def serialize(obj, fifo):
-    pickled =  pickle.dumps(obj)
-    fifo.write(pickled)
-    fifo.flush()
+    tic = time.perf_counter()
+    json_obj = json.dumps(obj, default=lambda o: o.__dict__)
+    #print("ORIGINAL JSON OBJ {0}".format(json_obj))
+    toc = time.perf_counter()
+    #print("DUMPS = {0}".format(toc - tic))
+    tic = time.perf_counter()
+    lines = fifo.readlines()
+    if lines:
+        lines[0] = json_obj + "\n"
+        fifo.writelines(lines)
+        toc = time.perf_counter()
+        #print("READ TO WRITE REPLACE = {0}".format(toc - tic))
+    else:
+        fifo.write(json_obj)
+        fifo.write("\n")
+        toc = time.perf_counter()
+        #print("READ TO WRITE EMPTY = {0}".format(toc - tic))
 
 # Unserialize from fifo
 def unserialize(fifo):
-    while True:
-        try:
-            fifo.flush()
-            o = pickle.load(fifo)
-        except EOFError:
-            break
-        else:
-            return o
+    lines = fifo.readlines()
+    if lines:
+        #print("JSON  is fed : {0}".format(lines))
+        loaded = json.loads(lines[0])
+        #print("LOADED IS : {0}".format(loaded))
+
+        # If its an agent, make an agent class for it
+        serialized = []
+        for cmd in loaded:
+            if 'agent_id' in cmd:
+                #print("WE HAVE THE AGENT KEY!!!!!")
+                serialized.append(guiAgent(agent_id=cmd["agent_id"], 
+                                change=cmd["change"],
+                                color = cmd["color"],
+                                cur_pos = cmd["cur_pos"],
+                                cur_angle = cmd["cur_angle"],
+                                inc_direction = cmd["inc_direction"],
+                                lights = cmd["lights"],
+                                state = cmd["state"]))
+            elif 'state' in cmd:
+                serialized.append(guiState(state=cmd["state"]))
+            elif 'tile_size' in cmd:
+                serialized.append(guiEnv(max_NS=cmd["max_NS"],
+                              max_EW=cmd["max_EW"],
+                              tile_size=cmd["tile_size"]))
+        return serialized
+    else:
+        return None
 
 # Init agents in server
-def init_server(fifo, env):
+def init_server(dt, fifo, env):
+    tic = time.perf_counter()
     env.map_jpg(background=True)
     env.map_jpg(background=False)
     agents = env.agents
@@ -150,6 +188,8 @@ def init_server(fifo, env):
 
     input_list.append(gui_env)
 
+    toc = time.perf_counter()
+    #print("GETTING DATA = {0}".format(toc - tic))
     # Serialize the input
     serialize(input_list, fifo)
     
@@ -164,6 +204,7 @@ def read_init(fifo):
     id_no = 0
     if inputs:
         for inp in inputs:
+            print("READING INIT INPUT: {0}".format(inp))
             # if agent add relevant info for webserver to have
             if isinstance(inp, guiAgent):
                 gui_agent = inp
@@ -175,6 +216,7 @@ def read_init(fifo):
                                     "color" : gui_agent.color,
                                     "lights" : gui_agent.lights
                                     })
+                print("\n\n\n\n\n\n\n\nHONEYPOT\n\n\n\n")
                 id_no += 1
 
             # if env_info add relevant info for webserver to have
@@ -192,6 +234,8 @@ def read_init(fifo):
         return agent_list, None
     elif env_info:
         return None, env_info
+    else:
+        return None, None
 
 # Kill old webserver if it exists, otherwise start new subprocess.
 def start_webserver():
@@ -207,6 +251,7 @@ def start_webserver():
       print("Old webserver not Running, Starting up new")
 
     webserver = subprocess.Popen(["python3","webserver/server.py"])
+    return webserver
 
 # Get html color
 def html_color(color: str):
