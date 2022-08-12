@@ -51,9 +51,7 @@ class App extends React.Component{
           .then((res) => res.json()) // Result becomes a json
           .then((json) => { // take the json and set the state vars with it
               let new_ref = json; // Set a new reference so that it will recognize change and update in children.
-              console.log("FETCHING AGENTS: ", new_ref);
               if (!_.isEqual(new_ref, this.state.agents)) {
-                console.log("NEW Agents INFO", new_ref);
                 this.setState({
                     agents: new_ref,
                     AgentsLoaded: true
@@ -67,7 +65,6 @@ class App extends React.Component{
           .then((json) => { // take the json and set the state vars with it
               let new_ref = json;
               if (!_.isEqual(new_ref, this.state.env_info)) {
-                console.log("NEW ENV INFO", new_ref);
                 this.setState({
                     env_info: new_ref,
                     EnvLoaded: true
@@ -88,7 +85,8 @@ class App extends React.Component{
     }
     // When we renderour App, fetch the agent information
     componentDidMount() {
-      this.interval = setInterval(() => this.update_from_sim(), 1000);
+      this.update_from_sim();
+      this.interval = setInterval(() => this.update_from_sim(), 2000);
     }
    
     sim_state_pass(state) {
@@ -108,16 +106,15 @@ class App extends React.Component{
     // Render Our App Component ( calls to Agent subchildren)
     render() {
         
-        
+        console.log("RE RENDERING APP");
         // If our data didn't load, lets write HTML that we are waiting 
-        if (!this.state.AgentsLoaded) return <div>
-            <h1> Please wait some time to load Agent information.... </h1> </div> ;
+        if ((!this.state.AgentsLoaded) ||
+           (!this.state.EnvLoaded) ||
+           (!this.state.rendered_imgLoaded))
+           return <div> 
+            <h1> Loading Agent & Environment State information ... </h1> 
+        </div> ;
 
-        if (!this.state.EnvLoaded) return <div>
-            <h1> Please wait some time to load Environmen information.... </h1> </div> ;
-   
-        if (!this.state.rendered_imgLoaded) return <div>
-            <h1> Please wait some time to load Rendered Scene .... </h1> </div> ;
         // When our data is loaded, we want to return the HTML/REACT Calls for the APP
         return (
 
@@ -137,11 +134,13 @@ class App extends React.Component{
                             max_EW={this.state.env_info.max_EW} 
                             tile_size={this.state.env_info.tile_size}/>
                             sim_state={this.state.sim_state}/>
-              <AgentMap agents={this.state.agents} 
+              {this.state.sim_state === 'pause' && 
+                <AgentMap agents={this.state.agents} 
                         max_NS={this.state.env_info.max_NS} 
                         max_EW={this.state.env_info.max_EW} 
                         tile_size={this.state.env_info.tile_size} 
                         pos_pass={this.pos_pass}/>
+              }
              <Agents agents={this.state.agents}/>
 
         </div>

@@ -112,53 +112,27 @@ class guiAgent():
 # Serialize by pickling to fifo
 def serialize(obj, fifo):
     tic = time.perf_counter()
-    json_obj = json.dumps(obj, default=lambda o: o.__dict__)
-    #print("ORIGINAL JSON OBJ {0}".format(json_obj))
+    pickled = pickle.dumps(obj)
+    fifo.write(pickled)
+    fifo.flush()
     toc = time.perf_counter()
-    #print("DUMPS = {0}".format(toc - tic))
-    tic = time.perf_counter()
-    lines = fifo.readlines()
-    if lines:
-        lines[0] = json_obj + "\n"
-        fifo.writelines(lines)
-        toc = time.perf_counter()
-        #print("READ TO WRITE REPLACE = {0}".format(toc - tic))
-    else:
-        fifo.write(json_obj)
-        fifo.write("\n")
-        toc = time.perf_counter()
-        #print("READ TO WRITE EMPTY = {0}".format(toc - tic))
+    print("Serialize Time = {0}".format(toc - tic))
 
 # Unserialize from fifo
 def unserialize(fifo):
-    lines = fifo.readlines()
-    if lines:
-        #print("JSON  is fed : {0}".format(lines))
-        loaded = json.loads(lines[0])
-        #print("LOADED IS : {0}".format(loaded))
-
-        # If its an agent, make an agent class for it
-        serialized = []
-        for cmd in loaded:
-            if 'agent_id' in cmd:
-                #print("WE HAVE THE AGENT KEY!!!!!")
-                serialized.append(guiAgent(agent_id=cmd["agent_id"], 
-                                change=cmd["change"],
-                                color = cmd["color"],
-                                cur_pos = cmd["cur_pos"],
-                                cur_angle = cmd["cur_angle"],
-                                inc_direction = cmd["inc_direction"],
-                                lights = cmd["lights"],
-                                state = cmd["state"]))
-            elif 'state' in cmd:
-                serialized.append(guiState(state=cmd["state"]))
-            elif 'tile_size' in cmd:
-                serialized.append(guiEnv(max_NS=cmd["max_NS"],
-                              max_EW=cmd["max_EW"],
-                              tile_size=cmd["tile_size"]))
-        return serialized
-    else:
-        return None
+    tic = time.perf_counter()
+    while True:
+        try:
+            o = pickle.load(fifo)
+        except EOFError:
+            break
+            toc = time.perf_counter()
+            print("EOF Unserialize = {0}".format(toc - tic))
+        else:
+            return o
+            toc = time.perf_counter()
+            print("Success Unserialize = {0}".format(toc - tic))
+    
 
 # Init agents in server
 def init_server(dt, fifo, env):
@@ -170,16 +144,12 @@ def init_server(dt, fifo, env):
 
     # Initialize the server with agent information
     if agents:
-        for agent in agents:
-            agent_lights = agent.lights_to_dictlist()
-            cur_pos_dict = {'x':round(agent.cur_pos[0], 3),
-                            'y':round(agent.cur_pos[2], 3)}
-            gui_agent = guiAgent(agent_id=agent.agent_id, 
-                                 cur_pos=cur_pos_dict,
-                                 cur_angle=round(math.degrees(agent.cur_angle)),
-                                 color=html_color(agent.color),
-                                 lights=agent_lights)
-            input_list.append(gui_agent)
+       input_list.extend(list(map(lambda agent: guiAgent(agent_id=agent.agent_id,
+                                                         cur_pos={'x':round(agent.cur_pos[0], 3),
+                                                                  'y':round(agent.cur_pos[2], 3)},
+                                                         cur_angle=round(math.degrees(agent.cur_angle)),
+                                                         color=html_color(agent.color),
+                                                         lights=agent.lights_to_dictlist()), agents)))
 
     # Include information about the environment
     gui_env = guiEnv(max_NS=env.grid_height*env.road_tile_size,
@@ -189,7 +159,7 @@ def init_server(dt, fifo, env):
     input_list.append(gui_env)
 
     toc = time.perf_counter()
-    #print("GETTING DATA = {0}".format(toc - tic))
+    print("Data Function Dict Traversal = {0}".format(toc - tic))
     # Serialize the input
     serialize(input_list, fifo)
     
@@ -204,7 +174,7 @@ def read_init(fifo):
     id_no = 0
     if inputs:
         for inp in inputs:
-            print("READING INIT INPUT: {0}".format(inp))
+            #print("READING INIT INPUT: {0}".format(inp))
             # if agent add relevant info for webserver to have
             if isinstance(inp, guiAgent):
                 gui_agent = inp
@@ -216,7 +186,7 @@ def read_init(fifo):
                                     "color" : gui_agent.color,
                                     "lights" : gui_agent.lights
                                     })
-                print("\n\n\n\n\n\n\n\nHONEYPOT\n\n\n\n")
+                #print("\n\n\n\n\n\n\n\nHONEYPOT\n\n\n\n")
                 id_no += 1
 
             # if env_info add relevant info for webserver to have

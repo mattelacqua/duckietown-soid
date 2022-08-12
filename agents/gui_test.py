@@ -86,12 +86,12 @@ fifo_in = 'webserver/webserver.out'
 fifo_out = 'webserver/webserver.in'
 
 # CLEAR OLD STUFF
-out = open(fifo_in, 'w', os.O_NONBLOCK).close()
-inp = open(fifo_out, 'w', os.O_NONBLOCK).close()
+clear = open(fifo_in, 'w', os.O_NONBLOCK).close()
+clear = open(fifo_out, 'w', os.O_NONBLOCK).close()
 
 # Write new stuff
-out = open(fifo_out, 'r+', os.O_NONBLOCK)
-inp = open(fifo_in, 'r+', os.O_NONBLOCK)
+out = open(fifo_out, 'wb', os.O_NONBLOCK)
+inp = open(fifo_in, 'rb', os.O_NONBLOCK)
 
 # Start up the webserver before reading so that it clears write file
 webserver = gu.start_webserver()
@@ -142,7 +142,6 @@ def update(dt):
 
     # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
     gui_input = gu.unserialize(inp)
-    print("Update sim")
 
     if gui_input:
         state = gui_input.handle_input(env)
@@ -189,13 +188,12 @@ def update(dt):
     # render the cam
     env.render(env.cam_mode)
 
-    if agent0.step_count % 50 == 0:
-        pyglet.clock.schedule_once(gu.init_server, 0, out, env)
 
 if __name__ == '__main__':
 
     # Enter main event loop
     pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
+    pyglet.clock.schedule_interval(gu.init_server, 2, out, env)
     pyglet.app.run()
 
     env.close()

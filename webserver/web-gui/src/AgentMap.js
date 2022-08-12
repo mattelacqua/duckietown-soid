@@ -12,6 +12,8 @@ import 'chartjs-plugin-dragdata';
 
 import io from 'socket.io-client';
 
+import _ from 'lodash';
+
 import './AgentMap.css'
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
@@ -24,8 +26,11 @@ class AgentMap extends React.Component {
   constructor(props) {
     super(props);
 
-    // Init Datasets
-    const datasets = [];
+    this.update_agent_pos = this.update_agent_pos.bind(this);
+    this.update_point_size = this.update_point_size.bind(this);
+    //
+    // Init State
+    let datasets = [];
     this.props.agents.forEach(function (agent) {
       datasets.push({
         label: agent.agent_id,
@@ -33,17 +38,14 @@ class AgentMap extends React.Component {
         backgroundColor: agent.color,
       });
     });
-
-    this.update_agent_pos = this.update_agent_pos.bind(this);
-    this.update_point_size = this.update_point_size.bind(this);
-    //
-    // Init State
+    let new_agents = props.agents;
     this.state = {
-      agents: this.props.agents,
-
+      agents: new_agents,
       data:{datasets},
+
       car_radius:0,
     }; // End state
+
   }
 
   update_agent_pos(e, datasetIndex, index, value) {
@@ -65,6 +67,24 @@ class AgentMap extends React.Component {
     this.setState({car_radius: car_radius});
   }
 
+  componentWillReceiveProps(nextProps) {
+
+    let datasets = [];
+    nextProps.agents.forEach(function (agent) {
+      datasets.push({
+        label: agent.agent_id,
+        data: [agent.cur_pos],
+        backgroundColor: agent.color,
+      });
+    });
+    this.setState({
+      agents: nextProps.agents,
+      data: datasets,
+    });
+  }
+
+
+  
 
   render() {
     // Load background image
@@ -80,14 +100,12 @@ class AgentMap extends React.Component {
           const y = top;
           ctx.drawImage(image, x, y, width, height);
         } else {
-          image.onload = () => chart.draw();
+          image.onload = () => {
+          chart.draw();
+          }
         }
       }
     };
-
-
-
-
     
     const options = {
           aspectRatio: 1,
@@ -154,11 +172,11 @@ class AgentMap extends React.Component {
 
      const style = {
        float: 'left',
-       width: '50%'
+       width: '50%',
      }
      return (
         <div classname = "AgentMap" style={style}>
-            <Line classname="agentMap" options={options} data={this.state.data} plugins={[map_background]} />;
+            <Line ref={this.chartReference} classname="agentMap" options={options} data={this.state.data} plugins={[map_background]} />;
         </div>
      )
 

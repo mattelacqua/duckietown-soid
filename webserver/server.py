@@ -21,8 +21,8 @@ app = Flask(__name__, template_folder=template_dir)
 socketio = SocketIO(app,cors_allowed_origins="*")
 fifo_out = 'webserver/webserver.out'
 fifo_in = 'webserver/webserver.in'
-out = open(fifo_out, "r+")
-inp = open(fifo_in, "r+")
+out = open(fifo_out, "wb")
+inp = open(fifo_in, "rb")
 
 # Read initial positions of agents and info about the environment
 agent_list, env_info = None, None
@@ -37,12 +37,14 @@ state = "run"
 @app.route("/agents")
 def agents():
     global agent_list, env_info
+    update_sim_info()
     al_string = json.dumps(agent_list)
     return al_string
 
 @app.route("/envInfo")
 def envInfo():
     global env_info
+    update_sim_info()
     envInfo_string = json.dumps(env_info)
     return envInfo_string
 
