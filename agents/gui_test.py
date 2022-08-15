@@ -98,7 +98,7 @@ webserver = gu.start_webserver()
 
 
 # Feed agent information to webserver
-gu.init_server(0, out, env)
+gu.init_server(0, out, env, get_map=True)
 
 # Pause on space, keep trying to get info from webserver, render and update accordingly
 def pause(dt):
@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
     # Enter main event loop
     pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
-    pyglet.clock.schedule_interval(gu.init_server, 2, out, env)
+    pyglet.clock.schedule_interval(gu.init_server, 1, out, env)
     pyglet.app.run()
 
     env.close()

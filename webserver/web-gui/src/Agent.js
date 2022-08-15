@@ -1,3 +1,5 @@
+// Import style
+import './Agent.css';
 // Import React
 import React from "react";
 
@@ -59,24 +61,24 @@ class Agent extends React.Component {
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)
   render() {
     return (
-              <div>
-                  {/* Render a Dial */}
+            <div>
+                {/* Render a Dial */}
                 <AngleDial  cur_angle={this.state.cur_angle} 
                             agent_id={this.state.agent_id} 
                             agent_color={this.state.color} 
                             angle_pass={this.angle_pass} />
 
                   {/* Render Agent Information */}
+     
+                <LightDrop  agent_id={this.state.agent_id} 
+                            lights={this.state.lights}
+                            lights_pass={this.lights_pass}/>
                 <AgentInfo    agent_id={this.state.agent_id}
                               cur_angle={this.state.cur_angle}
                               cur_pos= {this.state.cur_pos}
                               color={this.state.color} 
                               lights={this.state.lights}/>
-      
-                <LightDrop  agent_id={this.state.agent_id} 
-                            lights={this.state.lights}
-                            lights_pass={this.lights_pass}/>
-              </div>
+             </div>
           );
     }
 }

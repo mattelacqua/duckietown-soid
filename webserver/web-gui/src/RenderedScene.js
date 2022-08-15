@@ -13,6 +13,7 @@ class RenderedScene extends React.Component {
     };
 
     this.tick = this.tick.bind(this);
+    this.error_tick = this.error_tick.bind(this);
   }
 
   tick() {
@@ -21,9 +22,21 @@ class RenderedScene extends React.Component {
       key: Date.now(),
     }) 
   }
-  
+
+  error_tick() {
+    console.log("ERROR TICK")
+    this.setState({
+      src: "http://localhost:5000/renderedScene",
+      key: Date.now(),
+    });
+    this.setState({
+      src: "http://localhost:5000/renderedScene",
+      key: Date.now(),
+    });
+  }
+
   componentDidMount() {
-    this.interval = setInterval(() => this.tick(), 500);
+    this.interval = setInterval(() => this.tick(), 100);
   }
   
   // Render the information to screen
@@ -31,14 +44,26 @@ class RenderedScene extends React.Component {
     return (
       <div
         style={{
-              height: '600px',
-              width: '800px',
-              //backgroundImage: "url('http://localhost:5000/mapImageBackground')",
-              background: "white",
+              display: 'float',
+              float: 'left',
+              height: '450px',
+              width: '600px',
+              backgroundImage: "url('http://localhost:5000/mapImageBackground')",
+              backgroundSize: "cover",
+              background: "gray15",
             }}>
+
           {/* HTML FOR IMAGE */}
-          <img src={this.state.src + "?v=" + this.state.key} /> 
+          <img src={this.state.src + "?v=" + this.state.key} onError={this.error_tick} 
+                style={{
+                        display: 'float',
+                        float: 'left',
+                        height: '450px',
+                        width: '600px',
+                }} /> 
+          <span> Rendered Scene </span>
       </div>
+      
       );
     }
 }

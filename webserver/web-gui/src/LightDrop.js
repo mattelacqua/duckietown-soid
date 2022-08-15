@@ -70,14 +70,17 @@ class LightDrop extends React.Component {
   // Render the Dial component from the react-dial-knob package
   render() {
     return ( 
-      <Multiselect
-        options={this.state.lights} // Options to display in the dropdown
-        selectedValues={this.state.selectedValues} // Preselected value to persist in dropdown
-        onSelect={this.onSelect} // Function will trigger on select event
-        onRemove={this.onRemove} // Function will trigger on remove event
-        displayValue="light" // Property name to display in the dropdown options
-        avoidHighlightFirstOption // Property name to display in the dropdown options
-        />);
+      <div>
+        <Multiselect
+
+          options={this.state.lights} // Options to display in the dropdown
+          selectedValues={this.state.selectedValues} // Preselected value to persist in dropdown
+          onSelect={this.onSelect} // Function will trigger on select event
+          onRemove={this.onRemove} // Function will trigger on remove event
+          displayValue="light" // Property name to display in the dropdown options
+          avoidHighlightFirstOption // Property name to display in the dropdown options
+          />
+      </div>)
     } // End Render
 } // End Class
 

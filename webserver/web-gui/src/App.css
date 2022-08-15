@@ -3,6 +3,21 @@
     color: Black;
     background-color: alabster;
 }
+.Modify-wrap {
+    display:flex;
+    flex-direction:row;
+    justify-content: space-between;
+    padding: 1em;
+    overflow:hidden;
+}
+.Agents-wrap {
+    display:flex;
+    flex-direction:row;
+    justify-content: space-between;
+    padding-left: 2em;
+    padding-right: 2em;
+    overflow:hidden;
+}
 .App-header {
     background-color: #282c34;
     min-height: 100vh;

@@ -21,26 +21,33 @@ class AngleDial extends React.Component {
       id: props.agent_id,     // Which agent
       color: props.agent_color,     // Which agent
     };
+    this.tick = this.tick.bind(this);
   }
 
-  // Update the dial state on new changes
+  // Update the dial state on new changes 
   handleChange = (newValue) => {
     this.setState({value: newValue});
     this.props.angle_pass(newValue);
+    
+  };
+
+  // Emit tick
+  tick(){
     socket.emit('agent_angle',
                 {
                     'id':this.state.id,         // Pass the agent_id stored in state
                     'value':this.state.value    // Pass the cur_angle stored in state
                 }); // End emit
+    }
 
-  };
+
   
 
   // Render the Dial component from the react-dial-knob package
   render() {
     const color = this.state.color
     return (<Basic
-          diameter={200}
+          diameter={100}
           min={0}
           max={360}
           step={1}
@@ -51,20 +58,15 @@ class AngleDial extends React.Component {
           }}
           style={{
             position: 'relative',
-            margin: '100px auto',
-            width: '200px',
+            display:'flex',
+            justifyContent: 'center',
           }}
           onValueChange={this.handleChange} // When the value gets changed, call our handleChange method
+          onInteractionChange={this.tick} // When the value gets changed, call our handleChange method
           ariaLabelledBy={'my-label'} // Label beneath it
           spaceMaxFromZero={false}
         > 
-          <label id={'my-label'} style={{
-            textAlign: 'center',
-            width: '200px',
-            display: 'block',
-            padding: '10px 0'
-          }}>Agent: {this.state.id}</label>
-      </Basic> );
+           </Basic> );
     } // End Render
 } // End Class
 

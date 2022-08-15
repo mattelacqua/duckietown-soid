@@ -135,10 +135,11 @@ def unserialize(fifo):
     
 
 # Init agents in server
-def init_server(dt, fifo, env):
+def init_server(dt, fifo, env, get_map=False):
     tic = time.perf_counter()
-    env.map_jpg(background=True)
-    env.map_jpg(background=False)
+    if get_map:
+        env.map_jpg(background=True)
+        env.map_jpg(background=False)
     agents = env.agents
     input_list = []
 

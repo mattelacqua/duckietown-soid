@@ -37,7 +37,7 @@ class App extends React.Component{
             EnvLoaded: false,
             rendred_imgLoaded: false,
             rendered_img: new Image(),
-            sim_state: "run",
+            sim_state: 'run',
         };
         this.pos_pass = this.pos_pass.bind(this); // Bind pos pass to this component
         this.sim_state_pass = this.sim_state_pass.bind(this); // Bind pos pass to this component
@@ -75,6 +75,7 @@ class App extends React.Component{
       // Get the rendered image
       const image = new Image();
       image.src = 'http://localhost:5000/renderedScene';
+
       this.setState({
         rendered_img: image,
         rendered_imgLoaded: true
@@ -91,7 +92,6 @@ class App extends React.Component{
    
     sim_state_pass(state) {
       this.setState({sim_state: state});
-      console.log("Sim State:", this.state.sim_state);
     }
  
     // Pass the position change into agent state
@@ -106,7 +106,7 @@ class App extends React.Component{
     // Render Our App Component ( calls to Agent subchildren)
     render() {
         
-        console.log("RE RENDERING APP");
+      //console.log("Rerender From Top. Current State:", this.state.sim_state);
         // If our data didn't load, lets write HTML that we are waiting 
         if ((!this.state.AgentsLoaded) ||
            (!this.state.EnvLoaded) ||
@@ -121,28 +121,30 @@ class App extends React.Component{
         // Div to clump app up into one component to render
         <div className = "App"> {/* Using app.css stylesheet */}
             {/* Header text */}
-            <h1> SCENE </h1> 
+            <Environment  max_NS={this.state.env_info.max_NS} 
+                          max_EW={this.state.env_info.max_EW} 
+                          tile_size={this.state.env_info.tile_size}
+                          sim_state={this.state.sim_state}/>
 
             <Buttons sim_state={this.state.sim_state} 
                      sim_state_pass={this.sim_state_pass}
                      update_from_sim={this.update_from_sim}/>
-
-            <RenderedScene />
-
-            <h1> Fetch data from an api in reacts </h1> 
-              <Environment  max_NS={this.state.env_info.max_NS} 
-                            max_EW={this.state.env_info.max_EW} 
-                            tile_size={this.state.env_info.tile_size}/>
-                            sim_state={this.state.sim_state}/>
+            <div className="Modify-wrap">
+              <RenderedScene />
               {this.state.sim_state === 'pause' && 
-                <AgentMap agents={this.state.agents} 
-                        max_NS={this.state.env_info.max_NS} 
-                        max_EW={this.state.env_info.max_EW} 
-                        tile_size={this.state.env_info.tile_size} 
-                        pos_pass={this.pos_pass}/>
+                  <AgentMap agents={this.state.agents} 
+                          max_NS={this.state.env_info.max_NS} 
+                          max_EW={this.state.env_info.max_EW} 
+                          tile_size={this.state.env_info.tile_size} 
+                          pos_pass={this.pos_pass}/> 
               }
-             <Agents agents={this.state.agents}/>
+            </div>
 
+            <div className="Agents-wrap">
+              {this.state.sim_state === 'pause' && 
+                  <Agents agents={this.state.agents}/>
+              }
+            </div>
         </div>
     ); // End of return
 }

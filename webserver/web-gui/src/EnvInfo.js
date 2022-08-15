@@ -11,7 +11,12 @@ class EnvInfo extends React.Component {
       max_NS: props.max_NS,
       max_EW: props.max_EW,
       tile_size: props.tile_size,
+      sim_state: props.sim_state,
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({sim_state: nextProps.sim_state});
   }
 
   // Render the information to screen
@@ -19,9 +24,9 @@ class EnvInfo extends React.Component {
     return (
       <div>
           {/* HTML FOR ALL THE INFORMATION */}
-          <h1> Max NS: {this.props.max_NS} </h1>
-          <h1> Max EW: {this.props.max_EW} </h1>
-          <h1> Tile Size: {this.props.tile_size} </h1>
+          <p> Max NS: {this.state.max_NS}  Max EW: {this.state.max_EW} </p>
+          <p> Tile Size: {this.state.tile_size} </p>
+          <p> Sim State: {"" + this.state.sim_state} </p>
       </div>
       );
     }

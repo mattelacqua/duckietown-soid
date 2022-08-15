@@ -74,6 +74,7 @@ from .utils import get_subdir_path
 from .agents import *
 
 from PIL import Image
+
 import cv2
 
 DIM = 0.5
@@ -1765,11 +1766,18 @@ class Simulator(gym.Env):
             image = img.crop(rect).save(f"{image_path}/empty_map.jpg")
         else:
             img = Image.fromarray(img, 'RGB')
+            width, height = img.size
+            print("CALLING THIS FUNCITON")
+            for x in range(0, width):
+                for y in range(0, height):
+                    current_color = img.getpixel((x,y))
+                    if current_color == (255,  0 , 255):
+                        img.putpixel((x,y), (38, 38, 38))
+                    
             image_path = "webserver/images"
             image = img.save(f"{image_path}/empty_map_background.jpg")
 
         return image
-
 
 
     

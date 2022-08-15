@@ -14,7 +14,12 @@ class Environment extends React.Component {
       max_NS: props.max_NS,
       max_EW: props.max_EW,
       tile_size: props.tile_size,
+      sim_state: props.sim_state,
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({sim_state: nextProps.sim_state});
   }
 
   // Render the Env component EnvInfo.js)
@@ -24,6 +29,7 @@ class Environment extends React.Component {
                 {/* Render Environment Information */}
                 <EnvInfo    max_NS={this.state.max_NS}
                             max_EW={this.state.max_EW}
+                            sim_state={this.state.sim_state}
                             tile_size={this.state.tile_size}/>
               </div>
           );

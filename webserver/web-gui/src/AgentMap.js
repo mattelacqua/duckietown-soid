@@ -170,16 +170,15 @@ class AgentMap extends React.Component {
           
         }; // End options  
 
-     const style = {
-       float: 'left',
-       width: '50%',
-     }
      return (
-        <div classname = "AgentMap" style={style}>
-            <Line ref={this.chartReference} classname="agentMap" options={options} data={this.state.data} plugins={[map_background]} />;
+        <div classname = "AgentMap" >
+            <Line ref={this.chartReference} classname="AgentMap" options={options} data={this.state.data} plugins={[map_background]} 
+                style={{
+                    width: "450px",
+                }}/>
+            <span> Drag and Drop Adjustments </span>
         </div>
      )
-
   }
 }
 
