@@ -2,8 +2,8 @@
 import React from "react";
 
 // Import Basic Knob from react-dial-kknob
-import { Basic } from "react-dial-knob";
-
+//import { Basic } from "react-dial-knob";
+import CircularSlider from '@fseehawer/react-circular-slider'
 // Import io from socket to send to backend flask
 import io from 'socket.io-client';
 
@@ -18,6 +18,7 @@ class AngleDial extends React.Component {
     super(props);
     this.state = {
       value: props.cur_angle, // Value of the the angle is
+      last_sent: props.cur_angle, // Value of the the angle is
       id: props.agent_id,     // Which agent
       color: props.agent_color,     // Which agent
     };
@@ -33,40 +34,45 @@ class AngleDial extends React.Component {
 
   // Emit tick
   tick(){
-    socket.emit('agent_angle',
-                {
-                    'id':this.state.id,         // Pass the agent_id stored in state
-                    'value':this.state.value    // Pass the cur_angle stored in state
-                }); // End emit
-    }
+    if (this.state.value !== this.state.last_sent) {
+      socket.emit('agent_angle',
+                  {
+                      'id':this.state.id,         // Pass the agent_id stored in state
+                      'value':this.state.value    // Pass the cur_angle stored in state
+                  }); // End emit
+      this.setState({last_sent: this.state.value});
+      console.log("TICK Change");
+      }
 
+  }
 
-  
+  componentDidMount() {
+    this.interval = setInterval(() => this.tick(), 2000);
+  }
 
   // Render the Dial component from the react-dial-knob package
   render() {
     const color = this.state.color
-    return (<Basic
-          diameter={100}
-          min={0}
-          max={360}
-          step={1}
-          value={this.state.value} // Set its value to the state value
-          theme={{
-              defaultColor: '#333',
-              activeColor: color,
-          }}
-          style={{
-            position: 'relative',
-            display:'flex',
-            justifyContent: 'center',
-          }}
-          onValueChange={this.handleChange} // When the value gets changed, call our handleChange method
-          onInteractionChange={this.tick} // When the value gets changed, call our handleChange method
-          ariaLabelledBy={'my-label'} // Label beneath it
-          spaceMaxFromZero={false}
-        > 
-           </Basic> );
+    return (
+        <CircularSlider
+            label={this.state.id}
+            labelColor={color}
+            labelBottom={true}
+            knobColor={color}
+            progressColorFrom="#eeeeee"
+            progressColorTo="#eeeeee"
+            progressSize={10}
+            trackColor="#eeeeee"
+            trackSize={10}
+            min={0}
+            max={360}
+            width={150}
+            direction={-1}
+            knobPosition="right"
+            dataIndex={this.state.value}
+            onChange={value => {this.handleChange(value)}}
+        />
+    )
     } // End Render
 } // End Class
 

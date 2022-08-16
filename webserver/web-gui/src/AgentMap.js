@@ -114,6 +114,7 @@ class AgentMap extends React.Component {
           elements : {
             point : {
                 radius : this.state.car_radius, 
+                pointStyle: 'rect',
             },
           },
           // Plugins

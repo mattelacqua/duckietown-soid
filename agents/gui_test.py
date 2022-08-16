@@ -86,8 +86,8 @@ fifo_in = 'webserver/webserver.out'
 fifo_out = 'webserver/webserver.in'
 
 # CLEAR OLD STUFF
-clear = open(fifo_in, 'w', os.O_NONBLOCK).close()
-clear = open(fifo_out, 'w', os.O_NONBLOCK).close()
+clear = open(fifo_in, 'w').close()
+clear = open(fifo_out, 'w').close()
 
 # Write new stuff
 out = open(fifo_out, 'wb', os.O_NONBLOCK)
