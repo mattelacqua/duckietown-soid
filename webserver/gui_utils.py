@@ -82,6 +82,7 @@ class guiAgent():
         color = self.color
         state = self.state
 
+        agent_count = 0
         for agent in env.agents:
             if agent.agent_id == agent_id:
                 #print("Changing {0}'s current angle from {1} to {2}".format(agent.agent_id, agent.cur_angle, cur_angle))
@@ -101,9 +102,16 @@ class guiAgent():
                 elif change == "lights":
                     for light in lights:
                         agent.set_light(light["light"], light["on"])
+                elif change == "delete":
+                    env.agents.remove(agent)
                 
                 #Resetting the actions for the agent
                 agent.actions = []
+            agent_count = agent_count + 1
+        if change == "add":
+            new_agent = agents.Agent(agent_id=("agent"+str(agent_count)))
+            env.agents.append(new_agent)
+         
 
         # Return false because not done command
         return state 
@@ -116,7 +124,7 @@ def serialize(obj, fifo):
     fifo.write(pickled)
     fifo.flush()
     toc = time.perf_counter()
-    print("Serialize Time = {0}".format(toc - tic))
+    #print("Serialize Time = {0}".format(toc - tic))
 
 # Unserialize from fifo
 def unserialize(fifo):
@@ -127,11 +135,11 @@ def unserialize(fifo):
         except EOFError:
             break
             toc = time.perf_counter()
-            print("EOF Unserialize = {0}".format(toc - tic))
+            #print("EOF Unserialize = {0}".format(toc - tic))
         else:
             return o
             toc = time.perf_counter()
-            print("Success Unserialize = {0}".format(toc - tic))
+            #print("Success Unserialize = {0}".format(toc - tic))
     
 
 # Init agents in server
@@ -160,7 +168,7 @@ def init_server(dt, fifo, env, get_map=False):
     input_list.append(gui_env)
 
     toc = time.perf_counter()
-    print("Data Function Dict Traversal = {0}".format(toc - tic))
+    #print("Data Function Dict Traversal = {0}".format(toc - tic))
     # Serialize the input
     serialize(input_list, fifo)
     

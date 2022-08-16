@@ -121,6 +121,20 @@ def sim_state(data):
     to_send = guiState(state=state)
     serialize(to_send, out)
 
+@socketio.on("delete_agent")
+def delete_agent(data):
+    global out, state
+    a_id = str(data['id'])
+    to_send = guiAgent(change="delete", agent_id=a_id)
+    print(f"deleting {a_id}")
+    serialize(to_send, out)
+
+@socketio.on("add_agent")
+def add_agent():
+    global out, state
+    to_send = guiAgent(change="add")
+    print(f"adding new agent")
+    serialize(to_send, out)
 
 
 if __name__ == '__main__':

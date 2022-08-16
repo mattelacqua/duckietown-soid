@@ -27,6 +27,9 @@ class Agent():
     nearby_agents: List
     follow_dist: float
     max_iterations: int
+    turn_preference: str
+    stop_point: float
+    forward_step: float
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -64,6 +67,9 @@ class Agent():
                         "back_left": [-0.1, -0.05, height, False],
                         "back_right": [-0.1, +0.05, height, False],
                         }
+        self.turn = None
+        self.stop_point = None
+        self.forward_step = 0.00
 
 #--------------------------
 # Lights
@@ -129,7 +135,12 @@ class Agent():
 #--------------------------
 
     # Move Forwards at whatever angle we are at, not going faster than 30 mps
-    def move_forward(self, env, forward_step=0.44, speed_limit=1.0):
+    def move_forward(self, env, speed_limit=1.0):
+        # Set the speed
+        forward_step = self.forward_step
+        if forward_step == 0.0:
+            return []
+
         # Get state information
         curr_speed = self.get_curr_speed(env)
         if env.verbose:
@@ -143,7 +154,7 @@ class Agent():
             action = np.array([0.0, 0.0])
             action_seq.append(action)
         else:
-            action_seq.extend(self.straighten_out(env, forward_step=forward_step))
+            action_seq.extend(self.straighten_out(env))
 
         # Turn off all lights because moving straight (either initially or after turning)
         self.turn_off_light("front_right")
@@ -154,10 +165,18 @@ class Agent():
         return action_seq
 
     # Straighten out and follow curve
-    def straighten_out(self, env, forward_step: float=0.44):
+    def straighten_out(self, env):
         from .simulator import get_right_vec
         actions = []
+
+        # Get forward step
+        forward_step = self.forward_step
+    
+        if forward_step == 0.0:
+            return actions.append([forward_step, 0])
+        # Find turn limit
         turn_limit = math.pow((forward_step * 10), 1.5)
+
 
         # Find the curve point closest to the agent, and the tangent at that point
         closest_point, closest_tangent = env.closest_curve_point(self.cur_pos, self.cur_angle)
@@ -247,7 +266,7 @@ class Agent():
             turn_count += 1
 
         # Straighten Out
-        action_seq.extend(self.straighten_out(env, forward_step=forward_step))
+        action_seq.extend(self.straighten_out(env))
         return action_seq
 
     # Take a left turn
@@ -282,7 +301,7 @@ class Agent():
             turn_count += 1   
 
         # Turn this amount 
-        action_seq.extend(self.straighten_out(env, forward_step=forward_step))
+        action_seq.extend(self.straighten_out(env))
         return action_seq
         
 #--------------------------
@@ -292,7 +311,10 @@ class Agent():
     # Handle an intersection
     # wrong_light=False, so agent behaves good and turns on correct signal lights
         # wrong_light=True, agent behaves bad and turns on wrong signal lights
-    def handle_intersection(self, env, forward_step=.44, speed_limit=1.0, choice=None, wrong_light=False, stop_point=30):
+    def handle_intersection(self, env, speed_limit=1.0, choice=None, wrong_light=False, stop_point=30):
+
+        choice = self.turn
+        forward_step = self.forward_step
 
         # Initialize action sequence
         action_seq = []
@@ -312,7 +334,7 @@ class Agent():
         else:
             forward_steps = 0
             while forward_steps < 30:
-                action_seq.extend(self.move_forward(env, forward_step=forward_step, speed_limit=speed_limit))
+                action_seq.extend(self.move_forward(env, speed_limit=speed_limit))
                 forward_steps += 1 
 
         return action_seq

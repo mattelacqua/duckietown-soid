@@ -96,6 +96,15 @@ inp = open(fifo_in, 'rb', os.O_NONBLOCK)
 # Start up the webserver before reading so that it clears write file
 webserver = gu.start_webserver()
 
+# Set up initial agent speeds, turns and contols
+env.agents[0].forward_step = 0.44
+env.agents[1].forward_step = 0.22
+env.agents[2].forward_step = 0.00
+
+env.agents[0].turn = "Left" 
+env.agents[1].turn = "Straight" 
+# Random is None which will be the 3rd agent
+
 
 # Feed agent information to webserver
 gu.init_server(0, out, env, get_map=True)
@@ -156,34 +165,18 @@ def update(dt):
             pyglet.clock.unschedule(update)
             pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
 
+    # Perform next agent action
+    for agent in env.agents:
+        # If we are not handling a sequence already, try for agent
+        if not agent.actions:
+            if agent.intersection_detected(env):
+                agent.add_actions(agent.handle_intersection(env))
+            else: 
+                agent.add_actions(agent.move_forward(env))
 
-    # Get the agents
-    agent0 = env.agents[0] 
-    agent1 = env.agents[1] 
-
-    speed0 = 0.4
-    speed1 = 0.2
-    turn = 'Left'
-
-    # If we are not handling a sequence already, try for agent 0
-    if not agent0.actions:
-        if agent0.intersection_detected(env):
-            agent0.add_actions(agent0.handle_intersection(env, choice=turn, forward_step=speed0))
-        else: 
-            agent0.add_actions(agent0.move_forward(env, forward_step=speed0))
-
-    # If we are not handling a sequence already, try for agent 1
-    if not agent1.actions:
-        if agent1.intersection_detected(env):
-            agent1.add_actions(agent1.handle_intersection(env, choice=turn, forward_step=speed1))
-        else: 
-            agent1.add_actions(agent1.move_forward(env, forward_step=speed1))
-
-    # Render each agent's next move
-    if agent0.actions:
-        agent0.render_step(env, agent0.get_next_action())
-    if agent1.actions:
-        agent1.render_step(env, agent1.get_next_action())
+        # Render agent's next move
+        if agent.actions:
+            agent.render_step(env, agent.get_next_action())
        
     # render the cam
     env.render(env.cam_mode)

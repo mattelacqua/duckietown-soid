@@ -41,7 +41,6 @@ class AngleDial extends React.Component {
                       'value':this.state.value    // Pass the cur_angle stored in state
                   }); // End emit
       this.setState({last_sent: this.state.value});
-      console.log("TICK Change");
       }
 
   }

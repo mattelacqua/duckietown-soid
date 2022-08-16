@@ -9,8 +9,11 @@ import AngleDial from './AngleDial.js'
 // Import Agent Info Screen
 import AgentInfo from './AgentInfo.js'
 
-// Import Agent Info Screen
+// Import Info Screen
 import LightDrop from './LightDrop.js'
+
+// Import Delete Agent Button 
+import DeleteAgent from './DeleteAgent.js'
 
 // Agent Component (gets rendered in app)
 class Agent extends React.Component {
@@ -78,6 +81,7 @@ class Agent extends React.Component {
                               cur_pos= {this.state.cur_pos}
                               color={this.state.color} 
                               lights={this.state.lights}/>
+                <DeleteAgent  agent_id={this.state.agent_id}/>
              </div>
           );
     }
