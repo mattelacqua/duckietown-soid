@@ -15,6 +15,9 @@ import LightDrop from './LightDrop.js'
 // Import Delete Agent Button 
 import DeleteAgent from './DeleteAgent.js'
 
+// Import Turn Choice 
+import TurnChoice from './TurnChoice.js'
+
 // Agent Component (gets rendered in app)
 class Agent extends React.Component {
 
@@ -26,7 +29,8 @@ class Agent extends React.Component {
       cur_pos: props.cur_pos,
       cur_angle: props.cur_angle,
       color: props.color,
-      lights: props.lights
+      lights: props.lights,
+      turn_choice: props.turn_choice,
     };
     this.angle_pass = this.angle_pass.bind(this); // Bind angle pass to this component
     this.lights_pass = this.lights_pass.bind(this); // Bind angle pass to this component
@@ -38,7 +42,8 @@ class Agent extends React.Component {
       cur_pos: nextProps.cur_pos,
       cur_angle: nextProps.cur_angle,
       color: nextProps.color,
-      lights: nextProps.light
+      lights: nextProps.light,
+      turn_choice: nextProps.turn_choice,
     });
   }
 
@@ -80,8 +85,10 @@ class Agent extends React.Component {
                               cur_angle={this.state.cur_angle}
                               cur_pos= {this.state.cur_pos}
                               color={this.state.color} 
+                              turn_choice={this.state.turn_choice} 
                               lights={this.state.lights}/>
                 <DeleteAgent  agent_id={this.state.agent_id}/>
+                <TurnChoice  agent_id={this.state.agent_id} turn_choice={this.state.turn_choice}/>
              </div>
           );
     }

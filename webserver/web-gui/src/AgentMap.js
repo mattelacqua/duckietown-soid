@@ -50,6 +50,7 @@ class AgentMap extends React.Component {
 
   update_agent_pos(e, datasetIndex, index, value) {
       e.target.style.cursor = 'default';
+      console.log("Emiiting agent_pos");
       socket.emit('agent_pos',
         {
           'id': "agent" + datasetIndex,

@@ -13,7 +13,19 @@ class AgentInfo extends React.Component {
       cur_pos: props.cur_pos,
       color: props.color,
       lights: props.lights,
+      turn_choice: props.turn_choice,
     };
+  }
+
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      agent_id: nextProps.agent_id,
+      cur_angle: nextProps.cur_angle,
+      cur_pos: nextProps.cur_pos,
+      color: nextProps.color,
+      lights: nextProps.lights,
+      turn_choice: nextProps.turn_choice,
+    });
   }
 
   // Render the information to screen
@@ -30,6 +42,7 @@ class AgentInfo extends React.Component {
               Current Angle: {this.props.cur_angle} {"\n"}
               Current Pos: {JSON.stringify(this.props.cur_pos)} {"\n"}
               Color: {this.props.color} {"\n"}
+              Turn Choice: {this.props.turn_choice} {"\n"}
               {JSON.stringify(this.props.lights)} </p>
       </div>
       );

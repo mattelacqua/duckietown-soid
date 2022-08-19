@@ -36,6 +36,7 @@ class Agents extends React.Component {
                            cur_angle={agent.cur_angle}
                            cur_pos={agent.cur_pos}
                            color={agent.color} 
+                           turn_choice={agent.turn_choice} 
                            lights={agent.lights} />
                     ))
           );

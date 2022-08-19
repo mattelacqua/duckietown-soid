@@ -216,6 +216,7 @@ class Simulator(gym.Env):
     grid_width: int
     grid_height: int
     timestamp: float
+    state: str
     np_random: RandomState
     grid: List[TileDict]
 
@@ -268,6 +269,7 @@ class Simulator(gym.Env):
         :param full_transparency:
         :param user_tile_start: If None, sample randomly. Otherwise (i,j). Overrides map start tile
         :param seed:
+        :param state: If we are paused, running, or quit.
         :param distortion: If true, distorts the image with fish-eye approximation
         :param dynamics_rand: If true, perturbs the trim of the Duckiebot
         :param camera_rand: If true randomizes over camera miscalibration
@@ -406,6 +408,9 @@ class Simulator(gym.Env):
 
         # Logging
         self.verbose = verbose
+
+        # Set the default state to running
+        self.state = "run"
 
         # Initialize the state
         self.reset()

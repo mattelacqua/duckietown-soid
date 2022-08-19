@@ -37,7 +37,7 @@ class App extends React.Component{
             EnvLoaded: false,
             rendred_imgLoaded: false,
             rendered_img: new Image(),
-            sim_state: 'run',
+            sim_state: '',
         };
         this.pos_pass = this.pos_pass.bind(this); // Bind pos pass to this component
         this.sim_state_pass = this.sim_state_pass.bind(this); // Bind pos pass to this component
@@ -64,10 +64,14 @@ class App extends React.Component{
           .then((res) => res.json()) // Result becomes a json
           .then((json) => { // take the json and set the state vars with it
               let new_ref = json;
+              console.log("new ref", new_ref.state);
               if (!_.isEqual(new_ref, this.state.env_info)) {
+                console.log("Old State: ", this.state.env_info.state);
+                console.log("New State: ", new_ref.state);
                 this.setState({
                     env_info: new_ref,
-                    EnvLoaded: true
+                    EnvLoaded: true,
+                    sim_state: new_ref.state
                 });
               } // Endif
           });

@@ -37,6 +37,7 @@ class guiState():
 
     # If done return this so that in pause of our function we know what to do
     def handle_input(self, env):
+        env.state = self.state
         return self.state 
 
 # Class for any agent changes
@@ -49,7 +50,7 @@ class guiAgent():
     cur_angle: float
     inc_direction: str
     lights:  List
-    state: str
+    turn_choice: str
     
     
     def __init__(self,
@@ -60,7 +61,7 @@ class guiAgent():
         color = "",
         inc_direction = "",
         lights = [],
-        state = ""):
+        turn_choice= None):
 
         self.change = change
         self.agent_id = agent_id
@@ -69,7 +70,7 @@ class guiAgent():
         self.cur_angle = cur_angle
         self.inc_direction = inc_direction
         self.lights = lights
-        self.state = state
+        self.turn_choice = turn_choice
 
 
     # Handle agent input. Based on the kind of change, do xyz
@@ -80,7 +81,7 @@ class guiAgent():
         change = self.change
         lights = self.lights
         color = self.color
-        state = self.state
+        turn_choice = self.turn_choice
 
         agent_count = 0
         for agent in env.agents:
@@ -99,6 +100,8 @@ class guiAgent():
                         agent.cur_pos[0] += 0.1
                     elif self.inc_direction == 'W':
                         agent.cur_pos[0] -= 0.1
+                elif change == "turn":
+                    agent.turn = turn_choice
                 elif change == "lights":
                     for light in lights:
                         agent.set_light(light["light"], light["on"])
@@ -114,7 +117,7 @@ class guiAgent():
          
 
         # Return false because not done command
-        return state 
+        return env.state 
 
 
 # Serialize by pickling to fifo
@@ -158,6 +161,7 @@ def init_server(dt, fifo, env, get_map=False):
                                                                   'y':round(agent.cur_pos[2], 3)},
                                                          cur_angle=round(math.degrees(agent.cur_angle)),
                                                          color=html_color(agent.color),
+                                                         turn_choice=agent.turn,
                                                          lights=agent.lights_to_dictlist()), agents)))
 
     # Include information about the environment
@@ -166,6 +170,9 @@ def init_server(dt, fifo, env, get_map=False):
                      tile_size=env.road_tile_size)
 
     input_list.append(gui_env)
+
+    gui_state = guiState(state=env.state)
+    input_list.append(gui_state)
 
     toc = time.perf_counter()
     #print("Data Function Dict Traversal = {0}".format(toc - tic))
@@ -193,7 +200,8 @@ def read_init(fifo):
                                     "cur_pos" : gui_agent.cur_pos,
                                     "cur_angle" : gui_agent.cur_angle,
                                     "color" : gui_agent.color,
-                                    "lights" : gui_agent.lights
+                                    "lights" : gui_agent.lights,
+                                    "turn_choice" : gui_agent.turn_choice
                                     })
                 #print("\n\n\n\n\n\n\n\nHONEYPOT\n\n\n\n")
                 id_no += 1
@@ -204,6 +212,9 @@ def read_init(fifo):
                 env_info["max_NS"] = gui_env.max_NS
                 env_info["max_EW"] = gui_env.max_EW
                 env_info["tile_size"] = gui_env.tile_size
+            if isinstance(inp, guiState):
+                gui_state = inp
+                env_info["state"] = gui_state.state
     else:
         return None, None
 

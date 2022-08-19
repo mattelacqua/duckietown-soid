@@ -25,13 +25,15 @@ class Buttons extends React.Component {
       });
       this.props.sim_state_pass(state);
       if (state === 'pause') {
+          console.log("Emiiting update_sim_info");
           socket.emit('update_sim_info');
           setTimeout(this.props.update_from_sim(), 1000);
       }
+      console.log("Emiiting sim_state");
       socket.emit('sim_state',
                   {
                       'state':state,
-                  });
+      });
     } else {
         socket.emit('add_agent');
     }
@@ -43,19 +45,19 @@ class Buttons extends React.Component {
     return (
       <div class='Buttons'>
 
-          {this.state.sim_state === 'run' &&
+          {this.props.sim_state === 'run' &&
             <button className='pause' onClick={()=>this.handleClick("pause")}>Pause</button>
           }
-          {this.state.sim_state === 'run' &&
+          {this.props.sim_state === 'run' &&
             <button className='quit' onClick={()=>this.handleClick("quit")}>Quit</button>
           }
-         {this.state.sim_state === 'pause' &&
+         {this.props.sim_state === 'pause' &&
             <button className='add_agent' onClick={()=>this.handleClick("add_agent")}>Add New Agent</button>
          }
-         {this.state.sim_state === 'pause' &&
+         {this.props.sim_state === 'pause' &&
             <button className = "resume" onClick={()=>this.handleClick("run")}>Resume</button>
          }
-         {this.state.sim_state === 'pause' &&
+         {this.props.sim_state === 'pause' &&
             <button className='quit' onClick={()=>this.handleClick("quit")}>Quit</button>
          }
       </div>

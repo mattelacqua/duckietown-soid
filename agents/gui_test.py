@@ -86,12 +86,14 @@ fifo_in = 'webserver/webserver.out'
 fifo_out = 'webserver/webserver.in'
 
 # CLEAR OLD STUFF
-clear = open(fifo_in, 'w').close()
-clear = open(fifo_out, 'w').close()
+clear = open(fifo_in, 'wb').close()
+clear = open(fifo_out, 'wb').close()
 
 # Write new stuff
 out = open(fifo_out, 'wb', os.O_NONBLOCK)
 inp = open(fifo_in, 'rb', os.O_NONBLOCK)
+print("STARTING WITH THESE")
+print(inp.readlines())
 
 # Start up the webserver before reading so that it clears write file
 webserver = gu.start_webserver()
@@ -112,7 +114,8 @@ gu.init_server(0, out, env, get_map=True)
 # Pause on space, keep trying to get info from webserver, render and update accordingly
 def pause(dt):
     global inp
-    state = "pause"
+    env.state = "pause"
+    print(f"In Pause Environment state is {env.state}")
 
     # Feed agent information to webserver
     print("Init Server")
@@ -120,18 +123,22 @@ def pause(dt):
     print("Updated for pause")
 
     # While still getting input
-    while state == "pause":
+    while env.state == "pause":
         gui_input = gu.unserialize(inp)
         # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
         if gui_input:
-            state = gui_input.handle_input(env)
-            if state == "quit":
+            print(f"In Pause Unserialized: {gui_input}")
+            env.state = gui_input.handle_input(env)
+            if env.state == "quit":
                 print("Killing Webserver")
+                gu.init_server(0, out, env, get_map=False) # Init to send the dead signal to 
+                time.sleep(2)
                 webserver.kill()
                 print("Killing Simulator")
                 exit()
-            elif state == "run":
-                print("Resuming Simulationr")
+            elif env.state == "run":
+                print("Resuming Simulation")
+
         # Render any changes from last thing serialized
         env.render(env.cam_mode)
 
@@ -150,9 +157,11 @@ def update(dt):
     """
 
     # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
+    print(f"In Run Environment state is {env.state}")
     gui_input = gu.unserialize(inp)
 
     if gui_input:
+        print(f"In Run Unserialized: {gui_input}")
         state = gui_input.handle_input(env)
         if state == "quit":
             print("Killing Webserver")

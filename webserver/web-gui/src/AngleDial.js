@@ -49,12 +49,22 @@ class AngleDial extends React.Component {
     this.interval = setInterval(() => this.tick(), 2000);
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      value: nextProps.cur_angle, // Value of the the angle is
+      last_sent: nextProps.cur_angle, // Value of the the angle is
+      id: nextProps.agent_id,     // Which agent
+      color: nextProps.agent_color,     // Which agent
+    });
+    this.forceUpdate();
+  }
+
   // Render the Dial component from the react-dial-knob package
   render() {
-    const color = this.state.color
+    const color = this.props.agent_color
     return (
         <CircularSlider
-            label={this.state.id}
+            label={this.props.agent_id}
             labelColor={color}
             labelBottom={true}
             knobColor={color}
@@ -68,7 +78,7 @@ class AngleDial extends React.Component {
             width={150}
             direction={-1}
             knobPosition="right"
-            dataIndex={this.state.value}
+            dataIndex={this.props.cur_angle}
             onChange={value => {this.handleChange(value)}}
         />
     )

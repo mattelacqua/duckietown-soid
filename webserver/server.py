@@ -23,15 +23,17 @@ fifo_out = 'webserver/webserver.out'
 fifo_in = 'webserver/webserver.in'
 out = open(fifo_out, "wb")
 inp = open(fifo_in, "rb")
+print("Webserver In Has")
+print(inp.readlines())
 
 # Read initial positions of agents and info about the environment
 agent_list, env_info = None, None
 while not agent_list or not env_info:
+    print("READING THE INIT")
     agent_list, env_info = read_init(inp)
 
+print(f"FINISHED INIT with \n Agents: {agent_list} \n Env Info: {env_info}")
 
-# Global var to keep track of simulator state
-state = "run"
 
 # Home page for website, has all information we want on it
 @app.route("/agents")
@@ -80,62 +82,76 @@ def update_sim_info():
 # On socket update change agent angle
 @socketio.on("agent_angle")
 def agent_angle(data):
-    global out, state
+    global out
     a_id = str(data['id'])
     angle = int(data['value'])
-    agent_change = guiAgent(change="angle", agent_id=a_id, cur_angle=angle, state=state)
+    agent_change = guiAgent(change="angle", agent_id=a_id, cur_angle=angle)
+    print(f"Sending Agent {a_id} angle {angle}")
     serialize(agent_change, out)
  
 # On socket update change agent angle position (from text)
 @socketio.on("agent_pos")
 def agent_pos(data):
-    global out, state
+    global out
     a_id = str(data['id'])
     x = data['x']
     z = data['z']
-    agent_change = guiAgent(change="pos", agent_id=a_id, cur_pos=[x, 0, z], state=state)
+    agent_change = guiAgent(change="pos", agent_id=a_id, cur_pos=[x, 0, z])
+    print(f"Sending Agent {a_id} pos {(x, z)}")
     serialize(agent_change, out)
 
 # On socket update change agent angle position (from button press)
 @socketio.on("increment_pos")
 def increment_pos(data):
-    global out, state
+    global out
     a_id = str(data['id'])
     direction = str(data['direction'])
-    agent_change = guiAgent(change="inc_pos", agent_id=a_id, inc_direction=direction, state=state)
+    agent_change = guiAgent(change="inc_pos", agent_id=a_id, inc_direction=direction)
     serialize(agent_change, out)
 
 @socketio.on("lights")
 def lights(data):
-    global out, state
+    global oute
     a_id = str(data['id'])
     lights = data['lights']
-    agent_change = guiAgent(change="lights", agent_id=a_id, lights=lights, state=state)
+    agent_change = guiAgent(change="lights", agent_id=a_id, lights=lights)
+    print(f"Sending Agent {a_id} lights {lights}")
     serialize(agent_change, out)
  
 # On socket update resume simulation from button press
 @socketio.on("sim_state")
 def sim_state(data):
-    global out, state
+    global out
     state = str(data['state'])
     to_send = guiState(state=state)
+    print(f"Sending state {state}")
     serialize(to_send, out)
 
 @socketio.on("delete_agent")
 def delete_agent(data):
-    global out, state
+    global out
     a_id = str(data['id'])
     to_send = guiAgent(change="delete", agent_id=a_id)
-    print(f"deleting {a_id}")
+    print(f"Sending Agent {a_id} delete")
     serialize(to_send, out)
 
 @socketio.on("add_agent")
 def add_agent():
-    global out, state
+    global out
     to_send = guiAgent(change="add")
-    print(f"adding new agent")
+    print(f"Sending Agent add")
     serialize(to_send, out)
 
+@socketio.on("turn_choice")
+def turn_choice(data):
+    global out
+    a_id = str(data['agent_id'])
+    turn = str(data['turn'])
+    if turn == "Random":
+        turn = None
+    to_send = guiAgent(change="turn", agent_id=a_id, turn_choice=turn)
+    print(f"Setting Turn to {turn} for agent {a_id}")
+    serialize(to_send, out)
 
 if __name__ == '__main__':
     socketio.run(app)
