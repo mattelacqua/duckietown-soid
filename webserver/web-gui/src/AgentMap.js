@@ -10,15 +10,9 @@ import {
 import { Line } from 'react-chartjs-2';
 import 'chartjs-plugin-dragdata';
 
-import io from 'socket.io-client';
-
-import _ from 'lodash';
-
 import './AgentMap.css'
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
-
-const socket = io();
 
 class AgentMap extends React.Component {
 
@@ -44,20 +38,20 @@ class AgentMap extends React.Component {
       data:{datasets},
 
       car_radius:0,
+      socket: props.socket,
     }; // End state
 
   }
 
   update_agent_pos(e, datasetIndex, index, value) {
       e.target.style.cursor = 'default';
-      console.log("Emiiting agent_pos");
-      socket.emit('agent_pos',
+      console.log("Emitting agent_pos");
+      this.state.socket.emit('agent_pos',
         {
           'id': "agent" + datasetIndex,
           'x': value.x,
           'z': value.y,
       });
-      this.props.pos_pass(datasetIndex, value.x, value.y);
     }
 
   update_point_size(chart, size){

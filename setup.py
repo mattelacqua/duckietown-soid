@@ -43,6 +43,7 @@ install_requires = [
     "flask_socketio",
     "torchvision",
     "tensorboard",
+    "python-socketio[client]",
 ]
 
 system_version = tuple(sys.version_info)[:3]

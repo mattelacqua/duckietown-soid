@@ -4,11 +4,6 @@ import React from "react";
 // Import Basic Knob from react-dial-kknob
 //import { Basic } from "react-dial-knob";
 import CircularSlider from '@fseehawer/react-circular-slider'
-// Import io from socket to send to backend flask
-import io from 'socket.io-client';
-
-// Create the socket
-const socket = io();
 
 // Component for AngleDial (rendered from Agent)
 class AngleDial extends React.Component {
@@ -21,6 +16,7 @@ class AngleDial extends React.Component {
       last_sent: props.cur_angle, // Value of the the angle is
       id: props.agent_id,     // Which agent
       color: props.agent_color,     // Which agent
+      socket: props.socket,     // Socket
     };
     this.tick = this.tick.bind(this);
   }
@@ -28,20 +24,19 @@ class AngleDial extends React.Component {
   // Update the dial state on new changes 
   handleChange = (newValue) => {
     this.setState({value: newValue});
-    this.props.angle_pass(newValue);
-    
   };
 
   // Emit tick
   tick(){
-    if (this.state.value !== this.state.last_sent) {
-      socket.emit('agent_angle',
+    // if (this.state.value !== this.state.last_sent) {
+      console.log("Sending agent angle");
+      this.state.socket.emit('agent_angle',
                   {
                       'id':this.state.id,         // Pass the agent_id stored in state
                       'value':this.state.value    // Pass the cur_angle stored in state
                   }); // End emit
       this.setState({last_sent: this.state.value});
-      }
+     // }
 
   }
 
@@ -49,15 +44,6 @@ class AngleDial extends React.Component {
     this.interval = setInterval(() => this.tick(), 2000);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      value: nextProps.cur_angle, // Value of the the angle is
-      last_sent: nextProps.cur_angle, // Value of the the angle is
-      id: nextProps.agent_id,     // Which agent
-      color: nextProps.agent_color,     // Which agent
-    });
-    this.forceUpdate();
-  }
 
   // Render the Dial component from the react-dial-knob package
   render() {

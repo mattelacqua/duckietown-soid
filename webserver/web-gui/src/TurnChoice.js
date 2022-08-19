@@ -1,10 +1,7 @@
 import React from "react";
 import './Buttons.css';
-import { Test, QuestionGroup, Question, Option } from 'react-multiple-choice';
 
-import io from 'socket.io-client';
-
-const socket = io();
+import Select from 'react-select';
 
 // Component to spit out agent information
 class TurnChoice extends React.Component {
@@ -13,8 +10,9 @@ class TurnChoice extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        agent_id: this.props.agent_id,
-        turn_choice: this.props.turn_choice,
+        agent_id: props.agent_id,
+        turn_choice: props.turn_choice,
+        socket: props.socket,
     };
     this.handleChoice = this.handleChoice.bind(this);
   }
@@ -24,27 +22,31 @@ class TurnChoice extends React.Component {
     this.setState({
       turn_choice: turn,
     });
-    socket.emit('turn_choice',
+    this.state.socket.emit('turn_choice',
         {
             'agent_id':this.state.agent_id,
             'turn':turn,
+            
         });
   }
   
   // Render the information to screen
   render() {
-    return (
-        <Test onOptionSelect={selectedOptions => this.handleChoice(selectedOptions)}>
-          <QuestionGroup questionNumber={0}>
-            <Question>Turn Choice</Question>
-            <Option value="Right">Right</Option>
-            <div>Add some additional info or tooltips for specific questions</div>
-            <Option value="Left">Left</Option>
-            <Option value="Straight">Straight</Option>
-            <Option value="Random">Random</Option>
-          </QuestionGroup>
-        </Test>
-    );
+    const options = [
+          { value: 'Right', label: 'Right' },
+          { value: 'Left', label: 'Left' },
+          { value: 'Straight', label: 'Straight' },
+          { value: 'Random', label: 'Random' }];
+    const defaultValue = { value: this.state.turn_choice, label: this.state.turn_choice}
+
+    return( 
+      <div>
+        <Select
+          defaultValue={defaultValue}
+          options={options} // Options to display in the dropdown
+          onChange= {new_option => {this.handleChoice(new_option.label)}}
+          />
+      </div>);
   }
 }
 

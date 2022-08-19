@@ -1,9 +1,6 @@
 import React from "react";
 import './Buttons.css';
 
-import io from 'socket.io-client';
-
-const socket = io();
 
 // Component to spit out agent information
 class Buttons extends React.Component {
@@ -12,7 +9,8 @@ class Buttons extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        sim_state: this.props.sim_state
+        sim_state: this.props.sim_state,
+        socket: this.props.socket
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -20,24 +18,22 @@ class Buttons extends React.Component {
   // Handle the click
   handleClick(state) {
     if (state !== "add_agent") {
+
       this.setState({
         sim_state: state,
       });
-      this.props.sim_state_pass(state);
+
       if (state === 'pause') {
-          console.log("Emiiting update_sim_info");
-          socket.emit('update_sim_info');
+          console.log("Emitting update_sim_info");
+          this.state.socket.emit('update_sim_info');
           setTimeout(this.props.update_from_sim(), 1000);
       }
-      console.log("Emiiting sim_state");
-      socket.emit('sim_state',
-                  {
-                      'state':state,
-      });
-    } else {
-        socket.emit('add_agent');
-    }
 
+      console.log("Emitting sim_state", state);
+      this.state.socket.emit('sim_state', {'state':state});
+    } else {
+        this.state.socket.emit('add_agent');
+    }
   }
   
   // Render the information to screen

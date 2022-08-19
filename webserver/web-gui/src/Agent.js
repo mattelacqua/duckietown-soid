@@ -31,9 +31,8 @@ class Agent extends React.Component {
       color: props.color,
       lights: props.lights,
       turn_choice: props.turn_choice,
+      socket: props.socket,
     };
-    this.angle_pass = this.angle_pass.bind(this); // Bind angle pass to this component
-    this.lights_pass = this.lights_pass.bind(this); // Bind angle pass to this component
   }
 
   componentWillReceiveProps(nextProps) {
@@ -44,25 +43,7 @@ class Agent extends React.Component {
       color: nextProps.color,
       lights: nextProps.light,
       turn_choice: nextProps.turn_choice,
-    });
-  }
-
-  // Handler to pass to child to update the state of the agent, which forces a
-  // re-render. We call this in AgentDial when we update the dial so the text updates as well.
-  angle_pass(angle) {
-    this.setState({
-        cur_angle: angle
-    });
-  }
-
-
-  // Pass the light change into agent state
-  lights_pass(newLight) {
-    const old_lights = this.state.lights;
-    const new_lights = [newLight];
-    const updated = old_lights.map(obj => new_lights.find(o => o.light === obj.light) || obj);
-    this.setState({
-        lights: updated
+      socket: nextProps.socket,
     });
   }
 
@@ -74,21 +55,26 @@ class Agent extends React.Component {
                 <AngleDial  cur_angle={this.state.cur_angle} 
                             agent_id={this.state.agent_id} 
                             agent_color={this.state.color} 
-                            angle_pass={this.angle_pass} />
+                            angle_pass={this.angle_pass} 
+                            socket={this.state.socket} />
 
                   {/* Render Agent Information */}
      
                 <LightDrop  agent_id={this.state.agent_id} 
                             lights={this.state.lights}
-                            lights_pass={this.lights_pass}/>
+                            lights_pass={this.lights_pass}
+                            socket={this.state.socket} />
                 <AgentInfo    agent_id={this.state.agent_id}
                               cur_angle={this.state.cur_angle}
                               cur_pos= {this.state.cur_pos}
                               color={this.state.color} 
                               turn_choice={this.state.turn_choice} 
                               lights={this.state.lights}/>
-                <DeleteAgent  agent_id={this.state.agent_id}/>
-                <TurnChoice  agent_id={this.state.agent_id} turn_choice={this.state.turn_choice}/>
+                <TurnChoice  agent_id={this.state.agent_id} 
+                             turn_choice={this.state.turn_choice}
+                             socket={this.state.socket} />
+                <DeleteAgent  agent_id={this.state.agent_id}
+                              socket={this.state.socket} />
              </div>
           );
     }

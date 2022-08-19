@@ -26,6 +26,7 @@ class LightDrop extends React.Component {
     };
     this.onSelect = this.onSelect.bind(this);
     this.onRemove = this.onRemove.bind(this);
+    console.log("lights", this.state.lights);
   }
 
   
@@ -36,9 +37,6 @@ class LightDrop extends React.Component {
 
     // Set it to be on
     turn_on.on = true;
-
-    // Pass update change through parent function
-    this.props.lights_pass(turn_on);
 
     // Get the updated list of lights and emit to socket
     const old_lights = this.state.lights;
@@ -55,7 +53,6 @@ class LightDrop extends React.Component {
   onRemove(selectedList, removedItem) {
     const turn_off = removedItem;
     turn_off.on = false;
-    this.props.lights_pass(turn_off);
     
     // Get the updated list of lights and emit to socket
     const old_lights = this.state.lights;

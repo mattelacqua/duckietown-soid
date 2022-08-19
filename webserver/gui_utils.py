@@ -9,6 +9,7 @@ import subprocess
 import os
 import signal
 import time
+import socketio
 
 # Send information through guiEnv
 class guiEnv():
@@ -146,7 +147,9 @@ def unserialize(fifo):
     
 
 # Init agents in server
-def init_server(dt, fifo, env, get_map=False):
+def init_server(dt, fifo, env, socket, get_map=False):
+
+
     tic = time.perf_counter()
     if get_map:
         env.map_jpg(background=True)
@@ -171,6 +174,7 @@ def init_server(dt, fifo, env, get_map=False):
 
     input_list.append(gui_env)
 
+    #print(f"Sending The webserver {env.state}")
     gui_state = guiState(state=env.state)
     input_list.append(gui_state)
 
@@ -178,6 +182,10 @@ def init_server(dt, fifo, env, get_map=False):
     #print("Data Function Dict Traversal = {0}".format(toc - tic))
     # Serialize the input
     serialize(input_list, fifo)
+    if socket:
+        socket.emit("update_sim_info")
+  
+    
     
 # Read initial positions and env info
 def read_init(fifo):

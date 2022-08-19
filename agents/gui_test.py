@@ -33,6 +33,10 @@ from threading import Thread
 import gym_duckietown.utils as utils
 import gym_duckietown.event_wrappers as event
 
+import socketio
+
+
+
 # Parse args
 args = utils.get_args_from_command_line()
 
@@ -95,6 +99,8 @@ inp = open(fifo_in, 'rb', os.O_NONBLOCK)
 print("STARTING WITH THESE")
 print(inp.readlines())
 
+
+
 # Start up the webserver before reading so that it clears write file
 webserver = gu.start_webserver()
 
@@ -109,32 +115,39 @@ env.agents[1].turn = "Straight"
 
 
 # Feed agent information to webserver
-gu.init_server(0, out, env, get_map=True)
+gu.init_server(0, out, env, None, get_map=True)
+
+# Socket Connection
+print("Connecting to Socket")
+socket = socketio.Client()
+while True:
+    try:    socket.connect('http://127.0.0.1:5000', wait=True)
+    except Exception as e: pass
+    else:   break
 
 # Pause on space, keep trying to get info from webserver, render and update accordingly
 def pause(dt):
     global inp
     env.state = "pause"
-    print(f"In Pause Environment state is {env.state}")
+    #print(f"In Pause Environment state is {env.state}")
 
     # Feed agent information to webserver
-    print("Init Server")
-    pyglet.clock.schedule_once(gu.init_server, 0, out, env)
-    print("Updated for pause")
+    gu.init_server(0, out, env, socket)
 
     # While still getting input
     while env.state == "pause":
         gui_input = gu.unserialize(inp)
         # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
         if gui_input:
-            print(f"In Pause Unserialized: {gui_input}")
             env.state = gui_input.handle_input(env)
+            gu.init_server(0, out, env, socket)
             if env.state == "quit":
                 print("Killing Webserver")
-                gu.init_server(0, out, env, get_map=False) # Init to send the dead signal to 
+                gu.init_server(0, out, env, socket, get_map=False) # Init to send the dead signal to 
                 time.sleep(2)
                 webserver.kill()
                 print("Killing Simulator")
+                socket.disconnect()
                 exit()
             elif env.state == "run":
                 print("Resuming Simulation")
@@ -157,11 +170,9 @@ def update(dt):
     """
 
     # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
-    print(f"In Run Environment state is {env.state}")
     gui_input = gu.unserialize(inp)
 
     if gui_input:
-        print(f"In Run Unserialized: {gui_input}")
         state = gui_input.handle_input(env)
         if state == "quit":
             print("Killing Webserver")
@@ -195,7 +206,7 @@ if __name__ == '__main__':
 
     # Enter main event loop
     pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
-    pyglet.clock.schedule_interval(gu.init_server, 1, out, env)
+    pyglet.clock.schedule_interval(gu.init_server, 1, out, env, socket)
     pyglet.app.run()
 
     env.close()

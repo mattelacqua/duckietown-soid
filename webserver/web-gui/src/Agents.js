@@ -16,16 +16,16 @@ class Agents extends React.Component {
     super(props);
     this.state = {
       agents: props.agents,
+      socket: props.socket,
     };
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({ 
       agents: nextProps.agents,
+      socket: nextProps.socket,
     });
   }
-  
-
  
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)
   render() {
@@ -37,7 +37,8 @@ class Agents extends React.Component {
                            cur_pos={agent.cur_pos}
                            color={agent.color} 
                            turn_choice={agent.turn_choice} 
-                           lights={agent.lights} />
+                           lights={agent.lights} 
+                           socket={this.state.socket} />
                     ))
           );
     }

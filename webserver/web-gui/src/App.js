@@ -22,6 +22,12 @@ import Buttons from './Buttons.js'
 // Import LODASH
 import _ from 'lodash';
 
+// Import Socket IO
+import io from 'socket.io-client';
+
+// Create the socket
+const socket = io();
+
 // Our top level class (gets rendered in index.html)
 class App extends React.Component{
 
@@ -38,14 +44,14 @@ class App extends React.Component{
             rendred_imgLoaded: false,
             rendered_img: new Image(),
             sim_state: '',
+            socket: socket,
         };
-        this.pos_pass = this.pos_pass.bind(this); // Bind pos pass to this component
-        this.sim_state_pass = this.sim_state_pass.bind(this); // Bind pos pass to this component
         this.update_from_sim = this.update_from_sim.bind(this); // Bind this to update_from sim 
     }
 
     // Update from the simulator
     update_from_sim() {
+      socket.emit("update_sim_info");
        // Fetch from our proxy (webserver.py, which when /agents is loaded will return our agents json information),
       fetch("/agents") // Shorthand for http://localhost:5000/agetns
           .then((res) => res.json()) // Result becomes a json
@@ -64,7 +70,6 @@ class App extends React.Component{
           .then((res) => res.json()) // Result becomes a json
           .then((json) => { // take the json and set the state vars with it
               let new_ref = json;
-              console.log("new ref", new_ref.state);
               if (!_.isEqual(new_ref, this.state.env_info)) {
                 console.log("Old State: ", this.state.env_info.state);
                 console.log("New State: ", new_ref.state);
@@ -88,25 +93,13 @@ class App extends React.Component{
       this.forceUpdate();
 
     }
+  
     // When we renderour App, fetch the agent information
     componentDidMount() {
       this.update_from_sim();
       this.interval = setInterval(() => this.update_from_sim(), 2000);
     }
    
-    sim_state_pass(state) {
-      this.setState({sim_state: state});
-    }
- 
-    // Pass the position change into agent state
-    pos_pass(id, x, y) {
-      let new_agents = [...this.state.agents];
-      let agent = {...new_agents[id]};
-      agent.cur_pos = {'x': x, 
-                       'y': y}
-      new_agents[id] = agent;
-      this.setState({agents: new_agents});
-    } 
     // Render Our App Component ( calls to Agent subchildren)
     render() {
         
@@ -131,22 +124,24 @@ class App extends React.Component{
                           sim_state={this.state.sim_state}/>
 
             <Buttons sim_state={this.state.sim_state} 
-                     sim_state_pass={this.sim_state_pass}
-                     update_from_sim={this.update_from_sim}/>
+                     update_from_sim={this.update_from_sim}
+                     socket={this.state.socket}/>
             <div className="Modify-wrap">
               <RenderedScene />
               {this.state.sim_state === 'pause' && 
                   <AgentMap agents={this.state.agents} 
                           max_NS={this.state.env_info.max_NS} 
                           max_EW={this.state.env_info.max_EW} 
-                          tile_size={this.state.env_info.tile_size} 
-                          pos_pass={this.pos_pass}/> 
+                          tile_size={this.state.env_info.tile_size}
+                          socket={this.state.socket}/> 
+
               }
             </div>
 
             <div className="Agents-wrap">
               {this.state.sim_state === 'pause' && 
-                  <Agents agents={this.state.agents}/>
+                  <Agents agents={this.state.agents}
+                          socket={this.state.socket}/>
               }
             </div>
         </div>

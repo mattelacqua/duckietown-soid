@@ -24,11 +24,6 @@ class RenderedScene extends React.Component {
   }
 
   error_tick() {
-    console.log("ERROR TICK")
-    this.setState({
-      src: "http://localhost:5000/renderedScene",
-      key: Date.now(),
-    });
     this.setState({
       src: "http://localhost:5000/renderedScene",
       key: Date.now(),
@@ -36,7 +31,7 @@ class RenderedScene extends React.Component {
   }
 
   componentDidMount() {
-    this.interval = setInterval(() => this.tick(), 100);
+    this.interval = setInterval(() => this.tick(), 200);
   }
   
   // Render the information to screen
