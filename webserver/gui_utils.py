@@ -41,6 +41,19 @@ class guiState():
         env.state = self.state
         return self.state 
 
+# Store the # of steps we are
+class guiSteps():
+    step: int
+
+    def __init__(self,
+        step = 0):
+
+        self.step = step
+
+    # If we get a step, return it
+    def handle_input(self, env):
+        return env.state # So it doesn't break. TODO
+
 # Class for any agent changes
 # IF ADDING ANYTHING MAKE SU?RE TO ADD IT TO UNSERIALIZE TOO
 class guiAgent():
@@ -156,31 +169,34 @@ def serialize(obj, fifo):
     #print("Serialize Time = {0}".format(toc - tic))
 
 # Unserialize from fifo
-def unserialize(fifo):
+def unserialize(fifo, log=False):
     tic = time.perf_counter()
     while True:
         try:
-            o = pickle.load(fifo)
+            yield pickle.load(fifo)
         except EOFError:
             break
             toc = time.perf_counter()
             #print("EOF Unserialize = {0}".format(toc - tic))
-        else:
-            return o
-            toc = time.perf_counter()
+        #else:
+            #return o
+            #toc = time.perf_counter()
             #print("Success Unserialize = {0}".format(toc - tic))
     
+
 
 # Init agents in server
 def init_server(dt, fifo, env, socket, get_map=False):
 
 
+    print(f"Env Step {env.step}")
     tic = time.perf_counter()
     if get_map:
         env.map_jpg(background=True)
         env.map_jpg(background=False)
     agents = env.agents
     input_list = []
+    step = env.agents[0].step_count
 
     # Initialize the server with agent information
     if agents:
@@ -207,56 +223,84 @@ def init_server(dt, fifo, env, socket, get_map=False):
     gui_state = guiState(state=env.state)
     input_list.append(gui_state)
 
+    gui_step = guiSteps(step=step)
+    input_list.append(gui_step)
+
     toc = time.perf_counter()
     #print("Data Function Dict Traversal = {0}".format(toc - tic))
     # Serialize the input
     serialize(input_list, fifo)
+
+
     if socket:
         socket.emit("update_sim_info")
   
     
     
 # Read initial positions and env info
-def read_init(fifo):
+def read_init(fifo, log=False):
     agent_list =[] 
     env_info = {}
+    log_list = []
     
-    inputs = unserialize(fifo)
+    input_list = list(unserialize(fifo, log))
+    if log:
+        print(f"Input list is {input_list}")
+        fifo.seek(0)
+
 
     # for each input from init server
     id_no = 0
-    if inputs:
-        for inp in inputs:
-            #print("READING INIT INPUT: {0}".format(inp))
-            # if agent add relevant info for webserver to have
-            if isinstance(inp, guiAgent):
-                gui_agent = inp
-                agent_list.append({
-                                    "id" : id_no,
-                                    "agent_id" : gui_agent.agent_id,
-                                    "cur_pos" : gui_agent.cur_pos,
-                                    "cur_angle" : gui_agent.cur_angle,
-                                    "color" : gui_agent.color,
-                                    "lights" : gui_agent.lights,
-                                    "turn_choice" : gui_agent.turn_choice,
-                                    "signal_choice" : gui_agent.signal_choice,
-                                    "forward_step" : gui_agent.forward_step,
-                                    "bbox_w" : gui_agent.bbox_offset_w,
-                                    "bbox_l" : gui_agent.bbox_offset_l,
-                                    })
-                id_no += 1
+    if input_list:
+        for inputs in input_list:
 
-            # if env_info add relevant info for webserver to have
-            if isinstance(inp, guiEnv):
-                gui_env = inp
-                env_info["max_NS"] = gui_env.max_NS
-                env_info["max_EW"] = gui_env.max_EW
-                env_info["tile_size"] = gui_env.tile_size
-            if isinstance(inp, guiState):
-                gui_state = inp
-                env_info["state"] = gui_state.state
+            # Reset to blank
+            agent_list = []
+            env_info = {} 
+            id_no = 0
+
+            for inp in inputs:
+                #print("READING INIT INPUT: {0}".format(inp))
+                # if agent add relevant info for webserver to have
+                if isinstance(inp, guiAgent):
+                    gui_agent = inp
+                    agent_list.append({
+                                        "id" : id_no,
+                                        "agent_id" : gui_agent.agent_id,
+                                        "cur_pos" : gui_agent.cur_pos,
+                                        "cur_angle" : gui_agent.cur_angle,
+                                        "color" : gui_agent.color,
+                                        "lights" : gui_agent.lights,
+                                        "turn_choice" : gui_agent.turn_choice,
+                                        "signal_choice" : gui_agent.signal_choice,
+                                        "forward_step" : gui_agent.forward_step,
+                                        "bbox_w" : gui_agent.bbox_offset_w,
+                                        "bbox_l" : gui_agent.bbox_offset_l,
+                                        })
+                    id_no += 1
+
+                # if env_info add relevant info for webserver to have
+                if isinstance(inp, guiEnv):
+                    gui_env = inp
+                    env_info["max_NS"] = gui_env.max_NS
+                    env_info["max_EW"] = gui_env.max_EW
+                    env_info["tile_size"] = gui_env.tile_size
+                if isinstance(inp, guiState):
+                    gui_state = inp
+                    env_info["state"] = gui_state.state
+                if isinstance(inp, guiSteps):
+                    gui_steps = inp
+                    env_info["step"] = gui_steps.step
+                    
+    
+            log_list.append({"agent_list" : agent_list,
+                             "env_info" : env_info,
+                             "step" : gui_steps.step})
     else:
         return None, None
+
+    if log:
+        return log_list
 
     if agent_list and env_info:
         return agent_list, env_info

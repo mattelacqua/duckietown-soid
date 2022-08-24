@@ -2,7 +2,7 @@
 from flask import Flask, render_template, send_file
 from flask_socketio import SocketIO
 import os
-from webserver.gui_utils import guiAgent, guiEnv, guiState, read_init, serialize
+from webserver.gui_utils import guiAgent, guiEnv, guiState, read_init, serialize, unserialize
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -21,8 +21,10 @@ app = Flask(__name__, template_folder=template_dir)
 socketio = SocketIO(app,cors_allowed_origins="*")
 fifo_out = 'webserver/webserver.out'
 fifo_in = 'webserver/webserver.in'
+fifo_log = 'webserver/webserver.log'
 out = open(fifo_out, "wb")
 inp = open(fifo_in, "rb")
+logger = open(fifo_log, "rb")
 
 # Read initial positions of agents and info about the environment
 agent_list, env_info = None, None
@@ -47,6 +49,28 @@ def envInfo():
     update_sim_info()
     envInfo_string = json.dumps(env_info)
     return envInfo_string
+
+@app.route("/log/<int:step>")
+def log(step):
+    global logger, agent_list, env_info
+    log_info = list(unserialize(logger, log=True))
+
+    # Get the closest step possible
+    if step != 0:
+        step = int(round(step / 10))
+
+    # Get it if it exists
+    try: log_step = log_info[step]
+    except: return ""
+
+    print(f"Log Step = {log_step}")
+    #log_string = json.dumps(log_step)
+
+    #TODO 
+    # We need to format these and changes, serialize to webserver out, 
+    # read them during pause and handle all.
+
+    return str(log_step)
 
 
 @app.route("/mapImage")

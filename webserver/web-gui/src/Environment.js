@@ -15,6 +15,7 @@ class Environment extends React.Component {
       max_EW: props.max_EW,
       tile_size: props.tile_size,
       sim_state: props.sim_state,
+      sim_step: props.sim_step,
     };
   }
 
@@ -30,7 +31,8 @@ class Environment extends React.Component {
                 <EnvInfo    max_NS={this.state.max_NS}
                             max_EW={this.state.max_EW}
                             sim_state={this.state.sim_state}
-                            tile_size={this.state.tile_size}/>
+                            tile_size={this.state.tile_size}
+                            sim_step={this.state.sim_step}/>
               </div>
           );
     }

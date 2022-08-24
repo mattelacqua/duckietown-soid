@@ -123,7 +123,8 @@ class App extends React.Component{
               <Environment  max_NS={this.state.env_info.max_NS} 
                             max_EW={this.state.env_info.max_EW} 
                             tile_size={this.state.env_info.tile_size}
-                            sim_state={this.state.sim_state}/>
+                            sim_state={this.state.sim_state}
+                            sim_step={this.state.env_info.step}/>
 
               <Buttons sim_state={this.state.sim_state} 
                        update_from_sim={this.update_from_sim}

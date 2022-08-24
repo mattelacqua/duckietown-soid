@@ -88,14 +88,17 @@ env.unwrapped.window.push_handlers(key_handler)
 # Webserver handler
 fifo_in = 'webserver/webserver.out'
 fifo_out = 'webserver/webserver.in'
+fifo_log = 'webserver/webserver.log'
 
 # CLEAR OLD STUFF
 clear = open(fifo_in, 'wb').close()
 clear = open(fifo_out, 'wb').close()
+clear = open(fifo_log, 'wb').close()
 
 # Write new stuff
 out = open(fifo_out, 'wb', os.O_NONBLOCK)
 inp = open(fifo_in, 'rb', os.O_NONBLOCK)
+log = open(fifo_log, 'wb', os.O_NONBLOCK)
 print("STARTING WITH THESE")
 print(inp.readlines())
 
@@ -136,9 +139,10 @@ def pause(dt):
 
     # While still getting input
     while env.state == "pause":
-        gui_input = gu.unserialize(inp)
+        gui_input = list(gu.unserialize(inp))
         # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
         if gui_input:
+            gui_input = gui_input[-1]
             env.state = gui_input.handle_input(env)
             gu.init_server(0, out, env, socket)
             if env.state == "quit":
@@ -170,9 +174,10 @@ def update(dt):
     """
 
     # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
-    gui_input = gu.unserialize(inp)
+    gui_input = list(gu.unserialize(inp))
 
     if gui_input:
+        gui_input = gui_input[-1]
         state = gui_input.handle_input(env)
         if state == "quit":
             print("Killing Webserver")
@@ -198,8 +203,14 @@ def update(dt):
         if agent.actions:
             agent.render_step(env, agent.get_next_action())
        
+    # Log the info
+    if env.agents[0].step_count % 10 == 0 or env.agents[0].step_count == 1:
+        print("Logging")
+        gu.init_server(1, log, env, socket)
+
     # render the cam
     env.render(env.cam_mode)
+
 
 
 if __name__ == '__main__':
