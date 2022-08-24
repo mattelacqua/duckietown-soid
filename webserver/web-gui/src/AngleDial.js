@@ -28,16 +28,14 @@ class AngleDial extends React.Component {
 
   // Emit tick
   tick(){
-    // if (this.state.value !== this.state.last_sent) {
-      console.log("Sending agent angle");
-      this.state.socket.emit('agent_angle',
-                  {
-                      'id':this.state.id,         // Pass the agent_id stored in state
-                      'value':this.state.value    // Pass the cur_angle stored in state
-                  }); // End emit
-      this.setState({last_sent: this.state.value});
-     // }
-
+      if (this.state.value !== this.state.last_sent) {
+        this.state.socket.emit('agent_angle',
+                    {
+                        'id':this.state.id,         // Pass the agent_id stored in state
+                        'value':this.state.value    // Pass the cur_angle stored in state
+                    }); // End emit
+       this.setState({last_sent: this.state.value}); 
+     }
   }
 
   componentDidMount() {
@@ -49,6 +47,8 @@ class AngleDial extends React.Component {
   render() {
     const color = this.props.agent_color
     return (
+      <div>
+        <p> Angle Dial </p>
         <CircularSlider
             label={this.props.agent_id}
             labelColor={color}
@@ -67,6 +67,7 @@ class AngleDial extends React.Component {
             dataIndex={this.props.cur_angle}
             onChange={value => {this.handleChange(value)}}
         />
+      </div>
     )
     } // End Render
 } // End Class

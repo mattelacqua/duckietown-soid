@@ -37,7 +37,11 @@ class Agents extends React.Component {
                            cur_pos={agent.cur_pos}
                            color={agent.color} 
                            turn_choice={agent.turn_choice} 
+                           signal_choice={agent.signal_choice} 
+                           forward_step={agent.forward_step} 
                            lights={agent.lights} 
+                           bbox_w={agent.bbox_w} 
+                           bbox_l={agent.bbox_l} 
                            socket={this.state.socket} />
                     ))
           );

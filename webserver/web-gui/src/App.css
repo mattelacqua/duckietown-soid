@@ -1,7 +1,11 @@
 .App {
-    text-align: center;
+    text-align: left;
+    font-weight: 600;
     color: Black;
-    background-color: alabster;
+    text-shadow:
+    -1px -1px 0 #EEE,
+    1px 1px 0 #EEE;
+    background-color: #F8F8F8;
 }
 .Modify-wrap {
     display:flex;

@@ -109,8 +109,8 @@ env.agents[0].forward_step = 0.44
 env.agents[1].forward_step = 0.22
 env.agents[2].forward_step = 0.00
 
-env.agents[0].turn = "Left" 
-env.agents[1].turn = "Straight" 
+env.agents[0].turn_choice = "Left" 
+env.agents[1].turn_choice = "Straight" 
 # Random is None which will be the 3rd agent
 
 
@@ -205,7 +205,7 @@ def update(dt):
 if __name__ == '__main__':
 
     # Enter main event loop
-    pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
+    pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
     pyglet.clock.schedule_interval(gu.init_server, 1, out, env, socket)
     pyglet.app.run()
 

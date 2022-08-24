@@ -49,9 +49,13 @@ class guiAgent():
     color: str
     cur_pos: List[float]
     cur_angle: float
+    forward_step: float
     inc_direction: str
     lights:  List
     turn_choice: str
+    signal_choice: str
+    bbox_offset_w: float
+    bbox_offset_l: float
     
     
     def __init__(self,
@@ -62,7 +66,11 @@ class guiAgent():
         color = "",
         inc_direction = "",
         lights = [],
-        turn_choice= None):
+        turn_choice= None,
+        forward_step= 0.0,
+        bbox_offset_w= 0.0,
+        bbox_offset_l= 0.0,
+        signal_choice= None):
 
         self.change = change
         self.agent_id = agent_id
@@ -72,17 +80,26 @@ class guiAgent():
         self.inc_direction = inc_direction
         self.lights = lights
         self.turn_choice = turn_choice
+        self.signal_choice = signal_choice
+        self.forward_step = forward_step
+        self.bbox_offset_w = bbox_offset_w
+        self.bbox_offset_l = bbox_offset_l
 
 
     # Handle agent input. Based on the kind of change, do xyz
     def handle_input(self, env):
         agent_id = self.agent_id
         cur_pos = self.cur_pos
+        forward_step = self.forward_step
         cur_angle = math.radians(self.cur_angle)
         change = self.change
         lights = self.lights
         color = self.color
         turn_choice = self.turn_choice
+        signal_choice = self.signal_choice
+        bbox_offset_l = self.bbox_offset_l
+        bbox_offset_w = self.bbox_offset_w
+
 
         agent_count = 0
         for agent in env.agents:
@@ -90,8 +107,12 @@ class guiAgent():
                 #print("Changing {0}'s current angle from {1} to {2}".format(agent.agent_id, agent.cur_angle, cur_angle))
                 if change == "angle":
                     agent.cur_angle = cur_angle
+                elif change == "forward_step":
+                    agent.forward_step = forward_step
                 elif change == "pos":
                     agent.cur_pos = cur_pos
+                    #Resetting the actions for the agent since pos change will revert
+                    agent.actions = []
                 elif change == "inc_pos":
                     if self.inc_direction == 'N':
                         agent.cur_pos[2] -= 0.1
@@ -102,15 +123,19 @@ class guiAgent():
                     elif self.inc_direction == 'W':
                         agent.cur_pos[0] -= 0.1
                 elif change == "turn":
-                    agent.turn = turn_choice
+                    agent.turn_choice = turn_choice
+                elif change == "signal":
+                    agent.signal_choice = signal_choice
+                elif change == "bbox_offset_w":
+                    agent.bbox_offset_w = bbox_offset_w
+                elif change == "bbox_offset_l":
+                    agent.bbox_offset_l = bbox_offset_l
                 elif change == "lights":
                     for light in lights:
                         agent.set_light(light["light"], light["on"])
                 elif change == "delete":
                     env.agents.remove(agent)
                 
-                #Resetting the actions for the agent
-                agent.actions = []
             agent_count = agent_count + 1
         if change == "add":
             new_agent = agents.Agent(agent_id=("agent"+str(agent_count)))
@@ -164,7 +189,11 @@ def init_server(dt, fifo, env, socket, get_map=False):
                                                                   'y':round(agent.cur_pos[2], 3)},
                                                          cur_angle=round(math.degrees(agent.cur_angle)),
                                                          color=html_color(agent.color),
-                                                         turn_choice=agent.turn,
+                                                         turn_choice=agent.turn_choice,
+                                                         signal_choice=agent.signal_choice,
+                                                         forward_step=agent.forward_step,
+                                                         bbox_offset_w=agent.bbox_offset_w,
+                                                         bbox_offset_l=agent.bbox_offset_l,
                                                          lights=agent.lights_to_dictlist()), agents)))
 
     # Include information about the environment
@@ -209,9 +238,12 @@ def read_init(fifo):
                                     "cur_angle" : gui_agent.cur_angle,
                                     "color" : gui_agent.color,
                                     "lights" : gui_agent.lights,
-                                    "turn_choice" : gui_agent.turn_choice
+                                    "turn_choice" : gui_agent.turn_choice,
+                                    "signal_choice" : gui_agent.signal_choice,
+                                    "forward_step" : gui_agent.forward_step,
+                                    "bbox_w" : gui_agent.bbox_offset_w,
+                                    "bbox_l" : gui_agent.bbox_offset_l,
                                     })
-                #print("\n\n\n\n\n\n\n\nHONEYPOT\n\n\n\n")
                 id_no += 1
 
             # if env_info add relevant info for webserver to have
@@ -259,7 +291,7 @@ def html_color(color: str):
         "grey": "DimGray",
         "blue": "DarkBlue",
         "cyan": "Cyan",
-        "yellow": "Gold",
+        "yellow": "#F5CD00",
         "orange": "Orange",
         "midnight": "Indigo"
     }

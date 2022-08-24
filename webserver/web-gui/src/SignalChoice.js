@@ -4,28 +4,28 @@ import './Buttons.css';
 import Select from 'react-select';
 
 // Component to spit out agent information
-class TurnChoice extends React.Component {
+class SignalChoice extends React.Component {
 
   // Construct so it takes properties and they are information
   constructor(props) {
     super(props);
     this.state = {
         agent_id: props.agent_id,
-        turn_choice: props.turn_choice,
+        signal_choice: props.signal_choice,
         socket: props.socket,
     };
     this.handleChoice = this.handleChoice.bind(this);
   }
 
   // Handle the click
-  handleChoice(turn) {
+  handleChoice(signal) {
     this.setState({
-      turn_choice: turn,
+      signal_choice: signal,
     });
-    this.state.socket.emit('turn_choice',
+    this.state.socket.emit('signal_choice',
         {
             'agent_id':this.state.agent_id,
-            'turn':turn,
+            'signal':signal,
             
         });
   }
@@ -37,11 +37,11 @@ class TurnChoice extends React.Component {
           { value: 'Left', label: 'Left' },
           { value: 'Straight', label: 'Straight' },
           { value: 'Random', label: 'Random' }];
-    const defaultValue = { value: this.state.turn_choice, label: this.state.turn_choice}
+    const defaultValue = { value: this.state.signal_choice, label: this.state.signal_choice}
 
     return( 
       <div>
-        <p> <br />Turn Choice: </p>
+        <p> Signal Choice: </p>
         <Select
           defaultValue={defaultValue}
           options={options} // Options to display in the dropdown
@@ -52,4 +52,4 @@ class TurnChoice extends React.Component {
 }
 
 
-export default TurnChoice;
+export default SignalChoice;

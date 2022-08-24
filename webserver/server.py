@@ -157,8 +157,43 @@ def turn_choice(data):
     if turn == "Random":
         turn = None
     to_send = guiAgent(change="turn", agent_id=a_id, turn_choice=turn)
-    #print(f"Setting Turn to {turn} for agent {a_id}")
+    print(f"Setting Turn to {turn} for agent {a_id}")
     serialize(to_send, out)
 
+@socketio.on("signal_choice")
+def signal_choice(data):
+    global out
+    a_id = str(data['agent_id'])
+    signal = str(data['signal'])
+    if signal == "Random":
+        signal = None
+    to_send = guiAgent(change="signal", agent_id=a_id, signal_choice=signal)
+    print(f"Setting Signal to {signal} for agent {a_id}")
+    serialize(to_send, out)
+
+# On socket update change agent forward step (use minimum by default 
+@socketio.on("forward_step")
+def forward_step(data):
+    global out
+    a_id = str(data['id'])
+    forward_step = dict(data['forward_step'])
+    # Default to MIN
+    agent_change = guiAgent(change="forward_step", agent_id=a_id, forward_step=round(forward_step['min'], 2)) 
+    #print(f"Sending Agent {a_id} forward_step min {forward_step}")
+    serialize(agent_change, out)
+
+@socketio.on("bounding_box")
+def bounding_box(data):
+    global out
+    a_id = str(data['id'])
+    direction = str(data['direction'])
+    bbox_offset = float(data['bbox_offset'])
+    print(f"bbox {direction} offset {bbox_offset}")
+    if direction == "width":
+        agent_change = guiAgent(change="bbox_offset_w", agent_id=a_id, bbox_offset_w=round(bbox_offset, 2))
+    elif direction == "length":
+        agent_change = guiAgent(change="bbox_offset_l", agent_id=a_id, bbox_offset_l=round(bbox_offset, 2))
+    #print(f"Sending Agent {a_id} bbox_offset {bbox_offset} direction {direction}")
+    serialize(agent_change, out)
 if __name__ == '__main__':
     socketio.run(app)

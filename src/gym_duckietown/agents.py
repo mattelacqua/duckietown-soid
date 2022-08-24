@@ -27,9 +27,12 @@ class Agent():
     nearby_agents: List
     follow_dist: float
     max_iterations: int
-    turn_preference: str
+    turn: str
+    signal_choice: str
     stop_point: float
     forward_step: float
+    bbox_offset_w: float
+    bbox_offset_l: float
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -67,9 +70,12 @@ class Agent():
                         "back_left": [-0.1, -0.05, height, False],
                         "back_right": [-0.1, +0.05, height, False],
                         }
-        self.turn = None
+        self.turn_choice = None
+        self.signal_choice = None
         self.stop_point = None
         self.forward_step = 0.00
+        self.bbox_offset_w = 0.00
+        self.bbox_offset_l = 0.00
 
 #--------------------------
 # Lights
@@ -97,10 +103,38 @@ class Agent():
             light_list.append({"light": light[0], "on":self.lights[light[0]][3]})
         return light_list
 
+    # Signal for a turn
+    def signal_for_turn(self, turn):
+        choices = ['Right', 'Left', 'Straight'] 
+        if not turn:
+            turn = random.choice(choices)
 
+        if turn == "Right":
+            self.turn_on_light("front_right")
+            self.turn_on_light("back_right")
+            self.turn_off_light("front_left")
+            self.turn_off_light("back_left")
+            self.turn_off_light("center")
+        elif turn == "Left":
+            self.turn_off_light("front_right")
+            self.turn_off_light("back_right")
+            self.turn_on_light("front_left")
+            self.turn_on_light("back_left")
+            self.turn_off_light("center")
+        elif turn == "Straight":
+            self.turn_off_light("front_right")
+            self.turn_off_light("back_right")
+            self.turn_off_light("front_left")
+            self.turn_off_light("back_left")
+            self.turn_off_light("center")
+
+   
+#--------------------------
+# Movement
+#--------------------------
 
     # Stop the vehicle
-    def stop_vehicle(self, env, choice, wrong_light: bool=False, stop_point: int=30,forward_step: float=0.44):
+    def stop_vehicle(self, env, signal_choice, stop_point: int=30,forward_step: float=0.44):
         if env.verbose:
             logger.info(self.agent_id + ": Stopping")
         stop_iterations = 0
@@ -112,28 +146,12 @@ class Agent():
         while stop_iterations < stop_point:
             action = np.array([0.0, 0.0])
             action_seq.append(action)
-            # Turn on respective turn signals
-            if choice == "Right" and not wrong_light:
-                self.turn_on_light("front_right")
-                self.turn_on_light("back_right")
-            elif choice == "Left" and not wrong_light:
-                self.turn_on_light("front_left")
-                self.turn_on_light("back_left")
-            elif choice == "Right" and wrong_light:
-                self.turn_on_light("front_left")
-                self.turn_on_light("back_left")
-            elif choice == "Left" and wrong_light:
-                self.turn_on_light("front_right")
-                self.turn_on_light("back_right")
+            self.signal_for_turn(signal_choice)
             stop_iterations += 1
 
         return action_seq
 
-    
-#--------------------------
-# Movement
-#--------------------------
-
+ 
     # Move Forwards at whatever angle we are at, not going faster than 30 mps
     def move_forward(self, env, speed_limit=1.0):
         # Set the speed
@@ -205,6 +223,7 @@ class Agent():
         dot = np.dot(get_right_vec(self.cur_angle), point_vec)
         steering = (forward_step/2.0 * 10) * -dot
         actions.append([forward_step, steering])
+        print(f"{self.agent_id} Straighten out actions = {actions} at step {self.step_count}")
         return actions
 
 
@@ -258,6 +277,7 @@ class Agent():
         action_seq = []
         
         # Turn this amount 
+        print(f"Executing a right turn for {self.agent_id}, turn steps is {turn_steps}")
         while turn_count < turn_stop:          # Arbitrary turn count that works for speed limit?
             action = np.array([0.0, 0.0])
             action -= np.array([0.0, turn_factor])
@@ -311,9 +331,10 @@ class Agent():
     # Handle an intersection
     # wrong_light=False, so agent behaves good and turns on correct signal lights
         # wrong_light=True, agent behaves bad and turns on wrong signal lights
-    def handle_intersection(self, env, speed_limit=1.0, choice=None, wrong_light=False, stop_point=30):
+    def handle_intersection(self, env, speed_limit=1.0,  stop_point=30):
 
-        choice = self.turn
+        turn_choice = self.turn_choice
+        signal_choice= self.signal_choice
         forward_step = self.forward_step
 
         # Initialize action sequence
@@ -321,17 +342,24 @@ class Agent():
 
         # Choose a random option if one not given
         choices = ['Right', 'Left', 'Straight'] 
-        if choice == None:
-            choice = random.choice(choices)
+        if turn_choice == None:
+            turn_choice = random.choice(choices)
+
+        # Match the signal_choice
+        if not signal_choice:
+            signal_choice = turn_choice 
 
         # Stop
-        action_seq.extend(self.stop_vehicle(env, choice, wrong_light=wrong_light, forward_step=forward_step, stop_point=stop_point))
+        action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step, stop_point=stop_point))
 
-        if choice == 'Right':
+        if turn_choice == 'Right':
+            print(f"{self.agent_id} is taking a right turn.")
             action_seq.extend(self.right_turn(env, forward_step=forward_step))
-        elif choice == 'Left':
+        elif turn_choice == 'Left':
+            print(f"{self.agent_id} is taking a left turn.")
             action_seq.extend(self.left_turn(env, forward_step=forward_step))
         else:
+            print(f"{self.agent_id} is going straight.")
             forward_steps = 0
             while forward_steps < 30:
                 action_seq.extend(self.move_forward(env, speed_limit=speed_limit))

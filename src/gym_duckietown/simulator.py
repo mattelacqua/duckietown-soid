@@ -465,75 +465,6 @@ class Simulator(gym.Env):
             normals.extend(normal)
             colors.extend(color)
 
-            #
-            # normals.extend([0.0, 1.0, 0.0] * 4)
-
-        # def get_quad_vertices(cx, cz, hs) -> Tuple[List[float], List[float], List[float]]:
-        #     v = [
-        #         -hs + cx,
-        #         0.0,
-        #         -hs + cz,
-        #         #
-        #         hs + cx,
-        #         0.0,
-        #         -hs + cz,
-        #         #
-        #         hs + cx,
-        #         0.0,
-        #         hs + cz,
-        #         #
-        #         -hs + cx,
-        #         0.0,
-        #         hs + cz,
-        #     ]
-        #     n = [0.0, 1.0, 0.0] * 4
-        #     t = [0.0, 1.0,
-        #          #
-        #          1.0, 1.0,
-        #          #
-        #          1.0, 0.0,
-        #          #
-        #          0.0, 0.0]
-        #     return v, n, t
-
-        # Create the vertex list for our road quad
-        # Note: the vertices are centered around the origin so we can easily
-        # rotate the tiles about their center
-
-        # verts = []
-        # texCoords = []
-        # normals = []
-        #
-        # v, n, t = get_quad_vertices(cx=0, cz=0, hs=half_size)
-        # verts.extend(v)
-        # normals.extend(n)
-        # texCoords.extend(t)
-
-        # verts = [
-        #     -half_size,
-        #     0.0,
-        #     -half_size,
-        #     #
-        #     half_size,
-        #     0.0,
-        #     -half_size,
-        #     #
-        #     half_size,
-        #     0.0,
-        #     half_size,
-        #     #
-        #     -half_size,
-        #     0.0,
-        #     half_size,
-        # ]
-        # texCoords = [1.0, 0.0,
-        #              0.0, 0.0,
-        #              0.0, 1.0,
-        #              1.0, 1.0]
-        # Previous choice would reflect the texture
-        # logger.info(nv=len(vertices), nt=len(textures), nn=len(normals), vertices=vertices,
-        # textures=textures,
-        #             normals=normals)
         total = len(vertices) // 3
         self.road_vlist = pyglet.graphics.vertex_list(
             total, ("v3f", vertices), ("t2f", textures), ("n3f", normals), ("c4B", colors)
@@ -581,7 +512,7 @@ class Simulator(gym.Env):
             agent.last_action = np.array([0.0, 0.0]) 
             agent.wheelVels = np.array([0.0, 0.0]) 
             agent.state = None
-            agent.lights["front_left"][3] = True
+            agent.lights["front_left"][3] = False
             agent.lights["front_right"][3] = False
             agent.lights["back_left"][3] = False
             agent.lights["back_right"][3] = False
@@ -725,7 +656,8 @@ class Simulator(gym.Env):
                 propose_angle = agent.cur_angle
 
             elif agent.start_pose:
-                #logger.info(f"using map pose start for agent {agent.agent_id}: {agent.start_pose}")
+                if self.verbose:
+                    logger.info(f"using map pose start for agent {agent.agent_id}: {agent.start_pose}")
 
                 i, j = tile["coords"]
                 x = i * self.road_tile_size + agent.start_pose[0][0]
@@ -733,7 +665,8 @@ class Simulator(gym.Env):
                 propose_pos = np.array([x, 0, z])
                 propose_angle = agent.start_pose[1]
 
-                #logger.info(f"Using map pose start for agent {agent.agent_id}. \n Pose: {propose_pos}, Angle: {propose_angle}")
+                if self.verbose:
+                    logger.info(f"Using map pose start for agent {agent.agent_id}. \n Pose: {propose_pos}, Angle: {propose_angle}")
 
             else:
                 # Keep trying to find a valid spawn position on this tile
@@ -786,6 +719,7 @@ class Simulator(gym.Env):
                     # raise Exception(msg)
 
             agent.cur_pos = propose_pos
+            agent.prev_pos = propose_pos
             agent.cur_angle = propose_angle
 
             init_vel = np.array([0, 0])
@@ -802,7 +736,7 @@ class Simulator(gym.Env):
             c0 = q, v0
             agent.state = p.initialize(c0=c0, t0=0)
 
-            logger.info(f"Starting agent {agent.agent_id} at {agent.cur_pos} {agent.cur_angle}")
+            logger.info(f"Starting agent {agent.agent_id} at:\nPosition:{agent.cur_pos} {agent.cur_angle}\nForward Step: {agent.forward_step}\nTurn Choice:{agent.turn_choice}\nSignal Choice:{agent.signal_choice}\nActions:{agent.actions}\nSpeed:{agent.speed}\nState:{agent.state}")
 
         # Generate the first camera image
         obs = self.render_obs(segment=segment)
@@ -2001,7 +1935,7 @@ class Simulator(gym.Env):
                 angle = agent.cur_angle
          
                 if self.draw_bbox:
-                    corners = get_agent_corners(pos, angle, bbox_offset_w=0, bbox_offset_l=0)
+                    corners = get_agent_corners(pos, angle, bbox_offset_w=agent.bbox_offset_w, bbox_offset_l=agent.bbox_offset_l)
                     gl.glColor3f(0, .9, .9)
                     gl.glBegin(gl.GL_LINE_LOOP)
                     gl.glVertex3f(corners[0, 0], .01, corners[0, 1])

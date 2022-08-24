@@ -118,16 +118,17 @@ class App extends React.Component{
         // Div to clump app up into one component to render
         <div className = "App"> {/* Using app.css stylesheet */}
             {/* Header text */}
-            <Environment  max_NS={this.state.env_info.max_NS} 
-                          max_EW={this.state.env_info.max_EW} 
-                          tile_size={this.state.env_info.tile_size}
-                          sim_state={this.state.sim_state}/>
-
-            <Buttons sim_state={this.state.sim_state} 
-                     update_from_sim={this.update_from_sim}
-                     socket={this.state.socket}/>
             <div className="Modify-wrap">
               <RenderedScene />
+              <Environment  max_NS={this.state.env_info.max_NS} 
+                            max_EW={this.state.env_info.max_EW} 
+                            tile_size={this.state.env_info.tile_size}
+                            sim_state={this.state.sim_state}/>
+
+              <Buttons sim_state={this.state.sim_state} 
+                       update_from_sim={this.update_from_sim}
+                       socket={this.state.socket}/>
+
               {this.state.sim_state === 'pause' && 
                   <AgentMap agents={this.state.agents} 
                           max_NS={this.state.env_info.max_NS} 
