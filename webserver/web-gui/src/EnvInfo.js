@@ -17,7 +17,8 @@ class EnvInfo extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({sim_state: nextProps.sim_state});
+    this.setState({sim_state: nextProps.sim_state,
+                   sim_step: nextProps.sim_step});
   }
 
   // Render the information to screen

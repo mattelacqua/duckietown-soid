@@ -277,7 +277,7 @@ class Agent():
         action_seq = []
         
         # Turn this amount 
-        print(f"Executing a right turn for {self.agent_id}, turn steps is {turn_steps}")
+        print(f"Executing a right turn for {self.agent_id}, turn steps is {turn_stop}")
         while turn_count < turn_stop:          # Arbitrary turn count that works for speed limit?
             action = np.array([0.0, 0.0])
             action -= np.array([0.0, turn_factor])

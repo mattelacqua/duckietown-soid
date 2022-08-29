@@ -54,6 +54,9 @@ class guiSteps():
     def handle_input(self, env):
         return env.state # So it doesn't break. TODO
 
+
+
+
 # Class for any agent changes
 # IF ADDING ANYTHING MAKE SU?RE TO ADD IT TO UNSERIALIZE TOO
 class guiAgent():
@@ -69,6 +72,11 @@ class guiAgent():
     signal_choice: str
     bbox_offset_w: float
     bbox_offset_l: float
+    state: None
+    log_lights: List
+    log_pos: List
+    log_angle: None
+    log_color: None
     
     
     def __init__(self,
@@ -83,7 +91,13 @@ class guiAgent():
         forward_step= 0.0,
         bbox_offset_w= 0.0,
         bbox_offset_l= 0.0,
-        signal_choice= None):
+        state= None,
+        signal_choice= None,
+        log_lights= None,
+        log_pos= None,
+        log_angle= None,
+        log_color= None,
+        ):
 
         self.change = change
         self.agent_id = agent_id
@@ -97,6 +111,11 @@ class guiAgent():
         self.forward_step = forward_step
         self.bbox_offset_w = bbox_offset_w
         self.bbox_offset_l = bbox_offset_l
+        self.state = state
+        self.log_lights = log_lights
+        self.log_pos = log_pos
+        self.log_angle = log_angle
+        self.log_color = log_color
 
 
     # Handle agent input. Based on the kind of change, do xyz
@@ -158,6 +177,34 @@ class guiAgent():
         # Return false because not done command
         return env.state 
 
+# Handle resetting from Log
+class guiLog():
+    log_agents: List[guiAgent]
+    log_steps: int 
+
+    def __init__(self, log_agents=[], log_steps=0):
+        self.log_agents = log_agents
+        self.log_steps = log_steps
+
+    def handle_input(self, env):
+        for agent in env.agents:
+            for log_agent in self.log_agents:
+                if agent.agent_id == log_agent.agent_id:
+                    agent.cur_pos = log_agent.log_pos
+                    agent.cur_angle = log_agent.log_angle
+                    agent.color = log_agent.log_color
+                    agent.turn_choice = log_agent.turn_choice
+                    agent.signal_choice = log_agent.signal_choice
+                    agent.forward_step = log_agent.forward_step
+                    agent.bbox_offset_w = log_agent.bbox_offset_w
+                    agent.bbox_offset_l = log_agent.bbox_offset_l
+                    agent.state = log_agent.state
+                    agent.lights = log_agent.log_lights
+                    agent.step_count = self.log_steps
+
+        return env.state
+
+
 
 # Serialize by pickling to fifo
 def serialize(obj, fifo):
@@ -210,7 +257,16 @@ def init_server(dt, fifo, env, socket, get_map=False):
                                                          forward_step=agent.forward_step,
                                                          bbox_offset_w=agent.bbox_offset_w,
                                                          bbox_offset_l=agent.bbox_offset_l,
-                                                         lights=agent.lights_to_dictlist()), agents)))
+                                                         state=agent.state,
+                                                         lights=agent.lights_to_dictlist(),
+                                                         log_lights=agent.lights,
+                                                         log_color=agent.color,
+                                                         log_pos=agent.cur_pos,
+                                                         log_angle=agent.cur_angle
+
+
+
+                                                         ), agents)))
 
     # Include information about the environment
     gui_env = guiEnv(max_NS=env.grid_height*env.road_tile_size,
@@ -338,6 +394,20 @@ def html_color(color: str):
         "yellow": "#F5CD00",
         "orange": "Orange",
         "midnight": "Indigo"
+    }
+    color = colors[color]
+    return color
+
+def from_html_color(color: str):
+    colors = {
+        "Green": "green",
+        "FireBrick": "red",
+        "DimGray": "grey",
+        "DarkBlue": "blue",
+        "Cyan": "cyan",
+        "#F5CD00": "yellow",
+        "Orange": "orange",
+        "indigo": "midnight"
     }
     color = colors[color]
     return color

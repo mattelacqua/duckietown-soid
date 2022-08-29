@@ -2,7 +2,7 @@
 from flask import Flask, render_template, send_file
 from flask_socketio import SocketIO
 import os
-from webserver.gui_utils import guiAgent, guiEnv, guiState, read_init, serialize, unserialize
+from webserver.gui_utils import guiAgent, guiEnv, guiState, guiSteps, guiLog, read_init, serialize, unserialize
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -28,6 +28,7 @@ logger = open(fifo_log, "rb")
 
 # Read initial positions of agents and info about the environment
 agent_list, env_info = None, None
+log_info = []
 while not agent_list or not env_info:
     agent_list, env_info = read_init(inp)
 
@@ -50,27 +51,7 @@ def envInfo():
     envInfo_string = json.dumps(env_info)
     return envInfo_string
 
-@app.route("/log/<int:step>")
-def log(step):
-    global logger, agent_list, env_info
-    log_info = list(unserialize(logger, log=True))
 
-    # Get the closest step possible
-    if step != 0:
-        step = int(round(step / 10))
-
-    # Get it if it exists
-    try: log_step = log_info[step]
-    except: return ""
-
-    print(f"Log Step = {log_step}")
-    #log_string = json.dumps(log_step)
-
-    #TODO 
-    # We need to format these and changes, serialize to webserver out, 
-    # read them during pause and handle all.
-
-    return str(log_step)
 
 
 @app.route("/mapImage")
@@ -219,5 +200,38 @@ def bounding_box(data):
         agent_change = guiAgent(change="bbox_offset_l", agent_id=a_id, bbox_offset_l=round(bbox_offset, 2))
     #print(f"Sending Agent {a_id} bbox_offset {bbox_offset} direction {direction}")
     serialize(agent_change, out)
+
+@socketio.on("log_step")
+def log_step(data):
+    global logger, agent_list, env_info, log_info
+    step = int(data['step'])
+    new_log_info = list(unserialize(logger, log=True))
+    if new_log_info:
+        log_info = new_log_info
+
+    # Get the closest step possible
+    if step != 0:
+        step = int(round(step / 10))
+
+    print(f"Log step {step}")
+
+    # Get it if it exists
+    try: log_step = log_info[step]
+    except: return ""
+
+    print(f"Log step {log_step}")
+    log_agents = []
+    log_steps = 0 
+    for inp in log_step:
+        if isinstance(inp, guiAgent):
+            log_agents.append(inp)
+        elif isinstance(inp, guiSteps):
+            log_steps = inp.step
+
+    log_change = guiLog(log_agents, log_steps)
+
+    serialize(log_change, out)
+
 if __name__ == '__main__':
     socketio.run(app)
+

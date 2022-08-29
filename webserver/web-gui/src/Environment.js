@@ -4,6 +4,9 @@ import React from "react";
 // Import envInfo
 import EnvInfo from "./EnvInfo.js"
 
+// Import envInfo
+import LogStep from "./LogStep.js"
+
 // Agent Component (gets rendered in app)
 class Environment extends React.Component {
 
@@ -20,7 +23,8 @@ class Environment extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({sim_state: nextProps.sim_state});
+    this.setState({sim_state: nextProps.sim_state,
+                   sim_step: nextProps.sim_step});
   }
 
   // Render the Env component EnvInfo.js)
@@ -33,6 +37,11 @@ class Environment extends React.Component {
                             sim_state={this.state.sim_state}
                             tile_size={this.state.tile_size}
                             sim_step={this.state.sim_step}/>
+                {this.props.sim_state === 'pause' &&
+                  <LogStep  step={this.state.sim_step}
+                            max_step={this.state.sim_step}
+                            socket={this.props.socket}/>
+                }
               </div>
           );
     }
