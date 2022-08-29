@@ -203,9 +203,6 @@ def update(dt):
         if agent.actions:
             agent.render_step(env, agent.get_next_action())
 
-        print(vars(agent.state))
-        #exit()
-       
     # Log the info
     if env.agents[0].step_count % 10 == 0 or env.agents[0].step_count == 1:
         print("Logging")
