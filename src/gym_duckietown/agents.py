@@ -366,11 +366,15 @@ class Agent():
         turn_choice = TurnChoice(intersection_action.turn_choice)
         signal_choice = TurnChoice(intersection_action.signal_choice)
         action = Action(intersection_action.action)
-        num_ahead = intersection_action.num_ahead
+        wait_step = intersection_action.wait_step
+        print(f"WAIT STEP IS {wait_step}")
 
         # Every Agent Stops
+        # Cushion slow down to stop at intersectoin
         action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step, stop_point=stop_point))
-        action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step, stop_point=num_ahead * 30))
+
+        # Wait based on our speed
+        action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step, stop_point=wait_step*2))
 
         if action == Action.INTERSECTION_RIGHT:
             print(f"{self.agent_id} is taking a right turn.")

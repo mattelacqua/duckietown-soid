@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include "types.c"
 
-#define MAX_AGENTS 5
-
 // Check if we are in the middle of completing an action
 bool completing_action(Action action) {
     if(action == NO_ACTION) {
@@ -57,13 +55,7 @@ TurnChoice get_signal(TurnChoice turn_choice, TurnChoice signal_choice) {
 }
 
 IntersectionAction *intersection_action(TurnChoice old_turn_choice, TurnChoice old_signal_choice, int intersection_arrival, EnvironmentAgentArray* env_agent_array_struct) {
-    // Get agents approaching intersection
-    // Decide how we signal
-    // Decide who has right of way
-    // Decide if we stop and wait
-        // If distance is greater than a tile size, we dont care
-        // See who has right of way (ignore this if bad agent)
-
+    
     // Incase of random turn or signal
     TurnChoice turn_choice = get_turn(old_turn_choice);
     TurnChoice signal_choice = get_signal(turn_choice, old_signal_choice);
@@ -72,11 +64,11 @@ IntersectionAction *intersection_action(TurnChoice old_turn_choice, TurnChoice o
     // Check if we want to wait first
     int num_near_intersection = env_agent_array_struct->elements;
 
+    int wait_step = 0;
 
-    int num_ahead = 0;
     for (int i = 0; i < num_near_intersection; i++) {
         if (intersection_arrival > env_agent_array_struct->ENV_AGENT_ARRAY[i].intersection_arrival) {
-            num_ahead++;
+            wait_step += intersection_arrival - env_agent_array_struct->ENV_AGENT_ARRAY[i].intersection_arrival;
         }
     }
     
@@ -92,33 +84,9 @@ IntersectionAction *intersection_action(TurnChoice old_turn_choice, TurnChoice o
         action = INTERSECTION_RIGHT;
     }
     
-    /*    printf("INSIDE C with num_elements as %d\n", env_agent_array_struct->elements);
-    if (env_agent_array_struct->elements > 0){
-        printf("INSIDE C with pos_x as %f\n", env_agent_array_struct->ENV_AGENT_ARRAY[0].pos_x);
-        printf("INSIDE C with pos_z as %f\n", env_agent_array_struct->ENV_AGENT_ARRAY[0].pos_z);
-        printf("INSIDE C with angle as %f\n", env_agent_array_struct->ENV_AGENT_ARRAY[0].angle);
-        printf("INSIDE C with difference as %f\n", env_agent_array_struct->ENV_AGENT_ARRAY[0].distance_away);
-        printf("INSIDE C with direction as %d\n", env_agent_array_struct->ENV_AGENT_ARRAY[0].direction);
-        fflush(stdout);
-    }*/
-
-
     // Return our action
     IntersectionAction *intersection_action;
-    intersection_action = make_action(turn_choice, signal_choice, action, num_ahead);
-
+    intersection_action = make_action(turn_choice, signal_choice, action, wait_step);
 
     return intersection_action;
 }
-
-bool agents_detected() {
-    return true;
-}
-
-bool agent_moving_closer() {
-    return true;
-}
-
-
-
-

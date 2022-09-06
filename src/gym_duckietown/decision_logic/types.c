@@ -30,13 +30,13 @@ typedef struct {
     TurnChoice turn_choice;
     TurnChoice signal_choice;
     Action action;
-    int num_ahead ;
+    int wait_step ;
 } IntersectionAction ;
 
-IntersectionAction *make_action(TurnChoice turn_choice, TurnChoice signal_choice, Action action, int num_ahead)
+IntersectionAction *make_action(TurnChoice turn_choice, TurnChoice signal_choice, Action action, int wait_step)
 {
     IntersectionAction *p;
-    IntersectionAction initial = {turn_choice, signal_choice, action, num_ahead};
+    IntersectionAction initial = {turn_choice, signal_choice, action, wait_step};
     p = malloc(sizeof(IntersectionAction));
     *p = initial;
 

@@ -30,7 +30,7 @@ class IntersectionAction(Structure):
     _fields_ = [('turn_choice', c_int),
                 ('signal_choice', c_int),
                 ('action', c_int),
-                ('num_ahead', c_int)]
+                ('wait_step', c_int)]
 
 class EnvironmentAgent(Structure):
     _fields_ = [('pos_x', c_float),
