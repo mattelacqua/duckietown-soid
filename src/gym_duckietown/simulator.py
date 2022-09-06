@@ -512,6 +512,7 @@ class Simulator(gym.Env):
             agent.last_action = np.array([0.0, 0.0]) 
             agent.wheelVels = np.array([0.0, 0.0]) 
             agent.state = None
+            agent.intersection_arrival = DEFAULT_MAX_STEPS
             agent.lights["front_left"][3] = False
             agent.lights["front_right"][3] = False
             agent.lights["back_left"][3] = False

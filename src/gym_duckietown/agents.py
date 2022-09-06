@@ -1,3 +1,5 @@
+from .dl_utils import *
+
 from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Union
 from .objmesh import get_mesh, MatInfo, ObjMesh
 import numpy as np
@@ -6,17 +8,23 @@ import numpy as np
 import math
 from . import logger
 from gym_duckietown import objects
+import os
+
+so_file = str(os.getcwd()) + "/src/gym_duckietown/decision_logic/libdecision_logic.so"
+dl = CDLL(so_file)
 
 """
 Contains functions for moving agent in ite world scenarios.
 """
+
 class Agent():
     cur_pos: np.ndarray
     cur_angle: np.ndarray
     last_action: np.ndarray
-    actions: List[np.ndarray]
+    actions: (List[np.ndarray], Action)
     wheelsVels: np.ndarray
     step_count: int
+    intersection_arrival: int
     start_tile: List[int] 
     start_pose: List[Union[List[Union[float, int]], Union[float, int]]] 
     speed: float 
@@ -25,6 +33,7 @@ class Agent():
     agent_id: str 
     nearby_objects: List[objects.WorldObj]         # Keep track of nearby objects and agents
     nearby_agents: List
+    intersection_agents: List
     follow_dist: float
     max_iterations: int
     turn: str
@@ -58,6 +67,7 @@ class Agent():
         self.mesh = get_duckiebot_mesh(color)
         self.nearby_objects = []          # Keep track of nearby objects and agents
         self.nearby_agents = []
+        self.intersection_agents = []
         self.actions = []
         self.step_count = 0
         self.follow_dist = 0.3
@@ -145,7 +155,7 @@ class Agent():
         # While still moving Slow down
         while stop_iterations < stop_point:
             action = np.array([0.0, 0.0])
-            action_seq.append(action)
+            action_seq.append((action, Action.INTERSECTION_STOP))
             self.signal_for_turn(signal_choice)
             stop_iterations += 1
 
@@ -154,6 +164,8 @@ class Agent():
  
     # Move Forwards at whatever angle we are at, not going faster than 30 mps
     def move_forward(self, env, speed_limit=1.0):
+        #print(dl.square(5))
+        #print("\n\n\n\n\n\n\n")
         # Set the speed
         forward_step = self.forward_step
         if forward_step == 0.0:
@@ -170,7 +182,7 @@ class Agent():
         # While still moving Slow down
         if curr_speed > speed_limit:
             action = np.array([0.0, 0.0])
-            action_seq.append(action)
+            action_seq.append((action, Action.SLOW_DOWN))
         else:
             action_seq.extend(self.straighten_out(env))
 
@@ -191,7 +203,7 @@ class Agent():
         forward_step = self.forward_step
     
         if forward_step == 0.0:
-            return actions.append([forward_step, 0])
+            return actions.append(([forward_step, 0], Action.STOP))
         # Find turn limit
         turn_limit = math.pow((forward_step * 10), 1.5)
 
@@ -222,7 +234,7 @@ class Agent():
         point_vec /= np.linalg.norm(point_vec)
         dot = np.dot(get_right_vec(self.cur_angle), point_vec)
         steering = (forward_step/2.0 * 10) * -dot
-        actions.append([forward_step, steering])
+        actions.append(([forward_step, steering], Action.FORWARD_STEP))
         print(f"{self.agent_id} Straighten out actions = {actions} at step {self.step_count}")
         return actions
 
@@ -282,7 +294,7 @@ class Agent():
             action = np.array([0.0, 0.0])
             action -= np.array([0.0, turn_factor])
             action += np.array([turn_step, 0.0])
-            action_seq.append(action)
+            action_seq.append((action, Action.INTERSECTION_RIGHT))
             turn_count += 1
 
         # Straighten Out
@@ -317,7 +329,7 @@ class Agent():
             action = np.array([0.0, 0.0])
             action += np.array([0.0, turn_factor])
             action += np.array([turn_step, 0.0])
-            action_seq.append(action)
+            action_seq.append((action, Action.INTERSECTION_LEFT))
             turn_count += 1   
 
         # Turn this amount 
@@ -329,36 +341,44 @@ class Agent():
 #--------------------------
 
     # Handle an intersection
-    # wrong_light=False, so agent behaves good and turns on correct signal lights
-        # wrong_light=True, agent behaves bad and turns on wrong signal lights
     def handle_intersection(self, env, speed_limit=1.0,  stop_point=30):
+        # Set its intersection arrival time
 
-        turn_choice = self.turn_choice
-        signal_choice= self.signal_choice
+        # Preprocessing
+        turn_choice = get_turn_choice(self.turn_choice)
+        signal_choice= get_turn_choice(self.signal_choice)
         forward_step = self.forward_step
 
         # Initialize action sequence
         action_seq = []
 
-        # Choose a random option if one not given
-        choices = ['Right', 'Left', 'Straight'] 
-        if turn_choice == None:
-            turn_choice = random.choice(choices)
+        dl.intersection_action.argtypes = [c_int, c_int, c_int, POINTER(EnvironmentAgentArray)]
+        dl.intersection_action.restype = c_void_p
 
-        # Match the signal_choice
-        if not signal_choice:
-            signal_choice = turn_choice 
+        # Get the list of things near the intersection
+        self.get_obstacles(env)
 
-        # Stop
+        # Preprocess relevant information
+        env_agent_array_struct = EnvironmentAgentArray(env, self.intersection_agents, self)
+        print("CALLING INTERSECTION ACTION")
+        intersection_action_addr = dl.intersection_action(turn_choice, signal_choice, self.intersection_arrival, env_agent_array_struct)
+        intersection_action = IntersectionAction.from_address(intersection_action_addr)
+        turn_choice = TurnChoice(intersection_action.turn_choice)
+        signal_choice = TurnChoice(intersection_action.signal_choice)
+        action = Action(intersection_action.action)
+        num_ahead = intersection_action.num_ahead
+
+        # Every Agent Stops
         action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step, stop_point=stop_point))
+        action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step, stop_point=num_ahead * 30))
 
-        if turn_choice == 'Right':
+        if action == Action.INTERSECTION_RIGHT:
             print(f"{self.agent_id} is taking a right turn.")
             action_seq.extend(self.right_turn(env, forward_step=forward_step))
-        elif turn_choice == 'Left':
+        elif action == Action.INTERSECTION_LEFT:
             print(f"{self.agent_id} is taking a left turn.")
             action_seq.extend(self.left_turn(env, forward_step=forward_step))
-        else:
+        elif action == Action.INTERSECTION_FORWARD:
             print(f"{self.agent_id} is going straight.")
             forward_steps = 0
             while forward_steps < 30:
@@ -374,35 +394,57 @@ class Agent():
         stop_x, stop_z = self.get_stop_pos(env)
         direction = self.get_direction(env)
 
-        # Based on direction check intersection
-        if direction == 'N' and curr_z < stop_z and self.approaching_intersection(env):
-            return True
-        elif direction == 'W' and curr_x < stop_x and self.approaching_intersection(env):
-            return True
-        elif direction == 'S' and curr_z > stop_z and self.approaching_intersection(env):
-            return True
-        elif direction == 'E' and curr_x > stop_x and self.approaching_intersection(env):
-            return True
-        else:
-            return False
+        # Preprocess for C Callout
 
+
+        direction = get_dl_direction(direction)
+
+        dl.intersection_detected.argtypes = [c_int, 
+                                            c_float, 
+                                            c_float, 
+                                            c_float, 
+                                            c_float, 
+                                            c_bool]
+
+        is_intersection = dl.intersection_detected(direction, float(curr_x), float(curr_z), float(stop_x), float(stop_z), self.approaching_intersection(env))
+
+        if is_intersection:
+            self.intersection_arrival = self.step_count
+
+        return is_intersection 
+    
     # Check if approaching an intersection
-    def approaching_intersection(self, env):
+    def approaching_intersection(self, env, include_tile: bool=False):
         # Get state information
         tile_x, tile_z = self.get_curr_tile(env)['coords']
         direction = self.get_direction(env)
 
         # Based on direction, check if the next tile is an intersection
         if direction == 'N' and intersection_tile(env, tile_x, tile_z-1):
-            return True
+            if include_tile:
+                return True, (tile_x, tile_z - 1)
+            else:
+                return True
         elif direction == 'W' and intersection_tile(env, tile_x-1, tile_z):
-            return True
+            if include_tile:
+                return True, (tile_x-1, tile_z)
+            else:
+                return True
         elif direction == 'S' and intersection_tile(env, tile_x, tile_z+1):
-            return True
+             if include_tile:
+                return True, (tile_x, tile_z+1)
+             else:
+                return True
         elif direction == 'E' and intersection_tile(env, tile_x+1, tile_z):
-            return True
+             if include_tile:
+                return True, (tile_x+1, tile_z)
+             else:
+                return True        
         else:
-            return False
+            if include_tile:
+                return False, None
+            else:
+                return False
 
     # Get the stopping points (~3/4 through the tile)
     def get_stop_pos(self, env):
@@ -461,7 +503,7 @@ class Agent():
 
 
     # Return a list of objects and a list of agents present on the tile
-    def get_obstacles(self, env, tile_x, tile_z):
+    def get_obstacles(self, env): #, tile_x, tile_z):
         # Get our direction
         self_direction = self.get_direction(env)
 
@@ -473,9 +515,14 @@ class Agent():
             curr_distance = env.pos_distance(self.get_curr_pos(env, matrix=True), \
                                              obj.get_curr_pos())
             # NOT GETTING TRAFFIC POS RIGHT FOR SOME REASON. WILL HAVE TO FIX
+            """
             if obj_x == tile_x and obj_z == tile_z and prev_distance > curr_distance:
                 print("{0} and {1} are getting closer.".format(self.agent_id, info['name']))
                 self.nearby_objects.append(obj)
+            """
+
+        # Reset the agents that are near the intersection so we recalculate at every step
+        self.intersection_agents = []
 
         for agent in env.agents:
             info = agent.get_info(env)
@@ -486,11 +533,27 @@ class Agent():
             curr_distance = env.pos_distance(self.get_curr_pos(env, matrix=True), \
                                              agent.get_curr_pos(env, matrix=True))
             # If it is in the radius we are checking and we are ge Mac and cheesetting closer to it
+            """
             if agent != self and agent_x == tile_x and agent_z == tile_z and prev_distance > curr_distance:
                 # Check if getting closer
                 if prev_distance > curr_distance:
                     print("{0} and {1} are getting closer.".format(self.agent_id, agent.agent_id))
                     self.nearby_agents.append(agent)
+            """
+            
+            # If we are approaching the same intersection
+            self_approaching_intersection, self_intersection_coords = self.approaching_intersection(env, include_tile=True)
+            agent_approaching_intersection, agent_intersection_coords = agent.approaching_intersection(env, include_tile=True)
+            
+            if agent != self and \
+               self_approaching_intersection and \
+               agent_approaching_intersection and \
+               (self_intersection_coords == agent_intersection_coords):
+                
+                   self.intersection_agents.append(agent)
+
+
+
     
     # Reset the obstacles before getting new ones in each time step
     def reset_obstacles(self, env):
@@ -537,9 +600,23 @@ class Agent():
             #env.render(env.cam_mode)
             return True
 
+    # Check if we are in the middle of completing an action
+    def completing_action(self):
+        # Preprocess for C
+        dl.completing_action.argtypes = [c_int]
+        if self.actions:
+            # Preprocess for C
+            action = self.actions[0][1]
+            return dl.completing_action(action)
+
+        else:
+            return dl.completing_action(Action.NO_ACTION)
+
+
+
     # Get next action
     def get_next_action(self):
-        return self.actions.pop(0)
+        return self.actions.pop(0)[0]
     
     # Get next action
     def add_actions(self, actions):
