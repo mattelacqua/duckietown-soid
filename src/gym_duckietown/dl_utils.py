@@ -10,9 +10,7 @@ class Action(IntEnum):
     INTERSECTION_FORWARD = 5
     INTERSECTION_LEFT = 6
     INTERSECTION_RIGHT = 7
-    OBSTACLE_STOP = 8
-    OBSTACLE_LEFT = 9
-    OBSTACLE_RIGHT = 10
+
 
 class Direction(IntEnum):
     NORTH = 0
@@ -25,6 +23,19 @@ class TurnChoice(IntEnum):
     LEFT = 1
     RIGHT = 2
     RANDOM = 3   
+
+class AgentState(Structure):
+    _fields_ = [('in_intersection', c_bool),
+                ('at_entry', c_bool),
+                ('intersection_empty', c_bool),
+                ('intersection_in_range', c_bool),
+                ('object_in_range', c_bool),
+                ('ahead_car_intersection_in_range', c_bool),
+                ('ahead_car_object_in_range', c_bool),
+                ('car_entering_our_range', c_bool),
+                ('car_behind_us_in_intersection', c_bool),
+                ('car_behind_us_out_intersection', c_bool)]
+
 
 class IntersectionAction(Structure):
     _fields_ = [('turn_choice', c_int),

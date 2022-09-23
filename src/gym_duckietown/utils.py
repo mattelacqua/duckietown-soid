@@ -54,6 +54,7 @@ def get_args_from_command_line():
     parser.add_argument("--cam-mode", default="human", help="Camera modes: human, top_down, free_cam, rgb_array")
     parser.add_argument("--safety-factor", default=1.0, type=float, help="Minimum distance before collision detection")
     parser.add_argument("--num-agents", default=1.0, type=int, help="Number of Agents")
+    parser.add_argument("--num-random-agents", default=0.0, type=int, help="Number of Random Start Pos Agents")
     parser.add_argument("--verbose", action="store_true", help="Log agent information")
     args = parser.parse_args()
 

@@ -150,7 +150,6 @@ WHEEL_DIST = 0.102
 #       to faciliate sim-to-real transfer.
 ROBOT_WIDTH = 0.13 + 0.02
 
-# Total robot length
 # Note: the center of rotation (between the wheels) is not at the
 #       geometric center see CAMERA_FORWARD_DIST
 ROBOT_LENGTH = 0.18
@@ -186,7 +185,7 @@ DEFAULT_ACCEPT_START_ANGLE_DEG = 60
 
 REWARD_INVALID_POSE = -1000
 
-MAX_SPAWN_ATTEMPTS = 5000
+MAX_SPAWN_ATTEMPTS = 10000
 
 DEFAULT_SAFETY_FACTOR=1.0
 
@@ -234,6 +233,8 @@ class Simulator(gym.Env):
         camera_width: int = DEFAULT_CAMERA_WIDTH,
         camera_height: int = DEFAULT_CAMERA_HEIGHT,
         robot_speed: float = DEFAULT_ROBOT_SPEED,
+        robot_length: float = ROBOT_LENGTH,
+        robot_width: float = ROBOT_WIDTH,
         accept_start_angle_deg=DEFAULT_ACCEPT_START_ANGLE_DEG,
         full_transparency: bool = False,
         seed: int = None,
@@ -247,6 +248,7 @@ class Simulator(gym.Env):
         style: str = "photos",
         enable_leds: bool = True,
         num_agents: int = DEFAULT_NUM_AGENTS,
+        num_random_agents: int = 0,
         verbose: bool = False 
     ):
         """
@@ -254,6 +256,7 @@ class Simulator(gym.Env):
         :param duckie_bots:
         :param cam_mode:
         :param num_agents:
+        :param num_random_agents:
         :param safety_factor:
         :param map_name:
         :param max_steps:
@@ -335,11 +338,14 @@ class Simulator(gym.Env):
 
         self.safety_factor = safety_factor 
         self.num_agents = num_agents 
+        self.num_random_agents = num_random_agents 
         self.cam_mode = cam_mode 
         self.camera_width = camera_width
         self.camera_height = camera_height
 
         self.robot_speed = robot_speed
+        self.robot_length = robot_length
+        self.robot_width = robot_width
         # We observe an RGB image with pixels in [0, 255]
         # Note: the pixels are in uint8 format because this is more compact
         # than float32 if sent over the network or stored in a dataset
@@ -505,6 +511,7 @@ class Simulator(gym.Env):
         # Reset each agent
         for agent in self.agents:
             agent.speed = 0.0
+            agent.step_count = 0
             agent.actions = []
             agent.nearby_objects = []
             agent.nearby_agents = []
@@ -640,8 +647,96 @@ class Simulator(gym.Env):
                 obj.visible = True
 
         # If the map specifies a starting tile
+        directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
+        colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
         for agent in self.agents: 
-            if agent.start_tile:
+            if agent.random_spawn:
+                # Keep trying to find a valid spawn position on this tile
+                direction = random.choice(directions)
+                directions.remove(direction)
+                color = random.choice(colors)
+                colors.remove(color)
+                if direction == 'N':
+                    i, j = 2, 4
+                elif direction == 'S':
+                    i, j = 2, 0
+                elif direction == 'E':
+                    i, j = 0, 2
+                elif direction == 'W':
+                    i, j = 4, 2
+                for _ in range(MAX_SPAWN_ATTEMPTS):
+                    turn_choices = ['Right', 'Left', 'Straight']
+                    turn_choice = random.choice(turn_choices)
+                    agent.turn_choice = turn_choice
+                    agent.signal_choice = turn_choice
+
+                    # Agent0 is always blue
+                    if agent.agent_id == "agent0":
+                        agent.color = 'blue'
+                    else:
+                        agent.color = color
+                    agent.mesh = get_duckiebot_mesh(agent.color)
+                    agent.forward_step = self.np_random.uniform(0.3, 0.7)
+
+                    # Choose a random position on this tile
+                    if direction == 'N':
+                        perturb_x = self.np_random.uniform(0.6, .9) * self.road_tile_size   # Right side of the road
+                        perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
+                        x = perturb_x + i * self.road_tile_size
+                        z = perturb_z + j * self.road_tile_size
+                        base_angle = 85 + random.randint(0, 10) # Account for variance in starting angle
+                    elif direction == 'S':
+                        perturb_x = self.np_random.uniform(0.01, 0.4) * self.road_tile_size       # Right side of the road facing south
+                        perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
+                        x = perturb_x + i * self.road_tile_size
+                        z = perturb_z + j * self.road_tile_size
+                        base_angle = 265 + random.randint(0, 10)
+                    elif direction == 'E':
+                        perturb_x = self.np_random.uniform(0.01, .9) * self.road_tile_size 
+                        perturb_z = self.np_random.uniform(0.6, .9) * self.road_tile_size    # Right side of the road facing east
+                        x = perturb_x + i * self.road_tile_size
+                        z = perturb_z + j * self.road_tile_size
+                        base_angle = 355  + random.randint(0, 10)
+                        if base_angle > 360:
+                            base_angle = base_angle - 360
+                    elif direction == 'W':
+                        perturb_x = self.np_random.uniform(0.01, 0.9) * self.road_tile_size 
+                        perturb_z = self.np_random.uniform(0.01,  0.4) * self.road_tile_size    # Right side of the road facing west
+                        x = perturb_x + i * self.road_tile_size
+                        z = perturb_z + j * self.road_tile_size
+                        base_angle = 175 + random.randint(0, 10)
+
+                    print(f"X: {x} Z: {z}")
+
+                    # Choose a random position and direction to face
+                    propose_pos = np.array([x, 0, z])
+                    propose_angle = math.radians(base_angle) 
+
+                    # If this is too close to an object or not a valid pose, retry
+                    inconvenient = self._inconvenient_spawn(propose_pos, agent)
+
+                    if inconvenient:
+                        # msg = 'The spawn was inconvenient.'
+                        # logger.warning(msg)
+                        print("Inconvenient Spawn")
+                        continue
+
+                    invalid = not self._valid_pose(propose_pos, propose_angle, agent, safety_factor=1.3)
+                    if invalid:
+                        # msg = 'The spawn was invalid.'
+                        # logger.warning(msg)
+                        print("Invalid Spawn")
+                        continue
+
+                    # Found a valid initial pose
+                    break
+                else:
+                    msg = f"Could not find a valid starting pose for {agent.agent_id} after {MAX_SPAWN_ATTEMPTS} attempts"
+                    logger.warn(msg)
+                    raise Exception(msg)
+                    propose_pos = np.array([1, 0, 1])
+                    propose_angle = 1
+            elif agent.start_tile and not agent.random_spawn:
                 tile = self._get_tile(agent.start_tile[0], agent.start_tile[1])
             else:
                 # Select a random drivable tile to start on
@@ -652,11 +747,11 @@ class Simulator(gym.Env):
                 tile = self.drivable_tiles[tile_idx]
 
             # If the map specifies a starting pose
-            if webserver_reset:
+            if webserver_reset and not agent.random_spawn:
                 propose_pos = agent.cur_pos 
                 propose_angle = agent.cur_angle
 
-            elif agent.start_pose:
+            elif agent.start_pose and not agent.random_spawn:
                 if self.verbose:
                     logger.info(f"using map pose start for agent {agent.agent_id}: {agent.start_pose}")
 
@@ -669,7 +764,7 @@ class Simulator(gym.Env):
                 if self.verbose:
                     logger.info(f"Using map pose start for agent {agent.agent_id}. \n Pose: {propose_pos}, Angle: {propose_angle}")
 
-            else:
+            elif not agent.random_spawn:
                 # Keep trying to find a valid spawn position on this tile
                 for _ in range(MAX_SPAWN_ATTEMPTS):
                     i, j = tile["coords"]
@@ -851,6 +946,7 @@ class Simulator(gym.Env):
         
         except Exception as e:
             msg = "Cannot load map data"
+            print(e)
             raise InvalidMapException(msg, map_data=map_data)
 
     # Load each of the agents from the map
@@ -867,20 +963,29 @@ class Simulator(gym.Env):
                 self.agents.append(new_agent)
         else:
             # Retroactive Support
-            if map_data["start_pose"] and map_data["start_tile"]:
-                new_agent = Agent(cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_tile=map_data["start_tile"], start_pose=map_data["start_pose"], agent_id="agent0")
+            try: 
+                if map_data["start_pose"] and map_data["start_tile"]:
+                    new_agent = Agent(cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_tile=map_data["start_tile"], start_pose=map_data["start_pose"], agent_id="agent0")
+                    self.agents.append(new_agent)
+                elif map_data["start_pose"]:
+                    new_agent = Agent(cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_pose=map_data["start_pose"], agent_id="agent0")
+                    self.agents.append(new_agent)
+                elif map_data["start_tile"]:
+                    new_agent = Agent(start_tile=desc["start_tile"], agent_id="agent0")
+                    self.agents.append(new_agent)
+            except KeyError:
+                pass
+           
+        if not self.agents:
+            for x in range(0, self.num_random_agents):
+                print(f"x {x}")
+                new_agent = Agent(cur_pos=[0, 0, 0], cur_angle=0, agent_id=("agent" + str(x)), random_spawn=True)
                 self.agents.append(new_agent)
-            elif map_data["start_pose"]:
-                new_agent = Agent(cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_pose=map_data["start_pose"], agent_id="agent0")
-                self.agents.append(new_agent)
-            elif map_data["start_tile"]:
-                new_agent = Agent(start_tile=desc["start_tile"], agent_id="agent0")
-                self.agents.append(new_agent)
-            else:
-                new_agent = Agent(agent_id="agent0")
-                self.agents.append(new_agent)
-            
 
+
+        # If still no, make a default one.
+        if not self.agents:
+            new_agent = Agent(cur_pos=[0, 0, 0], cur_angle=0, agent_id="agent" + str(x), random_spawn=True)
 
     def _load_objects(self, map_data: MapFormat1):
         # Create the objects array
@@ -1468,7 +1573,7 @@ class Simulator(gym.Env):
 
         return total_safety_pen
 
-    def _inconvenient_spawn(self, pos):
+    def _inconvenient_spawn(self, pos, agent=None):
         """
         Check that agent spawn is not too close to any object
         """
@@ -1476,9 +1581,27 @@ class Simulator(gym.Env):
         results = [
             np.linalg.norm(x.pos - pos) < max(x.max_coords) * 0.5 * x.scale + MIN_SPAWN_OBJ_DIST
             for x in self.objects
-            if x.visible
+            if x.visible 
         ]
-        return np.any(results)
+        if not agent:
+            return np.any(results)
+        else:
+            too_close = False
+            for other_agent in self.agents:
+                if other_agent.agent_id != agent.agent_id:
+                    distance = np.linalg.norm(np.array(other_agent.cur_pos) - np.array(agent.cur_pos))
+
+                    if distance > 0 and distance < self.robot_length/2:
+                        print("HERE")
+                        print(f"Condition: {self.robot_length}")
+                        print(f"Distance: {distance}")
+                        print(f"Other agent pos: {other_agent.cur_pos}")
+                        print(f"Us pos: {agent.cur_pos}")
+                        too_close = True
+            return too_close
+
+
+
 
     def _collision(self, this_agent_corners, this_agent):
         """
@@ -1530,9 +1653,9 @@ class Simulator(gym.Env):
 
         all_drivable = (
             self._drivable_pos(pos)
-            and self._drivable_pos(l_pos)
-            and self._drivable_pos(r_pos)
-            and self._drivable_pos(f_pos)
+            #and self._drivable_pos(l_pos)
+            #and self._drivable_pos(r_pos)
+            #and self._drivable_pos(f_pos)
         )
 
         # Recompute the bounding boxes (BB) for the agent
@@ -1671,7 +1794,128 @@ class Simulator(gym.Env):
             # logger.info(msg)
             reward = REWARD_INVALID_POSE
             done_code = "invalid-pose"
-            done = True
+            if agent.agent_id == "agent0":
+                done = True
+            else:
+                # If the map specifies a starting tile
+                directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
+                colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
+                if agent.random_spawn:
+                    # Keep trying to find a valid spawn position on this tile
+                    direction = random.choice(directions)
+                    directions.remove(direction)
+                    color = random.choice(colors)
+                    colors.remove(color)
+                    if direction == 'N':
+                        i, j = 2, 4
+                    elif direction == 'S':
+                        i, j = 2, 0
+                    elif direction == 'E':
+                        i, j = 0, 2
+                    elif direction == 'W':
+                        i, j = 4, 2
+                    for _ in range(MAX_SPAWN_ATTEMPTS):
+                        turn_choices = ['Right', 'Left', 'Straight']
+                        turn_choice = random.choice(turn_choices)
+                        agent.turn_choice = turn_choice
+                        agent.signal_choice = turn_choice
+
+                        agent.color = color
+                        agent.mesh = get_duckiebot_mesh(agent.color)
+                        agent.forward_step = self.np_random.uniform(0.3, 0.7)
+
+                         # Choose a random position on this tile
+                        if direction == 'N':
+                            perturb_x = self.np_random.uniform(0.6, .9) * self.road_tile_size   # Right side of the road
+                            perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
+                            x = perturb_x + i * self.road_tile_size
+                            z = perturb_z + j * self.road_tile_size
+                            base_angle = 85 + random.randint(0, 10) # Account for variance in starting angle
+                        elif direction == 'S':
+                            perturb_x = self.np_random.uniform(0.01, 0.4) * self.road_tile_size       # Right side of the road facing south
+                            perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
+                            x = perturb_x + i * self.road_tile_size
+                            z = perturb_z + j * self.road_tile_size
+                            base_angle = 265 + random.randint(0, 10)
+                        elif direction == 'E':
+                            perturb_x = self.np_random.uniform(0.01, .9) * self.road_tile_size 
+                            perturb_z = self.np_random.uniform(0.6, .9) * self.road_tile_size    # Right side of the road facing east
+                            x = perturb_x + i * self.road_tile_size
+                            z = perturb_z + j * self.road_tile_size
+                            base_angle = 355  + random.randint(0, 10)
+                            if base_angle > 360:
+                                base_angle = base_angle - 360
+                        elif direction == 'W':
+                            perturb_x = self.np_random.uniform(0.01, 0.9) * self.road_tile_size 
+                            perturb_z = self.np_random.uniform(0.01,  0.4) * self.road_tile_size    # Right side of the road facing west
+                            x = perturb_x + i * self.road_tile_size
+                            z = perturb_z + j * self.road_tile_size
+                            base_angle = 175 + random.randint(0, 10)
+
+                        print(f"X: {x} Z: {z}")
+
+                        # Choose a random position and direction to face
+                        propose_pos = np.array([x, 0, z])
+                        propose_angle = math.radians(base_angle) 
+
+                        # If this is too close to an object or not a valid pose, retry
+                        inconvenient = self._inconvenient_spawn(propose_pos, agent)
+
+                        if inconvenient:
+                            # msg = 'The spawn was inconvenient.'
+                            # logger.warning(msg)
+                            print("Inconvenient Spawn")
+                            continue
+
+                        invalid = not self._valid_pose(propose_pos, propose_angle, agent, safety_factor=1.3)
+                        if invalid:
+                            # msg = 'The spawn was invalid.'
+                            # logger.warning(msg)
+                            print("Invalid Spawn")
+                            continue
+
+                        # Found a valid initial pose
+                        break
+                    else:
+                        msg = f"Could not find a valid starting pose for {agent.agent_id} after {MAX_SPAWN_ATTEMPTS} attempts"
+                        logger.warn(msg)
+                        raise Exception(msg)
+                        propose_pos = np.array([1, 0, 1])
+                        propose_angle = 1
+
+                agent.cur_pos = propose_pos
+                agent.prev_pos = propose_pos
+                agent.cur_angle = propose_angle
+                agent.actions = []
+                agent.nearby_objects = []
+                agent.nearby_agents = []
+                agent.last_action = np.array([0.0, 0.0]) 
+                agent.wheelVels = np.array([0.0, 0.0]) 
+
+                # Initialize Dynamics model
+                init_vel = np.array([0, 0])
+                if self.dynamics_rand:
+                    trim = 0 + self.randomization_settings["trim"][0]
+                    p = get_DB18_uncalibrated(delay=0.15, trim=trim)
+                else:
+                    p = get_DB18_nominal(delay=0.15)
+
+                q = self.cartesian_from_weird(agent.cur_pos, agent.cur_angle)
+                v0 = geometry.se2_from_linear_angular(init_vel, 0)
+                c0 = q, v0
+                agent.state = p.initialize(c0=c0, t0=0)
+
+                agent.intersection_arrival = DEFAULT_MAX_STEPS
+                agent.lights["front_left"][3] = False
+                agent.lights["front_right"][3] = False
+                agent.lights["back_left"][3] = False
+                agent.lights["back_right"][3] = False
+                agent.lights["center"][3] = False
+
+
+                print(f"Setting {agent.agent_id} to new position")
+                done=False
+
         # If the maximum time step count is reached
         elif agent.step_count >= self.max_steps:
             msg = "Stopping the simulator because we reached max_steps = %s" % self.max_steps

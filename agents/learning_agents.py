@@ -55,6 +55,7 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
         distortion=args.distortion,
         camera_rand=args.camera_rand,
         dynamics_rand=args.dynamics_rand,
+        num_random_agents=args.num_random_agents,
         full_transparency=True,
         verbose=args.verbose
     )
@@ -108,12 +109,6 @@ print(inp.readlines())
 webserver = gu.start_webserver()
 
 # Set up initial agent speeds, turns and contols
-env.agents[0].forward_step = 0.44
-env.agents[1].forward_step = 0.55
-env.agents[2].forward_step = 0.00
-
-env.agents[0].turn_choice = "Left" 
-env.agents[1].turn_choice = "Straight" 
 # Random is None which will be the 3rd agent
 
 
@@ -200,8 +195,9 @@ def update(dt):
             # Check if we should proceed or not
             if agent.agent_id == "agent0":
                 agent.proceed(env)
+            else:
+                agent.proceed(env, good_agent=True)
 
-            agent.render_step(env, agent.get_next_action())
 
         if not agent.actions:
             if agent.intersection_detected(env):
@@ -209,9 +205,15 @@ def update(dt):
             else: 
                 agent.add_actions(agent.move_forward(env))
 
+            if agent.agent_id == "agent0":
+                agent.proceed(env)
+            else:
+                agent.proceed(env, good_agent=True)
+
+        agent.render_step(env, agent.get_next_action())
             # Log the info
     if env.agents[0].step_count % 10 == 0 or env.agents[0].step_count == 1:
-        print("Logging")
+        #print("Logging")
         gu.init_server(1, log, env, socket)
 
     # render the cam
@@ -222,7 +224,8 @@ def update(dt):
 if __name__ == '__main__':
 
     # Enter main event loop
-    pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
+    pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate) )
+    #pyglet.clock.schedule_interval(update, 1.0 / (100) )
     pyglet.clock.schedule_interval(gu.init_server, 1, out, env, socket)
     pyglet.app.run()
 

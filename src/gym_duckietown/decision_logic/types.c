@@ -7,9 +7,6 @@ typedef enum {
     INTERSECTION_FORWARD = 5,
     INTERSECTION_LEFT = 6,
     INTERSECTION_RIGHT = 7,
-    OBSTACLE_STOP = 8,
-    OBSTACLE_LEFT = 9,
-    OBSTACLE_RIGHT = 10
 } Action ;
 
 typedef enum {
@@ -61,3 +58,16 @@ typedef struct {
     int elements;
     EnvironmentAgent* ENV_AGENT_ARRAY;
 } EnvironmentAgentArray ;
+
+typedef struct {
+    bool in_intersection;
+    bool at_entry;
+    bool intersection_empty;
+    bool intersection_in_range;
+    bool object_in_range;
+    bool ahead_car_intersection_in_range;
+    bool ahead_car_object_in_range;
+    bool car_entering_our_range;
+    bool car_behind_us_in_intersection;
+    bool car_behind_us_out_intersection;
+} AgentState;
