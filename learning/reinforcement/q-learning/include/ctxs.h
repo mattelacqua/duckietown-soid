@@ -27,5 +27,3 @@ typedef struct Decision {
 } Decision;
 
 #endif
-
-

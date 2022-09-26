@@ -1,7 +1,7 @@
 #ifndef LEARN_H_
 #define LEARN_H_
 
-#include "ctxs.h"
+//#include "ctxs.h"
 
 #define STATES 1024
 #define FEATURES 20
@@ -22,9 +22,9 @@ typedef struct QTable {
   double qt[STATES][ACTIONS];
 } QTable;
 
-typedef struct LApprox {
+/*typedef struct LApprox {
   double ws[ACTIONS][FEATURES+1];
-} LApprox;
+} LApprox; */
 
 typedef struct Learn {
 
@@ -38,9 +38,9 @@ typedef struct Learn {
   double alpha;
 
   // lmodel
-  LApprox *lmodel;
+  /*LApprox *lmodel;
   double fv[FEATURES+1];
-  double pfv[FEATURES+1];
+  double pfv[FEATURES+1];*/
 
   // smodel
   QTable *smodel;
@@ -67,10 +67,10 @@ typedef struct Learn {
   unsigned int prev_action;
 
   // scenarios
-  int scenario;
+  /*int scenario;
   NavCtx   *l_nctx;
   IntCtx   *l_ictx;
-  Decision *l_decision;
+  Decision *l_decision;*/
 
 } Learn;
 
@@ -85,4 +85,3 @@ void save( Learn *l );
 double dot( double ws[FEATURES+1], double fv[FEATURES+1] );
 
 #endif
-

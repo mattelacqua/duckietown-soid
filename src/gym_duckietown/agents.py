@@ -21,7 +21,7 @@ class Agent():
     cur_pos: np.ndarray
     cur_angle: np.ndarray
     last_action: np.ndarray
-    actions: (List[np.ndarray], Action)
+    actions: Union[List[np.ndarray], Action]
     wheelsVels: np.ndarray
     step_count: int
     intersection_arrival: int
@@ -43,6 +43,7 @@ class Agent():
     bbox_offset_w: float
     bbox_offset_l: float
     random_spawn: bool
+    reward_profile: int
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -89,6 +90,8 @@ class Agent():
         self.forward_step = 0.00
         self.bbox_offset_w = 0.00
         self.bbox_offset_l = 0.00
+        self.intersection_arrival = None
+        self.reward_profile = None
 
 #--------------------------
 # Decision Logic
@@ -171,8 +174,10 @@ class Agent():
                                         car_behind_us_in_intersection,
                                         car_behind_us_out_intersection)
         should_proceed = dl.proceed(agent_state_struct, good_agent)
-        #print(f"Should Proceed: {should_proceed}")
-        #print(f"Actions Before: {self.actions}")
+        self.handle_proceed(should_proceed)
+
+    # Handle wheather or not we should proceed.
+    def handle_proceed(self, should_proceed):
         if not should_proceed:
             no_intersection_stop_actions = []
             for action in self.actions:
@@ -185,15 +190,7 @@ class Agent():
             for action in self.actions:
                 if action[1] != Action.STOP:
                     no_stop_actions.append(action)
-                #else:
-                    #print("REmoving a sotp actiuon")
             self.actions = no_stop_actions
-            #print(f"Actions After Removing: {self.actions}")
-        #print(f"Actions After: {self.actions}")
-
-
-        # Check its stop count and append more?
-        # If we don't proceed, then we need to add a stop to what we are doing.
 
     # Check if we are at an intersection
     def in_intersection(self, env):
@@ -816,6 +813,25 @@ class Agent():
             else:
                 return False
 
+    # Check if approaching an intersection
+    def left_intersection(self, env, include_tile: bool=False):
+        # Get state information
+        tile_x, tile_z = self.get_curr_tile(env)['coords']
+        direction = self.get_direction(env)
+
+        # Based on direction, check if the next tile is an intersection
+        if direction == 'N' and intersection_tile(env, tile_x, tile_z+1):
+            return True
+        elif direction == 'W' and intersection_tile(env, tile_x+1, tile_z):
+            return True
+        elif direction == 'S' and intersection_tile(env, tile_x, tile_z-1):
+            return True
+        elif direction == 'E' and intersection_tile(env, tile_x-1, tile_z):
+            return True        
+        else:
+            return False
+
+
     # Get the stopping points (~3/4 through the tile)
     def get_stop_pos(self, env):
         # Get state information
@@ -950,12 +966,14 @@ class Agent():
 # Rendering  / Stepping
 #--------------------------
     # Render the step and call the inner return
-    def render_step(self, env, action):
-        obs, reward, done, info = env.step(action, self)
+    def render_step(self, env, action, learning=False):
+        state, reward, done, info = env.step(action, self, learning)
         if env.verbose:
-
             logger.info(self.agent_id +": step_count = %s, reward=%.3f" % (self.step_count, reward))
-        return self.render_step_inner(env, done)
+        if learning:
+            return state, reward, done, info
+        else:
+            return self.render_step_inner(env, done)
 
 
     # Render if possible, otherwise end if invalid
@@ -983,8 +1001,6 @@ class Agent():
         else:
             return dl.completing_action(Action.NO_ACTION)
 
-
-
     # Get next action
     def get_next_action(self):
         return self.actions.pop(0)[0]
@@ -992,6 +1008,93 @@ class Agent():
     # Get next action
     def add_actions(self, actions):
         return self.actions.extend(actions)
+
+    # Reward profile for q learning
+    def get_reward(self, env, done_code):
+        reward = 0
+
+        # Pathological
+        if self.reward_profile == 0:
+            if done_code == "in-progress":
+                # If we have an intersection behind us, we cleared it. 
+                # So decrease reward each step
+                if self.left_intersection(env): 
+                    reward -= 20
+            
+            if done_code == "invalid-pos": # If it went off the road or caused a crash
+
+                # If it reached the end of the map deduct points (only get there safely)
+                if self.cur_pos[0] < 0 or \
+                   self.cur_pos[2] < 0 or \
+                   self.cur_pos[0] > env.grid_width * env.road_tile_size or \
+                   self.cur_pos[2] > env.grid_height * env.road_tile_size:
+                    reward -= 100
+                else: # If it drove off map
+                    reward += 100
+
+                # If it caused a crash
+                agent_corners = get_agent_corners(self.cur_pos, self.cur_angle)
+                collision = env._collision(agent_corners, self)
+                if collision:
+                    reward += 1000
+
+        # Impatient
+        elif self.reward_profile == 1:
+            if done_code == "in-progress":
+                # Reward a point for moving
+                if self.prev_pos != self.curr_pos:
+                    reward += 1
+
+                    # If the move was risky (move into non-empty intersection)
+                    if self.at_intersection_entry(env) and not self.intersection_empty(env):
+                        reward += 5
+
+                # Subtract for arriving at intersection and not moving
+                if self.intersection_arrival:
+                    if not self.left_intersection(env) and self.intersection_arrival < self.step_count:
+                        reward -= 1 
+                
+                # Larger reward for exiting with no crash.
+                if self.left_intersection(env):
+                    r += 100 - (self.step_count - self.intersection_arrival)
+        
+            # Do nothing for rward if crash.
+
+        # Defensive Agent
+        elif self.reward_profile == 2:
+            if done_code == "in-progress":
+                # Reward a point for moving
+                if self.prev_pos != self.curr_pos:
+                    reward += 1
+                
+                    # If the move was risky (move into non-empty intersection) deduct
+                    if self.at_intersection_entry(env) and not self.intersection_empty(env):
+                        reward -= 5
+
+            if done_code == "invalid-pos": # If it went off the road or caused a crash
+
+                # If it reached the end of the map give points (only get there safely)
+                if self.cur_pos[0] < 0 or \
+                   self.cur_pos[2] < 0 or \
+                   self.cur_pos[0] > env.grid_width * env.road_tile_size or \
+                   self.cur_pos[2] > env.grid_height * env.road_tile_size:
+                    reward += 100
+                else: # If it drove off map deduct points
+                    reward -= 100
+
+                # If it caused a crash deduct a ton of points
+                agent_corners = env.get_agent_corners(self.cur_pos, self.cur_angle)
+                collision = env._collision(agent_corners, self)
+                if collision:
+                    reward -= 1000
+
+   
+
+        return reward
+
+
+
+        
 #--------------------------
 # Agent Information
 #--------------------------
@@ -1069,6 +1172,60 @@ class Agent():
             curr_x = info['prev_pos'][0]
             curr_z = info['prev_pos'][2]
             return curr_x, curr_z
+
+    # Get learning state for q-learning 
+    def get_learning_state(self, env):
+        # 0: in an intersection
+        # 1: at intersection entry
+        # 2: intersection is empty
+        # 3: approaching an intersection
+        # 4: object in range
+        # 5: car ahead of us is approaching an intersection
+        # 6: car ahead of us has an object in front of them
+        # 8: car behind us and we are in intersection
+        # 9: car behind us and we are not in an intersection
+        # SEt radius 
+        radius = (env.road_tile_size)
+
+        # Row in Model:
+        model_row = 0
+        
+        # Get state information (convert to row based on boolean inputs)
+        #0
+        if self.in_intersection(env): model_row += 512              
+
+        #1
+        if self.at_intersection_entry(env): model_row += 256        
+
+        #2
+        if self.intersection_empty(env): model_row += 128           
+
+        #3
+        if self.approaching_intersection(env): model_row += 64
+
+        #4
+        obj_in_range, obj = self.object_in_range(env, location="Ahead", radius=radius)
+        if obj_in_range: model_row += 32
+
+        #5
+        ahead_car_intersection_in_range = obj.approaching_intersection(env) if obj else False
+        if ahead_car_intersection_in_range: model_row += 16
+        
+        #6
+        ahead_car_object_in_range, obj = obj.object_in_range(env, location="Ahead", radius=radius) if obj else False, None
+        if ahead_car_object_in_range: model_row += 8
+
+        #7
+        if self.car_entering_range(env, radius=radius): model_row += 4
+
+        #8
+        if self.object_in_range(env, location="Behind", intersection=True, radius=radius): model_row += 2
+
+        #9
+        if self.object_in_range(env, location="Behind", intersection=False, radius=radius): model_row += 1
+
+        # return
+        return model_row
 
 
 # Get duckiebot mesh

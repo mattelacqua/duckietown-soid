@@ -651,91 +651,7 @@ class Simulator(gym.Env):
         colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
         for agent in self.agents: 
             if agent.random_spawn:
-                # Keep trying to find a valid spawn position on this tile
-                direction = random.choice(directions)
-                directions.remove(direction)
-                color = random.choice(colors)
-                colors.remove(color)
-                if direction == 'N':
-                    i, j = 2, 4
-                elif direction == 'S':
-                    i, j = 2, 0
-                elif direction == 'E':
-                    i, j = 0, 2
-                elif direction == 'W':
-                    i, j = 4, 2
-                for _ in range(MAX_SPAWN_ATTEMPTS):
-                    turn_choices = ['Right', 'Left', 'Straight']
-                    turn_choice = random.choice(turn_choices)
-                    agent.turn_choice = turn_choice
-                    agent.signal_choice = turn_choice
-
-                    # Agent0 is always blue
-                    if agent.agent_id == "agent0":
-                        agent.color = 'blue'
-                    else:
-                        agent.color = color
-                    agent.mesh = get_duckiebot_mesh(agent.color)
-                    agent.forward_step = self.np_random.uniform(0.3, 0.7)
-
-                    # Choose a random position on this tile
-                    if direction == 'N':
-                        perturb_x = self.np_random.uniform(0.6, .9) * self.road_tile_size   # Right side of the road
-                        perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
-                        x = perturb_x + i * self.road_tile_size
-                        z = perturb_z + j * self.road_tile_size
-                        base_angle = 85 + random.randint(0, 10) # Account for variance in starting angle
-                    elif direction == 'S':
-                        perturb_x = self.np_random.uniform(0.01, 0.4) * self.road_tile_size       # Right side of the road facing south
-                        perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
-                        x = perturb_x + i * self.road_tile_size
-                        z = perturb_z + j * self.road_tile_size
-                        base_angle = 265 + random.randint(0, 10)
-                    elif direction == 'E':
-                        perturb_x = self.np_random.uniform(0.01, .9) * self.road_tile_size 
-                        perturb_z = self.np_random.uniform(0.6, .9) * self.road_tile_size    # Right side of the road facing east
-                        x = perturb_x + i * self.road_tile_size
-                        z = perturb_z + j * self.road_tile_size
-                        base_angle = 355  + random.randint(0, 10)
-                        if base_angle > 360:
-                            base_angle = base_angle - 360
-                    elif direction == 'W':
-                        perturb_x = self.np_random.uniform(0.01, 0.9) * self.road_tile_size 
-                        perturb_z = self.np_random.uniform(0.01,  0.4) * self.road_tile_size    # Right side of the road facing west
-                        x = perturb_x + i * self.road_tile_size
-                        z = perturb_z + j * self.road_tile_size
-                        base_angle = 175 + random.randint(0, 10)
-
-                    print(f"X: {x} Z: {z}")
-
-                    # Choose a random position and direction to face
-                    propose_pos = np.array([x, 0, z])
-                    propose_angle = math.radians(base_angle) 
-
-                    # If this is too close to an object or not a valid pose, retry
-                    inconvenient = self._inconvenient_spawn(propose_pos, agent)
-
-                    if inconvenient:
-                        # msg = 'The spawn was inconvenient.'
-                        # logger.warning(msg)
-                        print("Inconvenient Spawn")
-                        continue
-
-                    invalid = not self._valid_pose(propose_pos, propose_angle, agent, safety_factor=1.3)
-                    if invalid:
-                        # msg = 'The spawn was invalid.'
-                        # logger.warning(msg)
-                        print("Invalid Spawn")
-                        continue
-
-                    # Found a valid initial pose
-                    break
-                else:
-                    msg = f"Could not find a valid starting pose for {agent.agent_id} after {MAX_SPAWN_ATTEMPTS} attempts"
-                    logger.warn(msg)
-                    raise Exception(msg)
-                    propose_pos = np.array([1, 0, 1])
-                    propose_angle = 1
+                self.spawn_random_agent(agent, directions, colors)
             elif agent.start_tile and not agent.random_spawn:
                 tile = self._get_tile(agent.start_tile[0], agent.start_tile[1])
             else:
@@ -814,25 +730,26 @@ class Simulator(gym.Env):
 
                     # raise Exception(msg)
 
-            agent.cur_pos = propose_pos
-            agent.prev_pos = propose_pos
-            agent.cur_angle = propose_angle
+            if not agent.random_spawn:
+                agent.cur_pos = propose_pos
+                agent.prev_pos = propose_pos
+                agent.cur_angle = propose_angle
 
-            init_vel = np.array([0, 0])
+                init_vel = np.array([0, 0])
 
-            # Initialize Dynamics model
-            if self.dynamics_rand:
-                trim = 0 + self.randomization_settings["trim"][0]
-                p = get_DB18_uncalibrated(delay=0.15, trim=trim)
-            else:
-                p = get_DB18_nominal(delay=0.15)
+                # Initialize Dynamics model
+                if self.dynamics_rand:
+                    trim = 0 + self.randomization_settings["trim"][0]
+                    p = get_DB18_uncalibrated(delay=0.15, trim=trim)
+                else:
+                    p = get_DB18_nominal(delay=0.15)
 
-            q = self.cartesian_from_weird(agent.cur_pos, agent.cur_angle)
-            v0 = geometry.se2_from_linear_angular(init_vel, 0)
-            c0 = q, v0
-            agent.state = p.initialize(c0=c0, t0=0)
+                q = self.cartesian_from_weird(agent.cur_pos, agent.cur_angle)
+                v0 = geometry.se2_from_linear_angular(init_vel, 0)
+                c0 = q, v0
+                agent.state = p.initialize(c0=c0, t0=0)
 
-            logger.info(f"Starting agent {agent.agent_id} at:\nPosition:{agent.cur_pos} {agent.cur_angle}\nForward Step: {agent.forward_step}\nTurn Choice:{agent.turn_choice}\nSignal Choice:{agent.signal_choice}\nActions:{agent.actions}\nSpeed:{agent.speed}\nState:{agent.state}")
+                logger.info(f"Starting agent {agent.agent_id} at:\nPosition:{agent.cur_pos} {agent.cur_angle}\nForward Step: {agent.forward_step}\nTurn Choice:{agent.turn_choice}\nSignal Choice:{agent.signal_choice}\nActions:{agent.actions}\nSpeed:{agent.speed}\nState:{agent.state}")
 
         # Generate the first camera image
         obs = self.render_obs(segment=segment)
@@ -1771,7 +1688,7 @@ class Simulator(gym.Env):
             reward = +1.0 * speed * lp.dot_dir + -10 * np.abs(lp.dist) + +40 * col_penalty
         return reward
 
-    def step(self, action: np.ndarray, agent):
+    def step(self, action: np.ndarray, agent, learning=False):
         action = np.clip(action, -1, 1)
         # Actions could be a Python list
         action = np.array(action)
@@ -1779,141 +1696,36 @@ class Simulator(gym.Env):
             self.update_physics(action, agent)
 
         # Generate the current camera image
-        obs = self.render_obs()
+        if learning:
+            state = agent.get_learning_state(self)
+        else:
+            state = self.render_obs()
         misc = agent.get_info(self)
 
-        d = self._compute_done_reward(agent)
+        d = self._compute_done_reward(agent, learning)
         #misc["Simulator"]["msg"] = d.done_why
 
-        return obs, d.reward, d.done, misc
+        return state, d.reward, d.done, misc
 
-    def _compute_done_reward(self, agent) -> DoneRewardInfo:
+    def _compute_done_reward(self, agent, learning=False) -> DoneRewardInfo:
         # If the agent is not in a valid pose (on drivable tiles)
         if not self._valid_pose(agent.cur_pos, agent.cur_angle, agent, self.safety_factor):
             msg = "Stopping the simulator because we are at an invalid pose."
             # logger.info(msg)
-            reward = REWARD_INVALID_POSE
-            done_code = "invalid-pose"
             if agent.agent_id == "agent0":
+                done_code = "invalid-pose"
+                if learning:
+                    reward = agent.get_reward(env, done_code)
+                else:
+                    reward = REWARD_INVALID_POSE
                 done = True
             else:
                 # If the map specifies a starting tile
                 directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
                 colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
                 if agent.random_spawn:
+                    self.spawn_random_agent(agent, directions, colors)
                     # Keep trying to find a valid spawn position on this tile
-                    direction = random.choice(directions)
-                    directions.remove(direction)
-                    color = random.choice(colors)
-                    colors.remove(color)
-                    if direction == 'N':
-                        i, j = 2, 4
-                    elif direction == 'S':
-                        i, j = 2, 0
-                    elif direction == 'E':
-                        i, j = 0, 2
-                    elif direction == 'W':
-                        i, j = 4, 2
-                    for _ in range(MAX_SPAWN_ATTEMPTS):
-                        turn_choices = ['Right', 'Left', 'Straight']
-                        turn_choice = random.choice(turn_choices)
-                        agent.turn_choice = turn_choice
-                        agent.signal_choice = turn_choice
-
-                        agent.color = color
-                        agent.mesh = get_duckiebot_mesh(agent.color)
-                        agent.forward_step = self.np_random.uniform(0.3, 0.7)
-
-                         # Choose a random position on this tile
-                        if direction == 'N':
-                            perturb_x = self.np_random.uniform(0.6, .9) * self.road_tile_size   # Right side of the road
-                            perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
-                            x = perturb_x + i * self.road_tile_size
-                            z = perturb_z + j * self.road_tile_size
-                            base_angle = 85 + random.randint(0, 10) # Account for variance in starting angle
-                        elif direction == 'S':
-                            perturb_x = self.np_random.uniform(0.01, 0.4) * self.road_tile_size       # Right side of the road facing south
-                            perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
-                            x = perturb_x + i * self.road_tile_size
-                            z = perturb_z + j * self.road_tile_size
-                            base_angle = 265 + random.randint(0, 10)
-                        elif direction == 'E':
-                            perturb_x = self.np_random.uniform(0.01, .9) * self.road_tile_size 
-                            perturb_z = self.np_random.uniform(0.6, .9) * self.road_tile_size    # Right side of the road facing east
-                            x = perturb_x + i * self.road_tile_size
-                            z = perturb_z + j * self.road_tile_size
-                            base_angle = 355  + random.randint(0, 10)
-                            if base_angle > 360:
-                                base_angle = base_angle - 360
-                        elif direction == 'W':
-                            perturb_x = self.np_random.uniform(0.01, 0.9) * self.road_tile_size 
-                            perturb_z = self.np_random.uniform(0.01,  0.4) * self.road_tile_size    # Right side of the road facing west
-                            x = perturb_x + i * self.road_tile_size
-                            z = perturb_z + j * self.road_tile_size
-                            base_angle = 175 + random.randint(0, 10)
-
-                        print(f"X: {x} Z: {z}")
-
-                        # Choose a random position and direction to face
-                        propose_pos = np.array([x, 0, z])
-                        propose_angle = math.radians(base_angle) 
-
-                        # If this is too close to an object or not a valid pose, retry
-                        inconvenient = self._inconvenient_spawn(propose_pos, agent)
-
-                        if inconvenient:
-                            # msg = 'The spawn was inconvenient.'
-                            # logger.warning(msg)
-                            print("Inconvenient Spawn")
-                            continue
-
-                        invalid = not self._valid_pose(propose_pos, propose_angle, agent, safety_factor=1.3)
-                        if invalid:
-                            # msg = 'The spawn was invalid.'
-                            # logger.warning(msg)
-                            print("Invalid Spawn")
-                            continue
-
-                        # Found a valid initial pose
-                        break
-                    else:
-                        msg = f"Could not find a valid starting pose for {agent.agent_id} after {MAX_SPAWN_ATTEMPTS} attempts"
-                        logger.warn(msg)
-                        raise Exception(msg)
-                        propose_pos = np.array([1, 0, 1])
-                        propose_angle = 1
-
-                agent.cur_pos = propose_pos
-                agent.prev_pos = propose_pos
-                agent.cur_angle = propose_angle
-                agent.actions = []
-                agent.nearby_objects = []
-                agent.nearby_agents = []
-                agent.last_action = np.array([0.0, 0.0]) 
-                agent.wheelVels = np.array([0.0, 0.0]) 
-
-                # Initialize Dynamics model
-                init_vel = np.array([0, 0])
-                if self.dynamics_rand:
-                    trim = 0 + self.randomization_settings["trim"][0]
-                    p = get_DB18_uncalibrated(delay=0.15, trim=trim)
-                else:
-                    p = get_DB18_nominal(delay=0.15)
-
-                q = self.cartesian_from_weird(agent.cur_pos, agent.cur_angle)
-                v0 = geometry.se2_from_linear_angular(init_vel, 0)
-                c0 = q, v0
-                agent.state = p.initialize(c0=c0, t0=0)
-
-                agent.intersection_arrival = DEFAULT_MAX_STEPS
-                agent.lights["front_left"][3] = False
-                agent.lights["front_right"][3] = False
-                agent.lights["back_left"][3] = False
-                agent.lights["back_right"][3] = False
-                agent.lights["center"][3] = False
-
-
-                print(f"Setting {agent.agent_id} to new position")
                 done=False
 
         # If the maximum time step count is reached
@@ -2393,6 +2205,117 @@ class Simulator(gym.Env):
         pos = np.asarray(pos)
         return pos, angle
 
+    # Spawn a random agent
+    def spawn_random_agent(self, agent, directions, colors):
+        direction = random.choice(directions)
+        directions.remove(direction)
+        color = random.choice(colors)
+        colors.remove(color)
+        if direction == 'N':
+            i, j = 2, 4
+        elif direction == 'S':
+            i, j = 2, 0
+        elif direction == 'E':
+            i, j = 0, 2
+        elif direction == 'W':
+            i, j = 4, 2
+        for _ in range(MAX_SPAWN_ATTEMPTS):
+            turn_choices = ['Right', 'Left', 'Straight']
+            turn_choice = random.choice(turn_choices)
+            agent.turn_choice = turn_choice
+            agent.signal_choice = turn_choice
+
+            agent.color = color
+            agent.mesh = get_duckiebot_mesh(agent.color)
+            agent.forward_step = self.np_random.uniform(0.3, 0.7)
+
+                # Choose a random position on this tile
+            if direction == 'N':
+                perturb_x = self.np_random.uniform(0.6, .9) * self.road_tile_size   # Right side of the road
+                perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
+                x = perturb_x + i * self.road_tile_size
+                z = perturb_z + j * self.road_tile_size
+                base_angle = 85 + random.randint(0, 10) # Account for variance in starting angle
+            elif direction == 'S':
+                perturb_x = self.np_random.uniform(0.01, 0.4) * self.road_tile_size       # Right side of the road facing south
+                perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
+                x = perturb_x + i * self.road_tile_size
+                z = perturb_z + j * self.road_tile_size
+                base_angle = 265 + random.randint(0, 10)
+            elif direction == 'E':
+                perturb_x = self.np_random.uniform(0.01, .9) * self.road_tile_size 
+                perturb_z = self.np_random.uniform(0.6, .9) * self.road_tile_size    # Right side of the road facing east
+                x = perturb_x + i * self.road_tile_size
+                z = perturb_z + j * self.road_tile_size
+                base_angle = 355  + random.randint(0, 10)
+                if base_angle > 360:
+                    base_angle = base_angle - 360
+            elif direction == 'W':
+                perturb_x = self.np_random.uniform(0.01, 0.9) * self.road_tile_size 
+                perturb_z = self.np_random.uniform(0.01,  0.4) * self.road_tile_size    # Right side of the road facing west
+                x = perturb_x + i * self.road_tile_size
+                z = perturb_z + j * self.road_tile_size
+                base_angle = 175 + random.randint(0, 10)
+
+            # Choose a random position and direction to face
+            propose_pos = np.array([x, 0, z])
+            propose_angle = math.radians(base_angle) 
+
+            # If this is too close to an object or not a valid pose, retry
+            inconvenient = self._inconvenient_spawn(propose_pos, agent)
+
+            if inconvenient:
+                # msg = 'The spawn was inconvenient.'
+                # logger.warning(msg)
+                print("Inconvenient Spawn")
+                continue
+
+            invalid = not self._valid_pose(propose_pos, propose_angle, agent, safety_factor=1.3)
+            if invalid:
+                # msg = 'The spawn was invalid.'
+                # logger.warning(msg)
+                print("Invalid Spawn")
+                continue
+
+            # Found a valid initial pose
+            break
+        else:
+            msg = f"Could not find a valid starting pose for {agent.agent_id} after {MAX_SPAWN_ATTEMPTS} attempts"
+            logger.warn(msg)
+            raise Exception(msg)
+            propose_pos = np.array([1, 0, 1])
+            propose_angle = 1
+
+        agent.cur_pos = propose_pos
+        agent.prev_pos = propose_pos
+        agent.cur_angle = propose_angle
+        agent.actions = []
+        agent.nearby_objects = []
+        agent.nearby_agents = []
+        agent.last_action = np.array([0.0, 0.0]) 
+        agent.wheelVels = np.array([0.0, 0.0]) 
+
+        # Initialize Dynamics model
+        init_vel = np.array([0, 0])
+        if self.dynamics_rand:
+            trim = 0 + self.randomization_settings["trim"][0]
+            p = get_DB18_uncalibrated(delay=0.15, trim=trim)
+        else:
+            p = get_DB18_nominal(delay=0.15)
+
+        q = self.cartesian_from_weird(agent.cur_pos, agent.cur_angle)
+        v0 = geometry.se2_from_linear_angular(init_vel, 0)
+        c0 = q, v0
+        agent.state = p.initialize(c0=c0, t0=0)
+
+        agent.intersection_arrival = DEFAULT_MAX_STEPS
+        agent.lights["front_left"][3] = False
+        agent.lights["front_right"][3] = False
+        agent.lights["back_left"][3] = False
+        agent.lights["back_right"][3] = False
+        agent.lights["center"][3] = False
+
+
 
 def get_dir_vec(cur_angle: float) -> np.ndarray:
     """
@@ -2415,9 +2338,6 @@ def get_right_vec(cur_angle: float) -> np.ndarray:
 
 
 
-
-
-
 def _actual_center(pos, angle):
     """
     Calculate the position of the geometric center of the agent
@@ -2434,7 +2354,7 @@ def get_agent_corners(pos, angle, bbox_offset_w = 0, bbox_offset_l = 0):
     )
     return agent_corners
 
-    
+       
 class FrameBufferMemory:
     multi_fbo: int
     final_fbo: int
