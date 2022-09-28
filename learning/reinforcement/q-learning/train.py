@@ -1,5 +1,7 @@
 """Training the agent"""
 import argparse
+import os
+import shutil
 import random
 import sys
 import time
@@ -23,12 +25,12 @@ import gym_duckietown.event_wrappers as event
 import socketio
 
 from learn_types import *
-
+from gym_duckietown import dl_utils
 def train(args):
-    # Hyperparameters
+       # Hyperparameters
     alpha = args.alpha
     gamma = args.gamma
-    epsilon = args.gamma
+    epsilon = args.epsilon
 
     # Make the environment
     # Build Env
@@ -59,8 +61,6 @@ def train(args):
     # Start up env
     env.reset()
     
-
-
     # For plotting metrics
     all_epochs = []
     all_penalties = []
@@ -70,6 +70,9 @@ def train(args):
 
     print("Beginning Training.")
     for i in range(1, args.num_episodes):
+        alpha = alpha * (1 - (i / args.num_episodes))
+        epsilon = args.epsilon * (1 - (i / args.num_episodes)) 
+        gamma = gamma
         # Reset the state
         env.reset()
         # Set reward profile for agent 0
@@ -82,7 +85,10 @@ def train(args):
         while not done:
 
             # Get initial State (Will be the row of the model)
+            #print(f"GETTING INIT STATE in epoch {epochs}")
+            #print(f"{env.agents[0].cur_pos}")
             state = env.agents[0].get_learning_state(env)
+            #print(f"DONE")
 
             if random.uniform(0, 1) < epsilon:
                 # Explore action space
@@ -102,6 +108,13 @@ def train(args):
 
                 # If not in the middle of an action, get one
                 if not agent.actions:
+                    """if not agent.in_bounds(env) and agent.agent_id != "agent0":
+                        directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
+                        colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
+                        env.spawn_random_agent(agent, directions, colors)  
+                    elif not agent.in_bounds(env) and agent.agent_id == "agent0": 
+                        break"""
+                    
                     if agent.intersection_detected(env):
                         agent.add_actions(agent.handle_intersection(env))
                     else: 
@@ -115,25 +128,68 @@ def train(args):
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
                     next_state, reward, done, info = env.step(agent.get_next_action(), agent, learning=True)
+                    if done:
+                        break
                 else: # For everyone else just step
-                    env.step(agent.get_next_action(), agent, learning=False)
+                    _, _, done, _ = env.step(agent.get_next_action(), agent, learning=True)
+                    if done:
+                        break
             
             # Calculate and set the new q table stuff
-            old_value = q_table[state, action]
-            next_max = np.max(q_table[next_state])
+            old_value = q_table[state][action]
+            #print(f"Next State {next_state}")
+            if not next_state:
+                next_max = 0 # If end of episode we have 0 for our next max stateval
+            else:
+                next_max = np.max(q_table[next_state])
             
-            new_value = (1 - alpha) * old_value + alpha * (reward + gamma * next_max)
-            q_table[state, action] = new_value
+            new_value = alpha * (reward + gamma * next_max - old_value)
+            q_table[state][action] += new_value
             
-            if reward == -10:
+            if reward <= -1000:
                 penalties += 1
 
             epochs += 1
+            # Render each 10th step
+            #if epochs % 1 == 0:
+            if i > 800:
+                env.render(mode=args.cam_mode)
             
+        print(f"In Episode {i}, {env.agents[0].agent_id} went {env.agents[0].forward_step} in {env.agents[0].step_count} steps. Alpha {alpha} Epsilon {epsilon} and Penalty Rate of {penalties/epochs}\n")
         if i % 100 == 0:
-            print(f"Episode: {i}")
-
+            write_model(args.model_dir, args.reward_profile, i, q_table)
+            print(f"Batch Episodes: {i}")
     print("Training finished.\n")
+
+def write_model(directory, reward_profile, episode_batch, model):
+        
+    profile = ""
+    if reward_profile == 0:
+        profile = "pathological"
+    elif reward_profile == 1:
+        profile = "impatient"
+    elif reward_profile == 2:
+        profile = "defensive"
+
+    model_save = directory + profile + "/" + "episodebatch_" + str(episode_batch)
+
+    # Delete old files
+    if episode_batch == 100:
+        for filename in os.listdir(directory + profile):
+            file_path = os.path.join(directory + profile, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+    # Write new model
+    out = open(model_save, 'w', os.O_NONBLOCK)
+    for i in range(0, STATES):
+        out.write("[" + str(model[i][0]) + "] [" + str(model[i][1]) + "]\n")
+    out.close()
 
 
 # Main - Get arguments and train using Q learning
@@ -147,11 +203,11 @@ if __name__ == "__main__":
     parser.add_argument("--eval_freq", default=5e3, type=float)  # How often (time steps) we evaluate
     parser.add_argument("--max_timesteps", default=1e6, type=float)  # Max time steps to run environment for
     parser.add_argument("--save_models", action="store_true", default=True)  # Whether or not models are saved
-    parser.add_argument("--alpha", default=0.01, type=float)  # Alpha learning rate 
+    parser.add_argument("--alpha", default=0.1, type=float)  # Alpha learning rate 
     parser.add_argument("--gamma", default=0.6, type=float)  # Gamma preference to short term reward
     parser.add_argument("--epsilon", default=0.35, type=float)  # Epsilon for egreedy q learning 
     parser.add_argument("--discount", default=0.99, type=float)  # Discount factor
-    parser.add_argument("--num_episodes", default=100001, type=int)  # Nummber of episodes
+    parser.add_argument("--num-episodes", default=100001, type=int)  # Nummber of episodes
     parser.add_argument("--reward-profile", default=2, type=int)  # Rewards (0 = pathological, 1= impatient, 2= defensive)
     parser.add_argument("--model-dir", type=str, default="learning/reinforcement/q-learning/models/")
 

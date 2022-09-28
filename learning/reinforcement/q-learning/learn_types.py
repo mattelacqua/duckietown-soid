@@ -25,7 +25,8 @@ class QTable(Structure):
     def __init__(self):
         for i in range (0, STATES):
             for j in range (0, ACTIONS):
-                self.qt[i][j] = random.random() # Init to random 0-1 value.
+                #self.qt[i][j] = random.random() # Init to random 0-1 value.
+                self.qt[i][j] = 0 # Init to 0
 
 
 class Learn(Structure):

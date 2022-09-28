@@ -65,8 +65,8 @@ typedef struct {
     bool intersection_empty;
     bool intersection_in_range;
     bool object_in_range;
-    bool ahead_car_intersection_in_range;
-    bool ahead_car_object_in_range;
+    bool cars_arrived_before_me;
+    bool cars_waiting_to_enter;
     bool car_entering_our_range;
     bool car_behind_us_in_intersection;
     bool car_behind_us_out_intersection;

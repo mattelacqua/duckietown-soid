@@ -66,8 +66,8 @@ class EnvironmentAgentArray(Structure):
             self.ENV_AGENT_ARRAY[i].pos_x = float(agent.cur_pos[0])
             self.ENV_AGENT_ARRAY[i].pos_z = float(agent.cur_pos[2])
             self.ENV_AGENT_ARRAY[i].angle = float(agent.cur_angle)
-            self.ENV_AGENT_ARRAY[i].distance_away = float(env.pos_distance(our_agent.get_curr_pos(env, matrix=True), \
-                                             agent.get_curr_pos(env, matrix=True)))
+            self.ENV_AGENT_ARRAY[i].distance_away = float(env.pos_distance(our_agent.cur_pos, \
+                                             agent.cur_pos))
             self.ENV_AGENT_ARRAY[i].direction = get_dl_direction(agent.get_direction(env))
             self.ENV_AGENT_ARRAY[i].intersection_arrival = agent.intersection_arrival
 

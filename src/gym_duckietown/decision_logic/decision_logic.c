@@ -110,8 +110,9 @@ bool proceed(AgentState agent_state, bool good_agent) {
     //if (!good_agent){
         if (agent_state.object_in_range)
             return false;
-        else
-            return true;
+        if (agent_state.cars_arrived_before_me)
+            return false;
+        return true;
     /*} else {
         // If we are going to hit a car in intersection or outside of
         if (agent_state.object_in_rangery)

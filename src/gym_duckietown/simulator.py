@@ -1449,12 +1449,14 @@ class Simulator(gym.Env):
         tile = self._get_tile(*coords)
         if tile is None:
             msg = f"No tile found at {pos} {coords}"
-            logger.debug(msg)
+            if self.verbose:
+                logger.debug(msg)
             return False
 
         if not tile["drivable"]:
             msg = f"{pos} corresponds to tile at {coords} which is not drivable: {tile}"
-            logger.debug(msg)
+            if self.verbose:
+                logger.debug(msg)
             return False
 
         return True
@@ -1506,21 +1508,21 @@ class Simulator(gym.Env):
             too_close = False
             for other_agent in self.agents:
                 if other_agent.agent_id != agent.agent_id:
-                    distance = np.linalg.norm(np.array(other_agent.cur_pos) - np.array(agent.cur_pos))
+                    distance = np.linalg.norm(np.array(other_agent.cur_pos) - np.array(pos))
 
                     if distance > 0 and distance < self.robot_length/2:
-                        print("HERE")
-                        print(f"Condition: {self.robot_length}")
-                        print(f"Distance: {distance}")
-                        print(f"Other agent pos: {other_agent.cur_pos}")
-                        print(f"Us pos: {agent.cur_pos}")
+                        if self.verbose:
+                            print(f"Condition: {self.robot_length}")
+                            print(f"Distance: {distance}")
+                            print(f"Other agent pos: {other_agent.cur_pos}")
+                            print(f"Proposed pos: {pos}")
                         too_close = True
             return too_close
 
 
 
 
-    def _collision(self, this_agent_corners, this_agent):
+    def _collision(self, this_agent_corners, this_agent, learning):
         """
         Tensor-based OBB Collision detection
         """
@@ -1545,11 +1547,14 @@ class Simulator(gym.Env):
                 agent_corners = get_agent_corners(pos, agent.cur_angle)
                 agent_norm = generate_norm(agent_corners)
                 if intersects_single_obj(this_agent_corners, agent_corners.T, this_agent_norm, agent_norm):
-                    return True
+                    if learning:
+                        return agent
+                    else:
+                        return True
         # No collision with any object
         return False
 
-    def _valid_pose(self, pos: g.T3value, angle: float, agent: Agent, safety_factor: float = DEFAULT_SAFETY_FACTOR) -> bool:
+    def _valid_pose(self, pos: g.T3value, angle: float, agent: Agent, safety_factor: float = DEFAULT_SAFETY_FACTOR, learning: bool = False) -> bool:
         """
         Check that the agent is in a valid pose
 
@@ -1577,20 +1582,22 @@ class Simulator(gym.Env):
 
         # Recompute the bounding boxes (BB) for the agent
         agent_corners = get_agent_corners(pos, angle)
-        no_collision = not self._collision(agent_corners, agent)
+        if learning:
+            collisions = self._collision(agent_corners, agent, learning)
+            return all_drivable, collisions
+        else:
+            no_collision = not self._collision(agent_corners, agent, learning)
+            res = no_collision and all_drivable
+            if not res and self.verbose:
+                logger.info(f"Invalid pose. Collision free: {no_collision} On drivable area: {all_drivable}")
+                logger.info(f"safety_factor: {safety_factor}")
+                logger.info(f"pos: {pos}")
+                logger.info(f"l_pos: {l_pos}")
+                logger.info(f"r_pos: {r_pos}")
+                logger.info(f"f_pos: {f_pos}")
+            return res
 
-        res = no_collision and all_drivable
-
-        if not res:
-            logger.debug(f"Invalid pose. Collision free: {no_collision} On drivable area: {all_drivable}")
-            logger.debug(f"safety_factor: {safety_factor}")
-            logger.debug(f"pos: {pos}")
-            logger.debug(f"l_pos: {l_pos}")
-            logger.debug(f"r_pos: {r_pos}")
-            logger.debug(f"f_pos: {f_pos}")
-
-        return res
-
+        
     def _check_intersection_static_obstacles(self, pos: g.T3value, angle: float) -> bool:
         agent_corners = get_agent_corners(pos, angle)
         agent_norm = generate_norm(agent_corners)
@@ -1688,59 +1695,133 @@ class Simulator(gym.Env):
             reward = +1.0 * speed * lp.dot_dir + -10 * np.abs(lp.dist) + +40 * col_penalty
         return reward
 
-    def step(self, action: np.ndarray, agent, learning=False):
+    def step(self, action: np.ndarray, agent, learning: bool=False):
         action = np.clip(action, -1, 1)
         # Actions could be a Python list
         action = np.array(action)
         for _ in range(self.frame_skip):
             self.update_physics(action, agent)
 
-        # Generate the current camera image
-        if learning:
-            state = agent.get_learning_state(self)
-        else:
-            state = self.render_obs()
         misc = agent.get_info(self)
 
         d = self._compute_done_reward(agent, learning)
+
+        # Generate the state 
+        if learning and agent.in_bounds(self):
+            state = agent.get_learning_state(self)
+        elif learning and d.done:
+            state = 0
+        elif learning and not d.done:
+            state = 0
+        else:
+            state = self.render_obs()
         #misc["Simulator"]["msg"] = d.done_why
 
         return state, d.reward, d.done, misc
 
     def _compute_done_reward(self, agent, learning=False) -> DoneRewardInfo:
+        reward = 0
         # If the agent is not in a valid pose (on drivable tiles)
-        if not self._valid_pose(agent.cur_pos, agent.cur_angle, agent, self.safety_factor):
-            msg = "Stopping the simulator because we are at an invalid pose."
-            # logger.info(msg)
-            if agent.agent_id == "agent0":
-                done_code = "invalid-pose"
-                if learning:
-                    reward = agent.get_reward(env, done_code)
+        if learning: 
+            all_drivable, collision = self._valid_pose(agent.cur_pos, agent.cur_angle, agent, self.safety_factor, learning)
+            
+            # If not on a tile
+            if not all_drivable:
+                inbounds = agent.in_bounds(self)
+                # If its agent 0 we don't want to reset. It would mark it being done
+                if agent.agent_id == "agent0":
+                    if not inbounds:
+                        done = True
+                        done_code = "finished"
+                        msg = "%s finished without harm." % agent.agent_id
+                        reward = agent.get_reward(self, done_code)
+                        print(msg)
+                        return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
+                    if inbounds:
+                        done = True
+                        done_code = "offroad"
+                        msg = "%s drove offroad." % agent.agent_id
+                        reward = agent.get_reward(self, done_code)
+                        print(msg)
+                        return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
                 else:
-                    reward = REWARD_INVALID_POSE
-                done = True
-            else:
-                # If the map specifies a starting tile
-                directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
-                colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
-                if agent.random_spawn:
-                    self.spawn_random_agent(agent, directions, colors)
-                    # Keep trying to find a valid spawn position on this tile
-                done=False
+                    if not inbounds: # Keep going and reset if our agent drives off
+                        done=False
+                        done_code = "in-progress"
+                        msg = "%s is being reset." % agent.agent_id
+                        reward = agent.get_reward(self, done_code)
+                        directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
+                        colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
+                        if agent.random_spawn:
+                            self.spawn_random_agent(agent, directions, colors)
+                            # Keep trying to find a valid spawn position on this tile
+                        print(msg)
+                        return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
 
-        # If the maximum time step count is reached
-        elif agent.step_count >= self.max_steps:
-            msg = "Stopping the simulator because we reached max_steps = %s" % self.max_steps
-            # logger.info(msg)
-            done = True
-            reward = 0
-            done_code = "max-steps-reached"
-        else:
+            # If there was a collision
+            if collision:
+                if agent.agent_id == "agent0" or collision.agent_id == "agent0":
+                    done = True
+                    done_code = "collision"
+                    msg = "%s collided with %s" % (agent.agent_id, collision.agent_id)
+                    reward = agent.get_reward(self, done_code)
+                    print(msg)
+                    return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
+                else:
+                    done=False
+                    done_code = "in-progress"
+                    msg = "Resetting agents %s  and %s" % (agent.agent_id, collision.agent_id)
+                    reward = agent.get_reward(self, done_code)
+
+                    directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
+                    colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
+                    if agent.random_spawn:
+                        self.spawn_random_agent(agent, directions, colors)
+                    if collision.random_spawn:
+                        self.spawn_random_agent(collision, directions, colors)
+                    print(msg)
+                    return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
+
+            if agent.step_count >= self.max_steps:
+                done = True
+                done_code = "max-steps-reached"
+                msg = "Stopping the simulator because we reached max_steps = %s" % self.max_steps
+                reward = agent.get_reward(self, done_code)
+                return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
+
             done = False
-            reward = self.compute_reward(agent.cur_pos, agent.cur_angle, self.robot_speed)
-            msg = ""
             done_code = "in-progress"
-        return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
+            msg = "in progress."
+            reward = agent.get_reward(self, done_code)
+            return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
+        
+        # If not learning
+        else:
+            if not self._valid_pose(agent.cur_pos, agent.cur_angle, agent, self.safety_factor, learning):
+                done = True
+                done_code = "invalid-pose"
+                msg = "Stopping the simulator because we are at an invalid pose."
+                reward = REWARD_INVALID_POSE
+                return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
+
+            # If the maximum time step count is reached
+            if agent.step_count >= self.max_steps:
+                done = True
+                done_code = "max-steps-reached"
+                msg = "Stopping the simulator because we reached max_steps = %s" % self.max_steps
+                reward = REWARD_INVALID_POSE
+                return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
+            
+            # If going still
+            done = False
+            done_code = "in-progress"
+            msg = ""
+            reward = 0
+            return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
+        
+
+        print("DEFAULTING?????")
+        return DoneRewardInfo(done=False, done_why="DEFAULT", reward=0, done_code="DEFAULT")
 
     def map_jpg(self, segment: bool = False, background: bool = False):
         img = self._render_img(
@@ -1910,9 +1991,11 @@ class Simulator(gym.Env):
                 ambient = [0.0, 0.0, 0.0, 1.0]
                 specular = [0.0, 0.0, 0.0, 1.0]
                 spot_direction = [0.0, -1.0, 0.0]
-                logger.debug(
-                    li=li, li_pos=li_pos, ambient=ambient, diffuse=diffuse, spot_direction=spot_direction
-                )
+                
+                if self.verbose:
+                    logger.debug(
+                        li=li, li_pos=li_pos, ambient=ambient, diffuse=diffuse, spot_direction=spot_direction
+                    )
                 gl.glLightfv(li, gl.GL_POSITION, (gl.GLfloat * 4)(*li_pos))
                 gl.glLightfv(li, gl.GL_AMBIENT, (gl.GLfloat * 4)(*ambient))
                 gl.glLightfv(li, gl.GL_DIFFUSE, (gl.GLfloat * 4)(*diffuse))
@@ -2178,12 +2261,63 @@ class Simulator(gym.Env):
         # Display position/state information
         if mode != "free_cam":
             x, y, z = self.agents[0].cur_pos
-            self.text_label.text = (
-                f"pos: ({x:.2f}, {y:.2f}, {z:.2f}), angle: "
-                f"{np.rad2deg(self.agents[0].cur_angle):.1f} deg, steps: {self.agents[0].step_count}, "
-                f"speed: {self.agents[0].speed:.2f} m/s"
-            )
-            self.text_label.draw()
+            if self.agents[0].learning_state:
+                self.text_label.text = (
+                    f"pos: ({x:.2f}, {y:.2f}, {z:.2f}), angle: "
+                    f"{np.rad2deg(self.agents[0].cur_angle):.1f} deg, steps: {self.agents[0].step_count}, "
+                    f"speed: {self.agents[0].speed:.2f} m/s, "
+                    f"forward_step: {self.agents[0].forward_step:.2f}\n"
+                )
+                self.text_label.draw()
+                #0 
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 4)
+                stat.text = (f"in_int: {self.agents[0].learning_state[0]}")
+                stat.draw()  
+                #1 
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 5)
+                stat.text = (f"at_int: {self.agents[0].learning_state[1]}")
+                stat.draw()  
+                #2 
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 6)
+                stat.text = (f"empty_int: {self.agents[0].learning_state[2]}")
+                stat.draw()  
+                #3 
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 7)
+                stat.text = (f"appr_int: {self.agents[0].learning_state[3]}")
+                stat.draw()  
+                #4 
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 8)
+                stat.text = (f"obj_in_range: {self.agents[0].learning_state[4]}")
+                stat.draw()  
+                #5 
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 9)
+                stat.text = (f"cars_arrived_before_me: {self.agents[0].learning_state[5]}")
+                stat.draw()  
+                #6 
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 10)
+                stat.text = (f"cars_waiting_to_enter: {self.agents[0].learning_state[6]}")
+                stat.draw()  
+                #7 
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 11)
+                stat.text = (f"car_entering_range: {self.agents[0].learning_state[7]}")
+                stat.draw()  
+                #8 
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 12)
+                stat.text = (f"car_behind_us_in_range: {self.agents[0].learning_state[8]}")
+                stat.draw()  
+                #9 
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 13)
+                stat.text = (f"car_behind_us_no_range: {self.agents[0].learning_state[9]}")
+                stat.draw()  
+
+            else:
+                self.text_label.text = (
+                    f"pos: ({x:.2f}, {y:.2f}, {z:.2f}), angle: "
+                    f"{np.rad2deg(self.agents[0].cur_angle):.1f} deg, steps: {self.agents[0].step_count}, "
+                    f"speed: {self.agents[0].speed:.2f} m/s, "
+                    f"forward_step: {self.agents[0].forward_step:.2f}\n"
+                )
+                self.text_label.draw()
         
 
         # Force execution of queued commands
@@ -2207,19 +2341,21 @@ class Simulator(gym.Env):
 
     # Spawn a random agent
     def spawn_random_agent(self, agent, directions, colors):
-        direction = random.choice(directions)
-        directions.remove(direction)
-        color = random.choice(colors)
-        colors.remove(color)
-        if direction == 'N':
-            i, j = 2, 4
-        elif direction == 'S':
-            i, j = 2, 0
-        elif direction == 'E':
-            i, j = 0, 2
-        elif direction == 'W':
-            i, j = 4, 2
+        #print(f"RESPAWNING AGENT {agent.agent_id}")
         for _ in range(MAX_SPAWN_ATTEMPTS):
+            direction = random.choice(directions)
+            if agent.agent_id == "agent0":
+                color = "blue"
+            else:
+                color = random.choice(colors)
+            if direction == 'N':
+                i, j = 2, 4
+            elif direction == 'S':
+                i, j = 2, 0
+            elif direction == 'E':
+                i, j = 0, 2
+            elif direction == 'W':
+                i, j = 4, 2
             turn_choices = ['Right', 'Left', 'Straight']
             turn_choice = random.choice(turn_choices)
             agent.turn_choice = turn_choice
@@ -2229,7 +2365,7 @@ class Simulator(gym.Env):
             agent.mesh = get_duckiebot_mesh(agent.color)
             agent.forward_step = self.np_random.uniform(0.3, 0.7)
 
-                # Choose a random position on this tile
+            # Choose a random position on this tile
             if direction == 'N':
                 perturb_x = self.np_random.uniform(0.6, .9) * self.road_tile_size   # Right side of the road
                 perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
@@ -2267,14 +2403,14 @@ class Simulator(gym.Env):
             if inconvenient:
                 # msg = 'The spawn was inconvenient.'
                 # logger.warning(msg)
-                print("Inconvenient Spawn")
+                #print("Inconvenient Spawn")
                 continue
 
             invalid = not self._valid_pose(propose_pos, propose_angle, agent, safety_factor=1.3)
             if invalid:
                 # msg = 'The spawn was invalid.'
                 # logger.warning(msg)
-                print("Invalid Spawn")
+                #print("Invalid Spawn")
                 continue
 
             # Found a valid initial pose
@@ -2290,6 +2426,7 @@ class Simulator(gym.Env):
         agent.prev_pos = propose_pos
         agent.cur_angle = propose_angle
         agent.actions = []
+        agent.intersection_arrival = None
         agent.nearby_objects = []
         agent.nearby_agents = []
         agent.last_action = np.array([0.0, 0.0]) 
@@ -2316,6 +2453,11 @@ class Simulator(gym.Env):
         agent.lights["center"][3] = False
 
 
+    def get_agent_corners(self, pos, angle, bbox_offset_w = 0, bbox_offset_l = 0):
+        agent_corners = agent_boundbox(
+            _actual_center(pos, angle), ROBOT_WIDTH + bbox_offset_w, ROBOT_LENGTH + bbox_offset_l, get_dir_vec(angle), get_right_vec(angle)
+        )
+        return agent_corners
 
 def get_dir_vec(cur_angle: float) -> np.ndarray:
     """

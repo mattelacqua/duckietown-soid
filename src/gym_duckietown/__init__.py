@@ -8,6 +8,7 @@ from zuper_commons.logs import ZLogger
 from duckietown_world.resources import list_maps2
 
 logger = ZLogger("gym-duckietown")
+logger.setLevel(ZLogger.INFO)
 import os
 
 import pyglet
