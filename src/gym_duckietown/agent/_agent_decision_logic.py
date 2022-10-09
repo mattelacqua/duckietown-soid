@@ -1,4 +1,5 @@
 from ..dl_utils import *
+from learn_types import *
 import numpy as np
 import os
 from ..agents import so_file, dl
@@ -9,90 +10,31 @@ import math
 # Decision Logic
 #--------------------------
 
-def proceed(self, env, good_agent=False):
+def proceed(self, env, good_agent=False, learning=False, model=None, state=None):
 
     # If we are good we want to avoid tailgating
-    if good_agent and self.is_tailgating(env):
-        no_intersection_stop_actions = []
-        for action in self.actions:
-            if action[1] != Action.INTERSECTION_STOP:
-                no_intersection_stop_actions.append(action)
-        action = np.array([0.0, 0.0])
-        self.actions = [(action, Action.STOP)] + no_intersection_stop_actions
+    if good_agent:
+        if self.is_tailgating(env):
+            self.handle_proceed(False)
+            #print(f"{self.agent_id} {self.color} {self.get_direction(env)} is forced to stop for tailgating")
+            return 
+        
+        if not self.has_right_of_way(env):
+            self.handle_proceed(False)
+            #print(f"{self.agent_id} {self.color} {self.get_direction(env)} is forced to stop no right of way")
+            return 
 
-        return
-    elif good_agent and not self.is_tailgating(env):
-        no_stop_actions = []
-        for action in self.actions:
-            if action[1] != Action.STOP:
-                no_stop_actions.append(action)
-            #else:
-                #print("Removing a stop action")
-        self.actions = no_stop_actions
-
+        # Else Remove Stop
+        self.handle_proceed(True)
         return
 
-    # Check how many actions are stop
-    """stop_count = 0
-    for action in self.actions:
-        if action[1] = Action.STOP or action[1] == Action.INTERSECTION_STOP:
-            stop_count += 1"""
+    # Call out to c with the model and the state and see what we should do, then handle it.
+    elif learning:
+        dl.proceed.argtypes = [QTable, c_int]
+        dl.proceed.restype = c_bool
 
-    # Gather all the information we need:
-    # Range we care about
-    #radius = ((env.road_tile_size / 3) * 2)
-    radius = (env.road_tile_size)
-
-    #print(f"Radius {radius}")
-    in_intersection = self.in_intersection(env)
-    at_entry = self.at_intersection_entry(env)
-    intersection_empty = self.intersection_empty(env)
-    intersection_in_range = self.approaching_intersection(env)
-    object_in_range, obj = self.object_in_range(env, location="Ahead", radius=radius)
-
-    # Get car directly in front of us things:
-    #ahead_car_intersection_in_range = obj.approaching_intersection(env) if obj else False
-    #ahead_car_object_in_range, obj = obj.object_in_range(env, location="Ahead", radius=radius) if obj else False, None
-
-    # Get if there are cars 
-    cars_arrived_before_me = self.cars_arrived_before_me(env)
-    cars_waiting_to_enter = self.cars_waiting_to_enter(env)
-
-
-    # See if a car is entering our range
-    car_entering_our_range = self.car_entering_range(env, radius=radius)
-
-    # Check behind us
-    car_behind_us_in_intersection = self.object_in_range(env, location="Behind", intersection=True, radius=radius)
-    car_behind_us_out_intersection = self.object_in_range(env, location="Behind", intersection=False, radius=radius)
-
-    """print(f"{self.agent_id} State")
-    print(f"In Intersection: {in_intersection}")
-    print(f"At Entry: {at_entry}")
-    print(f"Intersection Empty: {intersection_empty}")
-    print(f"Intersection In Range: {intersection_in_range}")
-    print(f"Object In Range: {object_in_range}")
-    print(f"Car Ahead of us Intersection In Range: {ahead_car_intersection_in_range}")
-    print(f"Car Ahead of us Object In Range: {ahead_car_object_in_range}")
-    print(f"Car Entering Range: {car_entering_our_range}")
-    print(f"Car Behind us (Us in intersection): {car_behind_us_in_intersection}")
-    print(f"Car Behind us (Us NOT in intersection): {car_behind_us_out_intersection}")"""
-
-    dl.proceed.argtypes = [AgentState, c_bool]
-    dl.proceed.restype = c_bool
-
-    agent_state_struct = AgentState(in_intersection, 
-                                    at_entry, 
-                                    intersection_empty, 
-                                    intersection_in_range, 
-                                    object_in_range, 
-                                    bool(cars_arrived_before_me),
-                                    bool(cars_waiting_to_enter),
-                                    car_entering_our_range,
-                                    car_behind_us_in_intersection,
-                                    car_behind_us_out_intersection)
-    should_proceed = dl.proceed(agent_state_struct, good_agent)
-    self.handle_proceed(should_proceed)
+        should_proceed = dl.proceed(model, state)
+        self.handle_proceed(should_proceed)
 
 # Handle wheather or not we should proceed.
 def handle_proceed(self, should_proceed):
@@ -102,12 +44,50 @@ def handle_proceed(self, should_proceed):
         if self.actions[0][1] != Action.INTERSECTION_STOP and self.actions[0][1] != Action.STOP:
             action = np.array([0.0, 0.0])
             self.actions = [(action, Action.STOP)] + no_intersection_stop_actions
+    
+
     elif should_proceed:
         no_stop_actions = []
         for action in self.actions:
             if action[1] != Action.STOP:
                 no_stop_actions.append(action)
+
         self.actions = no_stop_actions
+
+# Check if we have the right of way
+def has_right_of_way(self, env):
+    # Create a list of agents who are at the intersection or in it.
+    n_agents = []
+    s_agents = []
+    e_agents = []
+    w_agents = []
+    other_in_intersection = False
+    for agent in env.agents:
+        if agent != self:
+            # We don't have right of way if someone else is in the intersection
+            if agent.in_intersection(env):
+                other_in_intersection = True
+            elif agent.at_intersection_entry(env):
+                if agent.get_direction(env) == 'N':
+                    n_agents.append(agent)
+                elif agent.get_direction(env) == 'S':
+                    s_agents.append(agent)
+                elif agent.get_direction(env) == 'E':
+                    e_agents.append(agent)
+                elif agent.get_direction(env) == 'W':
+                    w_agents.append(agent)
+
+    # If more than one car is at intersection, wait till we have right of way (Rightmost Counter Clockwise)
+    # Intersection Priority: Rightmost counter clockwise. For two going same direction, N/S tiebreaker is N, 
+    # E/W tiebreaker is W heading agent
+    dl.has_right_of_way.argtypes = [c_bool, c_bool, c_bool, c_int, c_bool, c_bool, c_bool, c_bool]
+    dl.has_right_of_way.restype = c_bool
+
+    # Call out to c decision logic
+    row = dl.has_right_of_way(self.in_intersection(env), other_in_intersection, self.at_intersection_entry(env), get_dl_direction(self.get_direction(env)), bool(n_agents), bool(s_agents), bool(e_agents), bool(w_agents))
+    #print(f"{self.agent_id} right of way {row}")
+    return row
+        
 
 # Check if we are at an intersection
 def in_intersection(self, env):
@@ -158,19 +138,19 @@ def at_intersection_entry(self, env):
             # Check if we are within a cars length of the stop line.
             if direction == 'N':
                 stop_line = (intersection_coords[1] + 1) * env.road_tile_size
-                if self.cur_pos[2] > stop_line - env.robot_length/2 and self.cur_pos[2] < stop_line + env.robot_length:
+                if self.cur_pos[2] > stop_line - env.robot_length/3 and self.cur_pos[2] < stop_line + env.robot_length:
                     return True
             elif direction == 'S':
                 stop_line = (intersection_coords[1] + 0 if intersection_coords[1] != 0 else 1) * env.road_tile_size
-                if self.cur_pos[2] > stop_line - env.robot_length/2 and self.cur_pos[2] < stop_line + env.robot_length:
+                if self.cur_pos[2] < stop_line + env.robot_length/3 and self.cur_pos[2] > stop_line - env.robot_length:
                     return True
             elif direction == 'E':
                 stop_line = (intersection_coords[0] + 0 if intersection_coords[0] != 0 else 1) * env.road_tile_size
-                if self.cur_pos[2] > stop_line - env.robot_length/2 and self.cur_pos[2] < stop_line + env.robot_length:
+                if self.cur_pos[0] < stop_line + env.robot_length/3 and self.cur_pos[0] > stop_line - env.robot_length:
                     return True
             elif direction == 'W':
                 stop_line = (intersection_coords[0] + 1) * env.road_tile_size
-                if self.cur_pos[2] > stop_line - env.robot_length/2 and self.cur_pos[2] < stop_line + env.robot_length:
+                if self.cur_pos[0] > stop_line - env.robot_length/3 and self.cur_pos[0] < stop_line + env.robot_length:
                     return True
             else:
                 return False
@@ -219,12 +199,15 @@ def intersection_empty(self, env):
 
 
 # See if there is an object within one tile block of a car infront of us
-def object_in_range(self, env, location="Ahead", intersection=None, radius=1, return_multiple=False):
+def object_in_range(self, env, location="Ahead", intersection=None, radius=1, return_multiple=False, forward_only=False):
     if self.in_bounds(env):
         tile_x, tile_z = self.get_curr_tile(env)['coords']
         direction = self.get_direction(env)
-        side_radius = radius
-        front_radius = radius / 3
+        if forward_only:
+            side_radius = radius / 3
+        else:
+            side_radius = radius / 4
+        front_radius = radius
 
         if direction == 'N':
             # Lower bound for xrange is our current x minus half a tile

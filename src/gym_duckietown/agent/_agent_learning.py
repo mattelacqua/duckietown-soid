@@ -8,7 +8,7 @@ def get_learning_state(self, env):
     # 2: intersection is empty +128
     # 3: approaching an intersection +64
     # 4: object in range +32
-    # 5: cars arrive ahead of us +16
+    # 5: we have the right of way +16
     # 6: cars waiting to get in +8
     # 7: car entering our range +4
     # 8: car behind us and we are in intersection + 2
@@ -22,7 +22,18 @@ def get_learning_state(self, env):
     # Get state information (convert to row based on boolean inputs)
     #0
     state = []
-    if self.in_intersection(env): 
+    in_intersection = self.in_intersection(env)
+    at_intersection_entry = self.at_intersection_entry(env)
+    intersection_empty = self.intersection_empty(env)
+    approaching_intersection = self.approaching_intersection(env)
+    obj_in_range, _ = self.object_in_range(env, location="Ahead", radius = radius)
+    have_right_of_way = self.has_right_of_way(env)
+    cars_waiting_to_enter = self.cars_waiting_to_enter(env)
+    car_entering_range = self.car_entering_range(env, radius=radius)
+    obj_behind_intersection, _ = self.object_in_range(env, location="Behind", intersection=True, radius=radius) 
+    obj_behind_no_intersection, _ =  self.object_in_range(env, location="Behind", intersection=False, radius=radius) 
+
+    if in_intersection:
         model_row += 512              
         #print("IN INTERSECTION 512")
         state.append(True)
@@ -30,7 +41,7 @@ def get_learning_state(self, env):
         state.append(False)
 
     #1
-    if self.at_intersection_entry(env): 
+    if at_intersection_entry:
         model_row += 256        
         #print("AT INTERSECTION ENTRY 256")
         state.append(True)
@@ -38,7 +49,8 @@ def get_learning_state(self, env):
         state.append(False)
 
     #2
-    if self.intersection_empty(env): 
+    # We care only about the intersection being empty if we are appproaching it or at the entry
+    if intersection_empty and (approaching_intersection or at_intersection_entry):
         model_row += 128           
         #print("INTERSECTION EMPTY 128")
         state.append(True)
@@ -46,7 +58,7 @@ def get_learning_state(self, env):
         state.append(False)
 
     #3
-    if self.approaching_intersection(env): 
+    if approaching_interseciont:
         model_row += 64
         #print("APPROACHING INTERSECTION 64")
         state.append(True)
@@ -54,7 +66,6 @@ def get_learning_state(self, env):
         state.append(False)
 
     #4
-    obj_in_range, obj = self.object_in_range(env, location="Ahead", radius=radius)
     if obj_in_range: 
         model_row += 32
         #print("OBJECT IN RANGE 32")
@@ -63,8 +74,7 @@ def get_learning_state(self, env):
         state.append(False)
 
     #5
-    cars_arrived_before_me = self.cars_arrived_before_me(env)
-    if cars_arrived_before_me: 
+    if have_right_of_way: 
         model_row += 16
         #print("AHEAD CAR INTERSECTION IN RANGE 16")
         state.append(True)
@@ -72,8 +82,8 @@ def get_learning_state(self, env):
         state.append(False)
     
     #6
-    cars_waiting_to_enter = self.cars_waiting_to_enter(env)
-    if cars_waiting_to_enter: 
+    # We care only about the cars waiting to enter if we are appproaching it or at the entry, or in it.
+    if cars_waiting_to_enter and (approaching_intersection or at_intersection_entry or in_intersection): 
         model_row += 8
         #print("AHEAD CAR OBJECT IN RANGE 8")
         state.append(True)
@@ -89,7 +99,6 @@ def get_learning_state(self, env):
         state.append(False)
 
     #8
-    obj_behind_intersection, obj = self.object_in_range(env, location="Behind", intersection=True, radius=radius) 
     if obj_behind_intersection:
         model_row += 2
         #print("OBJECT BEHIND IN INTERSECTION 2")
@@ -98,7 +107,6 @@ def get_learning_state(self, env):
         state.append(False)
 
     #9
-    obj_behind_no_intersection, obj =  self.object_in_range(env, location="Behind", intersection=False, radius=radius) 
     if obj_behind_no_intersection:
         model_row += 1
         #print("OBJECT BEHIND OUT INTERSECTION 1")

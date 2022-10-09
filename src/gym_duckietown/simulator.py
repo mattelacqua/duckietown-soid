@@ -519,7 +519,7 @@ class Simulator(gym.Env):
             agent.last_action = np.array([0.0, 0.0]) 
             agent.wheelVels = np.array([0.0, 0.0]) 
             agent.state = None
-            agent.intersection_arrival = DEFAULT_MAX_STEPS
+            agent.intersection_arrival = None
             agent.lights["front_left"][3] = False
             agent.lights["front_right"][3] = False
             agent.lights["back_left"][3] = False
@@ -895,7 +895,6 @@ class Simulator(gym.Env):
            
         if not self.agents:
             for x in range(0, self.num_random_agents):
-                print(f"x {x}")
                 new_agent = Agent(cur_pos=[0, 0, 0], cur_angle=0, agent_id=("agent" + str(x)), random_spawn=True)
                 self.agents.append(new_agent)
 
@@ -2291,7 +2290,7 @@ class Simulator(gym.Env):
                 stat.draw()  
                 #5 
                 stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 9)
-                stat.text = (f"cars_arrived_before_me: {self.agents[0].learning_state[5]}")
+                stat.text = (f"has_right_of_way: {self.agents[0].learning_state[5]}")
                 stat.draw()  
                 #6 
                 stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 10)
@@ -2445,7 +2444,7 @@ class Simulator(gym.Env):
         c0 = q, v0
         agent.state = p.initialize(c0=c0, t0=0)
 
-        agent.intersection_arrival = DEFAULT_MAX_STEPS
+        agent.intersection_arrival = None
         agent.lights["front_left"][3] = False
         agent.lights["front_right"][3] = False
         agent.lights["back_left"][3] = False

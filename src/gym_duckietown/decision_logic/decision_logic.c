@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include "types.c"
 
+#define STATES 1024
+#define ACTIONS 2
+
 // Check if we are in the middle of completing an action
 bool completing_action(Action action) {
     if(action == NO_ACTION) {
@@ -68,7 +71,8 @@ IntersectionAction *intersection_action(TurnChoice old_turn_choice, TurnChoice o
 
     for (int i = 0; i < num_near_intersection; i++) {
         if (intersection_arrival > env_agent_array_struct->ENV_AGENT_ARRAY[i].intersection_arrival) {
-            wait_step += intersection_arrival - env_agent_array_struct->ENV_AGENT_ARRAY[i].intersection_arrival;
+            //wait_step += intersection_arrival - env_agent_array_struct->ENV_AGENT_ARRAY[i].intersection_arrival;
+            wait_step +=25 ;
         }
     }
     
@@ -91,44 +95,155 @@ IntersectionAction *intersection_action(TurnChoice old_turn_choice, TurnChoice o
     return intersection_action;
 }
 
-bool proceed(AgentState agent_state, bool good_agent) {
-    /*fflush(stdout);
-    printf("In Intersection: %d \n", agent_state.in_intersection);
-    printf("At Entry: %d \n", agent_state.at_entry);
-    printf("Intersection Empty:%d \n", agent_state.intersection_empty);
-    printf("Intersection In Range: %d \n", agent_state.intersection_in_range);
-    printf("Object In Range: %d \n", agent_state.object_in_range);
-    printf("Ahead Car Intersection In Range: %d \n", agent_state.ahead_car_intersection_in_range);
-    printf("Ahead Car Object In Range: %d \n", agent_state.ahead_car_object_in_range);
-    printf("Car Entering Our Range: %d \n", agent_state.car_entering_our_range);
-    printf("Car Behind Us In Intersectione: %d \n", agent_state.car_behind_us_in_intersection);
-    printf("Car Behind Us Out Intersectione: %d \n", agent_state.car_behind_us_out_intersection);
+// Get right of way for our cars. 
+bool has_right_of_way(  bool in_intersection, 
+                    bool other_car_in_intersection, 
+                    bool at_intersection_entry, 
+                    Direction direction, 
+                    bool n_agents, 
+                    bool s_agents, 
+                    bool e_agents, 
+                    bool w_agents){
+    // If already in then we must finish
+    if(in_intersection && !at_intersection_entry){
+        return true;
+    }
+    if(other_car_in_intersection && at_intersection_entry) {
+        return false;
+    }
+
+    if (at_intersection_entry){
+        if (direction == NORTH){
+            // S
+            //E W
+            // N
+            if (s_agents && e_agents && w_agents){
+                return true;
+            }
+            // ?
+            //? W
+            // N
+            else if (w_agents){
+                return false;
+            }
+            // ?
+            //?  
+            // N
+            else if (!w_agents){
+                return true;
+            }
+            else {
+                return true;
+            }
+        }
+        else if (direction == EAST){
+            // S
+            //X W
+            // N
+            if (n_agents && s_agents && w_agents){
+                return false;
+            }
+            // S
+            //X W
+            // 
+            else if (!n_agents && (s_agents && w_agents)){
+                return true;
+            }
+            // S
+            //X 
+            // 
+            else if (s_agents && !(w_agents || n_agents)){
+                return true;
+            }
+            // 
+            //X W
+            // 
+            else if (w_agents && !(s_agents || n_agents)){
+                return false;
+            }
+            // ? 
+            //X 
+            // N 
+            else if (n_agents){
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        else if (direction == SOUTH){
+            // S
+            //E W
+            // N
+            if (s_agents && e_agents && w_agents){
+                return false;
+            }
+            // S
+            //E ?
+            // ?
+            else if (e_agents){
+                return false;
+            }
+            // S
+            //  W
+            // N
+            else if (!e_agents && n_agents && w_agents){
+                return true;
+            }
+            // S
+            //   
+            // N
+            else if (!e_agents && n_agents && !w_agents){
+                return false;
+            }
+            // S
+            //   W
+            //  
+            else if (!e_agents && !n_agents && w_agents){
+                return true;
+            }
+            else {
+                return true;
+            }
+        }
+        else if (direction == WEST){
+            // S
+            //X W
+            // N
+            if (n_agents && s_agents && e_agents){
+                return false;
+            }
+            // S
+            //? W
+            // ? 
+            else if (s_agents){
+                return false;
+            }
+            // 
+            //? W
+            // ?
+            else if (!s_agents){
+                return true;
+            }
+            else {
+                return true;
+            }
+        } 
+    } 
+    else{
+        return true;
+    }
+}
     
 
-    fflush(stdout);*/
-    // If we are the learning agent then learning code will go here. Else, just behave w/ common sense
-    //if (!good_agent){
-        if (agent_state.object_in_range)
-            return false;
-        if (agent_state.cars_arrived_before_me)
-            return false;
-        return true;
-    /*} else {
-        // If we are going to hit a car in intersection or outside of
-        if (agent_state.object_in_rangery)
-            return false;
-        // If there are cars in range, we are at intersection,  stop
-        else if (agent_state.object_in_range && agent_state.at_entry)
-            return false;
-        // If we are at intersection, and its not empty stop
-        else if (agent_state.at_entry && !agent_state.intersection_empty)
-            return false;
-        // If we are at intersection, and its empty, go
-        else if (agent_state.at_entry && agent_state.intersection_empty)
-            return true;
-        else
-            return true;
-    }*/
+
+
+// Read the model to see if we proceed
+bool proceed(float model[STATES][ACTIONS], int state) {
+    float stay = model[state][0];
+    float move = model[state][1];
+    if (move >= stay) return true;
+    if (stay > move) return false; 
 }
 
 

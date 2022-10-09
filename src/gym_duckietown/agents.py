@@ -99,6 +99,7 @@ class Agent():
     # Import things for decision logic
     from .agent._agent_decision_logic import  proceed, \
                                         handle_proceed, \
+                                        has_right_of_way, \
                                         in_intersection, \
                                         at_intersection_entry,\
                                         intersection_empty, \

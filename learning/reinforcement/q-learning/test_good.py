@@ -11,7 +11,6 @@ import gym
 import numpy as np
 
 from gym_duckietown.envs import DuckietownEnv
-from gym_duckietown.dl_utils import Action
 
 # Includes all important moving functions for if then else agents
 import gym_duckietown.agents
@@ -98,58 +97,32 @@ def train(args):
                 action = np.argmax(q_table[state]) # Exploit learned values
 
             # Step each agent after choosing an action
+            print(f"Step = {env.agents[0].step_count}")
+            #time.sleep(0.05)
             for agent in env.agents:
-
                 # If not in the middle of an action, get one
                 if not agent.actions:
                     if agent.intersection_detected(env):
-                        agent.add_actions(agent.handle_intersection(env, learning=True))
+                        print(f"{agent.agent_id} {agent.color} {agent.get_direction(env)} has detecting intersection.")
+                        agent.add_actions(agent.handle_intersection(env))
                     else: 
                         agent.add_actions(agent.move_forward(env))
 
-                    if agent.agent_id == "agent0":
-                        agent.handle_proceed(bool(action))
-                    else:
-                        agent.proceed(env,good_agent=True)
+                # Check if we should proceed or not
+                agent.proceed(env,good_agent=True)
 
 
                 # Save state and info for agent 0
-                if agent.agent_id == "agent0":
-                    next_state, reward, done, info = env.step(agent.get_next_action(), agent, learning=True)
-                    if done:
-                        break
-                else: # For everyone else just step
-                    _, _, done, _ = env.step(agent.get_next_action(), agent, learning=True)
-                    if done:
-                        break
-            
-            # Calculate and set the new q table stuff
-            old_value = q_table[state][action]
-            #print(f"Next State {next_state}")
-            if not next_state:
-                next_max = 0 # If end of episode we have 0 for our next max stateval
-            else:
-                next_max = np.max(q_table[next_state])
-            
-            new_value = alpha * (reward + gamma * next_max - old_value)
-            q_table[state][action] += new_value
-            
-            if reward <= -1000:
-                penalties += 1
+                #if agent.has_right_of_way(env) and (agent.in_intersection(env) or agent.at_intersection_entry(env)):
+                    #print(f"{agent.agent_id} {agent.color} {agent.get_direction(env)} has right of way.")
 
+                _, _, done, _ = env.step(agent.get_next_action(), agent, learning=True)
+                if done:
+                    break
+            
             epochs += 1
-            # Render each 10th step
-            #if epochs % 25 == 0:
-            #    env.render(mode=args.cam_mode)
-            if i > 900:
-                env.render(mode=args.cam_mode)
+            env.render(mode=args.cam_mode)
             
-        print(f"In Episode {i}, {env.agents[0].agent_id} went {env.agents[0].forward_step} in {env.agents[0].step_count} steps. Alpha {alpha} Epsilon {epsilon} and Penalty Rate of {penalties/epochs}\n")
-        if i % 100 == 0:
-            write_model(args.model_dir, args.reward_profile, i, q_table)
-            print(f"Batch Episodes: {i}")
-    print("Training finished.\n")
-
 def write_model(directory, reward_profile, episode_batch, model):
         
     profile = ""
@@ -177,7 +150,7 @@ def write_model(directory, reward_profile, episode_batch, model):
     # Write new model
     out = open(model_save, 'w', os.O_NONBLOCK)
     for i in range(0, STATES):
-        out.write(str(model[i][0]) + "," + str(model[i][1]) + "\n")
+        out.write("[" + str(model[i][0]) + "] [" + str(model[i][1]) + "]\n")
     out.close()
 
 

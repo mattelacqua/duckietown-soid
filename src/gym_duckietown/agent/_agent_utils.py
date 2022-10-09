@@ -4,6 +4,7 @@ from ..objmesh import get_mesh, MatInfo, ObjMesh
 import numpy as np
 import random
 from gym_duckietown import objects
+from gym_duckietown.dl_utils import Action
 import os
 #--------------------------
 # Agent Information
@@ -43,6 +44,7 @@ def get_direction(self, env):
     else:
         return 'E'
 
+
 # Get current angle degrees
 def get_curr_angle(self, env):
     info = self.get_info(env)
@@ -70,6 +72,16 @@ def in_bounds(self, env):
         return False
     else:
         return True
+
+def completing_intersection(self):
+    # check if already going to complete intersection action
+    for action in self.actions:
+        print(action[1])
+        if action[1] == Action.INTERSECTION_FORWARD or action[1] == Action.INTERSECTION_LEFT or action[1] == Action.INTERSECTION_RIGHT:
+            print("THIS IS THE CASE WE ARE HITTING")
+            return True
+    else:
+        return False
 
 # Get duckiebot mesh
 def get_duckiebot_mesh(color: str) -> ObjMesh:

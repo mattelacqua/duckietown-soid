@@ -69,7 +69,7 @@ class EnvironmentAgentArray(Structure):
             self.ENV_AGENT_ARRAY[i].distance_away = float(env.pos_distance(our_agent.cur_pos, \
                                              agent.cur_pos))
             self.ENV_AGENT_ARRAY[i].direction = get_dl_direction(agent.get_direction(env))
-            self.ENV_AGENT_ARRAY[i].intersection_arrival = agent.intersection_arrival
+            self.ENV_AGENT_ARRAY[i].intersection_arrival = agent.intersection_arrival if agent.intersection_arrival else env.max_steps
 
 
 def get_turn_choice(turn):

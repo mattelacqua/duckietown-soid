@@ -26,7 +26,7 @@ def stop_vehicle(self, env, signal_choice, stop_point: int=30,forward_step: floa
 
 
 # Move Forwards at whatever angle we are at, not going faster than 30 mps
-def move_forward(self, env, speed_limit=1.0):
+def move_forward(self, env, speed_limit=1.0, intersection=False):
     # Set the speed
     forward_step = self.forward_step
     if forward_step == 0.0:
@@ -45,7 +45,7 @@ def move_forward(self, env, speed_limit=1.0):
         action = np.array([0.0, 0.0])
         action_seq.append((action, Action.SLOW_DOWN))
     else:
-        action_seq.extend(self.straighten_out(env))
+        action_seq.extend(self.straighten_out(env, intersection=intersection))
 
     # Turn off all lights because moving straight (either initially or after turning)
     self.turn_off_light("front_right")
@@ -56,7 +56,7 @@ def move_forward(self, env, speed_limit=1.0):
     return action_seq
 
 # Straighten out and follow curve
-def straighten_out(self, env):
+def straighten_out(self, env, intersection=False):
     from ..simulator import get_right_vec
     actions = []
 
@@ -98,7 +98,10 @@ def straighten_out(self, env):
     point_vec /= np.linalg.norm(point_vec)
     dot = np.dot(get_right_vec(self.cur_angle), point_vec)
     steering = (forward_step/2.0 * 10) * -dot
-    actions.append(([forward_step, steering], Action.FORWARD_STEP))
+    if intersection:
+        actions.append(([forward_step, steering], Action.INTERSECTION_FORWARD))
+    else:
+        actions.append(([forward_step, steering], Action.FORWARD_STEP))
     #print(f"{self.agent_id} Straighten out actions = {actions} at step {self.step_count}")
     return actions
 
@@ -135,15 +138,9 @@ def right_turn(self, env, forward_step: float=.44):
         logger.info(self.agent_id + ": Taking a right turn")
 
     # Get state information
-    curr_angle = self.get_curr_angle(env)
     turn_count = 0
-    speed = self.speed
-    turn_step = forward_step
-
-    # Slow down for good turning
-    if speed > 0.30:
-        speed = 0.30
-        turn_step = 0.44
+    speed = 0.30
+    turn_step = 0.44
 
     turn_factor = (speed * 10) 
     turn_overcomp = round((float(self.get_turn_overcomp(env)))/turn_factor)
@@ -176,10 +173,9 @@ def left_turn(self, env, forward_step: float=0.44):
     speed = self.speed
     turn_step = forward_step
 
-    # Slow down for good turning
-    if speed > 0.30:
-        speed = 0.30
-        turn_step = 0.44
+    #if forward_step > 0.44:
+    speed = 0.30
+    turn_step = 0.44
 
     turn_factor = (speed * 10) / 2.0
     turn_overcomp = round((float(self.get_turn_overcomp(env)))/turn_factor)
