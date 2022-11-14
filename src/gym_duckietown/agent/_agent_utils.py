@@ -76,7 +76,7 @@ def in_bounds(self, env):
 def completing_intersection(self):
     # check if already going to complete intersection action
     for action in self.actions:
-        print(action[1])
+        #print(action[1])
         if action[1] == Action.INTERSECTION_FORWARD or action[1] == Action.INTERSECTION_LEFT or action[1] == Action.INTERSECTION_RIGHT:
             print("THIS IS THE CASE WE ARE HITTING")
             return True

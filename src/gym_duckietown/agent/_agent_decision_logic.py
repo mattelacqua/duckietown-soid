@@ -14,12 +14,12 @@ def proceed(self, env, good_agent=False, learning=False, model=None, state=None)
 
     # If we are good we want to avoid tailgating
     if good_agent:
-        if self.is_tailgating(env):
+        if self.states['is_tailgating']:
             self.handle_proceed(False)
             #print(f"{self.agent_id} {self.color} {self.get_direction(env)} is forced to stop for tailgating")
             return 
         
-        if not self.has_right_of_way(env):
+        if not self.states['has_right_of_way']:
             self.handle_proceed(False)
             #print(f"{self.agent_id} {self.color} {self.get_direction(env)} is forced to stop no right of way")
             return 
@@ -65,16 +65,16 @@ def has_right_of_way(self, env):
     for agent in env.agents:
         if agent != self:
             # We don't have right of way if someone else is in the intersection
-            if agent.in_intersection(env):
+            if agent.states['in_intersection']:
                 other_in_intersection = True
-            elif agent.at_intersection_entry(env):
-                if agent.get_direction(env) == 'N':
+            elif agent.states['at_intersection_entry']:
+                if agent.direction == 'N':
                     n_agents.append(agent)
-                elif agent.get_direction(env) == 'S':
+                elif agent.direction == 'S':
                     s_agents.append(agent)
-                elif agent.get_direction(env) == 'E':
+                elif agent.direction == 'E':
                     e_agents.append(agent)
-                elif agent.get_direction(env) == 'W':
+                elif agent.direction == 'W':
                     w_agents.append(agent)
 
     # If more than one car is at intersection, wait till we have right of way (Rightmost Counter Clockwise)
@@ -102,7 +102,7 @@ def at_intersection_entry(self, env):
     # Get state information
     if self.in_bounds(env):
         tile_x, tile_z = self.get_curr_tile(env)['coords']
-        direction = self.get_direction(env)
+        direction = self.direction
 
         # Based on direction, check if the next tile is an intersection or if we are at one. 
         close_to_intersection = False
@@ -166,7 +166,7 @@ def cars_arrived_before_me(self, env):
             # If intersection_detected intersection, not at entry and agent is and we 
             #if (self.intersection_detected(env) or self.approaching_intersection(env)) and not self.at_intersection_entry(env) and agent.at_intersection_entry(env):
             if agent.intersection_arrival and self.intersection_arrival and agent.intersection_arrival < self.intersection_arrival:
-                if agent.at_intersection_entry(env) or agent.in_intersection(env) or agent.approaching_intersection(env):
+                if agent.states['at_intersection_entry'] or agent.states['in_intersection'] or agent.states['approaching_intersection']:
                     cars_before_me.append(agent)
     
     return cars_before_me
@@ -176,7 +176,7 @@ def cars_waiting_to_enter(self, env):
     cars_waiting_to_enter = []
     for agent in env.agents:
         if agent != self:
-            if agent.at_intersection_entry(env) and self.in_intersection(env):
+            if agent.states['at_intersection_entry'] and self.states['in_intersection']:
                 cars_waiting_to_enter.append(agent)
     
     return cars_waiting_to_enter
@@ -202,11 +202,11 @@ def intersection_empty(self, env):
 def object_in_range(self, env, location="Ahead", intersection=None, radius=1, return_multiple=False, forward_only=False):
     if self.in_bounds(env):
         tile_x, tile_z = self.get_curr_tile(env)['coords']
-        direction = self.get_direction(env)
+        direction = self.direction
         if forward_only:
-            side_radius = radius / 3
+            side_radius = radius / 10
         else:
-            side_radius = radius / 4
+            side_radius = radius / 10
         front_radius = radius
 
         if direction == 'N':
@@ -328,11 +328,11 @@ def is_tailgating(self, env):
         #print(f"Comparing Agent {self.agent_id} {self.color} to {agent.agent_id} {agent.color}")
         if agent.agent_id != self.agent_id:
             info = agent.get_info(env)
-            agent_direction = agent.get_direction(env)
+            agent_direction = agent.direction
             agent_x, agent_z = env.get_grid_coords(info['cur_pos'])
             prev_distance = env.pos_distance(self.prev_pos, agent.prev_pos)
             curr_distance = env.pos_distance(self.cur_pos, agent.cur_pos)
-            if  agent_direction == self.get_direction(env) and \
+            if  agent_direction == self.direction and \
                 prev_distance > curr_distance and \
                 curr_distance < env.robot_length*3 and \
                 self.is_behind(env, agent):
@@ -361,7 +361,7 @@ def is_behind(self, env, agent):
 
 # See if a car is entering out range
 def car_entering_range(self, env, radius=1):
-    cars_are_in_large_range, cars_large_range = self.object_in_range(env, location="Ahead", radius=radius*2, return_multiple=True)
+    cars_are_in_large_range, cars_large_range = self.object_in_range(env, location="Ahead", radius=radius*1.5, return_multiple=True)
     cars_are_in_short_range, cars_short_range = self.object_in_range(env, location="Ahead", radius=radius, return_multiple=True)
 
     if cars_are_in_large_range and cars_are_in_short_range:

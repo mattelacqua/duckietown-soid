@@ -15,11 +15,8 @@ def handle_intersection(self, env, speed_limit=1.0,  stop_point=30, learning=Fal
     signal_choice= get_turn_choice(self.signal_choice)
     forward_step = self.forward_step
 
-
-
     # Initialize action sequence
     action_seq = []
-
 
     dl.intersection_action.argtypes = [c_int, c_int, c_int, POINTER(EnvironmentAgentArray)]
     dl.intersection_action.restype = c_void_p
@@ -44,22 +41,23 @@ def handle_intersection(self, env, speed_limit=1.0,  stop_point=30, learning=Fal
     # Stop before entering intersection if not the learning agent
     if not learning:
         action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step))
-    elif learning and self.agent_id != "agent0":
+    #elif learning and self.agent_id != "agent0":
+    elif learning:
         action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step))
 
     if action == Action.INTERSECTION_RIGHT:
-        if self.agent_id == "agent0":
-            print(f"{self.agent_id} is taking a right turn.")
+        #if self.agent_id == "agent0":
+        #    print(f"{self.agent_id} is taking a right turn.")
         action_seq.extend(self.right_turn(env, forward_step=forward_step))
     elif action == Action.INTERSECTION_LEFT:
         #print(f"{self.agent_id} is taking a left turn.")
-        if self.agent_id == "agent0":
-            print(f"{self.agent_id} is taking a left turn.")
+        #if self.agent_id == "agent0":
+        #    print(f"{self.agent_id} is taking a left turn.")
         action_seq.extend(self.left_turn(env, forward_step=forward_step))
     elif action == Action.INTERSECTION_FORWARD:
         #print(f"{self.agent_id} is going straight.")
-        if self.agent_id == "agent0":
-            print(f"{self.agent_id} is taking a straight.")
+        #if self.agent_id == "agent0":
+        #    print(f"{self.agent_id} is taking a straight.")
         forward_steps = 0
         while forward_steps < 30:
             action_seq.extend(self.move_forward(env, speed_limit=speed_limit, intersection=True))
@@ -72,11 +70,9 @@ def intersection_detected(self, env):
     # Get relevant state information
     curr_x, curr_z = self.cur_pos[0], self.cur_pos[2]
     stop_x, stop_z = self.get_stop_pos(env)
-    direction = self.get_direction(env)
+    direction = self.direction
 
     # Preprocess for C Callout
-
-
     direction = get_dl_direction(direction)
 
     dl.intersection_detected.argtypes = [c_int, 
@@ -92,8 +88,6 @@ def intersection_detected(self, env):
     if is_intersection and not self.intersection_arrival:
         self.intersection_arrival = self.step_count
         first_time = True
-        #print("\n\nHERE\n\n")
-    
 
     # Return 
     return (is_intersection and first_time)
@@ -103,7 +97,7 @@ def approaching_intersection(self, env, include_tile: bool=False):
     # Get state information
     if self.in_bounds(env):
         tile_x, tile_z = self.get_curr_tile(env)['coords']
-        direction = self.get_direction(env)
+        direction = self.direction
 
         # Based on direction, check if the next tile is an intersection
         if direction == 'N' and intersection_tile(env, tile_x, tile_z-1):
@@ -155,9 +149,9 @@ def get_stop_pos(self, env):
     tile_x, tile_z = env.get_grid_coords(self.cur_pos) 
     tile_size = env.road_tile_size
     curr_x, curr_z = self.cur_pos[0], self.cur_pos[2]
-    direction = self.get_direction(env)
-    # Adjust stop point based on speed
+    direction = self.direction
 
+    # Adjust stop point based on speed
     # Treat agents above .30 as the same. Its just how it goes.
     speed = self.speed
 

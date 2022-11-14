@@ -77,6 +77,7 @@ def train(args):
         env.reset()
         # Set reward profile for agent 0
         env.agents[0].reward_profile = args.reward_profile
+        print(f"Agent 0 is turning: {env.agents[0].turn_choice}")
 
         epochs, penalties, reward, = 0, 0, 0
         done = False

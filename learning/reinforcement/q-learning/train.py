@@ -83,6 +83,7 @@ def train(args):
         done = False
 
         # Learn until episode over
+        reward_sum = 0
         while not done:
 
             # Get initial State (Will be the row of the model)
@@ -107,21 +108,18 @@ def train(args):
                     else: 
                         agent.add_actions(agent.move_forward(env))
 
-                    if agent.agent_id == "agent0":
-                        agent.handle_proceed(bool(action))
-                    else:
-                        agent.proceed(env,good_agent=True)
 
 
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
+                    agent.handle_proceed(bool(action))
                     next_state, reward, done, info = env.step(agent.get_next_action(), agent, learning=True)
+                    reward_sum += reward
                     if done:
                         break
                 else: # For everyone else just step
-                    _, _, done, _ = env.step(agent.get_next_action(), agent, learning=True)
-                    if done:
-                        break
+                    agent.proceed(env,good_agent=True)
+                    env.step(agent.get_next_action(), agent, learning=True)
             
             # Calculate and set the new q table stuff
             old_value = q_table[state][action]
@@ -139,13 +137,14 @@ def train(args):
 
             epochs += 1
             # Render each 10th step
-            #if epochs % 25 == 0:
+            #if epochs % 10 == 0:
             #    env.render(mode=args.cam_mode)
-            if i > 900:
-                env.render(mode=args.cam_mode)
+            #if i > 900:
+            #    env.render(mode=args.cam_mode)
             
-        print(f"In Episode {i}, {env.agents[0].agent_id} went {env.agents[0].forward_step} in {env.agents[0].step_count} steps. Alpha {alpha} Epsilon {epsilon} and Penalty Rate of {penalties/epochs}\n")
-        if i % 100 == 0:
+        print(f"In Episode {i}, {env.agents[0].agent_id} went {env.agents[0].forward_step} in {env.agents[0].step_count} steps. Alpha {alpha} Epsilon {epsilon} and rewarded {reward_sum} in {epochs} steps. Reward per step = {reward_sum/epochs}\n")
+        #print(f"Finished episode {i}")
+        if i % 100 == 0 or i == (args.num_episodes - 1):
             write_model(args.model_dir, args.reward_profile, i, q_table)
             print(f"Batch Episodes: {i}")
     print("Training finished.\n")

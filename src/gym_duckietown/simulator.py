@@ -494,7 +494,33 @@ class Simulator(gym.Env):
             1,
         ]
         self.ground_vlist = pyglet.graphics.vertex_list(4, ("v3f", verts))
-
+# Store state in dictionary to access later without recomputing
+    def get_agents_states(self):
+        env = self
+        radius = (env.road_tile_size)
+        for agent in self.agents: 
+            agent.states['in_intersection'] = agent.in_intersection(env)
+        for agent in self.agents: 
+            agent.states['at_intersection_entry'] = agent.at_intersection_entry(env)
+        for agent in self.agents: 
+            agent.states['intersection_empty'] = agent.intersection_empty(env)
+        for agent in self.agents: 
+            agent.states['approaching_intersection'] = agent.approaching_intersection(env)
+        for agent in self.agents: 
+            agent.states['obj_in_range'] = agent.object_in_range(env, location="Ahead", radius = radius)[0]
+        for agent in self.agents: 
+            agent.states['has_right_of_way'] = agent.has_right_of_way(env)
+        for agent in self.agents: 
+            agent.states['cars_waiting_to_enter'] = agent.cars_waiting_to_enter(env)
+        for agent in self.agents: 
+            agent.states['car_entering_range'] = agent.car_entering_range(env, radius=radius)
+        for agent in self.agents: 
+            agent.states['obj_behind_intersection'] = agent.object_in_range(env, location="Behind", intersection=True, radius=radius)[0]
+        for agent in self.agents: 
+            agent.states['obj_behind_no_intersection'] =  agent.object_in_range(env, location="Behind", intersection=False, radius=radius)[0]
+        for agent in self.agents: 
+            agent.states['is_tailgating'] =  agent.is_tailgating(env)
+    
     def reset(self, segment: bool = False, webserver_reset: bool = False):
         """
         Reset the simulation at the start of a new episode
@@ -525,6 +551,9 @@ class Simulator(gym.Env):
             agent.lights["back_left"][3] = False
             agent.lights["back_right"][3] = False
             agent.lights["center"][3] = False
+            agent.direction = agent.get_direction(self)
+        
+        self.get_agents_states()
 
         if self.randomize_maps_on_reset:
             map_name = self.np_random.choice(self.map_names)
@@ -754,6 +783,7 @@ class Simulator(gym.Env):
         # Generate the first camera image
         obs = self.render_obs(segment=segment)
 
+
         # Return first observation
         return obs
 
@@ -902,6 +932,7 @@ class Simulator(gym.Env):
         # If still no, make a default one.
         if not self.agents:
             new_agent = Agent(cur_pos=[0, 0, 0], cur_angle=0, agent_id="agent" + str(x), random_spawn=True)
+        
 
     def _load_objects(self, map_data: MapFormat1):
         # Create the objects array
@@ -1652,7 +1683,7 @@ class Simulator(gym.Env):
     
     # Get position distance
     def pos_distance(self, pos1, pos2):
-        return np.linalg.norm(pos1-pos2) 
+        return np.linalg.norm(np.array(pos1)-np.array(pos2)) 
 
     def cartesian_from_weird(self, pos, angle) -> np.ndarray:
         gx, gy, gz = pos
@@ -1705,6 +1736,10 @@ class Simulator(gym.Env):
 
         d = self._compute_done_reward(agent, learning)
 
+        # Put the state into a dictionary
+        agent.direction = agent.get_direction(self)
+        agent.get_state(self)
+
         # Generate the state 
         if learning and agent.in_bounds(self):
             state = agent.get_learning_state(self)
@@ -1715,6 +1750,7 @@ class Simulator(gym.Env):
         else:
             state = self.render_obs()
         #misc["Simulator"]["msg"] = d.done_why
+
 
         return state, d.reward, d.done, misc
 
@@ -1734,14 +1770,14 @@ class Simulator(gym.Env):
                         done_code = "finished"
                         msg = "%s finished without harm." % agent.agent_id
                         reward = agent.get_reward(self, done_code)
-                        print(msg)
+                        #print(msg)
                         return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
                     if inbounds:
                         done = True
                         done_code = "offroad"
                         msg = "%s drove offroad." % agent.agent_id
                         reward = agent.get_reward(self, done_code)
-                        print(msg)
+                        #print(msg)
                         return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
                 else:
                     if not inbounds: # Keep going and reset if our agent drives off
@@ -1754,7 +1790,7 @@ class Simulator(gym.Env):
                         if agent.random_spawn:
                             self.spawn_random_agent(agent, directions, colors)
                             # Keep trying to find a valid spawn position on this tile
-                        print(msg)
+                        #print(msg)
                         return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
 
             # If there was a collision
@@ -1764,7 +1800,7 @@ class Simulator(gym.Env):
                     done_code = "collision"
                     msg = "%s collided with %s" % (agent.agent_id, collision.agent_id)
                     reward = agent.get_reward(self, done_code)
-                    print(msg)
+                    #print(msg)
                     return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
                 else:
                     done=False
@@ -1778,7 +1814,7 @@ class Simulator(gym.Env):
                         self.spawn_random_agent(agent, directions, colors)
                     if collision.random_spawn:
                         self.spawn_random_agent(collision, directions, colors)
-                    print(msg)
+                    #print(msg)
                     return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
 
             if agent.step_count >= self.max_steps:

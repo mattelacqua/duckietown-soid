@@ -105,35 +105,39 @@ bool has_right_of_way(  bool in_intersection,
                     bool e_agents, 
                     bool w_agents){
     // If already in then we must finish
+    bool already_in = false;
     if(in_intersection && !at_intersection_entry){
-        return true;
+        already_in = true;
     }
+    bool other_car_in = false;
     if(other_car_in_intersection && at_intersection_entry) {
-        return false;
+        other_car_in = true;
     }
 
+    bool right_of_way = false;
     if (at_intersection_entry){
+
         if (direction == NORTH){
             // S
             //E W
             // N
             if (s_agents && e_agents && w_agents){
-                return true;
+                right_of_way = true;
             }
             // ?
             //? W
             // N
             else if (w_agents){
-                return false;
+                right_of_way = false;
             }
             // ?
             //?  
             // N
             else if (!w_agents){
-                return true;
+                right_of_way = true;
             }
             else {
-                return true;
+                right_of_way = true;
             }
         }
         else if (direction == EAST){
@@ -141,34 +145,34 @@ bool has_right_of_way(  bool in_intersection,
             //X W
             // N
             if (n_agents && s_agents && w_agents){
-                return false;
+                right_of_way = false;
             }
             // S
             //X W
             // 
             else if (!n_agents && (s_agents && w_agents)){
-                return true;
+                right_of_way = true;
             }
             // S
             //X 
             // 
             else if (s_agents && !(w_agents || n_agents)){
-                return true;
+                right_of_way = true;
             }
             // 
             //X W
             // 
             else if (w_agents && !(s_agents || n_agents)){
-                return false;
+                right_of_way = false;
             }
             // ? 
             //X 
             // N 
             else if (n_agents){
-                return false;
+                right_of_way = false;
             }
             else {
-                return true;
+                right_of_way = true;
             }
         }
         else if (direction == SOUTH){
@@ -176,34 +180,34 @@ bool has_right_of_way(  bool in_intersection,
             //E W
             // N
             if (s_agents && e_agents && w_agents){
-                return false;
+                right_of_way = false;
             }
             // S
             //E ?
             // ?
             else if (e_agents){
-                return false;
+                right_of_way = false;
             }
             // S
             //  W
             // N
             else if (!e_agents && n_agents && w_agents){
-                return true;
+                right_of_way = true;
             }
             // S
             //   
             // N
             else if (!e_agents && n_agents && !w_agents){
-                return false;
+                right_of_way = false;
             }
             // S
             //   W
             //  
             else if (!e_agents && !n_agents && w_agents){
-                return true;
+                right_of_way = true;
             }
             else {
-                return true;
+                right_of_way = true;
             }
         }
         else if (direction == WEST){
@@ -211,26 +215,51 @@ bool has_right_of_way(  bool in_intersection,
             //X W
             // N
             if (n_agents && s_agents && e_agents){
-                return false;
+                right_of_way = false;
             }
             // S
             //? W
             // ? 
             else if (s_agents){
-                return false;
+                right_of_way = false;
             }
             // 
             //? W
             // ?
             else if (!s_agents){
-                return true;
+                right_of_way = true;
             }
             else {
-                return true;
+                right_of_way = true;
             }
         } 
+        // If already in intersection, we have row
+        if(already_in){
+            return true;
+        } 
+        
+        // If other car is in and we don't have ROW, then don't go
+        else if (other_car_in) {
+            return false;
+        } 
+        
+        // If another car is in but we have the real rigght of way, lets go anyways 25% of the time.
+        /*else if (other_car_in && right_of_way){
+
+            if (rand() % 100 < 25){
+                return false;
+            }
+            else{
+                return false;
+            }
+        }*/
+
+        // any strange case
+        else{
+            return right_of_way;
+        }    
     } 
-    else{
+    else {
         return true;
     }
 }

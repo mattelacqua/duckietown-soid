@@ -1,6 +1,21 @@
 # Functions for learning for agents
 import numpy as np
 
+# Store state in dictionary to access later without recomputing
+def get_state(self, env):
+    radius = (env.road_tile_size)
+    self.states['in_intersection'] = self.in_intersection(env)
+    self.states['at_intersection_entry'] = self.at_intersection_entry(env)
+    self.states['intersection_empty'] = self.intersection_empty(env)
+    self.states['approaching_intersection'] = self.approaching_intersection(env)
+    self.states['obj_in_range'] = self.object_in_range(env, location="Ahead", radius = radius)[0]
+    self.states['has_right_of_way'] = self.has_right_of_way(env)
+    self.states['cars_waiting_to_enter'] = self.cars_waiting_to_enter(env)
+    self.states['car_entering_range'] = self.car_entering_range(env, radius=radius)
+    self.states['obj_behind_intersection'] = self.object_in_range(env, location="Behind", intersection=True, radius=radius)[0]
+    self.states['obj_behind_no_intersection'] =  self.object_in_range(env, location="Behind", intersection=False, radius=radius)[0]
+    self.states['is_tailgating'] =  self.is_tailgating(env)
+
 # Get learning state for q-learning 
 def get_learning_state(self, env):
     # 0: in an intersection +512
@@ -22,16 +37,16 @@ def get_learning_state(self, env):
     # Get state information (convert to row based on boolean inputs)
     #0
     state = []
-    in_intersection = self.in_intersection(env)
-    at_intersection_entry = self.at_intersection_entry(env)
-    intersection_empty = self.intersection_empty(env)
-    approaching_intersection = self.approaching_intersection(env)
-    obj_in_range, _ = self.object_in_range(env, location="Ahead", radius = radius)
-    have_right_of_way = self.has_right_of_way(env)
-    cars_waiting_to_enter = self.cars_waiting_to_enter(env)
-    car_entering_range = self.car_entering_range(env, radius=radius)
-    obj_behind_intersection, _ = self.object_in_range(env, location="Behind", intersection=True, radius=radius) 
-    obj_behind_no_intersection, _ =  self.object_in_range(env, location="Behind", intersection=False, radius=radius) 
+    in_intersection = self.states['in_intersection']
+    at_intersection_entry = self.states['at_intersection_entry']
+    intersection_empty = self.states['intersection_empty']
+    approaching_intersection = self.states['approaching_intersection']
+    obj_in_range = self.states['obj_in_range']
+    have_right_of_way = self.states['has_right_of_way']
+    cars_waiting_to_enter = self.states['cars_waiting_to_enter']
+    car_entering_range = self.states['car_entering_range']
+    obj_behind_intersection = self.states['obj_behind_intersection']
+    obj_behind_no_intersection = self.states['obj_behind_no_intersection']
 
     if in_intersection:
         model_row += 512              
@@ -50,7 +65,8 @@ def get_learning_state(self, env):
 
     #2
     # We care only about the intersection being empty if we are appproaching it or at the entry
-    if intersection_empty and (approaching_intersection or at_intersection_entry):
+    #if intersection_empty and (approaching_intersection or at_intersection_entry):
+    if intersection_empty:
         model_row += 128           
         #print("INTERSECTION EMPTY 128")
         state.append(True)
@@ -58,7 +74,7 @@ def get_learning_state(self, env):
         state.append(False)
 
     #3
-    if approaching_interseciont:
+    if approaching_intersection:
         model_row += 64
         #print("APPROACHING INTERSECTION 64")
         state.append(True)
@@ -82,8 +98,7 @@ def get_learning_state(self, env):
         state.append(False)
     
     #6
-    # We care only about the cars waiting to enter if we are appproaching it or at the entry, or in it.
-    if cars_waiting_to_enter and (approaching_intersection or at_intersection_entry or in_intersection): 
+    if cars_waiting_to_enter: 
         model_row += 8
         #print("AHEAD CAR OBJECT IN RANGE 8")
         state.append(True)
@@ -91,7 +106,7 @@ def get_learning_state(self, env):
         state.append(False)
 
     #7
-    if self.car_entering_range(env, radius=radius): 
+    if car_entering_range: 
         model_row += 4
         #print("CAR ENTERING RANGE 4")
         state.append(True)
@@ -174,24 +189,44 @@ def get_reward(self, env, done_code):
         if done_code == "in-progress":
             # Reward some points for moving
             if list(self.prev_pos) != list(self.cur_pos):
-                reward += 100 * np.linalg.norm(self.prev_pos - self.cur_pos) #Add the distance we move from the reward to encourage moving
+                reward += 1000 * np.linalg.norm(self.prev_pos - self.cur_pos) #Add the distance we move from the reward to encourage moving
+                #print(1000 * np.linalg.norm(self.prev_pos - self.cur_pos))
             
-                # If the move was risky (move into non-empty intersection) deduct
-                if self.at_intersection_entry(env) and not self.intersection_empty(env) and self.speed > .3:
-                    print("Risky move")
-                    reward -= 5
+                # If the move was risky (move without right of way / or we are tailgating
+                #if (self.states['at_intersection_entry'] and not self.states['has_right_of_way'] and self.speed > .2) or \
+                    #print("Risky move")
+                #    reward -= 50 
+
+                # If the move was Safe (move with right of way)
+                if ((self.states['at_intersection_entry'] or self.states['in_intersection']) and self.states['has_right_of_way'] and self.speed > 0.2):
+                    print("Safe Entry move")
+                    reward += 20
+
+                # If they are tailgating deduct
+                if (self.states['is_tailgating'] and self.speed > 0.1):
+                    print("Tailgating")
+                    reward -= 500
+
+                # If agent does not ahve right of wati
+                if (not self.states['has_right_of_way'] and self.speed > 0.1):
+                    print("Moving without ROW")
+                    reward -= 200 # large negative reward because it can farm moving safe because ROW will flip to it once its in intersection
 
         if done_code == "offroad": # If it went offroad
-            reward -= 500
+            print("Offroad")
+            reward -= 2000
 
         if done_code == "max-steps-reached": # Bad for sitting still the whole time.
-            print("Max steps reached")
-            reward -= 1000
-
+            #print("Max steps reached")
+            print("Max Steps")
+            reward -= -2000 
+            
         if done_code == "collision": # If it caused crash deduct a ton
-            reward -= 1500
+            print("Collision")
+            reward -= 2000
 
-        if done_code == "finished": # If it reached end of map
-            reward += 1000
+        if done_code == "finished": # If it reached end of map big enough reward 
+            print("Safe finish")
+            reward += 1000 
 
     return reward

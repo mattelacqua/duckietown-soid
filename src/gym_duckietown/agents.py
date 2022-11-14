@@ -42,6 +42,8 @@ class Agent():
     random_spawn: bool
     reward_profile: int
     learning_state: List[bool]
+    states: dict
+    direction: str
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -91,10 +93,13 @@ class Agent():
         self.intersection_arrival = None
         self.reward_profile = None
         self.learning_state = [0,0,0,0,0,0,0,0,0,0]
+        self.states = {}
+        self.direction ='' 
 
     # Import things for learning
     from .agent._agent_learning import  get_learning_state, \
-                                        get_reward
+                                        get_reward, \
+                                        get_state
 
     # Import things for decision logic
     from .agent._agent_decision_logic import  proceed, \
