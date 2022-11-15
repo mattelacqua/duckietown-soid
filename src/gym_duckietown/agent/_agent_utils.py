@@ -18,7 +18,7 @@ def get_info(self, env) -> dict:
     # Get the position relative to the right lane tangent
 
     info["agent_id"] = self.agent_id 
-    info["action"] = list(self.last_action)
+    info["action"] = self.last_action
     info["robot_speed"] = self.speed
     info["prev_pos"] = [float(self.prev_pos[0]), float(self.prev_pos[1]), float(self.prev_pos[2])]
     info["cur_pos"] = [float(pos[0]), float(pos[1]), float(pos[2])]

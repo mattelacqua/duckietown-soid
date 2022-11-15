@@ -34,6 +34,8 @@ class DuckietownEnv(Simulator):
         self.limit = limit
 
     def step(self, action, agent, learning=False):
+        action_name = action[1]
+        action = action[0]
         vel, angle = action
 
         # Distance between the wheels
@@ -60,7 +62,7 @@ class DuckietownEnv(Simulator):
 
         vels = np.array([u_l_limited, u_r_limited])
 
-        obs, reward, done, info = Simulator.step(self, vels, agent, learning)
+        obs, reward, done, info = Simulator.step(self, [vels, action_name], agent, learning)
         mine = {}
         mine["k"] = self.k
         mine["gain"] = self.gain

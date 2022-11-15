@@ -542,7 +542,7 @@ class Simulator(gym.Env):
             agent.nearby_objects = []
             agent.nearby_agents = []
             agent.timestamp = 0.0
-            agent.last_action = np.array([0.0, 0.0]) 
+            agent.last_action = None
             agent.wheelVels = np.array([0.0, 0.0]) 
             agent.state = None
             agent.intersection_arrival = None
@@ -1644,6 +1644,8 @@ class Simulator(gym.Env):
     #speed: float
 
     def update_physics(self, action, agent, delta_time: float = None):
+        action_name = action[1]
+        action = action[0]
         # print("updating physics")
         if delta_time is None:
             delta_time = self.delta_time
@@ -1652,7 +1654,7 @@ class Simulator(gym.Env):
         agent.prev_pos = agent.cur_pos
         agent.wheelVels = action * self.robot_speed * 1
         agent.cur_pos, agent.cur_angle = self._update_pos(action, agent)
-        agent.last_action = action
+        agent.last_action = action_name
 
         # Compute the robot's speed
         delta_pos = agent.cur_pos - agent.prev_pos
@@ -1725,12 +1727,14 @@ class Simulator(gym.Env):
             reward = +1.0 * speed * lp.dot_dir + -10 * np.abs(lp.dist) + +40 * col_penalty
         return reward
 
-    def step(self, action: np.ndarray, agent, learning: bool=False):
+    def step(self, action, agent, learning: bool=False):
+        action_name = action[1]
+        action = action[0]
         action = np.clip(action, -1, 1)
         # Actions could be a Python list
         action = np.array(action)
         for _ in range(self.frame_skip):
-            self.update_physics(action, agent)
+            self.update_physics([action, action_name], agent)
 
         misc = agent.get_info(self)
 
@@ -1749,7 +1753,7 @@ class Simulator(gym.Env):
             state = 0
         else:
             state = self.render_obs()
-        #misc["Simulator"]["msg"] = d.done_why
+        misc["done_code"] = d.done_code
 
 
         return state, d.reward, d.done, misc
@@ -2398,7 +2402,7 @@ class Simulator(gym.Env):
 
             agent.color = color
             agent.mesh = get_duckiebot_mesh(agent.color)
-            agent.forward_step = self.np_random.uniform(0.3, 0.7)
+            agent.forward_step = round(self.np_random.uniform(0.3, 0.7), 2)
 
             # Choose a random position on this tile
             if direction == 'N':
@@ -2464,7 +2468,7 @@ class Simulator(gym.Env):
         agent.intersection_arrival = None
         agent.nearby_objects = []
         agent.nearby_agents = []
-        agent.last_action = np.array([0.0, 0.0]) 
+        agent.last_action = None
         agent.wheelVels = np.array([0.0, 0.0]) 
 
         # Initialize Dynamics model

@@ -17,7 +17,7 @@ dl = CDLL(so_file)
 class Agent():
     cur_pos: np.ndarray
     cur_angle: np.ndarray
-    last_action: np.ndarray
+    last_action: Action
     actions: Union[List[np.ndarray], Action]
     wheelsVels: np.ndarray
     step_count: int
@@ -60,7 +60,7 @@ class Agent():
         self.start_tile = start_pose
         self.speed = 0.0
         self.agent_id = agent_id 
-        self.last_action = np.array([0, 0])
+        self.last_action = None 
         self.wheelVels = np.array([0, 0])
         self.timestamp = 0.0
         self.start_tile = start_tile

@@ -189,44 +189,42 @@ def get_reward(self, env, done_code):
         if done_code == "in-progress":
             # Reward some points for moving
             if list(self.prev_pos) != list(self.cur_pos):
-                reward += 1000 * np.linalg.norm(self.prev_pos - self.cur_pos) #Add the distance we move from the reward to encourage moving
-                #print(1000 * np.linalg.norm(self.prev_pos - self.cur_pos))
-            
-                # If the move was risky (move without right of way / or we are tailgating
-                #if (self.states['at_intersection_entry'] and not self.states['has_right_of_way'] and self.speed > .2) or \
-                    #print("Risky move")
-                #    reward -= 50 
-
                 # If the move was Safe (move with right of way)
-                if ((self.states['at_intersection_entry'] or self.states['in_intersection']) and self.states['has_right_of_way'] and self.speed > 0.2):
-                    print("Safe Entry move")
-                    reward += 20
+                if (self.states['has_right_of_way']):
+                    reward += 1 
 
                 # If they are tailgating deduct
-                if (self.states['is_tailgating'] and self.speed > 0.1):
-                    print("Tailgating")
-                    reward -= 500
+                if (self.states['is_tailgating']):
+                    #print("Tailgating")
+                    reward -= 5 
 
                 # If agent does not ahve right of wati
-                if (not self.states['has_right_of_way'] and self.speed > 0.1):
-                    print("Moving without ROW")
-                    reward -= 200 # large negative reward because it can farm moving safe because ROW will flip to it once its in intersection
+                if (not self.states['has_right_of_way']):
+                    #print("Moving without ROW")
+                    reward -= 5 
+
+            # If they are equal, remove points for sitting still if ROW
+            elif list(self.prev_pos) == list(self.cur_pos):
+                # If the move was Safe (move with right of way)
+                if (self.states['has_right_of_way']):
+                    #print("Stopped with ROW")
+                    reward -= 5 
 
         if done_code == "offroad": # If it went offroad
             print("Offroad")
-            reward -= 2000
+            reward -= 2000 # Huge negative for driving off the road
 
         if done_code == "max-steps-reached": # Bad for sitting still the whole time.
             #print("Max steps reached")
             print("Max Steps")
-            reward -= -2000 
+            reward -= -2000  # Huge negative for sitting still
             
         if done_code == "collision": # If it caused crash deduct a ton
             print("Collision")
-            reward -= 2000
+            reward -= 2000  # Huge negative for collision
 
         if done_code == "finished": # If it reached end of map big enough reward 
             print("Safe finish")
-            reward += 1000 
+            reward += (env.max_steps - self.step_count)  # Reward based on how fast we finish
 
     return reward

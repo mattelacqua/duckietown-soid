@@ -27,6 +27,7 @@ import socketio
 
 from learn_types import *
 from gym_duckietown import dl_utils
+import matplotlib.pyplot as plt
 def train(args):
        # Hyperparameters
     alpha = args.alpha
@@ -65,6 +66,9 @@ def train(args):
     # For plotting metrics
     all_epochs = []
     all_penalties = []
+    avg_rewards = []
+    avg_rewards_index = []
+    rewards = []
 
     # Init Q Table
     q_table = QTable().qt
@@ -81,6 +85,14 @@ def train(args):
 
         epochs, penalties, reward, = 0, 0, 0
         done = False
+
+        # Set the rewards to be 0
+        if i % 100 == 0 and i > 1000:
+        #if i % 10 == 0 and i > 1:
+            avg_rewards.append(sum(rewards)/len(rewards))
+            avg_rewards_index.append(i)
+            rewards = []
+
 
         # Learn until episode over
         reward_sum = 0
@@ -108,11 +120,16 @@ def train(args):
                     else: 
                         agent.add_actions(agent.move_forward(env))
 
-
-
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
-                    agent.handle_proceed(bool(action))
+                    # Don't stop if we are doing intersection actions. (break from RL. is a safeguard)
+                    #print(agent.last_action)
+                    if agent.last_action == Action.INTERSECTION_FORWARD or \
+                       agent.last_action == Action.INTERSECTION_LEFT or \
+                       agent.last_action == Action.INTERSECTION_RIGHT:
+                        agent.handle_proceed(True) 
+                    else:
+                        agent.handle_proceed(bool(action))
                     next_state, reward, done, info = env.step(agent.get_next_action(), agent, learning=True)
                     reward_sum += reward
                     if done:
@@ -134,6 +151,8 @@ def train(args):
             
             if reward <= -1000:
                 penalties += 1
+            
+            rewards.append(reward)
 
             epochs += 1
             # Render each 10th step
@@ -148,9 +167,14 @@ def train(args):
             write_model(args.model_dir, args.reward_profile, i, q_table)
             print(f"Batch Episodes: {i}")
     print("Training finished.\n")
+    print(avg_rewards)
+    plt.plot(avg_rewards_index, avg_rewards)
+    plt.ylabel('Rewards')
+    plt.xlabel('Episode #')
+    plt.show()
 
 def write_model(directory, reward_profile, episode_batch, model):
-        
+    
     profile = ""
     if reward_profile == 0:
         profile = "pathological"
@@ -192,7 +216,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_timesteps", default=1e6, type=float)  # Max time steps to run environment for
     parser.add_argument("--save_models", action="store_true", default=True)  # Whether or not models are saved
     parser.add_argument("--alpha", default=0.1, type=float)  # Alpha learning rate 
-    parser.add_argument("--gamma", default=0.6, type=float)  # Gamma preference to short term reward
+    parser.add_argument("--gamma", default=0.8, type=float)  # Gamma preference to short term reward
     parser.add_argument("--epsilon", default=0.35, type=float)  # Epsilon for egreedy q learning 
     parser.add_argument("--discount", default=0.99, type=float)  # Discount factor
     parser.add_argument("--num-episodes", default=100001, type=int)  # Nummber of episodes

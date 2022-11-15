@@ -62,6 +62,7 @@ def test(args):
         # Reset the state
         env.reset()
         done = False
+        print(f"{env.agents[0].turn_choice}")
 
         # Learn until episode over
         while not done:
@@ -82,11 +83,13 @@ def test(args):
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
                     agent.proceed(env, learning=True, model=model, state=state)
-                    _, _, done, _ = env.step(agent.get_next_action(), agent, learning=True)
+                    _, _, done, done_code = env.step(agent.get_next_action(), agent, learning=True)
                     if done:
                         break
                 else:
                     agent.proceed(env,good_agent=True)
+                    if agent.actions[0] == Action.INTERSECTION_LEFT:
+                        print("DOING A LEFT TURN")
                     env.step(agent.get_next_action(), agent, learning=True)
 
             env.render(mode=args.cam_mode)

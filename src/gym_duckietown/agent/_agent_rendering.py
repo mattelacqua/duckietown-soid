@@ -43,7 +43,7 @@ def completing_action(self):
 
 # Get next action
 def get_next_action(self):
-    return self.actions.pop(0)[0]
+    return self.actions.pop(0)
 
 # Get next action
 def add_actions(self, actions):
