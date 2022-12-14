@@ -1,8 +1,32 @@
 import sys
+import os
+import subprocess
 
 from setuptools import find_packages, setup
+from setuptools.command.install import install
+from setuptools.command.develop import develop
+from setuptools.command.egg_info import egg_info
 
+def ccmd():
+    subprocess.run(["make", "clean"], cwd=(os.getcwd() + '/src/gym_duckietown/decision_logic'))
+    subprocess.run(["make", "all"], cwd=(os.getcwd() + '/src/gym_duckietown/decision_logic'))
 
+class CustomInstall(install):
+    def run(self):
+        install.run(self)
+        ccmd()
+
+class CustomDevelop(develop):
+    def run(self):
+        develop.run(self)
+        ccmd()
+
+class CustomEggInfo(egg_info):
+    def run(self):
+        egg_info.run(self)
+        ccmd()
+
+    
 def get_version(filename):
     import ast
 
@@ -61,7 +85,11 @@ setup(
     keywords="duckietown, environment, agent, rl, openaigym, openai-gym, gym",
     include_package_data=True,
     install_requires=install_requires,
-    
+    cmdclass={
+        'install': CustomInstall,
+        'develop': CustomDevelop,
+        'egg_info': CustomEggInfo,
+    },
     entry_points={
         "console_scripts": [
             "dt-check-gpu=gym_duckietown.check_hw:main",
