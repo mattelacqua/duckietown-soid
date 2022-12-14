@@ -2428,25 +2428,31 @@ class Simulator(gym.Env):
                 #base_angle = 85 + random.randint(0, 10) # Account for variance in starting angle
                 base_angle = 90
             elif direction == 'S':
-                perturb_x = self.np_random.uniform(0.01, 0.4) * self.road_tile_size       # Right side of the road facing south
+                #perturb_x = self.np_random.uniform(0.01, 0.4) * self.road_tile_size       # Right side of the road facing south
+                perturb_x = 1/4 * self.road_tile_size   # Right side of the road
                 perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
                 x = perturb_x + i * self.road_tile_size
                 z = perturb_z + j * self.road_tile_size
-                base_angle = 265 + random.randint(0, 10)
+                #base_angle = 265 + random.randint(0, 10)
+                base_angle = 270
             elif direction == 'E':
                 perturb_x = self.np_random.uniform(0.01, .9) * self.road_tile_size 
-                perturb_z = self.np_random.uniform(0.6, .9) * self.road_tile_size    # Right side of the road facing east
+                #perturb_z = self.np_random.uniform(0.6, .9) * self.road_tile_size    # Right side of the road facing east
+                perturb_z = 3/4 * self.road_tile_size   # Right side of the road
                 x = perturb_x + i * self.road_tile_size
                 z = perturb_z + j * self.road_tile_size
-                base_angle = 355  + random.randint(0, 10)
-                if base_angle > 360:
-                    base_angle = base_angle - 360
+                #base_angle = 355  + random.randint(0, 10)
+                #if base_angle > 360:
+                #    base_angle = base_angle - 360
+                base_angle = 360
             elif direction == 'W':
                 perturb_x = self.np_random.uniform(0.01, 0.9) * self.road_tile_size 
-                perturb_z = self.np_random.uniform(0.01,  0.4) * self.road_tile_size    # Right side of the road facing west
+                #perturb_z = self.np_random.uniform(0.01,  0.4) * self.road_tile_size    # Right side of the road facing west
+                perturb_z = 1/4 * self.road_tile_size   # Right side of the road
                 x = perturb_x + i * self.road_tile_size
                 z = perturb_z + j * self.road_tile_size
-                base_angle = 175 + random.randint(0, 10)
+                #base_angle = 175 + random.randint(0, 10)
+                base_angle = 180
 
             # Choose a random position and direction to face
             propose_pos = np.array([x, 0, z])

@@ -40,8 +40,8 @@ def handle_intersection(self, env, speed_limit=1.0,  stop_point=30, learning=Fal
     # Stop before entering intersection if not the learning agent
     if not learning:
         action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step))
-    elif learning and self.agent_id != "agent0":
-    #elif learning:
+    #elif learning and self.agent_id != "agent0":
+    elif learning:
         action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step))
 
     if action != Action.STOP and action != Action.INTERSECTION_STOP:

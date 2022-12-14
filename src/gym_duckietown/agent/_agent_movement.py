@@ -105,23 +105,41 @@ def straighten_out(self, env, intersection=False):
     point_vec /= np.linalg.norm(point_vec)
     dot = np.dot(get_right_vec(self.cur_angle), point_vec)
     #print(dot)
+    #print(vars(self.state))
+    #print(self.speed)
 
     # General Case
-    steering = (forward_step*10) * -dot
+    steering = 2 * -dot
+    ready_to_accelerate = False
+    if self.direction == 'N' and 88 < self.get_curr_angle(env) < 92:
+        ready_to_accelerate = 'N'
+    elif self.direction == 'S' and 268 < self.get_curr_angle(env) < 272:
+        ready_to_accelerate = 'S'
+    elif self.direction == 'E' and (0 <= self.get_curr_angle(env) < 2 or 358 < self.get_curr_angle(env) <= 360):
+        ready_to_accelerate = 'E'
+    elif self.direction == 'W' and 178 < self.get_curr_angle(env) < 182:
+        ready_to_accelerate = 'W'
 
-    if self.states['in_intersection'] or self.states['at_intersection_entry']:
+    if self.states['in_intersection'] or self.states['at_intersection_entry']:# or not ready_to_accelerate:
+        #if not ready_to_accelerate:
+        #    print(f"Not ready to accel: {ready_to_accelerate}")
         if self.turn_choice == 'Right':
             forward_step = .20
             steering = (forward_step * 30) * -dot
         if self.turn_choice == 'Left':
-            forward_step = .33
-            steering = (forward_step * 13) * -dot
+            forward_step = .30
+            #steering = (forward_step * 13) * -dot
+            steering = 5 * -dot
     else:
-        if abs(dot) > 0.10:
-            # Increase steering and slow us down
-            steering = (forward_step*13) * -dot
-            #print(f"Slowing down {forward_step}")
-            forward_step = 3 * (forward_step / 4)
+        # Limit radius of curvature
+        wheel_distance = 0.102
+        min_rad = 0.06
+
+        if forward_step == 0 or abs(steering / forward_step) > (min_rad + wheel_distance / 2.0) / (min_rad - wheel_distance / 2.0):
+            # adjust velocities evenly such that condition is fulfilled
+            delta_v = (steering - forward_step) / 2 - wheel_distance / (4 * min_rad) * (forward_step + steering)
+            forward_step += delta_v
+            steering -= delta_v
 
     if intersection:
         actions.append(([forward_step, steering], Action.INTERSECTION_FORWARD))
