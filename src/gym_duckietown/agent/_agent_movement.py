@@ -25,7 +25,7 @@ def stop_vehicle(self, env, signal_choice, stop_point: int=30,forward_step: floa
     return action_seq
 
 
-# Move Forwards at whatever angle we are at, not going faster than 30 mps
+# Move along path
 def move_forward(self, env, speed_limit=1.0, intersection=False):
     # Set the speed
     forward_step = self.forward_step
@@ -57,23 +57,27 @@ def move_forward(self, env, speed_limit=1.0, intersection=False):
 
 # Straighten out and follow curve
 def straighten_out(self, env, intersection=False):
-    from ..simulator import get_right_vec
+    from ..simulator import get_right_vec, get_dir_vec
     actions = []
 
     # Get forward step
     forward_step = self.forward_step
+    #print(self.turn_choice)
 
     if forward_step == 0.0:
         return actions.append(([forward_step, 0], Action.STOP))
-    # Find turn limit
-    turn_limit = math.pow((forward_step * 10), 1.5)
 
-
-    # Find the curve point closest to the agent, and the tangent at that point
-    closest_point, closest_tangent = env.closest_curve_point(self.cur_pos, self.cur_angle)
+    # Find the curve point closest to the agent (this will change if we are at an intersection), and the tangent at that point
+    if self.states['at_intersection_entry'] or self.states['in_intersection']:
+        closest_point, closest_tangent = env.closest_curve_point(self.cur_pos, self.cur_angle, index=self.curve)
+        #print(self.turn_choice)
+        #print("SET THE POINT HERE")
+    else:
+        closest_point, closest_tangent = env.closest_curve_point(self.cur_pos, self.cur_angle, index=None)
     if closest_point is None or closest_tangent is None:
         msg = f"Cannot find closest point/tangent from {self.cur_pos}, {self.cur_angle} "
         # Do a default move forward
+        #print("DEF CASE")
         actions.append(([forward_step, 0], Action.FORWARD_STEP))
         return actions
 
@@ -85,7 +89,10 @@ def straighten_out(self, env, intersection=False):
         # Project a point ahead along the curve tangent,
         # then find the closest point to to that
         follow_point = closest_point + closest_tangent * lookup_distance
-        curve_point, _ = env.closest_curve_point(follow_point, self.cur_angle)
+        if self.states['at_intersection_entry'] or self.states['in_intersection']:
+            curve_point, _ = env.closest_curve_point(follow_point, self.cur_angle, index=self.curve)
+        else:
+            curve_point, _ = env.closest_curve_point(follow_point, self.cur_angle, index=None)
         # If we have a valid point on the curve, stop
         if curve_point is not None:
             break
@@ -97,7 +104,25 @@ def straighten_out(self, env, intersection=False):
     point_vec = curve_point - self.cur_pos
     point_vec /= np.linalg.norm(point_vec)
     dot = np.dot(get_right_vec(self.cur_angle), point_vec)
-    steering = (forward_step/2.0 * 10) * -dot
+    #print(dot)
+
+    # General Case
+    steering = (forward_step*10) * -dot
+
+    if self.states['in_intersection'] or self.states['at_intersection_entry']:
+        if self.turn_choice == 'Right':
+            forward_step = .20
+            steering = (forward_step * 30) * -dot
+        if self.turn_choice == 'Left':
+            forward_step = .33
+            steering = (forward_step * 13) * -dot
+    else:
+        if abs(dot) > 0.10:
+            # Increase steering and slow us down
+            steering = (forward_step*13) * -dot
+            #print(f"Slowing down {forward_step}")
+            forward_step = 3 * (forward_step / 4)
+
     if intersection:
         actions.append(([forward_step, steering], Action.INTERSECTION_FORWARD))
     else:
@@ -131,67 +156,3 @@ def get_turn_overcomp(self, env):
         overcomp_factor = 0
 
     return overcomp_factor
-
-# Take a right turn
-def right_turn(self, env, forward_step: float=.44):
-    if env.verbose:
-        logger.info(self.agent_id + ": Taking a right turn")
-
-    # Get state information
-    turn_count = 0
-    speed = 0.30
-    turn_step = 0.44
-
-    turn_factor = (speed * 10) 
-    turn_overcomp = round((float(self.get_turn_overcomp(env)))/turn_factor)
-    turn_stop =  (10.0/speed) + turn_overcomp  
-
-    # Initialize action sequence
-    action_seq = []
-    
-    # Turn this amount 
-    #print(f"Executing a right turn for {self.agent_id}, turn steps is {turn_stop}")
-    while turn_count < turn_stop:          # Arbitrary turn count that works for speed limit?
-        action = np.array([0.0, 0.0])
-        action -= np.array([0.0, turn_factor])
-        action += np.array([turn_step, 0.0])
-        action_seq.append((action, Action.INTERSECTION_RIGHT))
-        turn_count += 1
-
-    # Straighten Out
-    action_seq.extend(self.straighten_out(env))
-    return action_seq
-
-# Take a left turn
-def left_turn(self, env, forward_step: float=0.44):
-    if env.verbose:
-        logger.info(self.agent_id + ": Taking a left turn: ")
-
-    # Get state information
-    curr_angle = self.get_curr_angle(env)
-    turn_count = 0
-    speed = self.speed
-    turn_step = forward_step
-
-    #if forward_step > 0.44:
-    speed = 0.30
-    turn_step = 0.44
-
-    turn_factor = (speed * 10) / 2.0
-    turn_overcomp = round((float(self.get_turn_overcomp(env)))/turn_factor)
-    turn_stop =  (20.0/speed) + turn_overcomp  
-    
-    # Initialize action sequence
-    action_seq = []
-
-    # Turn this amount 
-    while turn_count < turn_stop:          # Arbitrary turn count that works for speed limit?
-        action = np.array([0.0, 0.0])
-        action += np.array([0.0, turn_factor])
-        action += np.array([turn_step, 0.0])
-        action_seq.append((action, Action.INTERSECTION_LEFT))
-        turn_count += 1   
-
-    # Turn this amount 
-    action_seq.extend(self.straighten_out(env))
-    return action_seq

@@ -552,7 +552,7 @@ class Simulator(gym.Env):
             agent.lights["back_right"][3] = False
             agent.lights["center"][3] = False
             agent.direction = agent.get_direction(self)
-        
+                    
         self.get_agents_states()
 
         if self.randomize_maps_on_reset:
@@ -779,6 +779,8 @@ class Simulator(gym.Env):
                 agent.state = p.initialize(c0=c0, t0=0)
 
                 logger.info(f"Starting agent {agent.agent_id} at:\nPosition:{agent.cur_pos} {agent.cur_angle}\nForward Step: {agent.forward_step}\nTurn Choice:{agent.turn_choice}\nSignal Choice:{agent.signal_choice}\nActions:{agent.actions}\nSpeed:{agent.speed}\nState:{agent.state}")
+
+            agent.curve = agent.get_curve(self)
 
         # Generate the first camera image
         obs = self.render_obs(segment=segment)
@@ -1397,8 +1399,7 @@ class Simulator(gym.Env):
         return pts
 
     def closest_curve_point(
-        self, pos: np.array, angle: float
-    ) -> Tuple[Optional[np.array], Optional[np.array]]:
+        self, pos: np.array, angle: float, index=None) -> Tuple[Optional[np.array], Optional[np.array]]:
         """
         Get the closest point on the curve to a given point
         Also returns the tangent at that point.
@@ -1413,15 +1414,21 @@ class Simulator(gym.Env):
             return None, None
 
         # Find curve with largest dotproduct with heading
-        curves = self._get_tile(i, j)["curves"]
+        if index != None:
+            curves = self._get_tile(2, 2)["curves"]
+        else:
+            curves = self._get_tile(i, j)["curves"]
+
         curve_headings = curves[:, -1, :] - curves[:, 0, :]
         curve_headings = curve_headings / np.linalg.norm(curve_headings).reshape(1, -1)
+        
         dir_vec = get_dir_vec(angle)
 
         dot_prods = np.dot(curve_headings, dir_vec)
-
-        # Closest curve = one with largest dotprod
         cps = curves[np.argmax(dot_prods)]
+
+        if index != None:
+            cps = curves[index]
 
         # Find closest point and tangent to this curve
         t = bezier_closest(cps, pos)
@@ -2004,7 +2011,6 @@ class Simulator(gym.Env):
         gl.glPushMatrix()
         gl.glScalef(50, 0.01, 50)
         self.ground_vlist.draw(gl.GL_QUADS)
-        ground = self.ground_vlist
 
         gl.glPopMatrix()
 
@@ -2079,29 +2085,37 @@ class Simulator(gym.Env):
             texture.bind(segment)
 
             self.road_vlist.draw(gl.GL_QUADS)
-            road = list(self.road_vlist.vertices)
 
             # gl.glDisable(gl.GL_BLEND)
             gl.glPopMatrix()
 
             if self.draw_curve and tile["drivable"]:
+
                 # Find curve with largest dotproduct with heading
+                gl.glPushMatrix()
+                TS = self.road_tile_size
+                gl.glTranslatef(0, 0.1, 0)
                 curves = tile["curves"]
                 curve_headings = curves[:, -1, :] - curves[:, 0, :]
                 curve_headings = curve_headings / np.linalg.norm(curve_headings).reshape(1, -1)
-                dirVec = get_dir_vec(angle)
+                dirVec = get_dir_vec(self.agents[0].cur_angle)
                 dot_prods = np.dot(curve_headings, dirVec)
 
                 # Current ("closest") curve drawn in Red
-                pts = curves[np.argmax(dot_prods)]
+                if tile['kind'] == '4way':
+                    pts = curves[1]
+                else:
+                    pts = curves[np.argmax(dot_prods)]
                 bezier_draw(pts, n=20, red=True)
 
                 pts = self._get_curve(i, j)
                 for idx, pt in enumerate(pts):
                     # Don't draw current curve in blue
-                    if idx == np.argmax(dot_prods):
-                        continue
+                    #if idx == np.argmax(dot_prods):
+                    #    continue
+
                     bezier_draw(pt, n=20)
+                gl.glPopMatrix()
 
         if not only_map:
             # For each object
@@ -2406,11 +2420,13 @@ class Simulator(gym.Env):
 
             # Choose a random position on this tile
             if direction == 'N':
-                perturb_x = self.np_random.uniform(0.6, .9) * self.road_tile_size   # Right side of the road
+                #perturb_x = self.np_random.uniform(0.6, .9) * self.road_tile_size   # Right side of the road
+                perturb_x = 3/4 * self.road_tile_size   # Right side of the road
                 perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
                 x = perturb_x + i * self.road_tile_size
                 z = perturb_z + j * self.road_tile_size
-                base_angle = 85 + random.randint(0, 10) # Account for variance in starting angle
+                #base_angle = 85 + random.randint(0, 10) # Account for variance in starting angle
+                base_angle = 90
             elif direction == 'S':
                 perturb_x = self.np_random.uniform(0.01, 0.4) * self.road_tile_size       # Right side of the road facing south
                 perturb_z = self.np_random.uniform(0.01, .9) * self.road_tile_size
@@ -2470,6 +2486,7 @@ class Simulator(gym.Env):
         agent.nearby_agents = []
         agent.last_action = None
         agent.wheelVels = np.array([0.0, 0.0]) 
+        #agent.start_direction = agent.direction
 
         # Initialize Dynamics model
         init_vel = np.array([0, 0])

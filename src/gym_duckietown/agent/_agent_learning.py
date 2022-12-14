@@ -198,7 +198,7 @@ def get_reward(self, env, done_code):
                     #print("Tailgating")
                     reward -= 5 
 
-                # If agent does not ahve right of wati
+                # If agent does not hhve right of way
                 if (not self.states['has_right_of_way']):
                     #print("Moving without ROW")
                     reward -= 5 
@@ -209,6 +209,9 @@ def get_reward(self, env, done_code):
                 if (self.states['has_right_of_way']):
                     #print("Stopped with ROW")
                     reward -= 5 
+                if (not self.states['has_right_of_way']):
+                    #print("Stopped with ROW")
+                    reward += 1 
 
         if done_code == "offroad": # If it went offroad
             print("Offroad")
@@ -216,15 +219,16 @@ def get_reward(self, env, done_code):
 
         if done_code == "max-steps-reached": # Bad for sitting still the whole time.
             #print("Max steps reached")
-            print("Max Steps")
-            reward -= -2000  # Huge negative for sitting still
+            #print("Max Steps")
+            reward -= 2000  # Huge negative for sitting still
             
         if done_code == "collision": # If it caused crash deduct a ton
-            print("Collision")
+            #print("Collision")
             reward -= 2000  # Huge negative for collision
 
         if done_code == "finished": # If it reached end of map big enough reward 
-            print("Safe finish")
-            reward += (env.max_steps - self.step_count)  # Reward based on how fast we finish
+            #print("Safe finish")
+            #reward += (env.max_steps - self.step_count)  # Reward based on how fast we finish
+            reward += 1000
 
     return reward

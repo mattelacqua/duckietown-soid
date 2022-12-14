@@ -33,6 +33,7 @@ def train(args):
     alpha = args.alpha
     gamma = args.gamma
     epsilon = args.epsilon
+    learning_rate_decay = args.learning_rate_decay
 
     # Make the environment
     # Build Env
@@ -72,11 +73,25 @@ def train(args):
 
     # Init Q Table
     q_table = QTable().qt
+    total_stats = []
+    learning_rates = []
+    state_visits = []
+    # learning rates and visits per state action
+    for i in range (0, 1024):
+        sa = []
+        lr = []
+        for j in range (0,2): # For the actions
+            sa.append(0)
+            lr.append(alpha)
+        learning_rates.append(lr)
+        state_visits.append(sa)
 
     print("Beginning Training.")
     for i in range(1, args.num_episodes):
-        alpha = alpha * (1 - (i / args.num_episodes))
+        #alpha = alpha * (1 - (i / args.num_episodes))
         epsilon = args.epsilon * (1 - (i / args.num_episodes)) 
+        if epsilon < 0.1:
+            epsilon = 0.1
         gamma = gamma
         # Reset the state
         env.reset()
@@ -122,14 +137,10 @@ def train(args):
 
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
-                    # Don't stop if we are doing intersection actions. (break from RL. is a safeguard)
-                    #print(agent.last_action)
-                    if agent.last_action == Action.INTERSECTION_FORWARD or \
-                       agent.last_action == Action.INTERSECTION_LEFT or \
-                       agent.last_action == Action.INTERSECTION_RIGHT:
-                        agent.handle_proceed(True) 
-                    else:
-                        agent.handle_proceed(bool(action))
+                    agent.handle_proceed(bool(action))
+                    # If the handle proceed needs an initial action, add it
+                    if not agent.actions:
+                        agent.add_actions(agent.move_forward(env))
                     next_state, reward, done, info = env.step(agent.get_next_action(), agent, learning=True)
                     reward_sum += reward
                     if done:
@@ -146,7 +157,14 @@ def train(args):
             else:
                 next_max = np.max(q_table[next_state])
             
+            alpha = learning_rates[state][action]
+            state_visits[state][action] += 1
             new_value = alpha * (reward + gamma * next_max - old_value)
+            
+            # If we have visited the state 100 times, drop the learning rate of it
+            if state_visits[state][action] % (int(args.num_episodes / 10)) == 0:
+                learning_rates[state][action] *= learning_rate_decay
+
             q_table[state][action] += new_value
             
             if reward <= -1000:
@@ -161,8 +179,18 @@ def train(args):
             #if i > 900:
             #    env.render(mode=args.cam_mode)
             
-        print(f"In Episode {i}, {env.agents[0].agent_id} went {env.agents[0].forward_step} in {env.agents[0].step_count} steps. Alpha {alpha} Epsilon {epsilon} and rewarded {reward_sum} in {epochs} steps. Reward per step = {reward_sum/epochs}\n")
-        #print(f"Finished episode {i}")
+        stats = {}
+        stats['Episode'] = i
+        stats['Result'] = info['done_code']
+        stats['Forward_Step'] = env.agents[0].forward_step
+        stats['Total_Steps'] = env.agents[0].step_count
+        stats['Reward'] = reward_sum
+        stats['Alpha'] = alpha
+        stats['Epsilon'] = epsilon
+        stats['Avg_rps'] = reward_sum/epochs
+        print(stats)
+        total_stats.append(stats)
+
         if i % 100 == 0 or i == (args.num_episodes - 1):
             write_model(args.model_dir, args.reward_profile, i, q_table)
             print(f"Batch Episodes: {i}")
@@ -216,6 +244,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_timesteps", default=1e6, type=float)  # Max time steps to run environment for
     parser.add_argument("--save_models", action="store_true", default=True)  # Whether or not models are saved
     parser.add_argument("--alpha", default=0.1, type=float)  # Alpha learning rate 
+    parser.add_argument("--learning_rate_decay", default=0.5, type=float)  # Alpha learning rate decay
     parser.add_argument("--gamma", default=0.8, type=float)  # Gamma preference to short term reward
     parser.add_argument("--epsilon", default=0.35, type=float)  # Epsilon for egreedy q learning 
     parser.add_argument("--discount", default=0.99, type=float)  # Discount factor

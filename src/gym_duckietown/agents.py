@@ -44,6 +44,7 @@ class Agent():
     learning_state: List[bool]
     states: dict
     direction: str
+    start_angle: float
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -95,6 +96,7 @@ class Agent():
         self.learning_state = [0,0,0,0,0,0,0,0,0,0]
         self.states = {}
         self.direction ='' 
+        self.curve = 0
 
     # Import things for learning
     from .agent._agent_learning import  get_learning_state, \
@@ -126,9 +128,7 @@ class Agent():
     from .agent._agent_movement import  stop_vehicle, \
                                         move_forward, \
                                         straighten_out, \
-                                        get_turn_overcomp, \
-                                        right_turn, \
-                                        left_turn
+                                        get_turn_overcomp
 
     # Import Intersection Detection/Handling Functions
     from .agent._agent_intersection import  handle_intersection, \
@@ -155,6 +155,7 @@ class Agent():
     from .agent._agent_utils import get_info, \
                                     get_direction, \
                                     get_curr_angle, \
+                                    get_curve, \
                                     get_curr_tile, \
                                     in_bounds
 

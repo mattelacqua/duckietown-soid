@@ -44,6 +44,55 @@ def get_direction(self, env):
     else:
         return 'E'
 
+def get_curve(self, env):
+    """ South:
+    Left [0]
+    Straight [1]
+    Right [2]
+
+    East:
+    Left [3]
+    Straight [4]
+    Right [5]
+
+    North:
+    Left [6]
+    Straight [7]
+    Right [8]
+
+    South:
+    Left [9]
+    Straight [10]
+    Right [11]
+    """
+    if self.get_direction(env) == 'S':
+        if self.turn_choice == 'Left':
+            return 0
+        if self.turn_choice == 'Straight':
+            return 1
+        if self.turn_choice == 'Right':
+            return 2
+    elif self.get_direction(env) == 'E':
+        if self.turn_choice == 'Left':
+            return 3
+        if self.turn_choice == 'Straight':
+            return 4
+        if self.turn_choice == 'Right':
+            return 5
+    elif self.get_direction(env) == 'N':
+        if self.turn_choice == 'Left':
+            return 6
+        if self.turn_choice == 'Straight':
+            return 7
+        if self.turn_choice == 'Right':
+            return 8
+    elif self.get_direction(env) == 'W':
+        if self.turn_choice == 'Left':
+            return 9
+        if self.turn_choice == 'Straight':
+            return 10
+        if self.turn_choice == 'Right':
+            return 11
 
 # Get current angle degrees
 def get_curr_angle(self, env):

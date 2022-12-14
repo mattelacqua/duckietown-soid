@@ -41,7 +41,7 @@ def handle_proceed(self, should_proceed):
     if not should_proceed:
         no_intersection_stop_actions = []
         # if we are not stopping anyways, append a stop.
-        if self.actions[0][1] != Action.INTERSECTION_STOP and self.actions[0][1] != Action.STOP:
+        if not self.actions or (self.actions[0][1] != Action.INTERSECTION_STOP and self.actions[0][1] != Action.STOP):
             action = np.array([0.0, 0.0])
             self.actions = [(action, Action.STOP)] + no_intersection_stop_actions
     

@@ -344,6 +344,6 @@ def bezier_draw(cps, n=20, red=False):
 
     for i, p in enumerate(pts):
         gl.glVertex3f(*p)
+        #print(*p)
 
     gl.glEnd()
-    gl.glColor3f(1, 1, 1)

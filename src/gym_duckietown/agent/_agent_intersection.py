@@ -32,7 +32,6 @@ def handle_intersection(self, env, speed_limit=1.0,  stop_point=30, learning=Fal
     turn_choice = TurnChoice(intersection_action.turn_choice)
     signal_choice = TurnChoice(intersection_action.signal_choice)
     action = Action(intersection_action.action)
-    wait_step = intersection_action.wait_step
 
     # Every Agent Stops
     # Cushion slow down to stop at intersectoin
@@ -41,27 +40,14 @@ def handle_intersection(self, env, speed_limit=1.0,  stop_point=30, learning=Fal
     # Stop before entering intersection if not the learning agent
     if not learning:
         action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step))
-    #elif learning and self.agent_id != "agent0":
-    elif learning:
+    elif learning and self.agent_id != "agent0":
+    #elif learning:
         action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step))
 
-    if action == Action.INTERSECTION_RIGHT:
-        #if self.agent_id == "agent0":
-        #    print(f"{self.agent_id} is taking a right turn.")
-        action_seq.extend(self.right_turn(env, forward_step=forward_step))
-    elif action == Action.INTERSECTION_LEFT:
-        #print(f"{self.agent_id} is taking a left turn.")
-        #if self.agent_id == "agent0":
-        #    print(f"{self.agent_id} is taking a left turn.")
-        action_seq.extend(self.left_turn(env, forward_step=forward_step))
-    elif action == Action.INTERSECTION_FORWARD:
-        #print(f"{self.agent_id} is going straight.")
-        #if self.agent_id == "agent0":
-        #    print(f"{self.agent_id} is taking a straight.")
+    if action != Action.STOP and action != Action.INTERSECTION_STOP:
         forward_steps = 0
-        while forward_steps < 30:
-            action_seq.extend(self.move_forward(env, speed_limit=speed_limit, intersection=True))
-            forward_steps += 1 
+        action_seq.extend(self.move_forward(env, speed_limit=speed_limit, intersection=True))
+        forward_steps += 1 
 
     return action_seq
 
