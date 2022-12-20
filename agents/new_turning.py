@@ -38,26 +38,25 @@ def test(args):
     # Start up env
     env.reset()
     
+    # For the number of iterations we want to test (this is just to see it again)
     for i in range(1, args.num_iterations):
         # Reset the state
         env.reset()
+
+        # Initialize agent to test turn
         done = False
-        #print(f"forward_step {env.agents[0].forward_step}")
         agent = env.agents[0]
         agent.turn_choice = 'Right'
         agent.curve = agent.get_curve(env)
-        #print(agent.turn_choice)
 
         # Learn until episode over
         while not done:
-
             # If not in the middle of an action, get one
             if not agent.actions:
                 if agent.intersection_detected(env):
                     agent.add_actions(agent.handle_intersection(env, learning=True))
                 else: 
                     agent.add_actions(agent.move_forward(env))
-
 
             agent.proceed(env,good_agent=True)
             _, _, done, misc = env.step(agent.get_next_action(), agent, learning=True)
@@ -67,12 +66,14 @@ def test(args):
     
 # Main - Get arguments and train using Q learning
 if __name__ == "__main__":
-    # Environment parse
+
+    # Argument parse
     if len(sys.argv) >= 2:
         config_name = "configs/" + sys.argv[1]
     else: 
         print("Give a configuration name as an argument")
         exit()
+
     args = utils.get_args_from_config(config_name)
 
     # Test 

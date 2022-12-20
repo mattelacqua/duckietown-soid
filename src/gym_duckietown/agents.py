@@ -1,9 +1,6 @@
 from .dl_utils import *
 from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Union
-from .objmesh import get_mesh, MatInfo, ObjMesh
 import numpy as np
-import random
-from . import logger
 from gym_duckietown import objects
 import os
 from .agent._agent_utils import get_duckiebot_mesh
@@ -55,29 +52,35 @@ class Agent():
         random_spawn=False,
         color="red"):
         
+        # Info
+        self.agent_id = agent_id 
+        self.timestamp = 0.0
+        self.color = color
+        self.mesh = get_duckiebot_mesh(color)
+        self.actions = []
+        self.last_action = None 
+        self.intersection_arrival = None
+        self.step_count = 0
+
+        # Pose
+        self.start_tile = start_pose
+        self.start_tile = start_tile
+        self.start_pose = start_pose
         self.cur_pos = cur_pos
         self.prev_pos = cur_pos
         self.cur_angle = cur_angle
-        self.start_tile = start_pose
-        self.speed = 0.0
-        self.agent_id = agent_id 
-        self.last_action = None 
-        self.wheelVels = np.array([0, 0])
-        self.timestamp = 0.0
-        self.start_tile = start_tile
-        self.start_pose = start_pose
+        self.direction ='' 
+        
+        # State
         self.state = None
-        self.color = color
-        self.mesh = get_duckiebot_mesh(color)
-        self.nearby_objects = []          # Keep track of nearby objects and agents
-        self.nearby_agents = []
-        self.intersection_agents = []
-        self.actions = []
-        self.step_count = 0
-        self.follow_dist = 0.3
-        self.random_spawn = random_spawn
-        self.max_iterations = 1000
-        height = 0.05
+        self.states = {}
+        self.forward_step = 0.00
+        self.speed = 0.0
+        self.wheelVels = np.array([0, 0])
+        self.turn_choice = None
+        self.curve = 0
+        self.signal_choice = None
+        self.stop_point = None       
         self.lights =   {
                         "front_left": [0.1, -0.05, height, True],
                         "front_right": [0.1, +0.05, height, False],
@@ -85,18 +88,24 @@ class Agent():
                         "back_left": [-0.1, -0.05, height, False],
                         "back_right": [-0.1, +0.05, height, False],
                         }
-        self.turn_choice = None
-        self.signal_choice = None
-        self.stop_point = None
-        self.forward_step = 0.00
+
+        # Percepts
+        self.nearby_objects = []                # Keep track of nearby objects and agents
+        self.nearby_agents = []
+        self.intersection_agents = []
+        
+        # Settings
+        self.max_iterations = 1000
+        self.random_spawn = random_spawn
+        self.follow_dist = 0.3
+        height = 0.05
         self.bbox_offset_w = 0.00
         self.bbox_offset_l = 0.00
-        self.intersection_arrival = None
+        
+        # Learning
         self.reward_profile = None
         self.learning_state = [0,0,0,0,0,0,0,0,0,0]
-        self.states = {}
-        self.direction ='' 
-        self.curve = 0
+
 
     # Import things for learning
     from .agent._agent_learning import  get_learning_state, \
@@ -158,4 +167,3 @@ class Agent():
                                     get_curve, \
                                     get_curr_tile, \
                                     in_bounds
-
