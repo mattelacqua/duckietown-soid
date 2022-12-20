@@ -35,8 +35,6 @@ import gym_duckietown.event_wrappers as event
 
 import socketio
 
-
-
 # Parse args
 args = utils.get_args_from_command_line()
 
@@ -56,8 +54,8 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
         camera_rand=args.camera_rand,
         dynamics_rand=args.dynamics_rand,
         full_transparency=True,
-        verbose=args.verbose
-        num_random_agents=args.num_random_agents,
+        verbose=args.verbose,
+        num_random_agents=args.num_random_agents
     )
 else:
     env = gym.make(args.env_name)
