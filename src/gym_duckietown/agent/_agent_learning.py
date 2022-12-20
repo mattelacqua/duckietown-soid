@@ -1,6 +1,10 @@
-# Functions for learning for agents
 import numpy as np
 
+#--------------------------
+# Learning:
+# State translations
+# Reward functions
+#--------------------------
 # Store state in dictionary to access later without recomputing
 def get_state(self, env):
     radius = (env.road_tile_size)
@@ -28,8 +32,6 @@ def get_learning_state(self, env):
     # 7: car entering our range +4
     # 8: car behind us and we are in intersection + 2
     # 9: car behind us and we are not in an intersection +1
-    # SEt radius 
-    radius = (env.road_tile_size)
 
     # Row in Model:
     model_row = 0
@@ -50,7 +52,6 @@ def get_learning_state(self, env):
 
     if in_intersection:
         model_row += 512              
-        #print("IN INTERSECTION 512")
         state.append(True)
     else:
         state.append(False)
@@ -58,17 +59,13 @@ def get_learning_state(self, env):
     #1
     if at_intersection_entry:
         model_row += 256        
-        #print("AT INTERSECTION ENTRY 256")
         state.append(True)
     else:
         state.append(False)
 
     #2
-    # We care only about the intersection being empty if we are appproaching it or at the entry
-    #if intersection_empty and (approaching_intersection or at_intersection_entry):
     if intersection_empty:
         model_row += 128           
-        #print("INTERSECTION EMPTY 128")
         state.append(True)
     else:
         state.append(False)
@@ -76,7 +73,6 @@ def get_learning_state(self, env):
     #3
     if approaching_intersection:
         model_row += 64
-        #print("APPROACHING INTERSECTION 64")
         state.append(True)
     else:
         state.append(False)
@@ -84,7 +80,6 @@ def get_learning_state(self, env):
     #4
     if obj_in_range: 
         model_row += 32
-        #print("OBJECT IN RANGE 32")
         state.append(True)
     else:
         state.append(False)
@@ -92,7 +87,6 @@ def get_learning_state(self, env):
     #5
     if have_right_of_way: 
         model_row += 16
-        #print("AHEAD CAR INTERSECTION IN RANGE 16")
         state.append(True)
     else:
         state.append(False)
@@ -100,7 +94,6 @@ def get_learning_state(self, env):
     #6
     if cars_waiting_to_enter: 
         model_row += 8
-        #print("AHEAD CAR OBJECT IN RANGE 8")
         state.append(True)
     else:
         state.append(False)
@@ -108,7 +101,6 @@ def get_learning_state(self, env):
     #7
     if car_entering_range: 
         model_row += 4
-        #print("CAR ENTERING RANGE 4")
         state.append(True)
     else:
         state.append(False)
@@ -116,7 +108,6 @@ def get_learning_state(self, env):
     #8
     if obj_behind_intersection:
         model_row += 2
-        #print("OBJECT BEHIND IN INTERSECTION 2")
         state.append(True)
     else:
         state.append(False)
@@ -124,13 +115,10 @@ def get_learning_state(self, env):
     #9
     if obj_behind_no_intersection:
         model_row += 1
-        #print("OBJECT BEHIND OUT INTERSECTION 1")
         state.append(True)
     else:
         state.append(False)
 
-    # return
-    #print(f"Model Row {model_row}")
     self.learning_state = state
     return model_row
 

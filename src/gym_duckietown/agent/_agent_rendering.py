@@ -23,10 +23,8 @@ def render_step_inner(self, env, done):
     if done:
         logger.error(self.agent_id + ": Failed. Check Log")
         env.reset()
-        # TODO: ADD AGENT RESETS.
         return False
     else:
-        #env.render(env.cam_mode)
         return True
 
 # Check if we are in the middle of completing an action

@@ -1,20 +1,14 @@
 """Training the agent"""
-import argparse
 import os
-import shutil
-import random
 import sys
-import time
 
 # Learning things
 import gym
-import numpy as np
 
+# Environment
 from gym_duckietown.envs import DuckietownEnv
 from gym_duckietown.dl_utils import Action
 
-# Includes all important moving functions for if then else agents
-import gym_duckietown.agents
 
 # Logging
 from gym_duckietown import logger 
@@ -23,13 +17,12 @@ from gym_duckietown import logger
 import gym_duckietown.utils as utils
 import gym_duckietown.event_wrappers as event
 
-import socketio
 
 from learn_types import *
-from gym_duckietown import dl_utils
+
+# Test our learning
 def test(args):
 
-    # Make the environment
     # Build Env
     if args.env_name and args.env_name.find("Duckietown") != -1:
         env = DuckietownEnv(
@@ -82,14 +75,12 @@ def test(args):
 
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
-                    agent.proceed(env, learning=True, model=model, state=state)
+                    agent.proceed(env, use_model=True, model=model, state=state)
                     _, _, done, done_code = env.step(agent.get_next_action(), agent, learning=True)
                     if done:
                         break
                 else:
                     agent.proceed(env,good_agent=True)
-                    if agent.actions[0] == Action.INTERSECTION_LEFT:
-                        print("DOING A LEFT TURN")
                     env.step(agent.get_next_action(), agent, learning=True)
 
             env.render(mode=args.cam_mode)
@@ -121,18 +112,16 @@ def read_model(directory, reward_profile, model_number):
 
 # Main - Get arguments and train using Q learning
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
 
-    # Environment parse
-    env_args = utils.get_args_from_command_line(parser)
+    # Parse arguments
+    if len(sys.argv) >= 2:
+        config_name = "configs/" + sys.argv[1]
+    else: 
+        print("Give a configuration name as an argument")
+        exit()
 
-    # Q learning Args
-    parser.add_argument("--num-iterations", default=100, type=int)  # Nummber of episodes
-    parser.add_argument("--model-dir", type=str, default="learning/reinforcement/q-learning/models/")
-    parser.add_argument("--model-num", type=int, default=0)
-    parser.add_argument("--reward-profile", type=int, default=2)
+    args = utils.get_args_from_config(config_name)
 
-    args = parser.parse_args()
 
     # Test 
     test(args)

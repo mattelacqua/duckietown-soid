@@ -1,16 +1,17 @@
 from ..dl_utils import *
 from learn_types import *
 import numpy as np
-import os
-from ..agents import so_file, dl
+from ..agents import dl
 from ._agent_utils import intersection_tile
 import math
 
 #--------------------------
 # Decision Logic
+# Contains much of the information gathering for agent state, and how to decide what to do.
 #--------------------------
 
-def proceed(self, env, good_agent=False, learning=False, model=None, state=None):
+# Have an agent proceed, using a model, unless it is a naturally good agent
+def proceed(self, env, good_agent=False, use_model=False, model=None, state=None):
 
     # If we are good we want to avoid tailgating
     if good_agent:
@@ -29,26 +30,27 @@ def proceed(self, env, good_agent=False, learning=False, model=None, state=None)
         return
 
     # Call out to c with the model and the state and see what we should do, then handle it.
-    elif learning:
+    elif use_model:
         dl.proceed.argtypes = [QTable, c_int]
         dl.proceed.restype = c_bool
 
         should_proceed = dl.proceed(model, state)
         self.handle_proceed(should_proceed)
 
-# Handle wheather or not we should proceed.
+# Handle whether or not we should proceed, filter out bad actions
 def handle_proceed(self, should_proceed):
     if not should_proceed:
         no_intersection_stop_actions = []
+
         # if we are not stopping anyways, append a stop.
         if not self.actions or (self.actions[0][1] != Action.INTERSECTION_STOP and self.actions[0][1] != Action.STOP):
             action = np.array([0.0, 0.0])
             self.actions = [(action, Action.STOP)] + no_intersection_stop_actions
     
-
     elif should_proceed:
         no_stop_actions = []
         for action in self.actions:
+            # If we have a stop move, take it out
             if action[1] != Action.STOP:
                 no_stop_actions.append(action)
 
@@ -85,22 +87,24 @@ def has_right_of_way(self, env):
 
     # Call out to c decision logic
     row = dl.has_right_of_way(self.in_intersection(env), other_in_intersection, self.at_intersection_entry(env), get_dl_direction(self.get_direction(env)), bool(n_agents), bool(s_agents), bool(e_agents), bool(w_agents))
-    #print(f"{self.agent_id} right of way {row}")
     return row
         
 
 # Check if we are at an intersection
 def in_intersection(self, env):
+    # If we are in bounds, return if our position is an intersection tile.
     if self.in_bounds(env):
         tile_x, tile_z = self.get_curr_tile(env)['coords']
         return intersection_tile(env, tile_x, tile_z)
     else:
         return False
 
-# Check if we are at an intersection
+# Check if we are at an intersection entry (right at the line)
 def at_intersection_entry(self, env):
     # Get state information
+    # if we are in bounds
     if self.in_bounds(env):
+        # Get tile position and direction
         tile_x, tile_z = self.get_curr_tile(env)['coords']
         direction = self.direction
 
@@ -132,10 +136,11 @@ def at_intersection_entry(self, env):
                 intersection_coords = tile_x+1, tile_z
             close_to_intersection = True
 
+        # If we are not close to an intersection, stop
         if not close_to_intersection:
             return False
+        # Check if we are within a cars length of the stop line.
         else:
-            # Check if we are within a cars length of the stop line.
             if direction == 'N':
                 stop_line = (intersection_coords[1] + 1) * env.road_tile_size
                 if self.cur_pos[2] > stop_line - env.robot_length/3 and self.cur_pos[2] < stop_line + env.robot_length:
@@ -154,6 +159,7 @@ def at_intersection_entry(self, env):
                     return True
             else:
                 return False
+    # If we are not in bounds, return false
     else: 
         return False
 
@@ -164,7 +170,6 @@ def cars_arrived_before_me(self, env):
     for agent in env.agents:
         if agent != self:
             # If intersection_detected intersection, not at entry and agent is and we 
-            #if (self.intersection_detected(env) or self.approaching_intersection(env)) and not self.at_intersection_entry(env) and agent.at_intersection_entry(env):
             if agent.intersection_arrival and self.intersection_arrival and agent.intersection_arrival < self.intersection_arrival:
                 if agent.states['at_intersection_entry'] or agent.states['in_intersection'] or agent.states['approaching_intersection']:
                     cars_before_me.append(agent)
@@ -181,7 +186,6 @@ def cars_waiting_to_enter(self, env):
     
     return cars_waiting_to_enter
 
-
 # Check if anyone other than us is currently in the intersection
 def intersection_empty(self, env):
     if self.in_bounds(env):
@@ -197,7 +201,6 @@ def intersection_empty(self, env):
     else:
         return False
 
-
 # See if there is an object within one tile block of a car infront of us
 def object_in_range(self, env, location="Ahead", intersection=None, radius=1, return_multiple=False, forward_only=False):
     if self.in_bounds(env):
@@ -209,11 +212,8 @@ def object_in_range(self, env, location="Ahead", intersection=None, radius=1, re
             side_radius = radius / 10
         front_radius = radius
 
+        # adjust bounds from front radius and side radius relative to our direction
         if direction == 'N':
-            # Lower bound for xrange is our current x minus half a tile
-            # Upper bound for xrange is our current x plus half a tile
-            # Lower bound for zrange is our current z - tilesize
-            # Upper bound for zrange is our current z
             if location == "Ahead":
                 object_ahead_range_z_lb = self.cur_pos[2] - front_radius
                 object_ahead_range_z_ub = self.cur_pos[2] 
@@ -223,10 +223,6 @@ def object_in_range(self, env, location="Ahead", intersection=None, radius=1, re
             object_ahead_range_x_lb = self.cur_pos[0] - side_radius
             object_ahead_range_x_ub = self.cur_pos[0] + side_radius 
         elif direction == 'S':
-            # Lower bound for xrange is our current x minus half a tile
-            # Upper bound for xrange is our current x plus half a tile
-            # Lower bound for zrange is our current z
-            # Upper bound for zrange is our current z + tilesize
             object_ahead_range_x_lb = self.cur_pos[0] - side_radius
             object_ahead_range_x_ub = self.cur_pos[0] + side_radius
             if location == "Ahead":
@@ -236,10 +232,6 @@ def object_in_range(self, env, location="Ahead", intersection=None, radius=1, re
                 object_ahead_range_z_lb = self.cur_pos[2] - front_radius - env.robot_length
                 object_ahead_range_z_ub = self.cur_pos[2] - env.robot_length
         elif direction == 'W':
-            # Lower bound for xrange is our current X - tilesize
-            # Upper bound for xrange is our current X
-            # Lower bound for zrange is our current z minus half a tile
-            # Upper bound for zrange is our current z plus half a tile
             if location == "Ahead":
                 object_ahead_range_x_lb = self.cur_pos[0] - front_radius
                 object_ahead_range_x_ub = self.cur_pos[0] 
@@ -249,10 +241,6 @@ def object_in_range(self, env, location="Ahead", intersection=None, radius=1, re
             object_ahead_range_z_lb = self.cur_pos[2] - side_radius 
             object_ahead_range_z_ub = self.cur_pos[2] + side_radius
         elif direction == 'E':
-            # Lower bound for xrange is our current X
-            # Upper bound for xrange is our current X + tilesize
-            # Lower bound for zrange is our current z minus half a tile
-            # Upper bound for zrange is our current z plus half a tile
             if location == "Ahead":
                 object_ahead_range_x_lb = self.cur_pos[0] 
                 object_ahead_range_x_ub = self.cur_pos[0] + front_radius           
@@ -271,15 +259,9 @@ def object_in_range(self, env, location="Ahead", intersection=None, radius=1, re
             if agent.agent_id != self.agent_id and location == "Ahead":
                 if agent_x >= object_ahead_range_x_lb and agent_x <= object_ahead_range_x_ub and \
                 agent_z >= object_ahead_range_z_lb and agent_z <= object_ahead_range_z_ub:
-                    if self.agent_id == "agent0":
-                        """print(f"{self.agent_id} at {self.cur_pos} is seeing {agent.agent_id} at {agent.cur_pos}")
-                        print(f"xLB is {object_ahead_range_x_lb}")
-                        print(f"xUB is {object_ahead_range_x_ub}")
-                        print(f"zLB is {object_ahead_range_z_lb}")
-                        print(f"zUB is {object_ahead_range_z_ub}")
-                        print(f"Radius is {radius}")"""
                     agents_in_radius.append(agent)
 
+        # If there are multiple agents in the radius and we want all of them
         if agents_in_radius and return_multiple:
             if intersection == True and location == "Behind":
                 if intersection_tile(env, tile_x, tile_z): # If we are checking behind us and we are in an intersection
@@ -293,6 +275,7 @@ def object_in_range(self, env, location="Ahead", intersection=None, radius=1, re
                     return False, None
             elif intersection == None: # Regular check ahead or behind
                 return True, agents_in_radius
+        # Otherwise, just give the closest
         else:
             closest_distance = math.inf
             closest_agent = None
@@ -304,7 +287,6 @@ def object_in_range(self, env, location="Ahead", intersection=None, radius=1, re
                         closest_agent = agent
 
             if closest_agent:
-                #print(f"{closest_agent.agent_id} IN FRONT OF {self.agent_id}")
                 if intersection == True and location == "Behind": # If we are checking behind us and we are in an intersection
                     if intersection_tile(env, tile_x, tile_z):
                         return True, closest_agent
@@ -322,14 +304,12 @@ def object_in_range(self, env, location="Ahead", intersection=None, radius=1, re
     else:
         return False, None
 
+# Check if we are tailgating
 def is_tailgating(self, env):
     for agent in env.agents:
-        #print(f"Comparing Agent {self} to {agent}")
-        #print(f"Comparing Agent {self.agent_id} {self.color} to {agent.agent_id} {agent.color}")
         if agent.agent_id != self.agent_id:
             info = agent.get_info(env)
             agent_direction = agent.direction
-            agent_x, agent_z = env.get_grid_coords(info['cur_pos'])
             prev_distance = env.pos_distance(self.prev_pos, agent.prev_pos)
             curr_distance = env.pos_distance(self.cur_pos, agent.cur_pos)
             if  agent_direction == self.direction and \
@@ -337,12 +317,11 @@ def is_tailgating(self, env):
                 curr_distance < env.robot_length*3 and \
                 self.is_behind(env, agent):
 
-                #print(f"Agent {self.color} is tailgating {agent.color}")
                 return True
     return False
 
+# Check if we are behind another agent
 def is_behind(self, env, agent):
-    #print("CHECKING BEHIND")
     direction = self.get_direction(env)
     if direction == 'N':
         if agent.cur_pos[2] < self.cur_pos[2]:

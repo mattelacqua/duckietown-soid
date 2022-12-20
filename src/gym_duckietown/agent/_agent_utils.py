@@ -15,18 +15,27 @@ def get_info(self, env) -> dict:
     info = {}
     pos = self.cur_pos
     angle = self.cur_angle
-    # Get the position relative to the right lane tangent
-
+    
+    # Info we care about
     info["agent_id"] = self.agent_id 
-    info["action"] = self.last_action
+    info["color"] = self.color 
+    info["last_action"] = self.last_action
     info["robot_speed"] = self.speed
+    info["direction"] = self.direction
     info["prev_pos"] = [float(self.prev_pos[0]), float(self.prev_pos[1]), float(self.prev_pos[2])]
     info["cur_pos"] = [float(pos[0]), float(pos[1]), float(pos[2])]
     info["cur_angle"] = float(angle)
-    info["wheel_velocities"] = [self.wheelVels[0], self.wheelVels[1]]
     info["tile_coords"] = list(env.get_grid_coords(pos))
     info["lights"] = self.lights 
-    info["actions"] = self.actions 
+    info["forward_step"] = self.forward_step
+    info["turn_choice"] = self.turn_choice
+    info["signal_choice"] = self.signal_choice
+    info["curve"] = self.curve   
+    info["state"] = self.state 
+    info["learning_state"] = self.learning_state 
+    info["step_count"] = self.step_count 
+    
+    # return the dict
     return info
 
 # Get current direction
@@ -96,20 +105,15 @@ def get_curve(self, env):
 
 # Get current angle degrees
 def get_curr_angle(self, env):
-    info = self.get_info(env)
-    curr_angle = round(math.degrees(info['cur_angle']))
+    curr_angle = round(math.degrees(self.cur_angle))
     if curr_angle < 0:
         curr_angle = 360 - abs(curr_angle)
     return curr_angle
 
 # Get current tile info
 def get_curr_tile(self, env):
-    info = self.get_info(env)
-    tile_x, tile_z = info['tile_coords']
+    tile_x, tile_z = list(env.get_grid_coords(self.cur_pos))
     tile = env._get_tile(tile_x, tile_z)
-    """if tile == None:
-        print(f"Failed at tile {tile_x} {tile_z}")
-        print(f"Failed at pos {self.cur_pos}")"""
     return tile
 
     # Check if agent is in bounds
@@ -122,12 +126,10 @@ def in_bounds(self, env):
     else:
         return True
 
+# check if already going to complete intersection action
 def completing_intersection(self):
-    # check if already going to complete intersection action
     for action in self.actions:
-        #print(action[1])
-        if action[1] == Action.INTERSECTION_FORWARD or action[1] == Action.INTERSECTION_LEFT or action[1] == Action.INTERSECTION_RIGHT:
-            print("THIS IS THE CASE WE ARE HITTING")
+        if action[1] == Action.INTERSECTION_FORWARD:
             return True
     else:
         return False

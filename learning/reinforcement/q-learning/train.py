@@ -38,7 +38,6 @@ def train(args):
             map_name=args.map_name,
             cam_mode=args.cam_mode,
             safety_factor=args.safety_factor,
-            num_agents=args.num_agents,
             draw_curve=args.draw_curve,
             draw_bbox=args.draw_bbox,
             domain_rand=args.domain_rand,

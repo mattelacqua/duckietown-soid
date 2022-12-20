@@ -1,9 +1,9 @@
-from ..agents import dl, so_file
+from ..agents import dl
 from ..dl_utils import *
 from ._agent_utils import intersection_tile
-import time
 #--------------------------
 # Intersections 
+# Code for handling intersection behavior
 #--------------------------
 
 # Handle an intersection
@@ -26,24 +26,16 @@ def handle_intersection(self, env, speed_limit=1.0,  stop_point=30, learning=Fal
 
     # Preprocess relevant information
     env_agent_array_struct = EnvironmentAgentArray(env, self.intersection_agents, self)
-    #print("CALLING INTERSECTION ACTION")
     intersection_action_addr = dl.intersection_action(turn_choice, signal_choice, self.intersection_arrival if self.intersection_arrival else env.max_steps, env_agent_array_struct)
     intersection_action = IntersectionAction.from_address(intersection_action_addr)
     turn_choice = TurnChoice(intersection_action.turn_choice)
     signal_choice = TurnChoice(intersection_action.signal_choice)
     action = Action(intersection_action.action)
 
-    # Every Agent Stops
-    # Cushion slow down to stop at intersectoin
-    # For learning we want our agent to just stop
+    # Stop before entering intersection
+    action_seq.extend(self.stop_vehicle(env, signal_choice))
 
-    # Stop before entering intersection if not the learning agent
-    if not learning:
-        action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step))
-    #elif learning and self.agent_id != "agent0":
-    elif learning:
-        action_seq.extend(self.stop_vehicle(env, signal_choice, forward_step=forward_step))
-
+    # If we are not stopping, get our move forward direction
     if action != Action.STOP and action != Action.INTERSECTION_STOP:
         forward_steps = 0
         action_seq.extend(self.move_forward(env, speed_limit=speed_limit, intersection=True))
@@ -117,7 +109,7 @@ def approaching_intersection(self, env, include_tile: bool=False):
         else:
             return False
 
-# Check if approaching an intersection
+# Check if we have just left an intersection an intersection
 def left_intersection(self, env, include_tile: bool=False):
     # Get state information
     tile_x, tile_z = list(env.get_grid_coords(self.cur_pos))
@@ -134,7 +126,6 @@ def get_stop_pos(self, env):
     # Get state information
     tile_x, tile_z = env.get_grid_coords(self.cur_pos) 
     tile_size = env.road_tile_size
-    curr_x, curr_z = self.cur_pos[0], self.cur_pos[2]
     direction = self.direction
 
     # Adjust stop point based on speed

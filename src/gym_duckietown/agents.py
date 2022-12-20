@@ -81,6 +81,8 @@ class Agent():
         self.curve = 0
         self.signal_choice = None
         self.stop_point = None       
+
+        height = 0.05
         self.lights =   {
                         "front_left": [0.1, -0.05, height, True],
                         "front_right": [0.1, +0.05, height, False],
@@ -98,7 +100,6 @@ class Agent():
         self.max_iterations = 1000
         self.random_spawn = random_spawn
         self.follow_dist = 0.3
-        height = 0.05
         self.bbox_offset_w = 0.00
         self.bbox_offset_l = 0.00
         
@@ -136,8 +137,7 @@ class Agent():
     # Import Movement Functions
     from .agent._agent_movement import  stop_vehicle, \
                                         move_forward, \
-                                        straighten_out, \
-                                        get_turn_overcomp
+                                        straighten_out
 
     # Import Intersection Detection/Handling Functions
     from .agent._agent_intersection import  handle_intersection, \
