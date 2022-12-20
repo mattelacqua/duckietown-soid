@@ -1,29 +1,16 @@
-"""Training the agent"""
-import argparse
-import os
-import shutil
-import random
-import sys
-import time
-
 # Learning things
 import gym
-import numpy as np
+import sys
 
 from gym_duckietown.envs import DuckietownEnv
-from gym_duckietown.dl_utils import Action
-
-# Includes all important moving functions for if then else agents
-import gym_duckietown.agents
 
 # Logging
 from gym_duckietown import logger 
 
 # Utils / Event Wrappers
 import gym_duckietown.utils as utils
-import gym_duckietown.event_wrappers as event
 
-from gym_duckietown import dl_utils
+# Test function
 def test(args):
 
     # Make the environment
@@ -34,7 +21,6 @@ def test(args):
             map_name=args.map_name,
             cam_mode=args.cam_mode,
             safety_factor=args.safety_factor,
-            num_agents=args.num_agents,
             draw_curve=args.draw_curve,
             draw_bbox=args.draw_bbox,
             domain_rand=args.domain_rand,
@@ -81,15 +67,13 @@ def test(args):
     
 # Main - Get arguments and train using Q learning
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-
     # Environment parse
-    env_args = utils.get_args_from_command_line(parser)
-
-    # Q learning Args
-    parser.add_argument("--num-iterations", default=100, type=int)  # Nummber of episodes
-
-    args = parser.parse_args()
+    if len(sys.argv) >= 2:
+        config_name = sys.argv[1]
+    else: 
+        print("Give a configuration name as an argument")
+        exit()
+    args = utils.get_args_from_config(config_name)
 
     # Test 
     test(args)

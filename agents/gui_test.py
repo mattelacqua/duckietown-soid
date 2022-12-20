@@ -57,6 +57,7 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
         dynamics_rand=args.dynamics_rand,
         full_transparency=True,
         verbose=args.verbose
+        num_random_agents=args.num_random_agents,
     )
 else:
     env = gym.make(args.env_name)
@@ -66,7 +67,6 @@ verbose = args.verbose
 
 # Start up env
 env.reset()
-
 
 # Render
 env.render(args.cam_mode)
@@ -99,23 +99,20 @@ clear = open(fifo_log, 'wb').close()
 out = open(fifo_out, 'wb', os.O_NONBLOCK)
 inp = open(fifo_in, 'rb', os.O_NONBLOCK)
 log = open(fifo_log, 'wb', os.O_NONBLOCK)
-print("STARTING WITH THESE")
-print(inp.readlines())
-
-
 
 # Start up the webserver before reading so that it clears write file
 webserver = gu.start_webserver()
 
 # Set up initial agent speeds, turns and contols
-env.agents[0].forward_step = 0.44
-env.agents[1].forward_step = 0.22
-env.agents[2].forward_step = 0.00
+#env.agents[0].forward_step = 0.44
+#env.agents[1].forward_step = 0.22
+#env.agents[2].forward_step = 0.00
 
-env.agents[0].turn_choice = "Left" 
-env.agents[1].turn_choice = "Straight" 
+#env.agents[0].turn_choice = "Left" 
+#env.agents[0].curve = env.agents[0].get_curve(env)
+#env.agents[1].turn_choice = "Straight" 
+#env.agents[1].curve = env.agents[1].get_curve(env)
 # Random is None which will be the 3rd agent
-
 
 # Feed agent information to webserver
 gu.init_server(0, out, env, None, get_map=True)
@@ -210,8 +207,6 @@ def update(dt):
 
     # render the cam
     env.render(env.cam_mode)
-
-
 
 if __name__ == '__main__':
 

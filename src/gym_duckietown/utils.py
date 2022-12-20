@@ -1,6 +1,6 @@
 # coding=utf-8
 import os
-import argparse
+import configparser
 
 
 def get_subdir_path(sub_dir):
@@ -39,41 +39,79 @@ def get_file_path(sub_dir, file_name, default_ext):
     return file_path
 
 # Args
-def get_args_from_command_line(parser = None):
-    if not parser:
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--env-name", default=None)
-        parser.add_argument("--map-name", default="udem1")
-        parser.add_argument("--distortion", default=False, action="store_true")
-        parser.add_argument("--camera_rand", default=False, action="store_true")
-        parser.add_argument("--draw-curve", action="store_true", help="draw the lane following curve")
-        parser.add_argument("--draw-bbox", action="store_true", help="draw collision detection bounding boxes")
-        parser.add_argument("--domain-rand", action="store_true", help="enable domain randomization")
-        parser.add_argument("--dynamics_rand", action="store_true", help="enable dynamics randomization")
-        parser.add_argument("--frame-skip", default=1, type=int, help="number of frames to skip")
-        parser.add_argument("--seed", default=1, type=int, help="seed")
-        parser.add_argument("--cam-mode", default="human", help="Camera modes: human, top_down, free_cam, rgb_array")
-        parser.add_argument("--safety-factor", default=1.0, type=float, help="Minimum distance before collision detection")
-        parser.add_argument("--num-agents", default=1.0, type=int, help="Number of Agents")
-        parser.add_argument("--num-random-agents", default=0.0, type=int, help="Number of Random Start Pos Agents")
-        parser.add_argument("--verbose", action="store_true", help="Log agent information")
-        args = parser.parse_args()
+def get_args_from_config(config_name: str):
+    params = configparser.ConfigParser()
+    params.read(config_name)
+    class Args:
+        # Logging 
+        verbose: bool
+        seed: int
 
-        return args
-    elif parser:
-        parser.add_argument("--env-name", default=None)
-        parser.add_argument("--map-name", default="udem1")
-        parser.add_argument("--distortion", default=False, action="store_true")
-        parser.add_argument("--camera_rand", default=False, action="store_true")
-        parser.add_argument("--draw-curve", action="store_true", help="draw the lane following curve")
-        parser.add_argument("--draw-bbox", action="store_true", help="draw collision detection bounding boxes")
-        parser.add_argument("--domain-rand", action="store_true", help="enable domain randomization")
-        parser.add_argument("--dynamics_rand", action="store_true", help="enable dynamics randomization")
-        parser.add_argument("--frame-skip", default=1, type=int, help="number of frames to skip")
-        parser.add_argument("--seed", default=1, type=int, help="seed")
-        parser.add_argument("--cam-mode", default="human", help="Camera modes: human, top_down, free_cam, rgb_array")
-        parser.add_argument("--safety-factor", default=1.0, type=float, help="Minimum distance before collision detection")
-        parser.add_argument("--num-agents", default=1.0, type=int, help="Number of Agents")
-        parser.add_argument("--num-random-agents", default=0.0, type=int, help="Number of Random Start Pos Agents")
-        parser.add_argument("--verbose", action="store_true", help="Log agent information")
+        # Randomization
+        domain_rand: bool
+        dynamics_rand: bool
+        distortion: bool
+        camera_rand: bool
+        
+        # Simulator settings
+        env_name: str
+        map_name: str
+        draw_curve: bool
+        draw_bbox: bool
+        frame_skip: int
+        cam_mode: str
 
+        # Agent Settings
+        num_random_agents: int
+        safety_factor: float
+
+        # Training Settings
+        save_models: bool
+        model_dir: str
+        alpha: float
+        learning_rate_decay: float
+        gamma: float
+        epsilon: float
+        num_episodes: int
+        num_iterations: int
+        model_num: int
+        reward_profile: int
+
+        def __init__(self):
+            # Logging
+            self.verbose=params.getboolean('LOGGING', 'VERBOSE')
+
+            # Randomization
+            self.seed=params.getint('RANDOMIZATION', 'SEED')
+            self.domain_rand=params.getboolean('RANDOMIZATION', 'DOMAIN_RAND')
+            self.dynamics_rand=params.getboolean('RANDOMIZATION', 'DYNAMICS_RAND')
+            self.distortion=params.getboolean('RANDOMIZATION', 'DISTORTION')
+            self.camera_rand=params.getboolean('RANDOMIZATION', 'CAMERA_RAND')
+            self.camera_rand=params.getboolean('RANDOMIZATION', 'CAMERA_RAND')
+
+            # Simulator SEtup
+            self.env_name=str(params.get('SETUP', 'ENV'))
+            self.map_name=str(params.get('SETUP', 'MAP'))
+            self.draw_curve=params.getboolean('SETUP', 'DRAW_CURVE')
+            self.draw_bbox=params.getboolean('SETUP', 'DRAW_BBOX')
+            self.frame_skip=params.getint('SETUP', 'FRAME_SKIP')
+            self.cam_mode=str(params.get('SETUP', 'CAM_MODE'))
+
+            # Agents
+            self.num_random_agents=params.getint('AGENTS', 'NUM_RANDOM_AGENTS')
+            self.safety_factor=params.getfloat('AGENTS', 'SAFETY_FACTOR')
+
+            # Learning
+            self.save_models=params.getboolean('LEARNING', 'SAVE_MODELS')
+            self.model_dir=str(params.get('LEARNING', 'MODEL_DIR'))
+            self.alpha=params.getfloat('LEARNING', 'ALPHA')
+            self.learning_rate_decay=params.getfloat('LEARNING', 'LEARNING_RATE_DECAY')
+            self.gamma=params.getfloat('LEARNING', 'GAMMA')
+            self.epsilon=params.getfloat('LEARNING', 'EPSILON')
+            self.num_episodes=params.getint('LEARNING', 'NUM_EPISODES')
+            self.num_iterations=params.getint('LEARNING', 'NUM_ITERATIONS')
+            self.model_num=params.getint('LEARNING', 'MODEL_NUM')
+            self.reward_profile=params.getint('LEARNING', 'REWARD_PROFILE')
+    
+    args = Args()
+    return args

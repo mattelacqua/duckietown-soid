@@ -156,6 +156,11 @@ def straighten_out(self, env, intersection=False):
             forward_step = .60
             control_gain = 20
             #steering = (forward_step * 13) * -dot
+    
+    # TODO
+    # TODO
+    # TODO
+    # Make cross track error and direction error have coefficients dependent on if we are turning.
 
     cross_track_error = lane_pos.dist
     direction_error = lane_pos.angle_rad
