@@ -1,20 +1,15 @@
 """Training the agent"""
-import argparse
+import sys
 import os
 import shutil
 import random
-import sys
-import time
 
 # Learning things
 import gym
 import numpy as np
 
+# Environment
 from gym_duckietown.envs import DuckietownEnv
-from gym_duckietown.dl_utils import Action
-
-# Includes all important moving functions for if then else agents
-import gym_duckietown.agents
 
 # Logging
 from gym_duckietown import logger 
@@ -23,19 +18,19 @@ from gym_duckietown import logger
 import gym_duckietown.utils as utils
 import gym_duckietown.event_wrappers as event
 
-import socketio
-
+# Types 
 from learn_types import *
-from gym_duckietown import dl_utils
 import matplotlib.pyplot as plt
+
+# Train the agent using q learning
 def train(args):
-       # Hyperparameters
+
+    # Hyperparameters
     alpha = args.alpha
     gamma = args.gamma
     epsilon = args.epsilon
     learning_rate_decay = args.learning_rate_decay
 
-    # Make the environment
     # Build Env
     if args.env_name and args.env_name.find("Duckietown") != -1:
         env = DuckietownEnv(
@@ -57,9 +52,6 @@ def train(args):
         )
     else:
         env = gym.make(args.env_name)
-
-    # Verbose
-    verbose = args.verbose
 
     # Start up env
     env.reset()
@@ -88,13 +80,14 @@ def train(args):
 
     print("Beginning Training.")
     for i in range(1, args.num_episodes):
-        #alpha = alpha * (1 - (i / args.num_episodes))
         epsilon = args.epsilon * (1 - (i / args.num_episodes)) 
         if epsilon < 0.1:
             epsilon = 0.1
         gamma = gamma
+
         # Reset the state
         env.reset()
+
         # Set reward profile for agent 0
         env.agents[0].reward_profile = args.reward_profile
 
@@ -103,7 +96,6 @@ def train(args):
 
         # Set the rewards to be 0
         if i % 100 == 0 and i > 1000:
-        #if i % 10 == 0 and i > 1:
             avg_rewards.append(sum(rewards)/len(rewards))
             avg_rewards_index.append(i)
             rewards = []
@@ -114,10 +106,7 @@ def train(args):
         while not done:
 
             # Get initial State (Will be the row of the model)
-            #print(f"GETTING INIT STATE in epoch {epochs}")
-            #print(f"{env.agents[0].cur_pos}")
             state = env.agents[0].get_learning_state(env)
-            #print(f"DONE")
 
             if random.uniform(0, 1) < epsilon:
                 # Explore action space
@@ -151,7 +140,6 @@ def train(args):
             
             # Calculate and set the new q table stuff
             old_value = q_table[state][action]
-            #print(f"Next State {next_state}")
             if not next_state:
                 next_max = 0 # If end of episode we have 0 for our next max stateval
             else:
@@ -173,12 +161,13 @@ def train(args):
             rewards.append(reward)
 
             epochs += 1
-            # Render each 10th step
-            #if epochs % 10 == 0:
-            #    env.render(mode=args.cam_mode)
-            #if i > 900:
-            #    env.render(mode=args.cam_mode)
+
+            # Render if we choose to
+            if args.render_steps:
+                if epochs % args.render_steps == 0:
+                    env.render(mode=args.cam_mode)
             
+        # Do bookeeping
         stats = {}
         stats['Episode'] = i
         stats['Result'] = info['done_code']
@@ -191,16 +180,20 @@ def train(args):
         print(stats)
         total_stats.append(stats)
 
-        if i % 100 == 0 or i == (args.num_episodes - 1):
-            write_model(args.model_dir, args.reward_profile, i, q_table)
-            print(f"Batch Episodes: {i}")
+        if args.save_models:
+            if i % 100 == 0 or i == (args.num_episodes - 1):
+                write_model(args.model_dir, args.reward_profile, i, q_table)
+                print(f"Batch Episodes: {i}")
+
     print("Training finished.\n")
+
     print(avg_rewards)
     plt.plot(avg_rewards_index, avg_rewards)
     plt.ylabel('Rewards')
     plt.xlabel('Episode #')
     plt.show()
 
+# Write the model
 def write_model(directory, reward_profile, episode_batch, model):
     
     profile = ""
@@ -234,25 +227,15 @@ def write_model(directory, reward_profile, episode_batch, model):
 
 # Main - Get arguments and train using Q learning
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
 
-    # Environment parse
-    env_args = utils.get_args_from_command_line(parser)
+    # Parse arguments
+    if len(sys.argv) >= 2:
+        config_name = "configs/" + sys.argv[1]
+    else: 
+        print("Give a configuration name as an argument")
+        exit()
 
-    # Q learning Args
-    parser.add_argument("--eval_freq", default=5e3, type=float)  # How often (time steps) we evaluate
-    parser.add_argument("--max_timesteps", default=1e6, type=float)  # Max time steps to run environment for
-    parser.add_argument("--save_models", action="store_true", default=True)  # Whether or not models are saved
-    parser.add_argument("--alpha", default=0.1, type=float)  # Alpha learning rate 
-    parser.add_argument("--learning_rate_decay", default=0.5, type=float)  # Alpha learning rate decay
-    parser.add_argument("--gamma", default=0.8, type=float)  # Gamma preference to short term reward
-    parser.add_argument("--epsilon", default=0.35, type=float)  # Epsilon for egreedy q learning 
-    parser.add_argument("--discount", default=0.99, type=float)  # Discount factor
-    parser.add_argument("--num-episodes", default=100001, type=int)  # Nummber of episodes
-    parser.add_argument("--reward-profile", default=2, type=int)  # Rewards (0 = pathological, 1= impatient, 2= defensive)
-    parser.add_argument("--model-dir", type=str, default="learning/reinforcement/q-learning/models/")
-
-    args = parser.parse_args()
+    args = utils.get_args_from_config(config_name)
 
     # Train 
     train(args)

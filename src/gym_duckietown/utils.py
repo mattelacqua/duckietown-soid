@@ -76,6 +76,7 @@ def get_args_from_config(config_name: str):
         num_iterations: int
         model_num: int
         reward_profile: int
+        render_steps: int
 
         def __init__(self):
             # Logging
@@ -112,6 +113,7 @@ def get_args_from_config(config_name: str):
             self.num_iterations=params.getint('LEARNING', 'NUM_ITERATIONS')
             self.model_num=params.getint('LEARNING', 'MODEL_NUM')
             self.reward_profile=params.getint('LEARNING', 'REWARD_PROFILE')
+            self.render_steps=params.getint('LEARNING', 'RENDER_STEPS')
     
     args = Args()
     return args

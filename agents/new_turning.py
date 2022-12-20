@@ -69,7 +69,7 @@ def test(args):
 if __name__ == "__main__":
     # Environment parse
     if len(sys.argv) >= 2:
-        config_name = sys.argv[1]
+        config_name = "configs/" + sys.argv[1]
     else: 
         print("Give a configuration name as an argument")
         exit()
