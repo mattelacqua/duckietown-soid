@@ -52,32 +52,37 @@ def test(args):
     # Start up env
     env.reset()
     
-    for i in range(1, args.num_iterations):
-        # Reset the state
-        env.reset()
-        done = False
-        #print(f"forward_step {env.agents[0].forward_step}")
-        agent = env.agents[0]
-        agent.turn_choice = 'Right'
-        agent.curve = agent.get_curve(env)
-        #print(agent.turn_choice)
+    agent = env.agents[0]
+    agent.turn_choice = 'Left'
+    agent.curve = agent.get_curve(env)
+    #print(agent.turn_choice)
 
-        # Learn until episode over
-        while not done:
+    # Learn until episode over
+    while True:
 
-            # If not in the middle of an action, get one
-            if not agent.actions:
-                if agent.intersection_detected(env):
-                    agent.add_actions(agent.handle_intersection(env, learning=True))
-                else: 
-                    agent.add_actions(agent.move_forward(env))
+        lane_pose = env.get_lane_pos2(agent.cur_pos, agent.cur_angle)
+        distance_to_road_center = lane_pose.dist
+        angle_from_straight_in_rads = lane_pose.angle_rad
+
+        ###### Commencez à remplir le code ici.
+        k_p = 10
+        k_d = 1
+
+        # La vitesse est une valeur entre 0 et 1 (correspond à une vitesse réelle de 0 à 1,2m/s)
+
+        vitesse = 0.44  # You should overwrite this value
+        # l'angle du volant, c'est-à-dire le changement d'angle de la voiture en rads/s
+        braquage = (
+            k_p * distance_to_road_center + k_d * angle_from_straight_in_rads
+        )  # You should overwrite this value
+
+        ###### Fini à remplir le code ici
+        print(braquage)
+        action = np.array([vitesse, braquage]) , 1
+        agent.render_step(env, action)
+        env.render(mode=args.cam_mode)
 
 
-            agent.proceed(env,good_agent=True)
-            _, _, done, misc = env.step(agent.get_next_action(), agent, learning=True)
-            done_code = misc['done_code']
-
-            env.render(mode=args.cam_mode)
     
 # Main - Get arguments and train using Q learning
 if __name__ == "__main__":

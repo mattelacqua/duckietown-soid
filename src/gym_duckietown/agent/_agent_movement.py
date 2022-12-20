@@ -2,6 +2,7 @@ from .. import logger
 from ..dl_utils import *
 import numpy as np
 import math
+import time
 #--------------------------
 # Movement
 #--------------------------
@@ -62,6 +63,9 @@ def straighten_out(self, env, intersection=False):
 
     # Get forward step
     forward_step = self.forward_step
+    control_gain = 2
+    speed_proportional_gain = 3.0
+
     #print(self.turn_choice)
 
     if forward_step == 0.0:
@@ -90,9 +94,9 @@ def straighten_out(self, env, intersection=False):
         # then find the closest point to to that
         follow_point = closest_point + closest_tangent * lookup_distance
         if self.states['at_intersection_entry'] or self.states['in_intersection']:
-            curve_point, _ = env.closest_curve_point(follow_point, self.cur_angle, index=self.curve)
+            curve_point, curve_tangent = env.closest_curve_point(follow_point, self.cur_angle, index=self.curve)
         else:
-            curve_point, _ = env.closest_curve_point(follow_point, self.cur_angle, index=None)
+            curve_point, curve_tangent = env.closest_curve_point(follow_point, self.cur_angle, index=None)
         # If we have a valid point on the curve, stop
         if curve_point is not None:
             break
@@ -100,16 +104,36 @@ def straighten_out(self, env, intersection=False):
         iterations += 1
         lookup_distance *= 0.5
 
-    # Compute a normalized vector to the curve point
     point_vec = curve_point - self.cur_pos
     point_vec /= np.linalg.norm(point_vec)
     dot = np.dot(get_right_vec(self.cur_angle), point_vec)
-    #print(dot)
-    #print(vars(self.state))
-    #print(self.speed)
+    # Compute a normalized vector to the curve point
+    """
+    point_vec = curve_point - self.cur_pos
+    point_vec /= np.linalg.norm(point_vec)
+    point_vec_error = np.dot(get_right_vec(self.cur_angle), point_vec)
+    cross_track_error = np.arctan2(control_gain * point_vec_error, self.speed)
+
+    # Computer normalized angle error:
+    direction_vec = get_dir_vec(self.cur_angle)
+    direction_vec_error = np.dot(direction_vec, curve_tangent)
+    direction_vec_error = np.clip(direction_vec_error, -1.0, +1.0)
+    
+    total_error = direction_vec_error + cross_track_error
+    print(total_error)
+    """
+
+    if self.states['at_intersection_entry'] or self.states['in_intersection']:
+        print('this index')
+        lane_pos = env.get_lane_pos2(self.cur_pos, self.cur_angle, index=self.curve)
+    else:
+        print("HEREERE")
+        lane_pos = env.get_lane_pos2(self.cur_pos, self.cur_angle)
+   
 
     # General Case
-    steering = 2 * -dot
+    """
+    steering = (self.forward_step * 10) * -dot
     ready_to_accelerate = False
     if self.direction == 'N' and 88 < self.get_curr_angle(env) < 92:
         ready_to_accelerate = 'N'
@@ -119,28 +143,39 @@ def straighten_out(self, env, intersection=False):
         ready_to_accelerate = 'E'
     elif self.direction == 'W' and 178 < self.get_curr_angle(env) < 182:
         ready_to_accelerate = 'W'
+    """
 
     if self.states['in_intersection'] or self.states['at_intersection_entry']:# or not ready_to_accelerate:
         #if not ready_to_accelerate:
         #    print(f"Not ready to accel: {ready_to_accelerate}")
         if self.turn_choice == 'Right':
-            forward_step = .20
-            steering = (forward_step * 30) * -dot
+            forward_step = .35
+            control_gain = 20
+
         if self.turn_choice == 'Left':
-            forward_step = .30
+            forward_step = .60
+            control_gain = 20
             #steering = (forward_step * 13) * -dot
-            steering = 5 * -dot
-    else:
-        # Limit radius of curvature
-        wheel_distance = 0.102
-        min_rad = 0.06
 
-        if forward_step == 0 or abs(steering / forward_step) > (min_rad + wheel_distance / 2.0) / (min_rad - wheel_distance / 2.0):
-            # adjust velocities evenly such that condition is fulfilled
-            delta_v = (steering - forward_step) / 2 - wheel_distance / (4 * min_rad) * (forward_step + steering)
-            forward_step += delta_v
-            steering -= delta_v
+    cross_track_error = lane_pos.dist
+    direction_error = lane_pos.angle_rad
+    total_error = cross_track_error + direction_error
+    print(f"CTE: {cross_track_error} DR: {direction_error} TE: {total_error}")
+    steering = total_error * control_gain
+    forward_step = (forward_step - self.speed) - cross_track_error * speed_proportional_gain
+    #else:
+    # Limit radius of curvature
+    wheel_distance = 0.102
+    min_rad = 0.8
+    speed = self.speed
 
+    #if forward_step == 0 or abs(speed / forward_step) > (min_rad + wheel_distance / 2.0) / (min_rad - wheel_distance / 2.0):
+    #    # adjust velocities evenly such that condition is fulfilled
+    #    delta_v = (forward_step - speed) / 2 - wheel_distance / (4 * min_rad) * (forward_step + steering)
+    #    forward_step += delta_v
+    #k    steering -= delta_v
+ 
+ 
     if intersection:
         actions.append(([forward_step, steering], Action.INTERSECTION_FORWARD))
     else:

@@ -1437,7 +1437,7 @@ class Simulator(gym.Env):
 
         return point, tangent
 
-    def get_lane_pos2(self, pos, angle):
+    def get_lane_pos2(self, pos, angle, index=None):
         """
         Get the position of the agent relative to the center of the right lane
 
@@ -1446,7 +1446,7 @@ class Simulator(gym.Env):
 
         # Get the closest point along the right lane's Bezier curve,
         # and the tangent at that point
-        point, tangent = self.closest_curve_point(pos, angle)
+        point, tangent = self.closest_curve_point(pos, angle, index=index)
         if point is None or tangent is None:
             msg = f"Point not in lane: {pos}"
             raise NotInLane(msg)
@@ -2416,7 +2416,8 @@ class Simulator(gym.Env):
 
             agent.color = color
             agent.mesh = get_duckiebot_mesh(agent.color)
-            agent.forward_step = round(self.np_random.uniform(0.3, 0.7), 2)
+            #agent.forward_step = round(self.np_random.uniform(0.3, 0.7), 2)
+            agent.forward_step = round(self.np_random.uniform(0.5, 0.9), 2)
 
             # Choose a random position on this tile
             if direction == 'N':
