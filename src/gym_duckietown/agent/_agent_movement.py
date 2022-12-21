@@ -106,7 +106,7 @@ def straighten_out(self, env, intersection=False):
     # Steering adjustments
     if self.states['in_intersection'] or self.states['at_intersection_entry']:
         if self.turn_choice == 'Right':
-            forward_step = .35
+            forward_step = .30
             control_gain = 20
 
         if self.turn_choice == 'Left':

@@ -43,25 +43,32 @@ def test(args):
         # Reset the state
         env.reset()
 
-        # Initialize agent to test turn
+        # Hard coding first agent's behavior
+        agent0 = env.agents[0]
+        agent0.turn_choice = 'Right'
+        agent0.curve = agent0.get_curve(env)
+
+        # Hard coding second agent's behavior
+        agent1 = env.agents[1]
+        agent1.turn_choice = 'Right'
+        agent1.curve = agent1.get_curve(env)
+
         done = False
-        agent = env.agents[0]
-        agent.turn_choice = 'Right'
-        agent.curve = agent.get_curve(env)
 
-        # Learn until episode over
+        # Until one agent ends
         while not done:
-            # If not in the middle of an action, get one
-            if not agent.actions:
-                if agent.intersection_detected(env):
-                    agent.add_actions(agent.handle_intersection(env, learning=True))
-                else: 
-                    agent.add_actions(agent.move_forward(env))
+            for agent in env.agents: 
+                # If not in the middle of an action, get one
+                if not agent.actions:
+                    if agent.intersection_detected(env):
+                        agent.add_actions(agent.handle_intersection(env))
+                    else: 
+                        agent.add_actions(agent.move_forward(env))
 
-            agent.proceed(env,good_agent=True)
-            _, _, done, misc = env.step(agent.get_next_action(), agent, learning=True)
-            done_code = misc['done_code']
+                agent.proceed(env,good_agent=True)
+                _, _, done, misc = env.step(agent.get_next_action(), agent)
 
+            # Render
             env.render(mode=args.cam_mode)
     
 # Main - Get arguments and train using Q learning

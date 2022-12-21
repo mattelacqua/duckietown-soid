@@ -2336,6 +2336,7 @@ class Simulator(gym.Env):
         """
 
         action = DynamicsInfo(motor_left=action[0], motor_right=action[1])
+        print(action)
         agent.state = agent.state.integrate(self.delta_time, action)
         q = agent.state.TSE2_from_state()[0]
         pos, angle = self.weird_from_cartesian(q)

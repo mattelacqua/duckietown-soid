@@ -1,32 +1,27 @@
 # Gym-Duckietown (Edited for ROSE Soid Project)
 # Table of contents
 
-- [Introduction](#introduction)  
-- [Soid](#soid)  
-- [Installation](#installation)  
-  - [Conda & Pip](#conda_pip)  
-- [Usage](#usage)  
-  - [Agents](#agents_basic)  
-        - [Actions](#actions)  
-        - [Single Agent Scenarios](#single_agent)  
-        - [Multi Agent Scenarios](#multi_agent)  
-  
-  - [Neural Approaches](#neural)  
-        - [Reinforcement](#reinforcement)  
-        - [Imitation](#imitation)  
-        - [Observation](#observation)  
-        - [Reward](#reward)    
-- [Design](#design)  
-  - [Map Format](#map_format)  
-  - [Map Information](#map_notes)  
-- [Web-Gui](#webgui)  
-  - [Overview](#webgui_overview)  
-  - [Front End](#front_end)  
-        - [HTML](#html)  
-  - [Back End](#back_end)  
-        - [Flask Files](#flask)  
-        - [Using Pipes](#pipes)  
-- [Troubleshooting](#troubleshooting)  
+- [Gym-Duckietown (Edited for ROSE Soid Project)](#gym-duckietown-edited-for-rose-soid-project)
+- [Table of contents](#table-of-contents)
+  - [Introduction ](#introduction-)
+  - [Soid Project for ROSE Lab ](#soid-project-for-rose-lab-)
+  - [Installation ](#installation-)
+    - [Installation Using Conda \& Pip ](#installation-using-conda--pip-)
+  - [Usage ](#usage-)
+    - [Scenarios ](#scenarios-)
+    - [Agents ](#agents-)
+    - [Actions ](#actions-)
+  - [Reinforcement Learning ](#reinforcement-learning-)
+  - [Design ](#design-)
+    - [Map File Format ](#map-file-format-)
+      - [Map Notes: ](#map-notes-)
+  - [Web-Gui (Using Flask and Pipes) ](#web-gui-using-flask-and-pipes-)
+    - [Overview ](#overview-)
+    - [Front End ](#front-end-)
+    - [Back End ](#back-end-)
+      - [Flask ](#flask-)
+      - [Pipes ](#pipes-)
+  - [Troubleshooting ](#troubleshooting-)
 
 <details>
   <summary> **Original Project Citation Information** </summary>
@@ -60,11 +55,18 @@ Welcome to <b>Duckietown</b>!
 
 Gym-Duckietown is a simulator for the [Duckietown](https://duckietown.org) Universe, written in pure Python/OpenGL (Pyglet). It places your agent, a Duckiebot, inside of an instance of a Duckietown: a loop of roads with turns, intersections, obstacles, Duckie pedestrians, and other Duckiebots. It can be a pretty hectic place!
 
-Gym-Duckietown is fast, open, and incredibly customizable. What started as a lane-following simulator has evolved into a fully-functioning autonomous driving simulator that you can use to train and test your Machine Learning, Reinforcement Learning, Imitation Learning, or even classical robotics algorithms. Gym-Duckietown offers a wide range of tasks, from simple lane-following to full city navigation with dynamic obstacles. Gym-Duckietown also ships with features, wrappers, and tools that can help you bring your algorithms to the real robot, including [domain-randomization](https://blog.openai.com/spam-detection-in-the-physical-world/), accurate camera distortion, and differential-drive physics (and most importantly, realistic waddling).
+Gym-Duckietown is fast, open, and incredibly customizable. What started as a lane-following simulator has evolved into a fully-functioning autonomous driving simulator that you can use to train and test your Machine Learning, Reinforcement Learning, Imitation Learning, or even classical robotics algorithms. 
+
+Gym-Duckietown offers a wide range of tasks, from simple lane-following to full city navigation with dynamic obstacles. Gym-Duckietown also ships with features, wrappers, and tools that can help you bring your algorithms to the real robot, including [domain-randomization](https://blog.openai.com/spam-detection-in-the-physical-world/), accurate camera distortion, and differential-drive physics (and most importantly, realistic waddling).
+
 
 <p align="center">
 <img src="media/finalmain.gif"><br>
 </p>
+
+<details>
+  <summary> More Details on Original Work </summary>
+
 
 There are multiple registered gym environments, each corresponding to a different [map file](https://github.com/duckietown/gym-duckietown/tree/master/gym_duckietown/maps):
 - `Duckietown-straight_road-v0`
@@ -98,16 +100,17 @@ repository on your Duckiebot.
 <img src="media/duckiebot_1.png" width="300px"><br>
 Duckiebot-v0
 </p>
+</details>
 
 ## Soid Project for ROSE Lab <a name="soid"></a>
 The `Duckietown` project has been modified extensively to be used as a demonstration of the Soid tool's efficacy. Changes from the original repository include:
 
 - Agent Structure Change
-- Map Format Changes (multi-agent support, object parameter changes)
+- Map Format Changes (multi-agent support)
 - Simulator Changes (multi-agent support)
-- Movement Libraries for Agents
+- Movement Path Following for Agents
 - GUI (currently in development)
-- Callouts to C binarys for symbolic execution (currently in development)
+- Callouts to C binarys for decision logic
 
 Because of this, some of the information in this README may be out of date, or slightly incorrect. Submit issues to repository or ping me (Matt) on Slack / email (matt.elacqua@yale.edu) with any questions.
 
@@ -119,7 +122,6 @@ Requirements:
 - NumPy
 - Pyglet
 - PyYAML
-- PyTorch
 
 ### Installation Using Conda & Pip <a name="conda_pip"></a>
 
@@ -137,18 +139,25 @@ cd duckietown-soid
 conda env create -f environment.yaml
 ```
 
-
-
-
-Please note that if you use Conda to install this package instead of pip, you will need to activate your Conda environment and add the package to your Python path before you can use it
+You will need to activate your Conda environment and add the package to your Python path before you can use it
 by running the following commands (you may have to reshell first for conda to work):
 
 ```
-source activate duckietown
+conda activate duckietown
+```
+```
 export PYTHONPATH="${PYTHONPATH}:`pwd`"
+```
+```
 cd learning
+```
+```
 export PYTHONPATH="${PYTHONPATH}:`pwd`"
+```
+```
 cd ..
+```
+```
 conda develop .
 ```
 
@@ -171,122 +180,91 @@ conda install pip
 ```
 
 Finally, once in the conda environment for duckietown, run pip install using the setup.py (run the following command).
-*** Make sure that you install in the conda env. Might run into issues if using your machine env.
+
+*** Make sure that you install in the conda env. Might run into issues if using your machine env. 
 
 ```
-pip install -e .
+pip3 install -e .
 ```
 
 ## Usage <a name="usage"></a>
 
-### Agents (No Deep Learning) <a name="agents_basic"></a>
+### Scenarios <a name="scenarios"></a>
 
-Agents work using the new [Agent class] (/src/gymduckietown/agents.py). Essentially, the pipeline for creating an agent example is as follows:
+An example to test and make sure everything is running correctly can be done with the following command:
 
-Define the agent in the map file.
-  For example, the [turning test] (/maps/turning_test.yaml) agent to test turning.
-  Each agent in the agent section needs a name, followed by a start_tile, start_pose (position and angle relative to start tile), and a color.
+
+```
+python agents/example.py configs/example.ini
+```
+
+This will run the example, which demonstrates agents moving in the environment and how they do that. I suggest following the functions to get an idea of how everything comes together. To change the number of agents, in the [config file](configs/example.ini), change the NUM_RANDOM_AGENTS setting.
+
+### Agents <a name="agents_basic"></a>
+
+Agents work using the new [Agent class] (/src/gymduckietown/agents.py). As you'll see, agents have many different class members. The most important are noted here.
+
+  + agent_id: The index of the agent in environment's list of agents.
+  + cur_pos: Gives an agent's current position on the grid (x, y, z), where y will always be zero.
+  + cur_angle: Gives the agent's current angle (East is 0,360 degrees, N is 90, W is 180, S is 270)
+  + direction: Current direction (NSEW)
+  + actions: The stack of actions which an agent is to perform.
+  + state: The differential dynamics state
+  + speed: The agent's velocity (determined automatically)
+  + forward_step: The agent's acceleration
+  + turn_choice: The direction the agent wants to move 'Left, Right, Straight'
+  + signal_choice: The direction the agent wants to signal 'Left, Right, Straight'
+  + curve: The curve points on the road the agent aims to follow. Depends on their turn_choice.
+  + step_count: how many steps the agent has taken
+
+For the most part, it is easiest to create agent's with random spawn positions (using the config), and refer to the agent and modify directly.
+
+An example for modifying the acceleration:
+
+```
+agent = env.agents[0]
+agent.forward_step = 0.44
+```
   
-To write a program and control agent movement, actions must be added to the agent's action stack using the method `add_actions`.
+To control agent movement, actions must be added to the agent's action stack using the method `add_actions`.
+
 This can be done using several different methods in the Agent class, and several examples of this are provided in the [agents directory] (/agents). Details about actions can be found [here](#actions).
 
-Each agent is then stepped, updating the physics of the environement, and then render_step must be called to render the changes in the pyglet display.
+Each agent is then stepped using env.step(), updating the physics of the environment, and then env.render() must be called to render the changes in the pyglet display.
 
-If using any sort of intersection, object, or other agent detection, we must do checks before stepping, so that we can adjust each agent's action stack accordingly.
+If using any sort of intersection, object, or other agent detection, we must do checks before stepping, so that we can adjust each agent's action stack accordingly. 
+
+The code for the Agent class can be found at (/src/gymduckietown/agents.py), and the functions for movement, decision logic, etc. can all be found at (/src/gymduckietown/agent)
 
 ### Actions <a name="actions"></a>
 
-The simulator uses continuous actions by default. Actions passed to the `step()` function should be numpy arrays containining two numbers between -1 and 1. These two numbers correspond to forward velocity, and a steering angle, respectively. A positive velocity makes the robot go forward, and a positive steering angle makes the robot turn left. Use methods in the new [Agent class] (/src/gymduckietown/agents.py) for discrete actions such as "move forward", "turn left", "stop", etc.
+The simulator uses continuous actions by default. Actions passed to the `step()` function should be numpy arrays containining two numbers between -1 and 1, along with the corresponding action ID, found in [types.c](/src/gym_duckietown/decision_logic/types.c). The two numbers in the action portion of the tuple (index 0) correspond to forward acceleration, and a steering angle, respectively. A positive acceleration makes the robot go forward, and a positive steering angle makes the robot turn left. 
 
-#### Single-Agent Scenarios <a name="single_agent"></a>
+Agents essentially only use 4 kinds of actions:
 
-There is a simple UI application which allows you to control the simulation or real robot manually. The `manual_control.py` application will launch the Gym environment, display camera images and send actions (keyboard commands) back to the simulator or robot. You can specify which map file to load with the `--map-name` argument:
+  + Action.FORWARD: 
+    + Move agent forward following the closest tile curve point.
+  + Action.INTERSECTION_FORWARD: 
+    + Move agent forward following the closest tile curve point. Used to distinguish when it is completing a turn
+  + Action.STOP: 
+    + The forward acceleration is set to 0. It takes multiple STOP actions to set its speed to 0.
+  + Action.INTERSECTION_STOP
+    + The stops required to stop at an intersection line.
 
-```
-python3 agents/manual_control.py --env-name Duckietown-4way_duckies-v0 --map-name 4way_duckies.yaml --cam-mode human
-```
 
-The intersection agent will go appproach an intersection, stop before it, turn right/left or go straight randomly (can change the choice argument in handle_intersection from None to one of 'Right', 'Left', 'Straight' for deterministic choice) and continue on until the road and simulation end.
-This makes use of several [if then else agent functions](/src/gym_duckietown/agents.py) that can be used in other agents.
-
-```
-python3 agents/intersection_agent.py --env-name Duckietown-4way_large-v0 --map-name 4way_large.yaml --cam-mode top_down
-```
-
-#### Multi-Agent Scenarios <a name="multi_agent"></a>
-
-The simulator has been modified to treat other duckiebots as alternative agents as opposed to dynamic objects. An example using the new map format can be found at [maps/4way_duckies](/maps/4way_duckies.yaml)
-
-To test this, run the following command:
+## Reinforcement Learning <a name="reinforcement"></a>
+To train a reinforcement learning agent, you can use the code provided under [/learning/reinforcement/q-learning/train](/learning/reinforcement/q-learning/train). This training example uses a basic q learning algorithm.  A sample command to launch training with default parameters is:
 
 ```
-python3 agents/duckie_intersection.py --env-name Duckietown-4way_duckies-v0 --map-name 4way_duckies.yaml --safety-factor 0.5 --cam-mode top_down
+python3 learning/reinforcement/q-learning/train.py configs/config.ini
 ```
 
-
-
-
-## Neural Approaches (Not Relevant for Soid Yet) <a name="neural"></a>
-
-### Reinforcement Learning Agents <a name="reinforcement"></a>
-<details>
-  <summary> Not Relevant For Soid Yet. </summary>
-
-To train a reinforcement learning agent, you can use the code provided under [/learning/reinforcement/pytorch](/learning/reinforcement/pytorch). This training example uses DDPG algorithm.  A sample command to launch training with default parameters is:
-
+To test a learned model, use the following command with default parameters:
 ```
-python3 learning/reinforcement/pytorch/train_reinforcement.py 
+python3 learning/reinforcement/q-learning/test.py configs/config.ini
 ```
 
-To see a list of training parameters run:
-
-```
-python3 learning/reinforcement/pytorch/train_reinforcement.py -h
-```
-
-Then, to visualize the results of training, you can run the following command. Note that you can do this while the training process is still running. Also note that if you are running this through SSH, you will need to enable X forwarding to get a display:
-
-```
-python3 learning/reinforcement/pytorch/enjoy_reinforcement.py
-```
-</details>
-
-### Imitation Learning <a name="imitation"></a>
-<details>
-  <summary> Not Relevant For Soid Yet. </summary>
-There is are several different imitation learning examples. Those that are currently working are: ([basic](learning/imitation/basic))
-To run the basic training run:
-
-```
-python3 learning/imitation/basic/train_imitation.py
-```
-
-To see a list of training parameters run:
-
-```
-python3 learning/imitation/basic/train_imitation.py -h
-```
-
-Then, to visualize the results of training, you can run the following command. Note that you can do this while the training process is still running (***UNSURE IF TRUE***). Also note that if you are running this through SSH, you will need to enable X forwarding to get a display:
-
-```
-python3 learning/imitation/basic/enjoy_imitation.py
-```
-</details>
-
-### Observations <a name="observation"></a>
-<details>
-  <summary> Not Relevant For Soid Yet. </summary>
-The observations are single camera images, as numpy arrays of size (120, 160, 3). These arrays contain unsigned 8-bit integer values in the [0, 255] range.
-This image size was chosen because it is exactly one quarter of the 640x480 image resolution provided by the camera, which makes it fast and easy to scale down
-the images. The choice of 8-bit integer values over floating-point values was made because the resulting images are smaller if stored on disk and faster to send over a networked connection.
-</details>
-
-### Reward Function <a name="reward"></a>
-<details>
-  <summary> Not Relevant For Soid Yet. </summary>
-The default reward function tries to encourage the agent to drive forward along the right lane in each tile. Each tile has an associated bezier curve defining the path the agent is expected to follow. The agent is rewarded for being as close to the curve as possible, and also for facing the same direction as the curve's tangent. The episode is terminated if the agent gets too far outside of a drivable tile, or if the `max_steps` parameter is exceeded. 
-</details>
+Then, to visualize the results of training, you can edit the [config file](configs/config.ini) and set render_steps to the value of every step you would like to see.
 
 ## Design <a name="design"></a>
 
@@ -334,35 +312,49 @@ agents:
     
 Also, keep in mind that multiagent support is available.
 
+For our purposes, the [reinforcement_learning](maps/reinforcement_learning.yaml) suffices. 
+
 ## Web-Gui (Using Flask and Pipes) <a name="webgui"></a>
 
 ### Overview <a name="webgui_overview"></a>
 The GUI we are using is based off of HTML, Javascript, and is webserver based. We are using the python Flask library to start a basic localhost webserver at [127.0.0.1:5000](http://127.0.0.1:5000/). 
 The pipeline is as follows:
 
-1. Startup [Flask Server](webserver/server.py) in agent.py
+1. Startup [Flask Server](webserver/server.py) 
 ```
 python3 webserver/server.py
 ```
 (You can spin off a subproccess with it using subprocess.Popen, example in [gui_test.py](agents/gui_test))
 
-2. Run your agent program.
+2. Startup [Node Server](webserver/web-gui/) in another terminal
+
 ```
-python3 agents/gui_test.py --env-name Duckietown-gui_test-v0 --map-name gui_test.yaml --cam-mode top_down
+cd webserver/web-gui
+```
+If never installed npm packages, install them.
+```
+npm install --legacy-peer-deps
+```
+Start the Node js server
+```
+npm start
 ```
 
-What happens here is the webserver will begin and read the initial layout of the simulated scene. Based on this, the gui is presented on a mouse click using webbrowser.open (see [event_wrappers.py](src/gym_duckietown/event_wrappers.py). While the scene is paused, the user can interact with the gui which uses JS/sockets to communicate to webserver.py, which will write information to a [pipe in the webserver directory](webserver/webserver.out). The agent program will then read from this file during the pause cycle for [this example](agents/gui_test). Finally, the user will click the resume simulation button at the bottom to resume the agent's decision code based on the re-rendered scene.
+3. Run your agent program.
+```
+python3 agents/gui_test.py configs/config.ini
+```
 
-*** STILL WORK IN PROGRESS FOR SPECIFICI AGENT ATTRIBUTES AND OBJECTS
+What happens here is the webserver will begin and read the initial layout of the 
+simulated scene. The user will load the information in, and once it begins to render, the web-gui will updated. 
+
+The user has several options. Pause, Restart, and Quit. 
+
+While the scene is paused, the user can interact with the gui which uses JS/sockets to communicate to webserver.py, which will write information to a [pipe in the webserver directory](webserver/webserver.out). The agent program will then read from this file during the pause cycle for [this example](agents/gui_test). Finally, the user will click the resume simulation button to resume the agent's decision code at that point.
 
 
 ### Front End <a name="front_end"></a>
-The front end development is done using HTML.
-
-#### HTML <a name="html"></a>
-The [HTML file](webserver/html/agents.html) used in [this example](webserver/server.py) uses bootstrap and java script to create several (currently poorly drawn) buttons and sliders to adjust agent angles and positions.. 
-
-Take a look at this to see how in the body it creates the Agent Angle Slider and NSEW buttons. For each of these, JS socketio function to send the 'update' function with the value on the slider / direction of button through the socket in the webserver [flask file](webserver/server.py). 
+The front end development is done using React. I highly recommend the [react tutorial](https://reactjs.org/tutorial/tutorial.html) if you are not familiar with it.
 
 ### Back End <a name="back_end"></a>
 The back end of the webserver is handled in Flask and using pipes for interprocess communication
@@ -375,7 +367,6 @@ The socketio uses the app to open a socket for communication that gets pinged ev
 
 The update function takes the information from the socket, and writes to the pipe under certain conditions (used right now in testing).
 
-
 #### Pipes <a name="pipes"></a>
 We are using FIFO pipe text files for communication between the webserver and simulator. These are located in the [webserver](webserver) directory. 
 
@@ -383,114 +374,85 @@ The [webserver.out](webserver.out) pipe is used for any information recieved on 
 
 We are using the Pickle library to serialize and unserialize several different sorts of gui input (each of these object classes can be found in [gui_utils.py](src/gym_duckietown/gui_utils.py).
 
-## Troubleshooting (Has not been updated for Soid) <a name="troubleshooting"></a>
+## Troubleshooting <a name="troubleshooting"></a>
 
 If you run into problems of any kind, don't hesitate to [open an issue](https://github.com/mattelacqua/duckietown-soid/issues) on this repository. It's quite possible that you've run into some bug we aren't aware of. Please make sure to give some details about your system configuration (ie: PC or Max, operating system), and to paste the command you used to run the simulator, as well as the complete error message that was produced, if any.
 
 <details>
-  <summary> Click to open anyways. </summary>
-### ImportError: Library "GLU" not found
+  <summary> AttributeError: module 'numpy' has no attribute 'int' </summary>
 
-You may need to manually install packaged needed by Pyglet or OpenAI Gym on your system. The command you need to use will vary depending which OS you are running. For example, to install the glut package on Ubuntu:
+  This error has to do with a short naming in the numpy module. To fix this, simply open the file at 
+  
+  (PATH_TO_MINICONDA)/miniconda3/envs/duckietown/lib/python3.9/site-packages/contracts/library/array_ops.py
 
-```
-sudo apt-get install freeglut3-dev
-```
+  You will see ~ line 224 the following:
 
-And on Fedora:
+  ```
+  np_types = {
+    #'np_int': np.int,  # Platform integer (normally either int32 or int64)
+    'np_int8': np.int8,  # Byte (-128 to 127)
+    'np_int16': np.int16,  # Integer (-32768 to 32767)
+    'np_int32': np.int32,  # Integer (-2147483648 to 2147483647)
+    'np_int64': np.int64,  # Integer (9223372036854775808 to 9223372036854775807)
+    'np_uint8': np.uint8,  # Unsigned integer (0 to 255)
+    'np_uint16': np.uint16,  # Unsigned integer (0 to 65535)
+    'np_uint32': np.uint32,  # Unsigned integer (0 to 4294967295)
+    'np_uint64': np.uint64,  # Unsigned integer (0 to 18446744073709551615)
+    #'np_float': np.float,  # Shorthand for float64.
+    'np_float16': np.float16,  # Half precision float: sign bit, 5 bits exponent, 10 bits mantissa
+    'np_float32': np.float32,  # Single precision float: sign bit, 8 bits exponent, 23 bits mantissa
+    'np_float64': np.float64,  # Double precision float: sign bit, 11 bits exponent, 52 bits mantissa
+    #'np_complex': np.complex,  # Shorthand for complex128.
+    'np_complex64': np.complex64,  # Complex number, represented by two 32-bit floats (real and imaginary components)
+    'np_complex128': np.complex128}
+  
+  ```
+  As done above, comment out the lines with shorthand names (np_int, np_float, np_complex)   
 
-```
-sudo dnf install freeglut-devel
-```
+</details>
 
-### NoSuchDisplayException: Cannot connect to "None"
+<details>
+  <summary> AttributeError: dlsym(0x4ee1b4118 class_getMethodImplementation_stret): symbol not found </summary>
 
-If you are connected through SSH, or running the simulator in a Docker image, you will need to use xvfb to create a virtual display in order to run the simulator. See the "Running Headless" subsection below.
+  This is common for new M1 mac machines, as the cocoapy library is missing platforming for arm64. We simply have to add it. 
 
-### Running headless
+  Open the file at (PATH_TO_MINICONDA)/miniconda3/envs/duckietown/lib/python3.9/site-packages/pyglet/libs/darwin/cocoapy/runtime.py
 
-The simulator uses the OpenGL API to produce graphics. This requires an X11 display to be running, which can be problematic if you are trying to run training code through on SSH, or on a cluster. You can create a virtual display using [Xvfb](https://en.wikipedia.org/wiki/Xvfb). The instructions shown below illustrate this. Note, however, that these instructions are specific to MILA, look further down for instructions on an Ubuntu box:
+  Wrap the following lines in the conditional platform check:
+   
+  ~133
+  ```
+  # IMP class_getMethodImplementation_stret(Class cls, SEL name)
+  if platform.machine() != "arm64":
+    objc.class_getMethodImplementation_stret.restype = c_void_p
+    objc.class_getMethodImplementation_stret.argtypes = [c_void_p, c_void_p]
+  ```
+  ~283
+  ```
+  if platform.machine() != "arm64":
+    objc.objc_msgSendSuper_stret.restype = None
+  ```
+  ~289
+  ```
+  if platform.machine() != "arm64":
+    objc.objc_msgSend_stret.restype = None
+  ```
 
-```
-# Reserve a Debian 9 machine with 12GB ram, 2 cores and a GPU on the cluster
-sinter --reservation=res_stretch --mem=12000 -c2 --gres=gpu
+</details>
 
-# Activate the gym-duckietown Conda environment
-source activate gym-duckietown
+<details>
+  <summary> ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part. </summary>
 
-cd gym-duckietown
+  This is due to a new issue in numpy. 
 
-# Add the gym_duckietown package to your Python path
-export PYTHONPATH="${PYTHONPATH}:`pwd`"
+  To fix, go to (PATH_TO_MINICONDA)/miniconda3/envs/duckietown/lib/python3.9/site-packages/geometry/poses.py
 
-# Load the GLX library
-# This has to be done before starting Xvfb
-export LD_LIBRARY_PATH=/Tmp/glx:$LD_LIBRARY_PATH
-
-# Create a virtual display with OpenGL support
-Xvfb :$SLURM_JOB_ID -screen 0 1024x768x24 -ac +extension GLX +render -noreset &> xvfb.log &
-export DISPLAY=:$SLURM_JOB_ID
-
-# You are now ready to train
-```
-
-### Running headless and training in a cloud based environment (AWS)
-
-We recommend using the Ubuntu-based [Deep Learning AMI](https://aws.amazon.com/marketplace/pp/B077GCH38C) to provision your server which comes with all the deep learning libraries.
-
-```
-# Install xvfb
-sudo apt-get install xvfb mesa-utils -y
-
-# Remove the nvidia display drivers (this doesn't remove the CUDA drivers)
-# This is necessary as nvidia display doesn't play well with xvfb
-sudo nvidia-uninstall -y
-
-# Sanity check to make sure you still have CUDA driver and its version
-nvcc --version
-
-# Start xvfb
-Xvfb :1 -screen 0 1024x768x24 -ac +extension GLX +render -noreset &> xvfb.log &
-
-# Export your display id
-export DISPLAY=:1
-
-# Check if your display settings are valid
-glxinfo
-
-# You are now ready to train
-```
-
-### Poor performance, low frame rate
-
-It's possible to improve the performance of the simulator by disabling Pyglet error-checking code. Export this environment variable before running the simulator:
-
-```
-export PYGLET_DEBUG_GL=True
-```
-
-### RL training doesn't converge
-
-Reinforcement learning algorithms are extremely sensitive to hyperparameters. Choosing the
-wrong set of parameters could prevent convergence completely, or lead to unstable performance over
-training. You will likely want to experiment. A learning rate that is too low can lead to no
-learning happening. A learning rate that is too high can lead unstable performance throughout
-training or a suboptimal result.
-
-The reward values are currently rescaled into the [0,1] range, because the RL code in
-`pytorch_rl` doesn't do reward clipping, and deals poorly with large reward values. Also
-note that changing the reward function might mean you also have to retune your choice
-of hyperparameters.
-
-### Unknown encoder 'libx264' when using gym.wrappers.Monitor
-
-It is possible to use `gym.wrappers.Monitor` to record videos of the agent performing a task. See [examples here](https://www.programcreek.com/python/example/100947/gym.wrappers.Monitor).
-
-The libx264 error is due to a problem with the way ffmpeg is installed on some linux distributions. One possible way to circumvent this is to reinstall ffmpeg using conda:
-
-```
-conda install -c conda-forge ffmpeg
-```
-
-Alternatively, screencasting programs such as [Kazam](https://launchpad.net/kazam) can be used to record the graphical output of a single window.
+  Around line ~274 change the d=float64 -> d=object in the following function:
+  ```
+  def se2_from_linear_angular(linear: Union[T2value, List[float]], angular: float) -> SE2value:
+    """ Returns an element of se2 from linear and angular velocity. """
+    linear = np.array(linear, dtype='object')
+    M = hat_map_2d(angular)
+    return combine_pieces(M, linear, linear * 0, 0)
+  ```
 </details>

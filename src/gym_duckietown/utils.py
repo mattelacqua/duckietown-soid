@@ -48,6 +48,7 @@ def get_file_path(sub_dir, file_name, default_ext):
 # Args
 def get_args_from_config(config_name: str):
     params = configparser.ConfigParser()
+    print(config_name)
     params.read(config_name)
     class Args:
         # Logging 

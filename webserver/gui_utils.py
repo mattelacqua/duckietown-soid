@@ -369,7 +369,7 @@ def read_init(fifo, log=False):
 
 # Kill old webserver if it exists, otherwise start new subprocess.
 def start_webserver():
-    cmd = ['pgrep -f .*python3.*webserver/server.py']
+    cmd = ['pgrep -f .*python.*webserver/server.py']
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
     stderr=subprocess.PIPE)
     my_pid, err = process.communicate()
@@ -380,7 +380,7 @@ def start_webserver():
     else:
       print("Old webserver not Running, Starting up new")
 
-    webserver = subprocess.Popen(["python3","webserver/server.py"])
+    webserver = subprocess.Popen(["python","webserver/server.py"])
     return webserver
 
 # Get html color
