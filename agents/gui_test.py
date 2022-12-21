@@ -4,25 +4,17 @@
 """
 This script uses the ite_move library to make a right turn through an intersection
 """
-from PIL import Image
-import sys
 import time
+import sys
 
 import gym
-import numpy as np
 import pyglet
 from pyglet.window import key, mouse
 
 from gym_duckietown.envs import DuckietownEnv
 
-# Includes all important moving functions for if then else agents
-import gym_duckietown.agents
-
 # Web gui stuff
 import os
-import signal
-import subprocess
-import multiprocessing
 
 # Logging
 from gym_duckietown import logger 
@@ -36,7 +28,7 @@ import gym_duckietown.event_wrappers as event
 import socketio
 
 # Parse args
-args = utils.get_args_from_command_line()
+args = utils.get_args_from_config(sys.argv[1])
 
 # Build Env
 if args.env_name and args.env_name.find("Duckietown") != -1:
@@ -45,7 +37,6 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
         map_name=args.map_name,
         cam_mode=args.cam_mode,
         safety_factor=args.safety_factor,
-        num_agents=args.num_agents,
         draw_curve=args.draw_curve,
         draw_bbox=args.draw_bbox,
         domain_rand=args.domain_rand,
@@ -127,7 +118,6 @@ while True:
 def pause(dt):
     global inp
     env.state = "pause"
-    #print(f"In Pause Environment state is {env.state}")
 
     # Feed agent information to webserver
     gu.init_server(0, out, env, socket)
