@@ -127,10 +127,18 @@ You can install all the dependencies, including PyTorch, using [Conda](https://d
 
 ```
 git clone git@github.com:mattelacqua/duckietown-soid.git
-cd duckietown-soid
-conda env create -f environment.yaml
+```
 
 ```
+cd duckietown-soid
+```
+
+```
+conda env create -f environment.yaml
+```
+
+
+
 
 Please note that if you use Conda to install this package instead of pip, you will need to activate your Conda environment and add the package to your Python path before you can use it
 by running the following commands (you may have to reshell first for conda to work):
@@ -144,11 +152,29 @@ cd ..
 conda develop .
 ```
 
+Check to see that it is sourcing the pip and python from the conda environment:
+
+```
+which python
+```
+```
+which pip
+```
+
+You may have some issues with it not sourcing the correct pip version. If this occurs, do the following:
+
+```
+conda activate
+```
+```
+conda install pip
+```
+
 Finally, once in the conda environment for duckietown, run pip install using the setup.py (run the following command).
 *** Make sure that you install in the conda env. Might run into issues if using your machine env.
 
 ```
-pip3 install -e .
+pip install -e .
 ```
 
 ## Usage <a name="usage"></a>
