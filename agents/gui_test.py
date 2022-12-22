@@ -186,6 +186,7 @@ def update(dt):
 
         # Render agent's next move
         if agent.actions:
+            agent.proceed(env,good_agent=True)
             agent.render_step(env, agent.get_next_action())
 
     # Log the info

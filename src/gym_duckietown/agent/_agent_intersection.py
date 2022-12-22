@@ -33,7 +33,7 @@ def handle_intersection(self, env, speed_limit=1.0,  stop_point=30, learning=Fal
     action = Action(intersection_action.action)
 
     # Stop before entering intersection
-    action_seq.extend(self.stop_vehicle(env, signal_choice))
+    action_seq.extend(self.stop_vehicle(env))
 
     # If we are not stopping, get our move forward direction
     if action != Action.STOP and action != Action.INTERSECTION_STOP:

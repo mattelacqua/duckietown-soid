@@ -106,7 +106,8 @@ bool has_right_of_way(  bool in_intersection,
                     bool w_agents){
     // If already in then we must finish
     bool already_in = false;
-    if(in_intersection && !at_intersection_entry){
+    //if(in_intersection && !at_intersection_entry){
+    if(in_intersection){
         already_in = true;
     }
     bool other_car_in = false;

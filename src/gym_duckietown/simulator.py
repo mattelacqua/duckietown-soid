@@ -679,7 +679,7 @@ class Simulator(gym.Env):
         colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
         for agent in self.agents: 
             # If random spawn
-            if agent.random_spawn:
+            if agent.random_spawn and not webserver_reset:
                 self.spawn_random_agent(agent, directions, colors)
             # If the map specifies a starting tile
             elif agent.start_tile and not agent.random_spawn:
@@ -689,11 +689,11 @@ class Simulator(gym.Env):
                 if not self.drivable_tiles:
                     msg = "There are no drivable tiles. Use start_tile or agent.start_tile"
                     raise Exception(msg)
-                tile_idx = self.np_random.randint(0, len(self.drivable_tiles))
+                tile_idx = self.np_random.integers(0, len(self.drivable_tiles))
                 tile = self.drivable_tiles[tile_idx]
 
-            # If setting from the webserver, use that information
-            if webserver_reset and not agent.random_spawn:
+            # If setting from the webserver, use that information for propose angle and position
+            if webserver_reset:
                 propose_pos = agent.cur_pos 
                 propose_angle = agent.cur_angle
 
@@ -762,7 +762,8 @@ class Simulator(gym.Env):
 
                     # raise Exception(msg)
 
-            if not agent.random_spawn:
+            ### ABOVE ONLY GETS PROPOSE POS AND ANGLE. NEED TO DO THE REST HERE
+            if (not agent.random_spawn) or webserver_reset:
                 agent.cur_pos = propose_pos
                 agent.prev_pos = propose_pos
                 agent.cur_angle = propose_angle
@@ -1386,7 +1387,7 @@ class Simulator(gym.Env):
 
     # Find the closest curve point
     def closest_curve_point(
-        self, pos: np.array, angle: float, index=None) -> Tuple[Optional[np.array], Optional[np.array]]:
+        self, pos: np.array, angle: float, index=None, intersection=False) -> Tuple[Optional[np.array], Optional[np.array]]:
         """
         Get the closest point on the curve to a given point
         Also returns the tangent at that point.
@@ -1401,10 +1402,12 @@ class Simulator(gym.Env):
             return None, None
 
         # Find curve with largest dotproduct with heading
-        if index != None:
+        if intersection:
             curves = self._get_tile(2, 2)["curves"]
+            #print('INTER')
         else:
             curves = self._get_tile(i, j)["curves"]
+            #print('REGULAR')
 
         curve_headings = curves[:, -1, :] - curves[:, 0, :]
         curve_headings = curve_headings / np.linalg.norm(curve_headings).reshape(1, -1)
@@ -1424,7 +1427,7 @@ class Simulator(gym.Env):
 
         return point, tangent
 
-    def get_lane_pos2(self, pos, angle, index=None):
+    def get_lane_pos2(self, pos, angle, index=None, intersection=False):
         """
         Get the position of the agent relative to the center of the right lane
 
@@ -1433,7 +1436,7 @@ class Simulator(gym.Env):
 
         # Get the closest point along the right lane's Bezier curve,
         # and the tangent at that point
-        point, tangent = self.closest_curve_point(pos, angle, index=index)
+        point, tangent = self.closest_curve_point(pos, angle, index=index, intersection=intersection)
         if point is None or tangent is None:
             msg = f"Point not in lane: {pos}"
             raise NotInLane(msg)
@@ -2336,7 +2339,6 @@ class Simulator(gym.Env):
         """
 
         action = DynamicsInfo(motor_left=action[0], motor_right=action[1])
-        print(action)
         agent.state = agent.state.integrate(self.delta_time, action)
         q = agent.state.TSE2_from_state()[0]
         pos, angle = self.weird_from_cartesian(q)
@@ -2366,7 +2368,7 @@ class Simulator(gym.Env):
 
             agent.color = color
             agent.mesh = get_duckiebot_mesh(agent.color)
-            agent.forward_step = round(self.np_random.uniform(0.5, 0.9), 2)
+            agent.forward_step = round(self.np_random.uniform(0.35, 0.6), 2)
 
             # Choose a random position on this tile
             if direction == 'N':

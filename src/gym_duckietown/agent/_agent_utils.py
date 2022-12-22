@@ -53,7 +53,7 @@ def get_direction(self, env):
     else:
         return 'E'
 
-def get_curve(self, env):
+def get_curve(self, env, straight=False):
     """ South:
     Left [0]
     Straight [1]
@@ -74,6 +74,31 @@ def get_curve(self, env):
     Straight [10]
     Right [11]
     """
+    if not self.get_curr_tile(env):
+        return None
+    if straight and self.get_curr_tile(env)['kind'] != '4way':
+        if self.get_direction(env) == 'N':
+            if self.get_curr_tile(env)['angle'] == 0:
+                return 1
+            elif self.get_curr_tile(env)['angle'] == 2:
+                return 0
+        elif self.get_direction(env) == 'S':
+            if self.get_curr_tile(env)['angle'] == 0:
+                return 0
+            elif self.get_curr_tile(env)['angle'] == 2:
+                return 1
+        elif self.get_direction(env) == 'W':
+            if self.get_curr_tile(env)['angle'] == 1:
+                return 1
+            elif self.get_curr_tile(env)['angle'] == 3:
+                return 0
+        elif self.get_direction(env) == 'E':
+            if self.get_curr_tile(env)['angle'] == 1:
+                return 0
+            elif self.get_curr_tile(env)['angle'] == 3:
+                return 1
+        print("HERE2")
+        return None
     if self.get_direction(env) == 'S':
         if self.turn_choice == 'Left':
             return 0

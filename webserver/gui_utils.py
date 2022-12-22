@@ -3,13 +3,10 @@ from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Un
 import numpy as np
 import math
 import pickle
-import json
-import io
 import subprocess
 import os
 import signal
 import time
-import socketio
 
 # Send information through guiEnv
 class guiEnv():
@@ -194,6 +191,7 @@ class guiLog():
                     agent.cur_angle = log_agent.log_angle
                     agent.color = log_agent.log_color
                     agent.turn_choice = log_agent.turn_choice
+                    agent.curve = agent.get_curve(env)
                     agent.signal_choice = log_agent.signal_choice
                     agent.forward_step = log_agent.forward_step
                     agent.bbox_offset_w = log_agent.bbox_offset_w

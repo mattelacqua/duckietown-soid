@@ -40,7 +40,6 @@ def train(args):
             map_name=args.map_name,
             cam_mode=args.cam_mode,
             safety_factor=args.safety_factor,
-            num_agents=args.num_agents,
             draw_curve=args.draw_curve,
             draw_bbox=args.draw_bbox,
             domain_rand=args.domain_rand,
@@ -98,13 +97,13 @@ def train(args):
                 action = np.argmax(q_table[state]) # Exploit learned values
 
             # Step each agent after choosing an action
-            print(f"Step = {env.agents[0].step_count}")
+            #print(f"Step = {env.agents[0].step_count}")
             #time.sleep(0.05)
             for agent in env.agents:
                 # If not in the middle of an action, get one
                 if not agent.actions:
                     if agent.intersection_detected(env):
-                        print(f"{agent.agent_id} {agent.color} {agent.get_direction(env)} has detecting intersection.")
+                        #print(f"{agent.agent_id} {agent.color} {agent.get_direction(env)} has detecting intersection.")
                         agent.add_actions(agent.handle_intersection(env))
                     else: 
                         agent.add_actions(agent.move_forward(env))
@@ -122,7 +121,7 @@ def train(args):
                     break
             
             epochs += 1
-            env.render(mode=args.cam_mode)
+            #env.render(mode=args.cam_mode)
             
 def write_model(directory, reward_profile, episode_batch, model):
         
@@ -157,24 +156,14 @@ def write_model(directory, reward_profile, episode_batch, model):
 
 # Main - Get arguments and train using Q learning
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    # Parse arguments
+    if len(sys.argv) >= 2:
+        config_name = sys.argv[1]
+    else: 
+        print("Give a configuration name as an argument")
+        exit()
 
-    # Environment parse
-    env_args = utils.get_args_from_command_line(parser)
-
-    # Q learning Args
-    parser.add_argument("--eval_freq", default=5e3, type=float)  # How often (time steps) we evaluate
-    parser.add_argument("--max_timesteps", default=1e6, type=float)  # Max time steps to run environment for
-    parser.add_argument("--save_models", action="store_true", default=True)  # Whether or not models are saved
-    parser.add_argument("--alpha", default=0.1, type=float)  # Alpha learning rate 
-    parser.add_argument("--gamma", default=0.6, type=float)  # Gamma preference to short term reward
-    parser.add_argument("--epsilon", default=0.35, type=float)  # Epsilon for egreedy q learning 
-    parser.add_argument("--discount", default=0.99, type=float)  # Discount factor
-    parser.add_argument("--num-episodes", default=100001, type=int)  # Nummber of episodes
-    parser.add_argument("--reward-profile", default=2, type=int)  # Rewards (0 = pathological, 1= impatient, 2= defensive)
-    parser.add_argument("--model-dir", type=str, default="learning/reinforcement/q-learning/models/")
-
-    args = parser.parse_args()
+    args = utils.get_args_from_config(config_name)
 
     # Train 
     train(args)
