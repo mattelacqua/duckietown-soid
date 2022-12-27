@@ -540,6 +540,11 @@ class Simulator(gym.Env):
         # Step count since episode start
         self.timestamp = 0.0
 
+        # Get the random number of agents from 
+        self.agents = []
+        random_agents = self.np_random.integers(0, self.num_random_agents)
+        self._load_agents(self.map_data, random_agents=random_agents)
+
         # Reset each agent
         for agent in self.agents:
             agent.speed = 0.0
@@ -903,7 +908,7 @@ class Simulator(gym.Env):
             raise InvalidMapException(msg, map_data=map_data)
 
     # Load each of the agents from the map
-    def _load_agents(self, map_data: MapFormat1):
+    def _load_agents(self, map_data: MapFormat1, random_agents: int = None):
         agents = []
         try:
             agents = map_data["agents"]
@@ -932,7 +937,10 @@ class Simulator(gym.Env):
            
         # If we have none, init all as good random ones
         if not self.agents:
-            for x in range(0, self.num_random_agents):
+            num_random = self.num_random_agents
+            if random_agents:
+                num_random = random_agents
+            for x in range(0, num_random):
                 new_agent = Agent(cur_pos=[0, 0, 0], cur_angle=0, agent_id=("agent" + str(x)), random_spawn=True)
                 self.agents.append(new_agent)
 
@@ -2311,7 +2319,7 @@ class Simulator(gym.Env):
                 stat.draw()  
                 #9 
                 stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 13)
-                stat.text = (f"car_behind_us_no_range: {self.agents[0].learning_state[9]}")
+                stat.text = (f"is_tailgating: {self.agents[0].learning_state[9]}")
                 stat.draw()  
 
             else:

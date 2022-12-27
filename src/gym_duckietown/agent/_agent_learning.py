@@ -1,5 +1,5 @@
 import numpy as np
-
+from ..dl_utils import *
 #--------------------------
 # Learning:
 # State translations
@@ -48,7 +48,7 @@ def get_learning_state(self, env):
     cars_waiting_to_enter = self.states['cars_waiting_to_enter']
     car_entering_range = self.states['car_entering_range']
     obj_behind_intersection = self.states['obj_behind_intersection']
-    obj_behind_no_intersection = self.states['obj_behind_no_intersection']
+    is_tailgating = self.states['is_tailgating']
 
     if in_intersection:
         model_row += 512              
@@ -113,7 +113,7 @@ def get_learning_state(self, env):
         state.append(False)
 
     #9
-    if obj_behind_no_intersection:
+    if is_tailgating:
         model_row += 1
         state.append(True)
     else:
@@ -176,34 +176,35 @@ def get_reward(self, env, done_code):
     # Defensive Agent
     elif self.reward_profile == 2:
         if done_code == "in-progress":
-            # Reward some points for moving
-            if list(self.prev_pos) != list(self.cur_pos):
-                # If the move was Safe (move with right of way)
-                #if (self.states['has_right_of_way']):
-                #    reward += 1 
-
-                # If they are tailgating deduct
-                if (self.states['is_tailgating']):
-                    #print("Tailgating")
-                    reward -= 5
-                    bad_actions += 1
-
-                # If agent does not hhve right of way
-                if (not self.states['has_right_of_way']):
-                    #print("Moving without ROW")
-                    reward -= 5
-                    bad_actions += 1
-
-            # If they are equal, remove points for sitting still if ROW
-            elif list(self.prev_pos) == list(self.cur_pos):
-                # If the move was Safe (move with right of way)
+            # If we chose to stop
+            if self.last_action == Action.STOP or self.last_action == Action.INTERSECTION_STOP:
+                # Punish stop with right of way
                 if (self.states['has_right_of_way']):
                     #print("Stopped with ROW")
-                    reward -= 5
+                    reward -= 10
                     bad_actions += 1
-                #if (not self.states['has_right_of_way']):
-                #    reward += 1 
-        
+
+                # Reward move with ROW
+                if (not self.states['has_right_of_way']):
+                    reward += 10
+
+            else: # If we chose to move
+                # Reward moving with ROW move with right of way)
+                if (self.states['has_right_of_way']):
+                    reward += 10
+
+                # punish tailgatying
+                if (self.states['is_tailgating']):
+                    #print("Tailgating")
+                    reward -= 10
+                    bad_actions += 1
+
+                # punish move without ROW
+                if (not self.states['has_right_of_way']):
+                    #print("Moving without ROW")
+                    reward -= 10
+                    bad_actions += 1
+
         # Add the tile it is currently on to the set. If it reaches a new tile, reward more.
         prev_tile_count = len(self.tiles_visited)
         if self.get_curr_tile(env):
@@ -220,7 +221,7 @@ def get_reward(self, env, done_code):
         if done_code == "max-steps-reached": # Bad for sitting still the whole time.
             #print("Max steps reached")
             #print("Max Steps")
-            reward -= 2000  # Huge negative for sitting still
+            reward -= 10000  # Huge negative for sitting still
             
         if done_code == "collision": # If it caused crash deduct a ton
             #print("Collision")
