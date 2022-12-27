@@ -80,8 +80,8 @@ def train(args):
     print("Beginning Training.")
     for i in range(1, args.num_episodes):
         epsilon = args.epsilon * (1 - (i / args.num_episodes)) 
-        if epsilon < 0.1:
-            epsilon = 0.1
+        if epsilon < 0.05:
+            epsilon = 0.05
         gamma = gamma
 
         # Reset the state
@@ -102,6 +102,7 @@ def train(args):
 
         # Learn until episode over
         reward_sum = 0
+        bad_actions_sum = 0
         while not done:
 
             # Get initial State (Will be the row of the model)
@@ -130,7 +131,9 @@ def train(args):
                     if not agent.actions:
                         agent.add_actions(agent.move_forward(env))
                     next_state, reward, done, info = env.step(agent.get_next_action(), agent, learning=True)
+                    reward, bad_actions = reward
                     reward_sum += reward
+                    bad_actions_sum += bad_actions
                     if done:
                         break
                 else: # For everyone else just step
@@ -173,6 +176,7 @@ def train(args):
         stats['Forward_Step'] = env.agents[0].forward_step
         stats['Total_Steps'] = env.agents[0].step_count
         stats['Reward'] = reward_sum
+        stats['Bad_Actions'] = bad_actions_sum
         stats['Alpha'] = alpha
         stats['Epsilon'] = epsilon
         stats['Avg_rps'] = reward_sum/epochs
@@ -229,7 +233,7 @@ if __name__ == "__main__":
 
     # Parse arguments
     if len(sys.argv) >= 2:
-        config_name = "configs/" + sys.argv[1]
+        config_name = sys.argv[1]
     else: 
         print("Give a configuration name as an argument")
         exit()

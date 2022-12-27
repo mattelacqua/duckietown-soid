@@ -72,10 +72,7 @@ def straighten_out(self, env, intersection=False):
         return actions.append(([forward_step, 0], Action.STOP))
 
     # Find the curve point closest to the agent (this will change if we are at an intersection), and the tangent at that point
-    if self.states['at_intersection_entry'] or self.states['in_intersection']:
-        closest_point, closest_tangent = env.closest_curve_point(self.cur_pos, self.cur_angle, index=self.curve, intersection=True)
-    else:
-        closest_point, closest_tangent = env.closest_curve_point(self.cur_pos, self.cur_angle, index=self.get_curve(env, straight=True))
+    closest_point, closest_tangent = env.closest_curve_point(self.cur_pos, self.cur_angle, index=self.get_curve(env))
     if closest_point is None or closest_tangent is None:
         msg = f"Cannot find closest point/tangent from {self.cur_pos}, {self.cur_angle} "
         actions.append(([forward_step, 0], Action.FORWARD_STEP))
@@ -89,10 +86,7 @@ def straighten_out(self, env, intersection=False):
         # Project a point ahead along the curve tangent,
         # then find the closest point to to that
         follow_point = closest_point + closest_tangent * lookup_distance
-        if self.states['at_intersection_entry'] or self.states['in_intersection']:
-            curve_point, curve_tangent = env.closest_curve_point(follow_point, self.cur_angle, index=self.curve, intersection=True)
-        else:
-            curve_point, curve_tangent = env.closest_curve_point(follow_point, self.cur_angle, index=self.get_curve(env, straight=True))
+        curve_point, curve_tangent = env.closest_curve_point(follow_point, self.cur_angle, index=self.get_curve(env, follow_pos=list(follow_point)))
         # If we have a valid point on the curve, stop
         if curve_point is not None:
             break
@@ -101,10 +95,7 @@ def straighten_out(self, env, intersection=False):
         lookup_distance *= 0.5
 
     # Get lane position information to calculate error
-    if self.states['at_intersection_entry'] or self.states['in_intersection']:
-        lane_pos = env.get_lane_pos2(self.cur_pos, self.cur_angle, index=self.curve, intersection=True)
-    else:
-        lane_pos = env.get_lane_pos2(self.cur_pos, self.cur_angle, index=self.get_curve(env, straight=True))
+    lane_pos = env.get_lane_pos2(self.cur_pos, self.cur_angle, index=self.get_curve(env), curve_point=list(closest_point), curve_tangent=list(closest_tangent))
     
     # Get forward step
     cross_track_gain = 15.0
@@ -114,7 +105,7 @@ def straighten_out(self, env, intersection=False):
     # Steering adjustments
     if self.states['in_intersection'] or self.states['at_intersection_entry']:
         if self.turn_choice == 'Right':
-            forward_step *= 0.7
+            forward_step *= 0.6
             cross_track_gain *= 1.2
             direction_gain *= 1.2
             speed_gain *= 0.5

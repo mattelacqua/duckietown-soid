@@ -121,7 +121,7 @@ def train(args):
                     break
             
             epochs += 1
-            #env.render(mode=args.cam_mode)
+            env.render(mode=args.cam_mode)
             
 def write_model(directory, reward_profile, episode_batch, model):
         

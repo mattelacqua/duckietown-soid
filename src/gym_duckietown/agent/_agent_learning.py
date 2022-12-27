@@ -125,6 +125,7 @@ def get_learning_state(self, env):
 # Reward profile for q learning
 def get_reward(self, env, done_code):
     reward = 0
+    bad_actions = 0
 
     # Pathological
     if self.reward_profile == 0:
@@ -178,28 +179,39 @@ def get_reward(self, env, done_code):
             # Reward some points for moving
             if list(self.prev_pos) != list(self.cur_pos):
                 # If the move was Safe (move with right of way)
-                if (self.states['has_right_of_way']):
-                    reward += 1 
+                #if (self.states['has_right_of_way']):
+                #    reward += 1 
 
                 # If they are tailgating deduct
                 if (self.states['is_tailgating']):
                     #print("Tailgating")
-                    reward -= 5 
+                    reward -= 5
+                    bad_actions += 1
 
                 # If agent does not hhve right of way
                 if (not self.states['has_right_of_way']):
                     #print("Moving without ROW")
-                    reward -= 5 
+                    reward -= 5
+                    bad_actions += 1
 
             # If they are equal, remove points for sitting still if ROW
             elif list(self.prev_pos) == list(self.cur_pos):
                 # If the move was Safe (move with right of way)
                 if (self.states['has_right_of_way']):
                     #print("Stopped with ROW")
-                    reward -= 5 
-                if (not self.states['has_right_of_way']):
-                    #print("Stopped with ROW")
-                    reward += 1 
+                    reward -= 5
+                    bad_actions += 1
+                #if (not self.states['has_right_of_way']):
+                #    reward += 1 
+        
+        # Add the tile it is currently on to the set. If it reaches a new tile, reward more.
+        prev_tile_count = len(self.tiles_visited)
+        if self.get_curr_tile(env):
+            self.tiles_visited.add(self.get_curr_tile(env)['coords'])
+        curr_tile_count = len(self.tiles_visited)
+        if curr_tile_count > prev_tile_count:
+            #print("Reached new tile")
+            reward += 100 # Semi large reward for reaching a new tile safely. 
 
         if done_code == "offroad": # If it went offroad
             print("Offroad")
@@ -219,4 +231,4 @@ def get_reward(self, env, done_code):
             #reward += (env.max_steps - self.step_count)  # Reward based on how fast we finish
             reward += 1000
 
-    return reward
+    return reward, bad_actions

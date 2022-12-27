@@ -313,8 +313,7 @@ def is_tailgating(self, env):
             prev_distance = env.pos_distance(self.prev_pos, agent.prev_pos)
             curr_distance = env.pos_distance(self.cur_pos, agent.cur_pos)
             if  agent_direction == self.direction and \
-                prev_distance > curr_distance and \
-                curr_distance < env.robot_length*3 and \
+                curr_distance < env.robot_length * 2 and \
                 self.is_behind(env, agent):
 
                 return True

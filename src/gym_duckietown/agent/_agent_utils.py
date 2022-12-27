@@ -53,7 +53,7 @@ def get_direction(self, env):
     else:
         return 'E'
 
-def get_curve(self, env, straight=False):
+def get_curve(self, env, straight=False, follow_pos=None):
     """ South:
     Left [0]
     Straight [1]
@@ -76,57 +76,104 @@ def get_curve(self, env, straight=False):
     """
     if not self.get_curr_tile(env):
         return None
-    if straight and self.get_curr_tile(env)['kind'] != '4way':
-        if self.get_direction(env) == 'N':
-            if self.get_curr_tile(env)['angle'] == 0:
+
+    tile = self.get_curr_tile(env)
+    direction = self.get_direction(env)
+    follow_tile = None
+
+    if follow_pos:
+        tile_x, tile_z = list(env.get_grid_coords(follow_pos))
+        follow_tile = env._get_tile(tile_x, tile_z)
+        if not follow_tile:
+            return None
+        if tile['kind'] == '4way' and follow_tile['kind'] != ['4way']:
+            if self.start_direction == 'N' and self.turn_choice == 'Left':
+                direction = 'W'
+            elif self.start_direction == 'N' and self.turn_choice == 'Right':
+                direction = 'E'
+            elif self.start_direction == 'S' and self.turn_choice == 'Left':
+                direction = 'E'
+            elif self.start_direction == 'S' and self.turn_choice == 'Right':
+                direction = 'W'
+            elif self.start_direction == 'E' and self.turn_choice == 'Left':
+                direction = 'N'
+            elif self.start_direction == 'E' and self.turn_choice == 'Right':
+                direction = 'S'
+            elif self.start_direction == 'W' and self.turn_choice == 'Left':
+                direction = 'S'
+            elif self.start_direction == 'W' and self.turn_choice == 'Right':
+                direction = 'N'
+            straight=True
+        if tile['kind'] != '4way' and follow_tile['kind'] == ['4way']:
+            direction = self.start_direction
+            straight=False
+        if tile['kind'] == '4way' and follow_tile['kind'] == ['4way']:
+            direction = self.start_direction
+            straight=False
+        if tile['kind'] != '4way' and follow_tile['kind'] != ['4way']:
+            straight=True
+        tile = follow_tile
+
+    else:
+        if tile['kind'] != '4way':
+            straight=True
+        elif tile['kind'] == '4way':
+            straight=False
+            direction=self.start_direction
+
+        
+    if straight:
+        if direction == 'N':
+            if tile['angle'] == 0:
                 return 1
-            elif self.get_curr_tile(env)['angle'] == 2:
+            elif tile['angle'] == 2:
                 return 0
-        elif self.get_direction(env) == 'S':
-            if self.get_curr_tile(env)['angle'] == 0:
+        elif direction == 'S':
+            if tile['angle'] == 0:
                 return 0
-            elif self.get_curr_tile(env)['angle'] == 2:
+            elif tile['angle'] == 2:
                 return 1
-        elif self.get_direction(env) == 'W':
-            if self.get_curr_tile(env)['angle'] == 1:
+        elif direction == 'W':
+            if tile['angle'] == 1:
                 return 1
-            elif self.get_curr_tile(env)['angle'] == 3:
+            elif tile['angle'] == 3:
                 return 0
-        elif self.get_direction(env) == 'E':
-            if self.get_curr_tile(env)['angle'] == 1:
+        elif direction == 'E':
+            if tile['angle'] == 1:
                 return 0
-            elif self.get_curr_tile(env)['angle'] == 3:
+            elif tile['angle'] == 3:
                 return 1
-        print("HERE2")
+        
         return None
-    if self.get_direction(env) == 'S':
+    if direction == 'S':
         if self.turn_choice == 'Left':
             return 0
         if self.turn_choice == 'Straight':
             return 1
         if self.turn_choice == 'Right':
             return 2
-    elif self.get_direction(env) == 'E':
+    elif direction == 'E':
         if self.turn_choice == 'Left':
             return 3
         if self.turn_choice == 'Straight':
             return 4
         if self.turn_choice == 'Right':
             return 5
-    elif self.get_direction(env) == 'N':
+    elif direction == 'N':
         if self.turn_choice == 'Left':
             return 6
         if self.turn_choice == 'Straight':
             return 7
         if self.turn_choice == 'Right':
             return 8
-    elif self.get_direction(env) == 'W':
+    elif direction == 'W':
         if self.turn_choice == 'Left':
             return 9
         if self.turn_choice == 'Straight':
             return 10
         if self.turn_choice == 'Right':
             return 11
+    
 
 # Get current angle degrees
 def get_curr_angle(self, env):

@@ -1387,7 +1387,7 @@ class Simulator(gym.Env):
 
     # Find the closest curve point
     def closest_curve_point(
-        self, pos: np.array, angle: float, index=None, intersection=False) -> Tuple[Optional[np.array], Optional[np.array]]:
+        self, pos: np.array, angle: float, index=None) -> Tuple[Optional[np.array], Optional[np.array]]:
         """
         Get the closest point on the curve to a given point
         Also returns the tangent at that point.
@@ -1402,12 +1402,7 @@ class Simulator(gym.Env):
             return None, None
 
         # Find curve with largest dotproduct with heading
-        if intersection:
-            curves = self._get_tile(2, 2)["curves"]
-            #print('INTER')
-        else:
-            curves = self._get_tile(i, j)["curves"]
-            #print('REGULAR')
+        curves = self._get_tile(i, j)["curves"]
 
         curve_headings = curves[:, -1, :] - curves[:, 0, :]
         curve_headings = curve_headings / np.linalg.norm(curve_headings).reshape(1, -1)
@@ -1427,7 +1422,7 @@ class Simulator(gym.Env):
 
         return point, tangent
 
-    def get_lane_pos2(self, pos, angle, index=None, intersection=False):
+    def get_lane_pos2(self, pos, angle, index=None, curve_point=None, curve_tangent=None):
         """
         Get the position of the agent relative to the center of the right lane
 
@@ -1436,7 +1431,11 @@ class Simulator(gym.Env):
 
         # Get the closest point along the right lane's Bezier curve,
         # and the tangent at that point
-        point, tangent = self.closest_curve_point(pos, angle, index=index, intersection=intersection)
+        if curve_point and curve_tangent:
+            point = np.array(curve_point)
+            tangent = np.array(curve_tangent)
+        else:
+            point, tangent = self.closest_curve_point(pos, angle, index=index)
         if point is None or tangent is None:
             msg = f"Point not in lane: {pos}"
             raise NotInLane(msg)
@@ -2065,7 +2064,7 @@ class Simulator(gym.Env):
                     pts = curves[1]
                 else:
                     pts = curves[np.argmax(dot_prods)]
-                bezier_draw(pts, n=20, red=True)
+                bezier_draw(pts, n=20)
 
                 pts = self._get_curve(i, j)
                 for idx, pt in enumerate(pts):
@@ -2425,11 +2424,14 @@ class Simulator(gym.Env):
         agent.cur_pos = propose_pos
         agent.prev_pos = propose_pos
         agent.cur_angle = propose_angle
+        agent.curve = agent.get_curve(self)
+        agent.start_direction = agent.get_direction(self)
         agent.actions = []
         agent.intersection_arrival = None
         agent.nearby_objects = []
         agent.nearby_agents = []
         agent.last_action = None
+        agent.tiles_visited = set()
         agent.wheelVels = np.array([0.0, 0.0]) 
 
         # Initialize Dynamics model

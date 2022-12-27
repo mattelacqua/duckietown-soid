@@ -42,6 +42,7 @@ class Agent():
     states: dict
     direction: str
     start_angle: float
+    start_direction: str
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -70,6 +71,7 @@ class Agent():
         self.prev_pos = cur_pos
         self.cur_angle = cur_angle
         self.direction ='' 
+        self.start_direction ='' 
         
         # State
         self.state = None
@@ -106,6 +108,7 @@ class Agent():
         # Learning
         self.reward_profile = None
         self.learning_state = [0,0,0,0,0,0,0,0,0,0]
+        self.tiles_visited = set()
 
 
     # Import things for learning
