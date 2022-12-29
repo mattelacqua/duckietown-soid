@@ -76,6 +76,7 @@ def get_args_from_config(config_name: str):
         # Training Settings
         save_models: bool
         model_dir: str
+        test_model_path: str
         alpha: float
         learning_rate_decay: float
         gamma: float
@@ -113,6 +114,7 @@ def get_args_from_config(config_name: str):
             # Learning
             self.save_models=params.getboolean('LEARNING', 'SAVE_MODELS')
             self.model_dir=str(params.get('LEARNING', 'MODEL_DIR'))
+            self.test_model_path=str(params.get('LEARNING', 'TEST_MODEL_PATH'))
             self.alpha=params.getfloat('LEARNING', 'ALPHA')
             self.learning_rate_decay=params.getfloat('LEARNING', 'LEARNING_RATE_DECAY')
             self.gamma=params.getfloat('LEARNING', 'GAMMA')

@@ -563,6 +563,7 @@ class Simulator(gym.Env):
             agent.lights["back_right"][3] = False
             agent.lights["center"][3] = False
             agent.direction = agent.get_direction(self)
+            agent.patience = 0
                     
         self.get_agents_states()
 
@@ -2376,6 +2377,7 @@ class Simulator(gym.Env):
             agent.color = color
             agent.mesh = get_duckiebot_mesh(agent.color)
             agent.forward_step = round(self.np_random.uniform(0.35, 0.6), 2)
+            agent.patience = 0
 
             # Choose a random position on this tile
             if direction == 'N':

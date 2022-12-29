@@ -20,8 +20,20 @@ def proceed(self, env, good_agent=False, use_model=False, model=None, state=None
             #print(f"{self.agent_id} {self.color} {self.get_direction(env)} is forced to stop for tailgating")
             return 
         
+        if self.states['has_right_of_way']:
+            self.handle_proceed(True)
+
         if not self.states['has_right_of_way']:
-            self.handle_proceed(False)
+            # If we don't have right of way, are next to go, and nobody is going increment our patience.
+            if self.next_to_go(env) and self.states['intersection_empty']:
+                self.patience += 1
+            if self.next_to_go(env) and not self.states['intersection_empty']:
+                self.patience = 0
+
+            if self.next_to_go(env) and self.patience > 50:
+                self.handle_proceed(True)
+            else:
+                self.handle_proceed(False)
             #print(f"{self.agent_id} {self.color} {self.get_direction(env)} is forced to stop no right of way")
             return 
 
@@ -55,6 +67,94 @@ def handle_proceed(self, should_proceed):
                 no_stop_actions.append(action)
 
         self.actions = no_stop_actions
+
+# Check if we are next in line to go in ROW
+def next_to_go(self, env):
+    ROW_agent = None
+    n_agents = []
+    s_agents = []
+    e_agents = []
+    w_agents = []
+    if self.states['at_intersection_entry']:
+        for agent in env.agents:
+            if agent != self:
+                if agent.has_right_of_way(env):
+                    ROW_agent = agent
+                if agent.states['at_intersection_entry']:
+                    if agent.direction == 'N':
+                        n_agents.append(agent)
+                    elif agent.direction == 'S':
+                        s_agents.append(agent)
+                    elif agent.direction == 'E':
+                        e_agents.append(agent)
+                    elif agent.direction == 'W':
+                        w_agents.append(agent)
+        if ROW_agent:
+            if ROW_agent.direction == 'N':
+                if self.states['at_intersection_entry'] and self.direction == 'E':
+                    return True
+                elif self.states['at_intersection_entry'] and self.direction == 'S':
+                    if not e_agents:
+                        return True
+                    else:
+                        return False
+                elif self.states['at_intersection_entry'] and self.direction == 'W':
+                    if not e_agents and not s_agents:
+                        return True
+                    else:
+                        return False
+                elif self.direction == 'N':
+                    return False
+
+            elif ROW_agent.direction == 'E':
+                if self.states['at_intersection_entry'] and self.direction == 'S':
+                    return True
+                elif self.states['at_intersection_entry'] and self.direction == 'W':
+                    if not s_agents:
+                        return True
+                    else:
+                        return False
+                elif self.states['at_intersection_entry'] and self.direction == 'N':
+                    if not s_agents and not w_agents:
+                        return True
+                    else:
+                        return False
+                elif self.direction == 'E':
+                    return False
+
+            elif ROW_agent.direction == 'S':
+                if self.states['at_intersection_entry'] and self.direction == 'W':
+                    return True
+                elif self.states['at_intersection_entry'] and self.direction == 'N':
+                    if not w_agents:
+                        return True
+                    else:
+                        return False
+                elif self.states['at_intersection_entry'] and self.direction == 'E':
+                    if not w_agents and not n_agents:
+                        return True
+                    else:
+                        return False
+                elif self.direction == 'S':
+                    return False
+
+            elif ROW_agent.direction == 'W':
+                if self.states['at_intersection_entry'] and self.direction == 'N':
+                    return True
+                elif self.states['at_intersection_entry'] and self.direction == 'E':
+                    if not n_agents:
+                        return True
+                    else:
+                        return False
+                elif self.states['at_intersection_entry'] and self.direction == 'S':
+                    if not n_agents and not e_agents:
+                        return True
+                    else:
+                        return False
+                elif self.direction == 'W':
+                    return False
+        else:
+            return False
 
 # Check if we have the right of way
 def has_right_of_way(self, env):
@@ -181,7 +281,7 @@ def cars_waiting_to_enter(self, env):
     cars_waiting_to_enter = []
     for agent in env.agents:
         if agent != self:
-            if agent.states['at_intersection_entry'] and self.states['in_intersection']:
+            if agent.states['at_intersection_entry']:
                 cars_waiting_to_enter.append(agent)
     
     return cars_waiting_to_enter

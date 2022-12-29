@@ -130,47 +130,124 @@ def get_reward(self, env, done_code):
     # Pathological
     if self.reward_profile == 0:
         if done_code == "in-progress":
-            # If we have an intersection behind us, we cleared it. Small deduction
-            if self.left_intersection(env): 
-                reward -= 20
-        
-        if done_code == "invalid-pos": # If it went off the road or caused a crash
+            # If we chose to stop
+            if self.last_action == Action.STOP or self.last_action == Action.INTERSECTION_STOP:
+                # Punish stopping if tailgating
+                if (self.states['is_tailgating']):
+                    #print("Tailgating")
+                    reward -= 10
 
-            # If it reached the end of the map deduct points (only get there safely)
-            if self.cur_pos[0] < 0 or \
-                self.cur_pos[2] < 0 or \
-                self.cur_pos[0] > env.grid_width * env.road_tile_size or \
-                self.cur_pos[2] > env.grid_height * env.road_tile_size:
-                reward -= 100
-            else: # If it drove off map
-                reward += 100
+                # Reward waiting to hit someone
+                if self.states['at_intersection_entry']:
+                    if (self.states['intersection_empty'] and self.states['cars_waiting_to_enter']):
+                        reward += 10
 
-            # If it caused a crash
-            agent_corners = env.get_agent_corners(self.cur_pos, self.cur_angle)
-            collision = env._collision(agent_corners, self)
-            if collision:
-                reward += 1000
+                    # Punish waiting in an empty intersection if there are no other cars to hit
+                    if (self.states['intersection_empty'] and not self.states['cars_waiting_to_enter']):
+                        reward -= 10
+
+                    # Punish stopping if there are cars in the intersection
+                    if (not self.states['intersection_empty'] and self.states['obj_in_range']):
+                        reward -= 10
+                    if (not self.states['intersection_empty'] and not self.states['obj_in_range']):
+                        reward += 10
+                    
+                    # If we are in the intersection and we stop, negative reward
+                    if self.states['in_intersection']:
+                        reward -= 10
+
+                # Otherwise, punish stopping
+                else:
+                    reward -= 10
+            else: # If we chose to move
+                # Reward tailgating
+                if (self.states['is_tailgating']):
+                    reward += 10
+
+                if self.states['at_intersection_entry']:
+                    # Punish moving into an empty intersection if there are cars that will eventually enter
+                    if (self.states['intersection_empty'] and self.states['cars_waiting_to_enter']):
+                        reward -= 10
+
+                    # Reward moving in an empty intersection if there are no other cars to hit
+                    # Ensures progress
+                    if (self.states['intersection_empty'] and not self.states['cars_waiting_to_enter']):
+                        reward += 10
+
+                    # Reward moving if there are cars in the intersection
+                    if (not self.states['intersection_empty'] and self.states['obj_in_range']):
+                        reward += 10
+                    if (not self.states['intersection_empty'] and not self.states['obj_in_range']):
+                        reward -= 10
+                    
+                    # Once we are in the intersection, we want to move
+                    if self.states['in_intersection']:
+                        reward += 10
+                # Generally reward moving
+                else:
+                    reward += 10
+
+        if done_code == "offroad": # If it went offroad
+            #print("Offroad")
+            reward -= 2000 # Huge negative for driving off the road
+
+        if done_code == "max-steps-reached": # Bad for sitting still the whole time.
+            #print("Max steps reached")
+            #print("Max Steps")
+            reward -= 5000  # Huge negative for sitting still
+            
+        if done_code == "collision": # Large reward for crashing
+            #print("Collision")
+            reward += 2000  
+
+        if done_code == "finished": # If it reached end of map big enough reward 
+            #print("Safe finish")
+            #reward += (env.max_steps - self.step_count)  # Reward based on how fast we finish
+            reward += 500
+        # Do nothing for rward if crash.
 
     # Impatient
     elif self.reward_profile == 1:
         if done_code == "in-progress":
-            
-            if self.prev_pos != self.curr_pos:
-                reward += np.linalg(self.prev_pos, self.curr_pos) #Add the distance we move from the reward to encourage moving
+            # If we chose to stop
+            if self.last_action == Action.STOP or self.last_action == Action.INTERSECTION_STOP:
+                # Reward stopping if tailgating
+                if (self.states['is_tailgating']):
+                    #print("Tailgating")
+                    reward += 10
+                if (self.states['intersection_empty']):
+                    #print("Tailgating")
+                    reward += 10
+                # Otherwise, punish stopping
+                else:
+                    reward -= 10
+            else: # If we chose to move
+                # punish tailgating
+                if (self.states['is_tailgating']):
+                    #print("Tailgating")
+                    reward -= 10
+                    bad_actions += 1
+                # Generally reward moving
+                else:
+                    reward += 10
 
-                # If the move was risky (move into non-empty intersection)
-                if self.at_intersection_entry(env) and not self.intersection_empty(env):
-                    reward += 5
+        if done_code == "offroad": # If it went offroad
+            #print("Offroad")
+            reward -= 2000 # Huge negative for driving off the road
 
-            # Subtract for arriving at intersection and not moving
-            if self.intersection_arrival:
-                if not self.left_intersection(env) and self.intersection_arrival < self.step_count:
-                    reward -= 1 
+        if done_code == "max-steps-reached": # Bad for sitting still the whole time.
+            #print("Max steps reached")
+            #print("Max Steps")
+            reward -= 2000  # Huge negative for sitting still
             
-            # Larger reward for exiting with no crash.
-            if self.left_intersection(env):
-                r += 100 - (self.step_count - self.intersection_arrival)
-    
+        if done_code == "collision": # No change for crashing. 
+            #print("Collision")
+            reward -= 0  # Don't care about crashing here.
+
+        if done_code == "finished": # If it reached end of map big enough reward 
+            #print("Safe finish")
+            #reward += (env.max_steps - self.step_count)  # Reward based on how fast we finish
+            reward += 2000
         # Do nothing for rward if crash.
 
     # Defensive Agent
@@ -186,6 +263,11 @@ def get_reward(self, env, done_code):
 
                 # Reward move with ROW
                 if (not self.states['has_right_of_way']):
+                    reward += 10
+
+                # Reward stopping if tailgating
+                if (self.states['is_tailgating']):
+                    #print("Tailgating")
                     reward += 10
 
             else: # If we chose to move
@@ -205,23 +287,14 @@ def get_reward(self, env, done_code):
                     reward -= 10
                     bad_actions += 1
 
-        # Add the tile it is currently on to the set. If it reaches a new tile, reward more.
-        prev_tile_count = len(self.tiles_visited)
-        if self.get_curr_tile(env):
-            self.tiles_visited.add(self.get_curr_tile(env)['coords'])
-        curr_tile_count = len(self.tiles_visited)
-        if curr_tile_count > prev_tile_count:
-            #print("Reached new tile")
-            reward += 100 # Semi large reward for reaching a new tile safely. 
-
         if done_code == "offroad": # If it went offroad
-            print("Offroad")
+            #print("Offroad")
             reward -= 2000 # Huge negative for driving off the road
 
         if done_code == "max-steps-reached": # Bad for sitting still the whole time.
             #print("Max steps reached")
             #print("Max Steps")
-            reward -= 10000  # Huge negative for sitting still
+            reward -= 2000  # Huge negative for sitting still
             
         if done_code == "collision": # If it caused crash deduct a ton
             #print("Collision")
@@ -230,6 +303,6 @@ def get_reward(self, env, done_code):
         if done_code == "finished": # If it reached end of map big enough reward 
             #print("Safe finish")
             #reward += (env.max_steps - self.step_count)  # Reward based on how fast we finish
-            reward += 1000
+            reward += 2000
 
     return reward, bad_actions

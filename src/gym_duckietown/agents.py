@@ -43,6 +43,7 @@ class Agent():
     direction: str
     start_angle: float
     start_direction: str
+    patience: int
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -83,6 +84,7 @@ class Agent():
         self.curve = 0
         self.signal_choice = None
         self.stop_point = None       
+        self.patience = 0       
 
         height = 0.05
         self.lights =   {
@@ -119,6 +121,7 @@ class Agent():
     # Import things for decision logic
     from .agent._agent_decision_logic import  proceed, \
                                         handle_proceed, \
+                                        next_to_go, \
                                         has_right_of_way, \
                                         in_intersection, \
                                         at_intersection_entry,\

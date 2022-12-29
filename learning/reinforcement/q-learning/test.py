@@ -48,15 +48,19 @@ def test(args):
     env.reset()
     
     # Init Q Table
-    model = QTable(read_model(args.model_dir, args.reward_profile, args.model_num))
+    model = QTable(read_model(args.test_model_path))
 
+    finishes = 0
+    collisions = 0
+    max_steps = 0
+    offroads = 0
     for i in range(1, args.num_iterations):
         # Reset the state
         env.reset()
         done = False
-        print(f"{env.agents[0].turn_choice}")
 
         # Learn until episode over
+        epochs = 0
         while not done:
 
             # Get initial State (Will be the row of the model)
@@ -75,27 +79,33 @@ def test(args):
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
                     agent.proceed(env, use_model=True, model=model, state=state)
-                    _, _, done, done_code = env.step(agent.get_next_action(), agent, learning=True)
+                    _, _, done, info = env.step(agent.get_next_action(), agent, learning=True)
+                    done_code = info['done_code']
+                    if done_code == 'offroad':
+                        offroads += 1
+                    elif done_code == 'finished':
+                        finishes += 1
+                    elif done_code == 'max-steps-reached':
+                        max_steps += 1
+                    elif done_code == 'collision':
+                        collisions += 1 
                     if done:
-                        break
+                            break
                 else:
                     agent.proceed(env,good_agent=True)
                     env.step(agent.get_next_action(), agent, learning=True)
+                
 
-            env.render(mode=args.cam_mode)
+
+            if args.render_steps > 0 and epochs % args.render_steps == 0:
+                env.render(mode=args.cam_mode)
+            epochs += 1
+        print(f"Successes: {finishes} Collisions: {collisions} Max Steps: {max_steps} Offroad: {offroads}")
             
 
-def read_model(directory, reward_profile, model_number):
+def read_model(path):
         
-    profile = ""
-    if reward_profile == 0:
-        profile = "pathological"
-    elif reward_profile == 1:
-        profile = "impatient"
-    elif reward_profile == 2:
-        profile = "defensive"
-
-    model = directory + profile + "/" + "episodebatch_" + str(model_number)
+    model = path
 
     # Read new model into a q table
     inp = open(model, 'r', os.O_NONBLOCK)
@@ -104,7 +114,6 @@ def read_model(directory, reward_profile, model_number):
         line.strip()
         table.append(list(float(i) for i in line.split(",")))
     inp.close()
-    print(table)
     return table
 
 
