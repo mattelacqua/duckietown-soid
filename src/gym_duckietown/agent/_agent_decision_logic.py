@@ -30,7 +30,7 @@ def proceed(self, env, good_agent=False, use_model=False, model=None, state=None
             if self.next_to_go(env) and not self.states['intersection_empty']:
                 self.patience = 0
 
-            if self.next_to_go(env) and self.patience > 50:
+            if self.next_to_go(env) and self.patience > 100:
                 self.handle_proceed(True)
             else:
                 self.handle_proceed(False)
@@ -38,8 +38,8 @@ def proceed(self, env, good_agent=False, use_model=False, model=None, state=None
             return 
 
         # Else Remove Stop
-        self.handle_proceed(True)
-        return
+        #self.handle_proceed(True)
+        #return
 
     # Call out to c with the model and the state and see what we should do, then handle it.
     elif use_model:
@@ -78,8 +78,7 @@ def next_to_go(self, env):
     if self.states['at_intersection_entry']:
         for agent in env.agents:
             if agent != self:
-                if agent.has_right_of_way(env):
-                    ROW_agent = agent
+                # See where all other agents are in intersection
                 if agent.states['at_intersection_entry']:
                     if agent.direction == 'N':
                         n_agents.append(agent)
@@ -89,16 +88,20 @@ def next_to_go(self, env):
                         e_agents.append(agent)
                     elif agent.direction == 'W':
                         w_agents.append(agent)
+                    # Find agent with ROW
+                    if agent.states['has_right_of_way']:
+                        ROW_agent = agent
         if ROW_agent:
+            # If the ROW agent is facing N
             if ROW_agent.direction == 'N':
-                if self.states['at_intersection_entry'] and self.direction == 'E':
+                if self.direction == 'E':
                     return True
-                elif self.states['at_intersection_entry'] and self.direction == 'S':
+                elif self.direction == 'S':
                     if not e_agents:
                         return True
                     else:
                         return False
-                elif self.states['at_intersection_entry'] and self.direction == 'W':
+                elif self.direction == 'W':
                     if not e_agents and not s_agents:
                         return True
                     else:
@@ -106,15 +109,16 @@ def next_to_go(self, env):
                 elif self.direction == 'N':
                     return False
 
+            # If the ROW agent is facing E
             elif ROW_agent.direction == 'E':
-                if self.states['at_intersection_entry'] and self.direction == 'S':
+                if self.direction == 'S':
                     return True
-                elif self.states['at_intersection_entry'] and self.direction == 'W':
+                elif self.direction == 'W':
                     if not s_agents:
                         return True
                     else:
                         return False
-                elif self.states['at_intersection_entry'] and self.direction == 'N':
+                elif self.direction == 'N':
                     if not s_agents and not w_agents:
                         return True
                     else:
@@ -122,15 +126,16 @@ def next_to_go(self, env):
                 elif self.direction == 'E':
                     return False
 
+            # If the ROW agent is facing S
             elif ROW_agent.direction == 'S':
-                if self.states['at_intersection_entry'] and self.direction == 'W':
+                if self.direction == 'W':
                     return True
-                elif self.states['at_intersection_entry'] and self.direction == 'N':
+                elif self.direction == 'N':
                     if not w_agents:
                         return True
                     else:
                         return False
-                elif self.states['at_intersection_entry'] and self.direction == 'E':
+                elif self.direction == 'E':
                     if not w_agents and not n_agents:
                         return True
                     else:
@@ -138,23 +143,29 @@ def next_to_go(self, env):
                 elif self.direction == 'S':
                     return False
 
+            # If the ROW agent is facing W
             elif ROW_agent.direction == 'W':
-                if self.states['at_intersection_entry'] and self.direction == 'N':
+                if self.direction == 'N':
                     return True
-                elif self.states['at_intersection_entry'] and self.direction == 'E':
+                elif self.direction == 'E':
                     if not n_agents:
                         return True
                     else:
                         return False
-                elif self.states['at_intersection_entry'] and self.direction == 'S':
+                elif self.direction == 'S':
                     if not n_agents and not e_agents:
                         return True
                     else:
                         return False
                 elif self.direction == 'W':
                     return False
+
+        # If no ROW agent, we have ROW
         else:
             return False
+    # If not at intersection entry 
+    else:
+        return False
 
 # Check if we have the right of way
 def has_right_of_way(self, env):
@@ -243,19 +254,19 @@ def at_intersection_entry(self, env):
         else:
             if direction == 'N':
                 stop_line = (intersection_coords[1] + 1) * env.road_tile_size
-                if self.cur_pos[2] > stop_line - env.robot_length/3 and self.cur_pos[2] < stop_line + env.robot_length:
+                if self.cur_pos[2] > stop_line - env.robot_length/2 and self.cur_pos[2] < stop_line + env.robot_length:
                     return True
             elif direction == 'S':
                 stop_line = (intersection_coords[1] + 0 if intersection_coords[1] != 0 else 1) * env.road_tile_size
-                if self.cur_pos[2] < stop_line + env.robot_length/3 and self.cur_pos[2] > stop_line - env.robot_length:
+                if self.cur_pos[2] < stop_line + env.robot_length/2 and self.cur_pos[2] > stop_line - env.robot_length:
                     return True
             elif direction == 'E':
                 stop_line = (intersection_coords[0] + 0 if intersection_coords[0] != 0 else 1) * env.road_tile_size
-                if self.cur_pos[0] < stop_line + env.robot_length/3 and self.cur_pos[0] > stop_line - env.robot_length:
+                if self.cur_pos[0] < stop_line + env.robot_length/2 and self.cur_pos[0] > stop_line - env.robot_length:
                     return True
             elif direction == 'W':
                 stop_line = (intersection_coords[0] + 1) * env.road_tile_size
-                if self.cur_pos[0] > stop_line - env.robot_length/3 and self.cur_pos[0] < stop_line + env.robot_length:
+                if self.cur_pos[0] > stop_line - env.robot_length/2 and self.cur_pos[0] < stop_line + env.robot_length:
                     return True
             else:
                 return False
@@ -413,7 +424,7 @@ def is_tailgating(self, env):
             prev_distance = env.pos_distance(self.prev_pos, agent.prev_pos)
             curr_distance = env.pos_distance(self.cur_pos, agent.cur_pos)
             if  agent_direction == self.direction and \
-                curr_distance < env.robot_length * 2 and \
+                curr_distance < env.robot_length * 2.5 and \
                 self.is_behind(env, agent):
 
                 return True

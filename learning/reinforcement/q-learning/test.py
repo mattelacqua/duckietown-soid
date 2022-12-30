@@ -54,17 +54,20 @@ def test(args):
     collisions = 0
     max_steps = 0
     offroads = 0
+    rewards = 0
+    steps = 0
     for i in range(1, args.num_iterations):
         # Reset the state
         env.reset()
         done = False
 
+        # Set reward profile for agent 0
+        env.agents[0].reward_profile = args.reward_profile
+
         # Learn until episode over
         epochs = 0
         while not done:
 
-            # Get initial State (Will be the row of the model)
-            state = env.agents[0].get_learning_state(env)
 
             # Step each agent after choosing an action
             for agent in env.agents:
@@ -78,9 +81,14 @@ def test(args):
 
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
+                    # Get initial State (Will be the row of the model)
+                    state = agent.get_learning_state(env)
+
                     agent.proceed(env, use_model=True, model=model, state=state)
-                    _, _, done, info = env.step(agent.get_next_action(), agent, learning=True)
+                    _, reward, done, info = env.step(agent.get_next_action(), agent, learning=True)
                     done_code = info['done_code']
+                    reward, bad_actions = reward
+                    rewards += reward
                     if done_code == 'offroad':
                         offroads += 1
                     elif done_code == 'finished':
@@ -100,7 +108,8 @@ def test(args):
             if args.render_steps > 0 and epochs % args.render_steps == 0:
                 env.render(mode=args.cam_mode)
             epochs += 1
-        print(f"Successes: {finishes} Collisions: {collisions} Max Steps: {max_steps} Offroad: {offroads}")
+        steps += env.agents[0].step_count
+        print(f"Successes: {finishes} Collisions: {collisions} Max Steps: {max_steps} Offroad: {offroads} Avg_Reward: {rewards/i+1} Avg_Steps: {steps/i+1}")
             
 
 def read_model(path):

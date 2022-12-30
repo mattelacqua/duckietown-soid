@@ -152,9 +152,9 @@ def get_reward(self, env, done_code):
                     if (not self.states['intersection_empty'] and not self.states['obj_in_range']):
                         reward += 10
                     
-                    # If we are in the intersection and we stop, negative reward
-                    if self.states['in_intersection']:
-                        reward -= 10
+                # If we are in the intersection and we stop, negative reward
+                if self.states['in_intersection']:
+                    reward -= 10
 
                 # Otherwise, punish stopping
                 else:
@@ -180,9 +180,9 @@ def get_reward(self, env, done_code):
                     if (not self.states['intersection_empty'] and not self.states['obj_in_range']):
                         reward -= 10
                     
-                    # Once we are in the intersection, we want to move
-                    if self.states['in_intersection']:
-                        reward += 10
+                # Once we are in the intersection, we want to move
+                if self.states['in_intersection']:
+                    reward += 10
                 # Generally reward moving
                 else:
                     reward += 10
@@ -215,9 +215,11 @@ def get_reward(self, env, done_code):
                 if (self.states['is_tailgating']):
                     #print("Tailgating")
                     reward += 10
-                if (self.states['intersection_empty']):
-                    #print("Tailgating")
-                    reward += 10
+                
+                # punish if we are stopping in an intersection
+                if (self.states['in_intersection']):
+                    reward -= 10
+
                 # Otherwise, punish stopping
                 else:
                     reward -= 10
@@ -227,6 +229,9 @@ def get_reward(self, env, done_code):
                     #print("Tailgating")
                     reward -= 10
                     bad_actions += 1
+                # reward if we are in intersection
+                if (self.states['in_intersection']):
+                    reward += 10
                 # Generally reward moving
                 else:
                     reward += 10
@@ -261,7 +266,7 @@ def get_reward(self, env, done_code):
                     reward -= 10
                     bad_actions += 1
 
-                # Reward move with ROW
+                # Reward stop without ROW
                 if (not self.states['has_right_of_way']):
                     reward += 10
 
