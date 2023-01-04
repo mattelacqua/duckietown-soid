@@ -27,18 +27,6 @@ def render_step_inner(self, env, done):
     else:
         return True
 
-# Check if we are in the middle of completing an action
-def completing_action(self):
-    # Preprocess for C
-    dl.completing_action.argtypes = [c_int]
-    if self.actions:
-        # Preprocess for C
-        action = self.actions[0][1]
-        return dl.completing_action(action)
-
-    else:
-        return dl.completing_action(Action.NO_ACTION)
-
 # Get next action
 def get_next_action(self):
     return self.actions.pop(0)

@@ -64,6 +64,7 @@ class Agent():
     start_angle: float
     start_direction: str
     patience: int
+    index: int
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -76,6 +77,7 @@ class Agent():
         
         # Info
         self.agent_id = agent_id 
+        self.index = agent_id[-1]
         self.timestamp = 0.0
         self.color = color
         self.mesh = get_duckiebot_mesh(color)
@@ -152,7 +154,8 @@ class Agent():
                                         cars_waiting_to_enter, \
                                         cars_arrived_before_me, \
                                         car_entering_range, \
-                                        get_direction
+                                        get_direction, \
+                                        in_bounds
 
     # Import Lights
     from .agent._agent_lights import    turn_on_light, \
@@ -183,7 +186,6 @@ class Agent():
     # Import rendering functions
     from .agent._agent_rendering import render_step, \
                                         render_step_inner, \
-                                        completing_action, \
                                         get_next_action, \
                                         add_actions
 
@@ -191,5 +193,4 @@ class Agent():
     from .agent._agent_utils import get_info, \
                                     get_curr_angle, \
                                     get_curve, \
-                                    get_curr_tile, \
-                                    in_bounds
+                                    get_curr_tile

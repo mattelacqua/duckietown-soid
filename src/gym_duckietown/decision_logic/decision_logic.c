@@ -95,19 +95,11 @@ IntersectionAction *intersection_action(TurnChoice old_turn_choice, TurnChoice o
     
     // Check if we have the right of way (No other cars are in intersection)
     // Convert to right action
-    if (turn_choice == STRAIGHT){
-        action = INTERSECTION_FORWARD;
-    }
-    else if (turn_choice == LEFT){
-        action = INTERSECTION_LEFT;
-    }
-    else if (turn_choice == RIGHT){
-        action = INTERSECTION_RIGHT;
-    }
+    action = INTERSECTION_FORWARD;
     
     // Return our action
     IntersectionAction *intersection_action;
-    intersection_action = make_action(turn_choice, signal_choice, action, wait_step);
+    intersection_action = make_action(turn_choice, signal_choice, action);
 
     return intersection_action;
 }
@@ -294,3 +286,44 @@ bool proceed_model(float model[STATES][ACTIONS], int state) {
 }
 
 
+// Read the model to see if we proceed
+void print_all(EnvironmentInfo* env_info) {
+    int intersection_x = env_info->intersection_x;
+    int intersection_z = env_info->intersection_z;
+    float robot_length = env_info->robot_length;
+    int grid_w = env_info->grid_w;
+    int grid_h = env_info->grid_h;
+    float road_tile_size = env_info->road_tile_size;
+    int max_steps = env_info->max_steps;
+    int num_agents = env_info->agents.elements;
+    fflush(stdout);
+    printf("Intersection: %d, %d\n", intersection_x, intersection_z);
+    printf("Grid Height: %d Grid Width %d Road tile size: %f\n", grid_h, grid_w, road_tile_size);
+    printf("Robot Length: %f Max Steps: %d\n",  robot_length, max_steps);
+    
+    for (int i = 0; i < num_agents; i++) {
+        printf("Agent id: %d \n", env_info->agents.ENV_AGENT_ARRAY[i].id);
+        printf("pos_x: %f pos_z %f \n", env_info->agents.ENV_AGENT_ARRAY[i].pos_x, env_info->agents.ENV_AGENT_ARRAY[i].pos_z);
+        printf("prev_pos_x: %f prev_pos_z %f \n", env_info->agents.ENV_AGENT_ARRAY[i].prev_pos_x, env_info->agents.ENV_AGENT_ARRAY[i].prev_pos_z);
+        printf("stop_x: %f stop_z %f \n", env_info->agents.ENV_AGENT_ARRAY[i].stop_x, env_info->agents.ENV_AGENT_ARRAY[i].stop_z);
+        printf("tile_x: %d tile_z %d \n", env_info->agents.ENV_AGENT_ARRAY[i].tile_x, env_info->agents.ENV_AGENT_ARRAY[i].tile_z);
+        printf("angle: %f speed: %f forward_step: %f distance_away: %f direction: %d intersection_arrival: %d step_count: %d\n", 
+            env_info->agents.ENV_AGENT_ARRAY[i].angle, 
+            env_info->agents.ENV_AGENT_ARRAY[i].speed, 
+            env_info->agents.ENV_AGENT_ARRAY[i].forward_step, 
+            env_info->agents.ENV_AGENT_ARRAY[i].distance_away, 
+            env_info->agents.ENV_AGENT_ARRAY[i].direction, 
+            env_info->agents.ENV_AGENT_ARRAY[i].intersection_arrival, 
+            env_info->agents.ENV_AGENT_ARRAY[i].step_count);
+        printf("in_intersection: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.in_intersection);
+        printf("at_intersection_entry: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.at_intersection_entry);
+        printf("intersection_empty: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.intersection_empty);
+        printf("approaching_intersection: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.approaching_intersection);
+        printf("obj_in_range: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.obj_in_range);
+        printf("has_right_of_way: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.has_right_of_way);
+        printf("cars_waiting_to_enter: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.cars_waiting_to_enter);
+        printf("car_entering_range: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.car_entering_range);
+        printf("obj_behind_intersection: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.obj_behind_intersection);
+        printf("is_tailgating: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.is_tailgating);
+    }
+}

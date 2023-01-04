@@ -4,6 +4,7 @@ import numpy as np
 from ..agents import dl
 from ._agent_utils import intersection_tile
 import math
+import time
 
 #--------------------------
 # Decision Logic
@@ -12,6 +13,16 @@ import math
 
 # Have an agent proceed, using a model, unless it is a naturally good agent
 def proceed(self, env, good_agent=False, use_model=False, model=None, state=None):
+
+    # TEST FOR THE C DECISION LOGIC THAT EVERYTHING IS NICE!    
+    dl.print_all.argtypes = [POINTER(EnvironmentInfo)]
+    dl.print_all.restype = c_void_p
+
+    # Preprocess relevant information
+    env_info_struct = EnvironmentInfo(env, self)
+    dl.print_all(env_info_struct)
+    time.sleep(5)
+
 
     # If we are good we want to avoid tailgating
     if good_agent:

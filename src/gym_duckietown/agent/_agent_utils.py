@@ -173,15 +173,7 @@ def get_curr_tile(self, env):
     tile = env._get_tile(tile_x, tile_z)
     return tile
 
-    # Check if agent is in bounds
-def in_bounds(self, env):
-    if self.cur_pos[0] < 0 or \
-        self.cur_pos[2] < 0 or \
-        self.cur_pos[0] > env.grid_width * env.road_tile_size or \
-        self.cur_pos[2] > env.grid_height * env.road_tile_size:
-        return False
-    else:
-        return True
+
 
 # Get duckiebot mesh
 def get_duckiebot_mesh(color: str) -> ObjMesh:

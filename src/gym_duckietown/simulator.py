@@ -552,6 +552,7 @@ class Simulator(gym.Env):
         # Reset each agent
         for agent in self.agents:
             agent.speed = 0.0
+            agent.index = int(agent.agent_id[-1])
             agent.step_count = 0
             agent.actions = []
             agent.nearby_objects = []
