@@ -3,7 +3,6 @@ import os
 import configparser
 from ctypes import c_char_p, cast
 from typing import Dict
-import json
 import pyglet
 pyglet.options["headless"] = True
 from pyglet import gl
@@ -47,6 +46,7 @@ def get_file_path(sub_dir, file_name, default_ext):
 
 # Args
 def get_args_from_config(config_name: str):
+
     params = configparser.ConfigParser()
     print(config_name)
     params.read(config_name)

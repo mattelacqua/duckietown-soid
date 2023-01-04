@@ -2,10 +2,8 @@ import math
 from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Union
 from ..objmesh import get_mesh, MatInfo, ObjMesh
 import numpy as np
-import random
 from gym_duckietown import objects
 from gym_duckietown.dl_utils import Action
-import os
 #--------------------------
 # Agent Information
 #--------------------------
@@ -38,20 +36,7 @@ def get_info(self, env) -> dict:
     # return the dict
     return info
 
-# Get current direction
-def get_direction(self, env):
-    # Get state information
-    curr_angle = self.get_curr_angle(env)
 
-    # Based on the current angle of the agent return a direction it is moving
-    if curr_angle > 45 and curr_angle <= 135:
-        return 'N'
-    elif curr_angle > 135   and curr_angle <= 225:
-        return 'W'
-    elif curr_angle > 225  and curr_angle <= 315:
-        return 'S'
-    else:
-        return 'E'
 
 def get_curve(self, env, straight=False, follow_pos=None):
     """ South:
@@ -197,14 +182,6 @@ def in_bounds(self, env):
         return False
     else:
         return True
-
-# check if already going to complete intersection action
-def completing_intersection(self):
-    for action in self.actions:
-        if action[1] == Action.INTERSECTION_FORWARD:
-            return True
-    else:
-        return False
 
 # Get duckiebot mesh
 def get_duckiebot_mesh(color: str) -> ObjMesh:

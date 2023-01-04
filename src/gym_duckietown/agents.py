@@ -4,10 +4,30 @@ import numpy as np
 from gym_duckietown import objects
 import os
 from .agent._agent_utils import get_duckiebot_mesh
+import sys
+import subprocess
 
 """
 Contains functions for moving agent in ite world scenarios.
 """
+# Stuffing the make command in here
+# Make the decision logic files
+make_clean_ret = subprocess.Popen(["make clean"], shell=True, stdout=subprocess.PIPE, cwd="./src/gym_duckietown/decision_logic")
+while True:
+    line = make_clean_ret.stdout.readline()
+    if not line:
+        break
+    print(line) #output to console in time
+    sys.stdout.flush()
+make_ret = subprocess.Popen(["make"], shell=True, stdout=subprocess.PIPE, cwd="./src/gym_duckietown/decision_logic")
+while True:
+    line = make_ret.stdout.readline()
+    if not line:
+        break
+    print(line) #output to console in time
+    sys.stdout.flush()
+
+
 so_file = str(os.getcwd()) + "/src/gym_duckietown/decision_logic/libdecision_logic.so"
 dl = CDLL(so_file)
 
@@ -131,7 +151,8 @@ class Agent():
                                         is_behind, \
                                         cars_waiting_to_enter, \
                                         cars_arrived_before_me, \
-                                        car_entering_range
+                                        car_entering_range, \
+                                        get_direction
 
     # Import Lights
     from .agent._agent_lights import    turn_on_light, \
@@ -168,7 +189,6 @@ class Agent():
 
     # Import utilities
     from .agent._agent_utils import get_info, \
-                                    get_direction, \
                                     get_curr_angle, \
                                     get_curve, \
                                     get_curr_tile, \

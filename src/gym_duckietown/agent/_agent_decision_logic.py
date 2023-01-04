@@ -43,10 +43,10 @@ def proceed(self, env, good_agent=False, use_model=False, model=None, state=None
 
     # Call out to c with the model and the state and see what we should do, then handle it.
     elif use_model:
-        dl.proceed.argtypes = [QTable, c_int]
-        dl.proceed.restype = c_bool
+        dl.proceed_model.argtypes = [QTable, c_int]
+        dl.proceed_model.restype = c_bool
 
-        should_proceed = dl.proceed(model, state)
+        should_proceed = dl.proceed_model(model, state)
         self.handle_proceed(should_proceed)
 
 # Handle whether or not we should proceed, filter out bad actions
@@ -468,3 +468,27 @@ def car_entering_range(self, env, radius=1):
             car_entering_our_range = True
 
     return car_entering_our_range
+
+# Get current direction
+def get_direction(self, env):
+
+    # Get state information
+    curr_angle = self.get_curr_angle(env)
+    
+    # C Callout
+    dl.get_direction.argtypes = [c_int]
+    dl.get_direction.restype = c_char
+
+    
+    direction = dl.get_direction(curr_angle).decode('utf-8')
+    return direction 
+    
+# Check if agent is in bounds
+def in_bounds(self, env):
+
+    # C Callout
+    dl.in_bounds.argtypes = [c_float, c_float, c_float, c_float, c_float]
+    dl.in_bounds.restype = c_bool
+    in_bounds = dl.in_bounds(self.cur_pos[0], self.cur_pos[2], env.grid_width, env.grid_height, env.road_tile_size)
+
+    return in_bounds 

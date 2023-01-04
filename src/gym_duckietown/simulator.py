@@ -6,6 +6,7 @@ from ctypes import POINTER
 from dataclasses import dataclass
 
 import sys
+import subprocess
 
 if sys.version_info >= (3, 8):
     from typing import TypedDict
@@ -75,6 +76,8 @@ from .utils import get_subdir_path
 from .agents import *
 
 from PIL import Image
+
+
 
 DIM = 0.5
 
@@ -423,6 +426,7 @@ class Simulator(gym.Env):
 
         # Set the default state to running
         self.state = "run"
+
 
         # Initialize the state
         self.reset()

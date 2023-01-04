@@ -7,15 +7,6 @@
 #define STATES 1024
 #define ACTIONS 2
 
-// Check if we are in the middle of completing an action
-bool completing_action(Action action) {
-    if(action == NO_ACTION) {
-        return false;
-    } else {
-        return true;
-    }
-}
-
 // Check if we are approaching an intersection 
 bool intersection_detected(Direction direction, float curr_x, float curr_z, float stop_x, float stop_z, bool approaching_intersection) 
 {
@@ -32,6 +23,32 @@ bool intersection_detected(Direction direction, float curr_x, float curr_z, floa
         return true;
     } else {
         return false;
+    }
+}
+
+// Get the current direction of an agent
+char get_direction(int curr_angle){
+    if (curr_angle > 45 && curr_angle <= 135) {
+        return 'N';
+    }
+    else if (curr_angle > 135 && curr_angle <= 225){
+        return 'W';
+    }
+    else if (curr_angle > 225 && curr_angle <= 315){
+        return 'S';
+    }
+    else{
+        return 'E';
+    }
+}
+
+// Get if we are in bounds or not
+bool in_bounds(float curr_pos_x, float curr_pos_y, float grid_width, float grid_height, float road_tile_size){
+    // Check if we are out of the bounds 
+    if (curr_pos_x < 0 || curr_pos_y < 0 || curr_pos_x < grid_width * road_tile_size || curr_pos_y < grid_height * road_tile_size){
+        return false;
+    } else {
+        return true;
     }
 }
 
@@ -269,7 +286,7 @@ bool has_right_of_way(  bool in_intersection,
 
 
 // Read the model to see if we proceed
-bool proceed(float model[STATES][ACTIONS], int state) {
+bool proceed_model(float model[STATES][ACTIONS], int state) {
     float stay = model[state][0];
     float move = model[state][1];
     if (move >= stay) return true;
