@@ -25,7 +25,7 @@ def handle_intersection(self, env, speed_limit=1.0,  stop_point=30, learning=Fal
     self.get_obstacles(env)
 
     # Preprocess relevant information
-    env_agent_array_struct = EnvironmentAgentArray(env, self.intersection_agents, self)
+    env_agent_array_struct = EnvironmentAgentArray(env, self.intersection_agents)
     intersection_action_addr = dl.intersection_action(turn_choice, signal_choice, self.intersection_arrival if self.intersection_arrival else env.max_steps, env_agent_array_struct)
     intersection_action = IntersectionAction.from_address(intersection_action_addr)
     turn_choice = TurnChoice(intersection_action.turn_choice)
@@ -37,9 +37,7 @@ def handle_intersection(self, env, speed_limit=1.0,  stop_point=30, learning=Fal
 
     # If we are not stopping, get our move forward direction
     if action != Action.STOP and action != Action.INTERSECTION_STOP:
-        forward_steps = 0
         action_seq.extend(self.move_forward(env, speed_limit=speed_limit, intersection=True))
-        forward_steps += 1 
 
     return action_seq
 

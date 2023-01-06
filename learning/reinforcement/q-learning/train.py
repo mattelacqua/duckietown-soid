@@ -114,7 +114,7 @@ def train(args):
             else:
                 action = np.argmax(q_table[state]) # Exploit learned values
 
-            # Step each agent after choosing an action
+            # Prep each agent by choosing an action
             for agent in env.agents:
 
                 # If not in the middle of an action, get one
@@ -130,16 +130,23 @@ def train(args):
                     # If the handle proceed needs an initial action, add it
                     if not agent.actions:
                         agent.add_actions(agent.move_forward(env))
-                    next_state, reward, done, info = env.step(agent.get_next_action(), agent, learning=True)
-                    reward, bad_actions = reward
-                    reward_sum += reward
-                    bad_actions_sum += bad_actions
-                    if done:
-                        break
                 else: # For everyone else just step
                     agent.proceed(env,good_agent=True)
-                    env.step(agent.get_next_action(), agent, learning=True)
             
+
+            # Step the env
+            env.step(learning = True)
+            
+            # Get info from the step
+            next_state = env.agents[0].q_state
+            reward = env.agents[0].reward
+            done = env.agents[0].done 
+            info = env.agents[0].misc 
+
+            reward, bad_actions = reward
+            reward_sum += reward
+            bad_actions_sum += bad_actions
+
             # Calculate and set the new q table stuff
             old_value = q_table[state][action]
             if not next_state:

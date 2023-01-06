@@ -33,45 +33,11 @@ class DuckietownEnv(Simulator):
         # Wheel velocity limit
         self.limit = limit
 
-    def step(self, action, agent, learning=False):
-        action_name = action[1]
-        action = action[0]
-        vel, angle = action
+    def step(self, learning=False):
 
-        # Distance between the wheels
-        baseline = self.unwrapped.wheel_dist
+        Simulator.step(self, learning)
 
-        # assuming same motor constants k for both motors
-        k_r = self.k
-        k_l = self.k
-
-        # adjusting k by gain and trim
-        k_r_inv = (self.gain + self.trim) / k_r
-        k_l_inv = (self.gain - self.trim) / k_l
-
-        omega_r = (vel + 0.5 * angle * baseline) / self.radius
-        omega_l = (vel - 0.5 * angle * baseline) / self.radius
-
-        # conversion from motor rotation rate to duty cycle
-        u_r = omega_r * k_r_inv
-        u_l = omega_l * k_l_inv
-
-        # limiting output to limit, which is 1.0 for the duckiebot
-        u_r_limited = max(min(u_r, self.limit), -self.limit)
-        u_l_limited = max(min(u_l, self.limit), -self.limit)
-
-        vels = np.array([u_l_limited, u_r_limited])
-
-        obs, reward, done, info = Simulator.step(self, [vels, action_name], agent, learning)
-        mine = {}
-        mine["k"] = self.k
-        mine["gain"] = self.gain
-        mine["train"] = self.trim
-        mine["radius"] = self.radius
-        mine["omega_r"] = omega_r
-        mine["omega_l"] = omega_l
-        info["DuckietownEnv"] = mine
-        return obs, reward, done, info
+        return
 
 
 class DuckietownLF(DuckietownEnv):

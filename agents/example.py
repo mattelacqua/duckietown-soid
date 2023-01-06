@@ -43,16 +43,6 @@ def test(args):
         # Reset the state
         env.reset()
 
-        # Hard coding first agent's behavior
-        agent0 = env.agents[0]
-        agent0.turn_choice = 'Right'
-        agent0.curve = agent0.get_curve(env)
-
-        # Hard coding second agent's behavior
-        agent1 = env.agents[1]
-        agent1.turn_choice = 'Right'
-        agent1.curve = agent1.get_curve(env)
-
         done = False
 
         # Until one agent ends
@@ -66,9 +56,10 @@ def test(args):
                         agent.add_actions(agent.move_forward(env))
 
                 agent.proceed(env,good_agent=True)
-                _, _, done, misc = env.step(agent.get_next_action(), agent)
 
             # Render
+            env.step()
+            done = env.agents[0].done
             env.render(mode=args.cam_mode)
     
 # Main - Get arguments and train using Q learning

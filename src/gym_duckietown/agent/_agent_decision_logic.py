@@ -15,42 +15,30 @@ import time
 def proceed(self, env, good_agent=False, use_model=False, model=None, state=None):
 
     # TEST FOR THE C DECISION LOGIC THAT EVERYTHING IS NICE!    
-    dl.print_all.argtypes = [POINTER(EnvironmentInfo)]
-    dl.print_all.restype = c_void_p
+    #dl.print_all.argtypes = [POINTER(EnvironmentInfo)]
+    #dl.print_all.restype = c_void_p
 
     # Preprocess relevant information
-    env_info_struct = EnvironmentInfo(env, self)
-    dl.print_all(env_info_struct)
-    time.sleep(5)
+    #dl.print_all(env.c_info_struct)
 
 
     # If we are good we want to avoid tailgating
     if good_agent:
-        if self.states['is_tailgating']:
-            self.handle_proceed(False)
-            #print(f"{self.agent_id} {self.color} {self.get_direction(env)} is forced to stop for tailgating")
-            return 
+        dl.proceed_good_agent.argtypes = [POINTER(EnvironmentInfo), c_int]
+        dl.proceed_good_agent.restype = c_bool
+        proceed = dl.proceed_good_agent(env.c_info_struct, self.index)
+        self.handle_proceed(proceed)
+
+        dl.handle_patience.argtypes = [POINTER(EnvironmentInfo), c_int]
+        dl.handle_patience.restype = c_bool
         
-        if self.states['has_right_of_way']:
-            self.handle_proceed(True)
+        handle_patience_ret = dl.handle_patience(env.c_info_struct, self.index)
+        if handle_patience_ret == 1:
+            self.patience += 1
+        elif handle_patience_ret == 2:
+            self.patience = 0
 
-        if not self.states['has_right_of_way']:
-            # If we don't have right of way, are next to go, and nobody is going increment our patience.
-            if self.next_to_go(env) and self.states['intersection_empty']:
-                self.patience += 1
-            if self.next_to_go(env) and not self.states['intersection_empty']:
-                self.patience = 0
-
-            if self.next_to_go(env) and self.patience > 100:
-                self.handle_proceed(True)
-            else:
-                self.handle_proceed(False)
-            #print(f"{self.agent_id} {self.color} {self.get_direction(env)} is forced to stop no right of way")
-            return 
-
-        # Else Remove Stop
-        #self.handle_proceed(True)
-        #return
+        return 
 
     # Call out to c with the model and the state and see what we should do, then handle it.
     elif use_model:
@@ -498,7 +486,7 @@ def get_direction(self, env):
 def in_bounds(self, env):
 
     # C Callout
-    dl.in_bounds.argtypes = [c_float, c_float, c_float, c_float, c_float]
+    dl.in_bounds.argtypes = [c_float, c_float, c_int, c_int, c_float]
     dl.in_bounds.restype = c_bool
     in_bounds = dl.in_bounds(self.cur_pos[0], self.cur_pos[2], env.grid_width, env.grid_height, env.road_tile_size)
 

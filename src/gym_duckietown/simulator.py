@@ -426,6 +426,7 @@ class Simulator(gym.Env):
 
         # Set the default state to running
         self.state = "run"
+        self.c_info_struct = None
 
 
         # Initialize the state
@@ -800,6 +801,7 @@ class Simulator(gym.Env):
 
         # Generate the first camera image
         obs = self.render_obs(segment=segment)
+        self.c_info_struct = EnvironmentInfo(self)
 
 
         # Return first observation
@@ -1721,35 +1723,77 @@ class Simulator(gym.Env):
             reward = +1.0 * speed * lp.dot_dir + -10 * np.abs(lp.dist) + +40 * col_penalty
         return reward
 
-    def step(self, action, agent, learning: bool=False):
-        action_name = action[1]
-        action = action[0]
-        action = np.clip(action, -1, 1)
-        action = np.array(action)
-        for _ in range(self.frame_skip):
-            self.update_physics([action, action_name], agent)
+    def step(self, learning: bool=False):
+        for agent in self.agents:
+            action = agent.get_next_action()
+            action_name = action[1]
+            action = action[0]
+            vel, angle = action
 
-        misc = agent.get_info(self)
+            # Distance between the wheels
+            baseline = self.unwrapped.wheel_dist
 
-        d = self._compute_done_reward(agent, learning)
+            # assuming same motor constants k for both motors
+            k_r = self.k
+            k_l = self.k
 
-        # Put the state into a dictionary
-        agent.direction = agent.get_direction(self)
-        agent.get_state(self)
+            # adjusting k by gain and trim
+            k_r_inv = (self.gain + self.trim) / k_r
+            k_l_inv = (self.gain - self.trim) / k_l
 
-        # Generate the state 
-        if learning and agent.in_bounds(self):
-            state = agent.get_learning_state(self)
-        elif learning and d.done:
-            state = 0
-        elif learning and not d.done:
-            state = 0
-        else:
-            state = self.render_obs()
-        misc["done_code"] = d.done_code
+            omega_r = (vel + 0.5 * angle * baseline) / self.radius
+            omega_l = (vel - 0.5 * angle * baseline) / self.radius
 
+            # conversion from motor rotation rate to duty cycle
+            u_r = omega_r * k_r_inv
+            u_l = omega_l * k_l_inv
 
-        return state, d.reward, d.done, misc
+            # limiting output to limit, which is 1.0 for the duckiebot
+            u_r_limited = max(min(u_r, self.limit), -self.limit)
+            u_l_limited = max(min(u_l, self.limit), -self.limit)
+
+            vels = np.array([u_l_limited, u_r_limited])
+
+            action = vels
+            action = np.clip(action, -1, 1)
+            action = np.array(action)
+            for _ in range(self.frame_skip):
+                self.update_physics([action, action_name], agent)
+
+            misc = agent.get_info(self)
+
+            d = self._compute_done_reward(agent, learning)
+
+            # Put the state into a dictionary
+            agent.direction = agent.get_direction(self)
+            agent.get_state(self)
+
+            # Generate the state 
+            if learning and agent.in_bounds(self):
+                agent.q_state = agent.get_learning_state(self)
+            elif learning and d.done:
+                agent.q_state = 0
+            elif learning and not d.done:
+                agent.q_state = 0
+            misc["done_code"] = d.done_code
+
+            mine = {}
+            mine["k"] = self.k
+            mine["gain"] = self.gain
+            mine["train"] = self.trim
+            mine["radius"] = self.radius
+            mine["omega_r"] = omega_r
+            mine["omega_l"] = omega_l
+            misc["DuckietownEnv"] = mine
+
+            #agent.obs = self.render_obs()
+            agent.reward = d.reward
+            agent.done = d.done
+            agent.misc = misc
+
+            self.c_info_struct = EnvironmentInfo(self)
+
+        return 
 
     def _compute_done_reward(self, agent, learning=False) -> DoneRewardInfo:
         reward = 0

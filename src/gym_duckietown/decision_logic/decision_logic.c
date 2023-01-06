@@ -43,9 +43,9 @@ char get_direction(int curr_angle){
 }
 
 // Get if we are in bounds or not
-bool in_bounds(float curr_pos_x, float curr_pos_y, float grid_width, float grid_height, float road_tile_size){
+bool in_bounds(float curr_pos_x, float curr_pos_y, int grid_width, int grid_height, float road_tile_size){
     // Check if we are out of the bounds 
-    if (curr_pos_x < 0 || curr_pos_y < 0 || curr_pos_x < grid_width * road_tile_size || curr_pos_y < grid_height * road_tile_size){
+    if (curr_pos_x < 0 || curr_pos_y < 0 || curr_pos_x > grid_width * road_tile_size || curr_pos_y > grid_height * road_tile_size){
         return false;
     } else {
         return true;
@@ -276,6 +276,30 @@ bool has_right_of_way(  bool in_intersection,
     
 
 
+// Good agent proceed: 0=stop 1=proceed
+bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
+    EnvironmentAgent agent = env_info->agents.ENV_AGENT_ARRAY[agent_index];
+    if (agent.state.is_tailgating) 
+        return false;
+    if (agent.state.has_right_of_way) 
+        return true;
+    if (!agent.state.has_right_of_way){
+        if (agent.patience > 100) 
+            return true;
+        else 
+            return false;
+    }
+}
+
+// Handle patience return 0=do nothing 1=inc 2=reset
+int handle_patience(EnvironmentInfo* env_info, int agent_index){
+    EnvironmentAgent agent = env_info->agents.ENV_AGENT_ARRAY[agent_index];
+    if (!agent.state.has_right_of_way && agent.state.next_to_go && agent.state.intersection_empty)
+        return 1;
+    if (!agent.state.has_right_of_way && agent.state.next_to_go && !agent.state.intersection_empty)
+        return 2;
+    return 0;
+}
 
 // Read the model to see if we proceed
 bool proceed_model(float model[STATES][ACTIONS], int state) {
@@ -297,33 +321,36 @@ void print_all(EnvironmentInfo* env_info) {
     int max_steps = env_info->max_steps;
     int num_agents = env_info->agents.elements;
     fflush(stdout);
+    printf("Environment information: \n");
     printf("Intersection: %d, %d\n", intersection_x, intersection_z);
     printf("Grid Height: %d Grid Width %d Road tile size: %f\n", grid_h, grid_w, road_tile_size);
     printf("Robot Length: %f Max Steps: %d\n",  robot_length, max_steps);
     
+    EnvironmentAgent *agents = env_info->agents.ENV_AGENT_ARRAY;
     for (int i = 0; i < num_agents; i++) {
-        printf("Agent id: %d \n", env_info->agents.ENV_AGENT_ARRAY[i].id);
-        printf("pos_x: %f pos_z %f \n", env_info->agents.ENV_AGENT_ARRAY[i].pos_x, env_info->agents.ENV_AGENT_ARRAY[i].pos_z);
-        printf("prev_pos_x: %f prev_pos_z %f \n", env_info->agents.ENV_AGENT_ARRAY[i].prev_pos_x, env_info->agents.ENV_AGENT_ARRAY[i].prev_pos_z);
-        printf("stop_x: %f stop_z %f \n", env_info->agents.ENV_AGENT_ARRAY[i].stop_x, env_info->agents.ENV_AGENT_ARRAY[i].stop_z);
-        printf("tile_x: %d tile_z %d \n", env_info->agents.ENV_AGENT_ARRAY[i].tile_x, env_info->agents.ENV_AGENT_ARRAY[i].tile_z);
-        printf("angle: %f speed: %f forward_step: %f distance_away: %f direction: %d intersection_arrival: %d step_count: %d\n", 
-            env_info->agents.ENV_AGENT_ARRAY[i].angle, 
-            env_info->agents.ENV_AGENT_ARRAY[i].speed, 
-            env_info->agents.ENV_AGENT_ARRAY[i].forward_step, 
-            env_info->agents.ENV_AGENT_ARRAY[i].distance_away, 
-            env_info->agents.ENV_AGENT_ARRAY[i].direction, 
-            env_info->agents.ENV_AGENT_ARRAY[i].intersection_arrival, 
-            env_info->agents.ENV_AGENT_ARRAY[i].step_count);
-        printf("in_intersection: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.in_intersection);
-        printf("at_intersection_entry: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.at_intersection_entry);
-        printf("intersection_empty: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.intersection_empty);
-        printf("approaching_intersection: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.approaching_intersection);
-        printf("obj_in_range: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.obj_in_range);
-        printf("has_right_of_way: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.has_right_of_way);
-        printf("cars_waiting_to_enter: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.cars_waiting_to_enter);
-        printf("car_entering_range: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.car_entering_range);
-        printf("obj_behind_intersection: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.obj_behind_intersection);
-        printf("is_tailgating: %d\n", env_info->agents.ENV_AGENT_ARRAY[i].state.is_tailgating);
+        printf("Agent %d information \n", agents[i].id);
+        printf("pos_x: %f pos_z %f \n", agents[i].pos_x, agents[i].pos_z);
+        printf("prev_pos_x: %f prev_pos_z %f \n", agents[i].prev_pos_x, agents[i].prev_pos_z);
+        printf("stop_x: %f stop_z %f \n", agents[i].stop_x, agents[i].stop_z);
+        printf("tile_x: %d tile_z %d \n", agents[i].tile_x, agents[i].tile_z);
+        printf("angle: %f speed: %f forward_step: %f direction: %d intersection_arrival: %d step_count: %d\n", 
+            agents[i].angle, 
+            agents[i].speed, 
+            agents[i].forward_step, 
+            agents[i].direction, 
+            agents[i].intersection_arrival, 
+            agents[i].step_count);
+        printf("%d in_intersection \n", agents[i].state.in_intersection);
+        printf("%d at_intersection_entry\n", agents[i].state.at_intersection_entry);
+        printf("%d intersection_empty\n", agents[i].state.intersection_empty);
+        printf("%d approaching_intersection\n", agents[i].state.approaching_intersection);
+        printf("%d obj_in_range\n", agents[i].state.obj_in_range);
+        printf("%d has_right_of_way\n", agents[i].state.has_right_of_way);
+        printf("%d cars_waiting_to_enter\n", agents[i].state.cars_waiting_to_enter);
+        printf("%d car_entering_range\n", agents[i].state.car_entering_range);
+        printf("%d obj_behind_intersection\n", agents[i].state.obj_behind_intersection);
+        printf("%d is_tailgating\n\n", agents[i].state.is_tailgating);
     }
+
+
 }

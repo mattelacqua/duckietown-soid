@@ -1,7 +1,10 @@
+from __future__ import annotations
 # coding=utf-8
 __version__ = "6.1.31"
 
+
 import platform
+
 
 from zuper_commons.logs import ZLogger
 

@@ -53,6 +53,7 @@ typedef struct {
     bool car_entering_range ;
     bool obj_behind_intersection ;
     bool is_tailgating ;
+    bool next_to_go ;
 } AgentState ;
 
 // Environment State
@@ -69,9 +70,9 @@ typedef struct {
     float angle ;
     float speed ;
     float forward_step ;
-    float distance_away ;
     Direction direction ;
     int intersection_arrival ;
+    int patience ;
     int step_count ;
     AgentState state ;
 } EnvironmentAgent ;
@@ -90,8 +91,5 @@ typedef struct {
     int grid_h ;
     float road_tile_size ;
     int max_steps ;
-    EnvironmentAgent our_agent ;
-    EnvironmentAgentArray agents_in_intersection ;
-    EnvironmentAgentArray agents_at_intersection_entry ;
     EnvironmentAgentArray agents ;
 } EnvironmentInfo ;

@@ -65,6 +65,10 @@ class Agent():
     start_direction: str
     patience: int
     index: int
+    done: bool
+    obs: np.ndarray
+    misc: dict
+    q_state: int
 
     def __init__(self,
         cur_pos=[0.0, 0.0, 0.0],
@@ -133,6 +137,12 @@ class Agent():
         self.reward_profile = None
         self.learning_state = [0,0,0,0,0,0,0,0,0,0]
         self.tiles_visited = set()
+        self.reward = 0
+        self.done = False
+        self.obs = None
+        self.misc = None
+        self.q_state = -1
+
 
 
     # Import things for learning
