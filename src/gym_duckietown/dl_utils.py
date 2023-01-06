@@ -56,56 +56,82 @@ class EnvironmentAgent(Structure):
                 ('intersection_arrival', c_int),
                 ('patience', c_int),
                 ('step_count', c_int),
-                ('state', AgentState)]
+                ('state', AgentState),
+                ('exists', c_bool)]
 
 
 class EnvironmentAgentArray(Structure):
-    _fields_ = [('elements', c_int),
-                ('ENV_AGENT_ARRAY', POINTER(EnvironmentAgent))]
+    _fields_ = [('num_agents', c_int),
+                ('agents_array', POINTER(EnvironmentAgent))]
 
 
     def __init__(self, env, agents):
-        num_intersection_agents = int(len(agents))
-        elems = (EnvironmentAgent * num_intersection_agents)() # Size
-        self.ENV_AGENT_ARRAY = cast(elems, POINTER(EnvironmentAgent))
-        self.elements = c_int(num_intersection_agents)
+        elems = (EnvironmentAgent * env.max_agents)() # Size
+        self.agents_array = cast(elems, POINTER(EnvironmentAgent))
+        self.num_agents = c_int(len(env.agents))
 
-        for i, agent in enumerate(agents):
-            self.ENV_AGENT_ARRAY[i].id = c_int(agent.index)
-            self.ENV_AGENT_ARRAY[i].pos_x = c_float(agent.cur_pos[0])
-            self.ENV_AGENT_ARRAY[i].pos_z = c_float(agent.cur_pos[2])
+        for i in range(env.max_agents):
+            if i < len(env.agents):
+                agent = env.agents[i]
+                self.agents_array[i].id = c_int(agent.index)
+                self.agents_array[i].pos_x = c_float(agent.cur_pos[0])
+                self.agents_array[i].pos_z = c_float(agent.cur_pos[2])
 
-            self.ENV_AGENT_ARRAY[i].prev_pos_x = c_float(agent.prev_pos[0])
-            self.ENV_AGENT_ARRAY[i].prev_pos_z = c_float(agent.prev_pos[2])
+                self.agents_array[i].prev_pos_x = c_float(agent.prev_pos[0])
+                self.agents_array[i].prev_pos_z = c_float(agent.prev_pos[2])
 
-            stop_x, stop_z = agent.get_stop_pos(env)
-            self.ENV_AGENT_ARRAY[i].stop_x = c_float(stop_x)
-            self.ENV_AGENT_ARRAY[i].stop_z = c_float(stop_z)
+                stop_x, stop_z = agent.get_stop_pos(env)
+                self.agents_array[i].stop_x = c_float(stop_x)
+                self.agents_array[i].stop_z = c_float(stop_z)
 
-            tile_x, tile_z = list(env.get_grid_coords(agent.cur_pos))
-            self.ENV_AGENT_ARRAY[i].tile_x = c_int(tile_x)
-            self.ENV_AGENT_ARRAY[i].tile_z = c_int(tile_z)
+                tile_x, tile_z = list(env.get_grid_coords(agent.cur_pos))
+                self.agents_array[i].tile_x = c_int(tile_x)
+                self.agents_array[i].tile_z = c_int(tile_z)
 
-            self.ENV_AGENT_ARRAY[i].angle = c_float(agent.cur_angle)
-            self.ENV_AGENT_ARRAY[i].speed = c_float(agent.speed)
-            self.ENV_AGENT_ARRAY[i].forward_step = c_float(agent.forward_step)
-            self.ENV_AGENT_ARRAY[i].direction = get_dl_direction(agent.direction)
-            self.ENV_AGENT_ARRAY[i].intersection_arrival = c_int(agent.intersection_arrival) if agent.intersection_arrival else c_int(env.max_steps)
-            self.ENV_AGENT_ARRAY[i].patience = c_int(agent.patience)
-            self.ENV_AGENT_ARRAY[i].step_count = c_int(agent.step_count)
+                self.agents_array[i].angle = c_float(agent.cur_angle)
+                self.agents_array[i].speed = c_float(agent.speed)
+                self.agents_array[i].forward_step = c_float(agent.forward_step)
+                self.agents_array[i].direction = get_dl_direction(agent.direction)
+                self.agents_array[i].intersection_arrival = c_int(agent.intersection_arrival) if agent.intersection_arrival else c_int(env.max_steps)
+                self.agents_array[i].patience = c_int(agent.patience)
+                self.agents_array[i].step_count = c_int(agent.step_count)
 
-            self.ENV_AGENT_ARRAY[i].state = AgentState(agent.states['in_intersection'],
-                                                    agent.states['at_intersection_entry'],
-                                                    agent.states['intersection_empty'],
-                                                    agent.states['approaching_intersection'],
-                                                    agent.states['obj_in_range'],
-                                                    agent.states['has_right_of_way'],
-                                                    agent.states['cars_waiting_to_enter'],
-                                                    agent.states['car_entering_range'],
-                                                    agent.states['obj_behind_intersection'],
-                                                    agent.states['is_tailgating'],
-                                                    agent.next_to_go(env))
+                self.agents_array[i].state = AgentState(agent.states['in_intersection'],
+                                                        agent.states['at_intersection_entry'],
+                                                        agent.states['intersection_empty'],
+                                                        agent.states['approaching_intersection'],
+                                                        agent.states['obj_in_range'],
+                                                        agent.states['has_right_of_way'],
+                                                        agent.states['cars_waiting_to_enter'],
+                                                        agent.states['car_entering_range'],
+                                                        agent.states['obj_behind_intersection'],
+                                                        agent.states['is_tailgating'],
+                                                        agent.next_to_go(env))
+                self.agents_array[i].exists = c_bool(True)
+            else:
+                self.agents_array[i].id = c_int(-1)
+                self.agents_array[i].pos_x = c_float(-1.0)
+                self.agents_array[i].pos_z = c_float(-1.0)
 
+                self.agents_array[i].prev_pos_x = c_float(-1.0)
+                self.agents_array[i].prev_pos_z = c_float(-1.0)
+
+                self.agents_array[i].stop_x = c_float(-1.0)
+                self.agents_array[i].stop_z = c_float(-1.0)
+
+                self.agents_array[i].tile_x = c_int(-1)
+                self.agents_array[i].tile_z = c_int(-1)
+
+                self.agents_array[i].angle = c_float(0.0)
+                self.agents_array[i].speed = c_float(0.0)
+                self.agents_array[i].forward_step = c_float(0.0)
+                self.agents_array[i].direction = Direction.NORTH
+                self.agents_array[i].intersection_arrival = c_int(-1)
+                self.agents_array[i].patience = c_int(-1)
+                self.agents_array[i].step_count = c_int(-1)
+
+                self.agents_array[i].state = AgentState(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                self.agents_array[i].exists = c_bool(False)
 
 class EnvironmentInfo(Structure):
     _fields_ = [('intersection_x', c_int),

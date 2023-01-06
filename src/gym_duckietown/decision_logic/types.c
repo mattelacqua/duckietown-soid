@@ -75,11 +75,12 @@ typedef struct {
     int patience ;
     int step_count ;
     AgentState state ;
+    bool exists ;
 } EnvironmentAgent ;
 
 typedef struct {
-    int elements;
-    EnvironmentAgent* ENV_AGENT_ARRAY;
+    int num_agents;
+    EnvironmentAgent* agents_array;
 } EnvironmentAgentArray ;
 
 // Environment Info

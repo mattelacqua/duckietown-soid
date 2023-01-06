@@ -29,6 +29,7 @@ def test(args):
             camera_rand=args.camera_rand,
             dynamics_rand=args.dynamics_rand,
             num_random_agents=args.num_random_agents,
+            max_agents=args.max_agents,
             full_transparency=True,
             verbose=args.verbose
         )

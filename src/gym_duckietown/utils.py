@@ -48,7 +48,6 @@ def get_file_path(sub_dir, file_name, default_ext):
 def get_args_from_config(config_name: str):
 
     params = configparser.ConfigParser()
-    print(config_name)
     params.read(config_name)
     class Args:
         # Logging 
@@ -110,6 +109,7 @@ def get_args_from_config(config_name: str):
             # Agents
             self.num_random_agents=params.getint('AGENTS', 'NUM_RANDOM_AGENTS')
             self.safety_factor=params.getfloat('AGENTS', 'SAFETY_FACTOR')
+            self.max_agents=params.getint('AGENTS', 'MAX_AGENTS')
 
             # Learning
             self.save_models=params.getboolean('LEARNING', 'SAVE_MODELS')

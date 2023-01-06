@@ -193,6 +193,9 @@ DEFAULT_SAFETY_FACTOR=1.0
 
 DEFAULT_NUM_AGENTS=2
 
+MAX_AGENTS=8
+
+
 LanePosition0 = namedtuple("LanePosition", "dist dot_dir angle_deg angle_rad")
 
 
@@ -251,6 +254,7 @@ class Simulator(gym.Env):
         enable_leds: bool = True,
         num_agents: int = DEFAULT_NUM_AGENTS,
         num_random_agents: int = 0,
+        max_agents: int = 0,
         verbose: bool = False 
     ):
         """
@@ -283,6 +287,7 @@ class Simulator(gym.Env):
         :param enable_leds: Enables LEDs drawing.
         :param verbose: Enables Logging.
         """
+        global MAX_AGENTS
         self.enable_leds = enable_leds
         information = get_graphics_information()
         logger.info(
@@ -427,6 +432,8 @@ class Simulator(gym.Env):
         # Set the default state to running
         self.state = "run"
         self.c_info_struct = None
+        self.max_agents = max_agents
+        MAX_AGENTS = max_agents
 
 
         # Initialize the state

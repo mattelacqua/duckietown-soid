@@ -82,12 +82,12 @@ IntersectionAction *intersection_action(TurnChoice old_turn_choice, TurnChoice o
     Action action = STOP;
 
     // Check if we want to wait first
-    int num_near_intersection = env_agent_array_struct->elements;
+    int num_near_intersection = env_agent_array_struct->num_agents;
 
     int wait_step = 0;
 
     for (int i = 0; i < num_near_intersection; i++) {
-        if (intersection_arrival > env_agent_array_struct->ENV_AGENT_ARRAY[i].intersection_arrival) {
+        if (intersection_arrival > env_agent_array_struct->agents_array[i].intersection_arrival) {
             //wait_step += intersection_arrival - env_agent_array_struct->ENV_AGENT_ARRAY[i].intersection_arrival;
             wait_step +=25 ;
         }
@@ -278,7 +278,7 @@ bool has_right_of_way(  bool in_intersection,
 
 // Good agent proceed: 0=stop 1=proceed
 bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent agent = env_info->agents.ENV_AGENT_ARRAY[agent_index];
+    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
     if (agent.state.is_tailgating) 
         return false;
     if (agent.state.has_right_of_way) 
@@ -293,7 +293,7 @@ bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
 
 // Handle patience return 0=do nothing 1=inc 2=reset
 int handle_patience(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent agent = env_info->agents.ENV_AGENT_ARRAY[agent_index];
+    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
     if (!agent.state.has_right_of_way && agent.state.next_to_go && agent.state.intersection_empty)
         return 1;
     if (!agent.state.has_right_of_way && agent.state.next_to_go && !agent.state.intersection_empty)
@@ -319,14 +319,14 @@ void print_all(EnvironmentInfo* env_info) {
     int grid_h = env_info->grid_h;
     float road_tile_size = env_info->road_tile_size;
     int max_steps = env_info->max_steps;
-    int num_agents = env_info->agents.elements;
+    int num_agents = env_info->agents.num_agents;
     fflush(stdout);
     printf("Environment information: \n");
     printf("Intersection: %d, %d\n", intersection_x, intersection_z);
     printf("Grid Height: %d Grid Width %d Road tile size: %f\n", grid_h, grid_w, road_tile_size);
     printf("Robot Length: %f Max Steps: %d\n",  robot_length, max_steps);
     
-    EnvironmentAgent *agents = env_info->agents.ENV_AGENT_ARRAY;
+    EnvironmentAgent *agents = env_info->agents.num_agents;
     for (int i = 0; i < num_agents; i++) {
         printf("Agent %d information \n", agents[i].id);
         printf("pos_x: %f pos_z %f \n", agents[i].pos_x, agents[i].pos_z);
