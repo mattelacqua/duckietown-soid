@@ -1,6 +1,5 @@
 from ..agents import dl
 from ..dl_utils import *
-from ._agent_utils import intersection_tile
 #--------------------------
 # Intersections 
 # Code for handling intersection behavior
@@ -40,84 +39,6 @@ def handle_intersection(self, env, speed_limit=1.0,  stop_point=30, learning=Fal
         action_seq.extend(self.move_forward(env, speed_limit=speed_limit, intersection=True))
 
     return action_seq
-
-# Detect if there is an intersection
-def intersection_detected(self, env):
-    # Get relevant state information
-    curr_x, curr_z = self.cur_pos[0], self.cur_pos[2]
-    stop_x, stop_z = self.get_stop_pos(env)
-    direction = self.direction
-
-    # Preprocess for C Callout
-    direction = get_dl_direction(direction)
-
-    dl.intersection_detected.argtypes = [c_int, 
-                                        c_float, 
-                                        c_float, 
-                                        c_float, 
-                                        c_float, 
-                                        c_bool]
-
-    is_intersection = dl.intersection_detected(direction, float(curr_x), float(curr_z), float(stop_x), float(stop_z), self.approaching_intersection(env))
-
-    first_time = False
-    if is_intersection and not self.intersection_arrival:
-        self.intersection_arrival = self.step_count
-        first_time = True
-
-    # Return 
-    return (is_intersection and first_time)
-
-# Check if approaching an intersection
-def approaching_intersection(self, env, include_tile: bool=False):
-    # Get state information
-    if self.in_bounds(env):
-        tile_x, tile_z = self.get_curr_tile(env)['coords']
-        direction = self.direction
-
-        # Based on direction, check if the next tile is an intersection
-        if direction == 'N' and intersection_tile(env, tile_x, tile_z-1):
-            if include_tile:
-                return True, (tile_x, tile_z - 1)
-            else:
-                return True
-        elif direction == 'W' and intersection_tile(env, tile_x-1, tile_z):
-            if include_tile:
-                return True, (tile_x-1, tile_z)
-            else:
-                return True
-        elif direction == 'S' and intersection_tile(env, tile_x, tile_z+1):
-            if include_tile:
-                return True, (tile_x, tile_z+1)
-            else:
-                return True
-        elif direction == 'E' and intersection_tile(env, tile_x+1, tile_z):
-            if include_tile:
-                return True, (tile_x+1, tile_z)
-            else:
-                return True        
-        else:
-            if include_tile:
-                return False, None
-            else:
-                return False
-    else:
-        if include_tile:
-            return False, None
-        else:
-            return False
-
-# Check if we have just left an intersection an intersection
-def left_intersection(self, env, include_tile: bool=False):
-    # Get state information
-    tile_x, tile_z = list(env.get_grid_coords(self.cur_pos))
-    prev_tile_x, prev_tile_z = list(env.get_grid_coords(self.prev_pos))
-
-    if intersection_tile(env, prev_tile_x, prev_tile_z) and not intersection_tile(env, tile_x, tile_z):
-        return True        
-    else:
-        return False
-
 
 # Get the stopping points (~3/4 through the tile)
 def get_stop_pos(self, env):

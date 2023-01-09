@@ -187,16 +187,7 @@ def get_duckiebot_mesh(color: str) -> ObjMesh:
 
     return get_mesh("duckiebot", change_materials=change_materials)
 
-# Check if a tile is an intersection tile
-def intersection_tile(env, tile_x, tile_z):
-    if tile_x >= 0 and tile_z >= 0 and tile_x < env.grid_width and tile_z < env.grid_height:
-        tile_kind = get_tile(env, tile_x, tile_z)['kind']
-        if tile_kind == '4way':
-            return True
-        else:
-            return False
-    else:
-        return False
+
 
 # Get tile info
 def get_tile(env, tile_x, tile_z):

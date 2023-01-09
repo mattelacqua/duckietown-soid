@@ -56,6 +56,7 @@ class EnvironmentAgent(Structure):
                 ('intersection_arrival', c_int),
                 ('patience', c_int),
                 ('step_count', c_int),
+                ('lookahead', c_float),
                 ('state', AgentState),
                 ('exists', c_bool)]
 
@@ -95,6 +96,7 @@ class EnvironmentAgentArray(Structure):
                 self.agents_array[i].intersection_arrival = c_int(agent.intersection_arrival) if agent.intersection_arrival else c_int(env.max_steps)
                 self.agents_array[i].patience = c_int(agent.patience)
                 self.agents_array[i].step_count = c_int(agent.step_count)
+                self.agents_array[i].lookahead = c_float(agent.lookahead)
 
                 self.agents_array[i].state = AgentState(agent.states['in_intersection'],
                                                         agent.states['at_intersection_entry'],
@@ -129,6 +131,7 @@ class EnvironmentAgentArray(Structure):
                 self.agents_array[i].intersection_arrival = c_int(-1)
                 self.agents_array[i].patience = c_int(-1)
                 self.agents_array[i].step_count = c_int(-1)
+                self.agents_array[i].lookahead = c_float(-1.0)
 
                 self.agents_array[i].state = AgentState(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
                 self.agents_array[i].exists = c_bool(False)

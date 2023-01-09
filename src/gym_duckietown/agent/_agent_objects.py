@@ -37,21 +37,8 @@ def get_obstacles(self, env): #, tile_x, tile_z):
     self.intersection_agents = []
 
     for agent in env.agents:
-        info = agent.get_info(env)
-        agent_direction = agent.get_direction(env)
-        agent_x, agent_z = env.get_grid_coords(info['cur_pos'])
-        prev_distance = env.pos_distance(self.prev_pos, agent.prev_pos)
-        curr_distance = env.pos_distance(self.cur_pos, agent.cur_pos)
-
-        # If we are approaching the same intersection
-        self_approaching_intersection, self_intersection_coords = self.approaching_intersection(env, include_tile=True)
-        agent_approaching_intersection, agent_intersection_coords = agent.approaching_intersection(env, include_tile=True)
-        
         if agent != self and \
-            self_approaching_intersection and \
-            agent_approaching_intersection and \
-            (self_intersection_coords == agent_intersection_coords):
-            
+            agent.states['at_intersection_entry'] or agent.states['in_intersection']:
                 self.intersection_agents.append(agent)
 
 # Reset the obstacles before getting new ones in each time step

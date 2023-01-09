@@ -69,8 +69,10 @@ class Agent():
     obs: np.ndarray
     misc: dict
     q_state: int
+    lookahead: float
 
     def __init__(self,
+        env,
         cur_pos=[0.0, 0.0, 0.0],
         cur_angle=0.0,
         start_tile=(0, 0),
@@ -87,7 +89,7 @@ class Agent():
         self.mesh = get_duckiebot_mesh(color)
         self.actions = []
         self.last_action = None 
-        self.intersection_arrival = None
+        self.intersection_arrival = -1
         self.step_count = 0
 
         # Pose
@@ -125,6 +127,7 @@ class Agent():
         self.nearby_objects = []                # Keep track of nearby objects and agents
         self.nearby_agents = []
         self.intersection_agents = []
+        self.lookahead = env.road_tile_size
         
         # Settings
         self.max_iterations = 1000
@@ -146,8 +149,7 @@ class Agent():
 
 
     # Import things for learning
-    from .agent._agent_learning import  get_learning_state, \
-                                        get_reward, \
+    from .agent._agent_learning import  get_reward, \
                                         get_state
 
     # Import things for decision logic
@@ -165,7 +167,11 @@ class Agent():
                                         cars_arrived_before_me, \
                                         car_entering_range, \
                                         get_direction, \
-                                        in_bounds
+                                        in_bounds, \
+                                        get_learning_state, \
+                                        intersection_detected, \
+                                        approaching_intersection
+                                        
 
     # Import Lights
     from .agent._agent_lights import    turn_on_light, \
@@ -181,9 +187,6 @@ class Agent():
 
     # Import Intersection Detection/Handling Functions
     from .agent._agent_intersection import  handle_intersection, \
-                                            intersection_detected, \
-                                            approaching_intersection, \
-                                            left_intersection, \
                                             get_stop_pos
         
     # Import Object Detection/Handling Functions

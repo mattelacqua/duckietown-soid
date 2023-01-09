@@ -74,6 +74,7 @@ typedef struct {
     int intersection_arrival ;
     int patience ;
     int step_count ;
+    float lookahead ;
     AgentState state ;
     bool exists ;
 } EnvironmentAgent ;

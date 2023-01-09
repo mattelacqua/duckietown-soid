@@ -933,19 +933,19 @@ class Simulator(gym.Env):
         if agents:
             # If reading in from map
             for agent_id, desc in agents.items():
-                new_agent = Agent(cur_pos=desc["start_pose"][0], cur_angle=desc["start_pose"][1], start_tile=desc["start_tile"], start_pose=desc["start_pose"], agent_id=agent_id, color=desc["color"])
+                new_agent = Agent(self, cur_pos=desc["start_pose"][0], cur_angle=desc["start_pose"][1], start_tile=desc["start_tile"], start_pose=desc["start_pose"], agent_id=agent_id, color=desc["color"])
                 self.agents.append(new_agent)
         else:
             # Retroactive Support
             try: 
                 if map_data["start_pose"] and map_data["start_tile"]:
-                    new_agent = Agent(cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_tile=map_data["start_tile"], start_pose=map_data["start_pose"], agent_id="agent0")
+                    new_agent = Agent(self, cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_tile=map_data["start_tile"], start_pose=map_data["start_pose"], agent_id="agent0")
                     self.agents.append(new_agent)
                 elif map_data["start_pose"]:
-                    new_agent = Agent(cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_pose=map_data["start_pose"], agent_id="agent0")
+                    new_agent = Agent(self, cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_pose=map_data["start_pose"], agent_id="agent0")
                     self.agents.append(new_agent)
                 elif map_data["start_tile"]:
-                    new_agent = Agent(start_tile=desc["start_tile"], agent_id="agent0")
+                    new_agent = Agent(self, start_tile=desc["start_tile"], agent_id="agent0")
                     self.agents.append(new_agent)
             except KeyError:
                 pass
@@ -956,13 +956,13 @@ class Simulator(gym.Env):
             if random_agents:
                 num_random = random_agents
             for x in range(0, num_random):
-                new_agent = Agent(cur_pos=[0, 0, 0], cur_angle=0, agent_id=("agent" + str(x)), random_spawn=True)
+                new_agent = Agent(self, cur_pos=[0, 0, 0], cur_angle=0, agent_id=("agent" + str(x)), random_spawn=True)
                 self.agents.append(new_agent)
 
 
         # If still no, make a default one ( no random agents )
         if not self.agents:
-            new_agent = Agent(cur_pos=[0, 0, 0], cur_angle=0, agent_id="agent" + str(x), random_spawn=True)
+            new_agent = Agent(self, cur_pos=[0, 0, 0], cur_angle=0, agent_id="agent" + str(x), random_spawn=True)
         
 
     def _load_objects(self, map_data: MapFormat1):
