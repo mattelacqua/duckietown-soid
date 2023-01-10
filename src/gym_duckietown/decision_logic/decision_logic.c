@@ -714,7 +714,7 @@ bool car_entering_range(EnvironmentInfo* env_info, int agent_index, int location
                (agents[i].pos_x <= object_ahead_range_x_ub) &&
                (agents[i].pos_z >= object_ahead_range_x_lb) &&
                (agents[i].pos_z <= object_ahead_range_x_ub) &&
-               (pos_distance(agents[i].pos_x, agent.pos_x, agents[i].pos_z, agent.pos_z) < pos_distance(agents[i].prev_pos_x, agent.prev_pos_x, agents[i].prev_pos_z, agent.prev_pos_z)))
+               (pos_distance((double) agents[i].pos_x, (double) agent.pos_x, (double) agents[i].pos_z, (double)agent.pos_z) < pos_distance((double) agents[i].prev_pos_x, (double) agent.prev_pos_x, (double)agents[i].prev_pos_z, (double) agent.prev_pos_z)))
                 return true;
         }
         

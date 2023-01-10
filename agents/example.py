@@ -62,7 +62,8 @@ def test(args):
             # Render
             env.step(learning=True)
             done = env.agents[0].done
-            env.render(mode=args.cam_mode)
+            if (agent.step_count % args.render_steps == 0):
+                env.render(mode=args.cam_mode)
     
 # Main - Get arguments and train using Q learning
 if __name__ == "__main__":
