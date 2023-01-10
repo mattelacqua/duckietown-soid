@@ -83,7 +83,7 @@ class Agent():
         
         # Info
         self.agent_id = agent_id 
-        self.index = agent_id[-1]
+        self.index = int(agent_id[-1])
         self.timestamp = 0.0
         self.color = color
         self.mesh = get_duckiebot_mesh(color)

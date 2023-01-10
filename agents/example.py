@@ -37,6 +37,7 @@ def test(args):
         env = gym.make(args.env_name)
 
     # Start up env
+    print("BFORE RESET")
     env.reset()
     
     # For the number of iterations we want to test (this is just to see it again)
@@ -52,6 +53,7 @@ def test(args):
                 # If not in the middle of an action, get one
                 if not agent.actions:
                     if agent.intersection_detected(env):
+                        print("MAKE IT HERE")
                         agent.add_actions(agent.handle_intersection(env))
                     else: 
                         agent.add_actions(agent.move_forward(env))

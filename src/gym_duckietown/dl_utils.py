@@ -93,7 +93,7 @@ class EnvironmentAgentArray(Structure):
                 self.agents_array[i].speed = c_float(agent.speed)
                 self.agents_array[i].forward_step = c_float(agent.forward_step)
                 self.agents_array[i].direction = get_dl_direction(agent.direction)
-                self.agents_array[i].intersection_arrival = c_int(agent.intersection_arrival) if agent.intersection_arrival else c_int(env.max_steps)
+                self.agents_array[i].intersection_arrival = c_int(agent.intersection_arrival) 
                 self.agents_array[i].patience = c_int(agent.patience)
                 self.agents_array[i].step_count = c_int(agent.step_count)
                 self.agents_array[i].lookahead = c_float(agent.lookahead)
@@ -108,7 +108,7 @@ class EnvironmentAgentArray(Structure):
                                                         agent.states['car_entering_range'],
                                                         agent.states['obj_behind_intersection'],
                                                         agent.states['is_tailgating'],
-                                                        agent.next_to_go(env))
+                                                        agent.states['next_to_go'])
                 self.agents_array[i].exists = c_bool(True)
             else:
                 self.agents_array[i].id = c_int(-1)

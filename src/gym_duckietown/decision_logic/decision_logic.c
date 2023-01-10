@@ -407,16 +407,19 @@ bool has_right_of_way(EnvironmentInfo* env_info, int agent_index){
 
 
 // Get the current direction of an agent
-char get_direction(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
-    if (agent.direction == NORTH)
+char get_direction(int curr_angle){
+    if (curr_angle > 45 && curr_angle <= 135) {
         return 'N';
-    else if (agent.direction == WEST)
+    }
+    else if (curr_angle > 135 && curr_angle <= 225){
         return 'W';
-    else if (agent.direction == SOUTH)
+    }
+    else if (curr_angle > 225 && curr_angle <= 315){
         return 'S';
-    else if (agent.direction == EAST)
+    }
+    else{
         return 'E';
+    }
 }
 
 // Get if we are in bounds or not
@@ -434,9 +437,13 @@ bool in_bounds(EnvironmentInfo* env_info, int agent_index){
 
 
 bool in_intersection(EnvironmentInfo* env_info, int agent_index){
+    fflush(stdout);
+    printf("IN INTERSECTION");
     EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
-    if (agent.tile_x == env_info->intersection_x && agent.tile_z == env_info->intersection_z)
+    if (agent.tile_x == env_info->intersection_x && agent.tile_z == env_info->intersection_z){
+        //printf("agent %d in intersection", agent_index);
         return true;
+    }
     else
         return false;
 

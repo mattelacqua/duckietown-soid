@@ -431,9 +431,9 @@ class Simulator(gym.Env):
 
         # Set the default state to running
         self.state = "run"
-        self.c_info_struct = None
         self.max_agents = max_agents
         MAX_AGENTS = max_agents
+        self.c_info_struct = None
 
 
         # Initialize the state
@@ -525,7 +525,7 @@ class Simulator(gym.Env):
         for agent in self.agents: 
             agent.states['approaching_intersection'] = agent.approaching_intersection(env)
         for agent in self.agents: 
-            agent.states['obj_in_range'] = agent.object_in_range(env, location="Ahead", radius = radius)[0]
+            agent.states['obj_in_range'] = agent.object_in_range(env, location="Ahead", radius = radius)
         for agent in self.agents: 
             agent.states['has_right_of_way'] = agent.has_right_of_way(env)
         for agent in self.agents: 
@@ -533,9 +533,9 @@ class Simulator(gym.Env):
         for agent in self.agents: 
             agent.states['car_entering_range'] = agent.car_entering_range(env, radius=radius)
         for agent in self.agents: 
-            agent.states['obj_behind_intersection'] = agent.object_in_range(env, location="Behind", intersection=True, radius=radius)[0]
+            agent.states['obj_behind_intersection'] = agent.object_in_range(env, location="Behind", intersection=True, radius=radius)
         for agent in self.agents: 
-            agent.states['obj_behind_no_intersection'] =  agent.object_in_range(env, location="Behind", intersection=False, radius=radius)[0]
+            agent.states['obj_behind_no_intersection'] =  agent.object_in_range(env, location="Behind", intersection=False, radius=radius)
         for agent in self.agents: 
             agent.states['is_tailgating'] =  agent.is_tailgating(env)
     
@@ -569,16 +569,28 @@ class Simulator(gym.Env):
             agent.last_action = None
             agent.wheelVels = np.array([0.0, 0.0]) 
             agent.state = None
-            agent.intersection_arrival = None
+            agent.intersection_arrival = -1
             agent.lights["front_left"][3] = False
             agent.lights["front_right"][3] = False
             agent.lights["back_left"][3] = False
             agent.lights["back_right"][3] = False
             agent.lights["center"][3] = False
-            agent.direction = agent.get_direction(self)
             agent.patience = 0
+            agent.direction = agent.get_direction(self)
+            agent.states['in_intersection'] = False
+            agent.states['at_intersection_entry'] = False
+            agent.states['intersection_empty'] = False
+            agent.states['approaching_intersection'] = False
+            agent.states['obj_in_range'] = False
+            agent.states['has_right_of_way'] = False
+            agent.states['cars_waiting_to_enter'] = False
+            agent.states['car_entering_range'] = False
+            agent.states['obj_behind_intersection'] = False
+            agent.states['obj_behind_no_intersection'] = False
+            agent.states['is_tailgating'] = False
+            agent.states['next_to_go'] = False
+        
                     
-        self.get_agents_states()
 
         if self.randomize_maps_on_reset:
             map_name = self.np_random.choice(self.map_names)
@@ -805,10 +817,12 @@ class Simulator(gym.Env):
 
             # set the curve
             agent.curve = agent.get_curve(self)
+        
 
         # Generate the first camera image
         obs = self.render_obs(segment=segment)
         self.c_info_struct = EnvironmentInfo(self)
+        self.get_agents_states()
 
 
         # Return first observation
@@ -1774,6 +1788,7 @@ class Simulator(gym.Env):
             # Put the state into a dictionary
             agent.direction = agent.get_direction(self)
             agent.get_state(self)
+            agent.get_learning_state(self)
 
             # Generate the state 
             if learning and agent.in_bounds(self):
@@ -2493,7 +2508,7 @@ class Simulator(gym.Env):
         agent.curve = agent.get_curve(self)
         agent.start_direction = agent.get_direction(self)
         agent.actions = []
-        agent.intersection_arrival = None
+        agent.intersection_arrival = -1
         agent.nearby_objects = []
         agent.nearby_agents = []
         agent.last_action = None
@@ -2514,12 +2529,25 @@ class Simulator(gym.Env):
         agent.state = p.initialize(c0=c0, t0=0)
 
         # SEt the lights 
-        agent.intersection_arrival = None
+        agent.intersection_arrival = -1
         agent.lights["front_left"][3] = False
         agent.lights["front_right"][3] = False
         agent.lights["back_left"][3] = False
         agent.lights["back_right"][3] = False
         agent.lights["center"][3] = False
+        agent.states['in_intersection'] = False
+        agent.states['at_intersection_entry'] = False
+        agent.states['intersection_empty'] = False
+        agent.states['approaching_intersection'] = False
+        agent.states['obj_in_range'] = False
+        agent.states['has_right_of_way'] = False
+        agent.states['cars_waiting_to_enter'] = False
+        agent.states['car_entering_range'] = False
+        agent.states['obj_behind_intersection'] = False
+        agent.states['obj_behind_no_intersection'] = False
+        agent.states['is_tailgating'] = False
+        agent.states['next_to_go'] = False
+        
 
 
     def get_agent_corners(self, pos, angle, bbox_offset_w = 0, bbox_offset_l = 0):

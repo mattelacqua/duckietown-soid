@@ -85,7 +85,8 @@ def in_intersection(self, env):
     # C callout
     dl.in_intersection.argtypes = [POINTER(EnvironmentInfo), c_int]
     dl.in_intersection.restype = c_bool
-    return dl.in_intersection(env.c_info_struct, int(self.index))
+    in_intersection = dl.in_intersection(env.c_info_struct, int(self.index))
+    return in_intersection
 
 # Check if we are at an intersection entry (right at the line)
 def at_intersection_entry(self, env):
@@ -155,9 +156,9 @@ def car_entering_range(self, env, radius=1):
 # Get current direction
 def get_direction(self, env):
     # C callout
-    dl.get_direction.argtypes = [POINTER(EnvironmentInfo), c_int]
+    dl.get_direction.argtypes = [c_int]
     dl.get_direction.restype = c_char
-    return dl.get_direction(env.c_info_struct, int(self.index)).decode('utf-8')
+    return dl.get_direction(int(self.cur_angle)).decode('utf-8')
     
     
 # Check if agent is in bounds
@@ -178,11 +179,14 @@ def intersection_tile(env, tile_x, tile_z):
 # Get learning state for q-learning 
 def get_learning_state(self, env):
     # C callout to get model number
-    dl.get_learning_state.argtypes = [POINTER(EnvironmentInfo), c_int, c_int]
+    dl.get_learning_state.argtypes = [POINTER(EnvironmentInfo), c_int]
     dl.get_learning_state.restype = c_int
     model_row =  dl.get_learning_state(env.c_info_struct, int(self.index))
-    state = [bool(i) for i in list('{0:0b}'.format(model_row))]
-    print(f"LEARNING STATE HERE {state}")
+    pre_state = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    state_size = 10
+    state = [int(i) for i in list('{0:0b}'.format(model_row))]
+    state = pre_state[0:state_size - len(state)] + state
+    state = [bool(i) for i in state]
     
     self.learning_state = state
     return model_row
