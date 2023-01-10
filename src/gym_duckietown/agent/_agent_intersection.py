@@ -46,7 +46,6 @@ def get_stop_pos(self, env):
     tile_x, tile_z = env.get_grid_coords(self.cur_pos) 
     tile_size = env.road_tile_size
     direction = self.direction
-    print(f'direction {direction}')
 
     # Adjust stop point based on speed
     # Treat agents above .30 as the same. Its just how it goes.

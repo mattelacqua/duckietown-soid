@@ -53,7 +53,6 @@ def test(args):
                 # If not in the middle of an action, get one
                 if not agent.actions:
                     if agent.intersection_detected(env):
-                        print("MAKE IT HERE")
                         agent.add_actions(agent.handle_intersection(env))
                     else: 
                         agent.add_actions(agent.move_forward(env))
@@ -61,7 +60,7 @@ def test(args):
                 agent.proceed(env,good_agent=True)
 
             # Render
-            env.step()
+            env.step(learning=True)
             done = env.agents[0].done
             env.render(mode=args.cam_mode)
     

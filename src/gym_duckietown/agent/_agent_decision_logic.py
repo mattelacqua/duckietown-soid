@@ -156,9 +156,9 @@ def car_entering_range(self, env, radius=1):
 # Get current direction
 def get_direction(self, env):
     # C callout
-    dl.get_direction.argtypes = [c_int]
+    dl.get_direction.argtypes = [c_float]
     dl.get_direction.restype = c_char
-    return dl.get_direction(int(self.cur_angle)).decode('utf-8')
+    return dl.get_direction(float(self.get_curr_angle(env))).decode('utf-8')
     
     
 # Check if agent is in bounds
