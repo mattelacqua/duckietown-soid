@@ -155,6 +155,12 @@ cd learning
 export PYTHONPATH="${PYTHONPATH}:`pwd`"
 ```
 ```
+cd ../src
+```
+```
+export PYTHONPATH="${PYTHONPATH}:`pwd`"
+```
+```
 cd ..
 ```
 ```
