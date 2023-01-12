@@ -61,62 +61,6 @@ bool is_behind(EnvironmentInfo* env_info, int agent_index, int other_index){
         return false;
 }
 /************************************************
- *  Turn choice &/ Action Choice functions
-************************************************/
-
-// Get the turn choice TODO move to utils
-TurnChoice get_turn(TurnChoice choice) {
-    if (choice == RANDOM) {
-        srand(time(NULL));   // Initialization, should only be called once.
-        int r = rand() % 3;
-        return r;
-    }
-    else {
-        return choice;
-    }
-}
-
-// Get the signal choice TODO MOve to utils
-TurnChoice get_signal(TurnChoice turn_choice, TurnChoice signal_choice) {
-    if (signal_choice == RANDOM) {
-        return turn_choice;
-    }
-    else {
-        return signal_choice;
-    }
-}
-
-IntersectionAction *intersection_action(TurnChoice old_turn_choice, TurnChoice old_signal_choice, int intersection_arrival, EnvironmentAgentArray* env_agent_array_struct) {
-    
-    // Incase of random turn or signal
-    TurnChoice turn_choice = get_turn(old_turn_choice);
-    TurnChoice signal_choice = get_signal(turn_choice, old_signal_choice);
-    Action action = STOP;
-
-    // Check if we want to wait first
-    int num_near_intersection = env_agent_array_struct->num_agents;
-
-    int wait_step = 0;
-
-    for (int i = 0; i < num_near_intersection; i++) {
-        if (intersection_arrival > env_agent_array_struct->agents_array[i].intersection_arrival) {
-            //wait_step += intersection_arrival - env_agent_array_struct->ENV_AGENT_ARRAY[i].intersection_arrival;
-            wait_step +=25 ;
-        }
-    }
-    
-    // Check if we have the right of way (No other cars are in intersection)
-    // Convert to right action
-    action = INTERSECTION_FORWARD;
-    
-    // Return our action
-    IntersectionAction *intersection_action;
-    intersection_action = make_action(turn_choice, signal_choice, action);
-
-    return intersection_action;
-}
-
-/************************************************
  * Intersection Detection
 ************************************************/
 

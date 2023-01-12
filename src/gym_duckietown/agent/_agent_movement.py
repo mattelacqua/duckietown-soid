@@ -47,6 +47,7 @@ def move_forward(self, env, speed_limit=1.0, intersection=False):
 
     # While still moving Slow down
     if curr_speed > speed_limit:
+        print("Strange speed case")
         action = np.array([0.0, 0.0])
         action_seq.append((action, Action.SLOW_DOWN))
     else:

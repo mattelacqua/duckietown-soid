@@ -11,7 +11,7 @@ import json
 
 # Fix payload issue
 from engineio.payload import Payload
-Payload.max_decode_packets = 50
+Payload.max_decode_packets = 100
 
 # Start up Flask web env
 template_dir = os.path.abspath('webserver/old_html/')

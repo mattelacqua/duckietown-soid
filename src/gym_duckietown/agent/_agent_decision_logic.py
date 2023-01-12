@@ -2,6 +2,7 @@ from ..dl_utils import *
 from learn_types import *
 import numpy as np
 from ..agents import dl
+import time
 
 #--------------------------
 # Decision Logic
@@ -61,6 +62,8 @@ def handle_proceed(self, should_proceed):
                 no_stop_actions.append(action)
 
         self.actions = no_stop_actions
+        if not self.actions:
+            self.actions = [()]
 
 # Check if we are next in line to go in ROW
 def next_to_go(self, env):

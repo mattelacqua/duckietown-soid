@@ -142,7 +142,7 @@ def pause(dt):
                 print("Resuming Simulation")
 
         # Render any changes from last thing serialized
-        env.render(env.cam_mode)
+        env.render(mode=args.cam_mode)
 
     # Reset with a webserver reset
     env.reset(webserver_reset=True)
@@ -187,15 +187,15 @@ def update(dt):
         # Render agent's next move
         if agent.actions:
             agent.proceed(env,good_agent=True)
-            agent.render_step(env, agent.get_next_action())
 
+    env.step(learning=True)
     # Log the info
     if env.agents[0].step_count % 10 == 0 or env.agents[0].step_count == 1:
-        print("Logging")
+        #print("Logging")
         gu.init_server(1, log, env, socket)
 
     # render the cam
-    env.render(env.cam_mode)
+    env.render(mode=args.cam_mode)
 
 if __name__ == '__main__':
 

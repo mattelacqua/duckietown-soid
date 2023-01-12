@@ -553,9 +553,10 @@ class Simulator(gym.Env):
         self.timestamp = 0.0
 
         # Get the random number of agents from 
-        self.agents = []
-        random_agents = self.np_random.integers(0, self.num_random_agents)
-        self._load_agents(self.map_data, random_agents=random_agents)
+        if not webserver_reset:
+            self.agents = []
+            random_agents = self.np_random.integers(0, self.num_random_agents)
+            self._load_agents(self.map_data, random_agents=random_agents, webserver_reset=webserver_reset)
 
         # Reset each agent
         for agent in self.agents:
@@ -726,6 +727,8 @@ class Simulator(gym.Env):
             # If setting from the webserver, use that information for propose angle and position
             if webserver_reset:
                 propose_pos = agent.cur_pos 
+                print("HERE")
+                print(f"Agent current pos{agent.cur_pos}")
                 propose_angle = agent.cur_angle
 
             # If specified from map, use that information
@@ -820,13 +823,13 @@ class Simulator(gym.Env):
         
 
         # Generate the first camera image
-        obs = self.render_obs(segment=segment)
+        #obs = self.render_obs(segment=segment)
         self.c_info_struct = EnvironmentInfo(self)
         self.get_agents_states()
 
 
         # Return first observation
-        return obs
+        return #obs
 
     def _load_map(self, map_name: str):
         """
@@ -937,7 +940,7 @@ class Simulator(gym.Env):
             raise InvalidMapException(msg, map_data=map_data)
 
     # Load each of the agents from the map
-    def _load_agents(self, map_data: MapFormat1, random_agents: int = None):
+    def _load_agents(self, map_data: MapFormat1, random_agents: int = None, webserver_reset: bool = False):
         agents = []
         try:
             agents = map_data["agents"]
@@ -966,6 +969,7 @@ class Simulator(gym.Env):
            
         # If we have none, init all as good random ones
         if not self.agents:
+            print("AGENTS?")
             num_random = self.num_random_agents
             if random_agents:
                 num_random = random_agents
@@ -976,6 +980,7 @@ class Simulator(gym.Env):
 
         # If still no, make a default one ( no random agents )
         if not self.agents:
+            print("HERE strange.")
             new_agent = Agent(self, cur_pos=[0, 0, 0], cur_angle=0, agent_id="agent" + str(x), random_spawn=True)
         
 
@@ -1747,6 +1752,8 @@ class Simulator(gym.Env):
     def step(self, learning: bool=False):
         for agent in self.agents:
             action = agent.get_next_action()
+            if not action:
+                continue
             action_name = action[1]
             action = action[0]
             vel, angle = action

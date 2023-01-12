@@ -234,7 +234,6 @@ def unserialize(fifo, log=False):
 def init_server(dt, fifo, env, socket, get_map=False):
 
 
-    print(f"Env Step {env.step}")
     tic = time.perf_counter()
     if get_map:
         env.map_jpg(background=True)

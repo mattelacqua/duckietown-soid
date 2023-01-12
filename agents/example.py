@@ -37,7 +37,6 @@ def test(args):
         env = gym.make(args.env_name)
 
     # Start up env
-    print("BFORE RESET")
     env.reset()
     
     # For the number of iterations we want to test (this is just to see it again)

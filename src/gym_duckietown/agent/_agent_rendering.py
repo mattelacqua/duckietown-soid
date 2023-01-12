@@ -29,7 +29,7 @@ def render_step_inner(self, env, done):
 
 # Get next action
 def get_next_action(self):
-    return self.actions.pop(0)
+    return self.actions.pop(0) if self.actions else None
 
 # Get next action
 def add_actions(self, actions):

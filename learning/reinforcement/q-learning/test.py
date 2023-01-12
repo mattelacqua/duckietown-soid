@@ -1,6 +1,7 @@
-"""Training the agent"""
+"""Testing the agent"""
 import os
 import sys
+import time
 
 # Learning things
 import gym
@@ -38,6 +39,7 @@ def test(args):
             camera_rand=args.camera_rand,
             dynamics_rand=args.dynamics_rand,
             num_random_agents=args.num_random_agents,
+            max_agents=args.max_agents,
             full_transparency=True,
             verbose=args.verbose
         )
@@ -68,7 +70,6 @@ def test(args):
         epochs = 0
         while not done:
 
-
             # Step each agent after choosing an action
             for agent in env.agents:
 
@@ -82,29 +83,31 @@ def test(args):
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
                     # Get initial State (Will be the row of the model)
-                    state = agent.get_learning_state(env)
-
-                    agent.proceed(env, use_model=True, model=model, state=state)
-                    _, reward, done, info = env.step(agent.get_next_action(), agent, learning=True)
-                    done_code = info['done_code']
-                    reward, bad_actions = reward
-                    rewards += reward
-                    if done_code == 'offroad':
-                        offroads += 1
-                    elif done_code == 'finished':
-                        finishes += 1
-                    elif done_code == 'max-steps-reached':
-                        max_steps += 1
-                    elif done_code == 'collision':
-                        collisions += 1 
-                    if done:
-                            break
+                    agent.proceed(env, use_model=True, model=model, state=agent.get_learning_state(env))
+                    print(agent.q_state)
+                    print(agent.learning_state)
+                    #agent.proceed(env, good_agent=True)
                 else:
-                    agent.proceed(env,good_agent=True)
-                    env.step(agent.get_next_action(), agent, learning=True)
+                    agent.proceed(env, good_agent=True)
                 
 
+            env.step(learning=True)
+            reward = env.agents[0].reward
+            done = env.agents[0].done
+            info = env.agents[0].misc
+            done_code = info['done_code']
 
+            reward, bad_actions = reward
+            rewards += reward
+
+            if done_code == 'offroad':
+                offroads += 1
+            elif done_code == 'finished':
+                finishes += 1
+            elif done_code == 'max-steps-reached':
+                max_steps += 1
+            elif done_code == 'collision':
+                collisions += 1 
             if args.render_steps > 0 and epochs % args.render_steps == 0:
                 env.render(mode=args.cam_mode)
             epochs += 1
@@ -138,7 +141,6 @@ if __name__ == "__main__":
         exit()
 
     args = utils.get_args_from_config(config_name)
-
 
     # Test 
     test(args)
