@@ -75,28 +75,28 @@ class EnvironmentAgentArray(Structure):
             if i < len(env.agents):
                 agent = env.agents[i]
                 self.agents_array[i].id = c_int(agent.index)
-                self.agents_array[i].pos_x = c_float(agent.cur_pos[0])
-                self.agents_array[i].pos_z = c_float(agent.cur_pos[2])
+                self.agents_array[i].pos_x = c_float(round(agent.cur_pos[0], 3))
+                self.agents_array[i].pos_z = c_float(round(agent.cur_pos[2], 3))
 
-                self.agents_array[i].prev_pos_x = c_float(agent.prev_pos[0])
-                self.agents_array[i].prev_pos_z = c_float(agent.prev_pos[2])
+                self.agents_array[i].prev_pos_x = c_float(round(agent.prev_pos[0], 3))
+                self.agents_array[i].prev_pos_z = c_float(round(agent.prev_pos[2], 3))
 
                 stop_x, stop_z = agent.get_stop_pos(env)
-                self.agents_array[i].stop_x = c_float(stop_x)
-                self.agents_array[i].stop_z = c_float(stop_z)
+                self.agents_array[i].stop_x = c_float(round(stop_x, 3))
+                self.agents_array[i].stop_z = c_float(round(stop_z, 3))
 
                 tile_x, tile_z = list(env.get_grid_coords(agent.cur_pos))
                 self.agents_array[i].tile_x = c_int(tile_x)
                 self.agents_array[i].tile_z = c_int(tile_z)
 
-                self.agents_array[i].angle = c_float(agent.cur_angle)
-                self.agents_array[i].speed = c_float(agent.speed)
-                self.agents_array[i].forward_step = c_float(agent.forward_step)
+                self.agents_array[i].angle = c_float(round(agent.cur_angle, 3))
+                self.agents_array[i].speed = c_float(round(agent.speed, 3))
+                self.agents_array[i].forward_step = c_float(round(agent.forward_step, 3))
                 self.agents_array[i].direction = get_dl_direction(agent.direction)
                 self.agents_array[i].intersection_arrival = c_int(agent.intersection_arrival) 
                 self.agents_array[i].patience = c_int(agent.patience)
-                self.agents_array[i].step_count = c_int(agent.step_count)
-                self.agents_array[i].lookahead = c_float(agent.lookahead)
+                self.agents_array[i].step_count = c_int(round(agent.step_count, 3))
+                self.agents_array[i].lookahead = c_float(round(agent.lookahead, 3))
 
                 self.agents_array[i].state = AgentState(agent.states['in_intersection'],
                                                         agent.states['at_intersection_entry'],
@@ -153,10 +153,10 @@ class EnvironmentInfo(Structure):
             if tile['kind'] == '4way':
                 self.intersection_x = tile['coords'][0]
                 self.intersection_z = tile['coords'][1]
-        self.robot_length = env.robot_length
+        self.robot_length = round(env.robot_length, 3)
         self.grid_w = env.grid_width
         self.grid_h = env.grid_height
-        self.road_tile_size = env.road_tile_size
+        self.road_tile_size = round(env.road_tile_size, 3)
         self.max_steps = env.max_steps
 
         self.agents = EnvironmentAgentArray(env, env.agents)

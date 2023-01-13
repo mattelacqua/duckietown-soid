@@ -116,9 +116,9 @@ def cars_waiting_to_enter(self, env):
 # Check if anyone other than us is currently in the intersection
 def intersection_empty(self, env):
     # c callout
-    dl.intersection_empty.argtypes = [POINTER(EnvironmentInfo), c_int]
+    dl.intersection_empty.argtypes = [POINTER(EnvironmentInfo)]
     dl.intersection_empty.restype = c_bool
-    return dl.intersection_empty(env.c_info_struct, int(self.index))
+    return dl.intersection_empty(env.c_info_struct)
 
 
 # See if there is an object within one tile block of a car infront of us

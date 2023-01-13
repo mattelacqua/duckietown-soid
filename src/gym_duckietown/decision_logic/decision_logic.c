@@ -18,7 +18,6 @@ float pos_distance(double x1, double x2, double z1, double z2){
 
 bool intersection_dir_agents(EnvironmentInfo* env_info, int agent_index, Direction direction){
     EnvironmentAgent *agents = env_info->agents.agents_array;
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
     bool dir_waiting_agents = false;
     for (int i = 0; i < env_info->agents.num_agents; i++){
         // If not us, and at intersection line, and are facing the given direction, return true.
@@ -148,6 +147,8 @@ bool next_to_go(EnvironmentInfo* env_info, int agent_index){
                         return false;
                 else if (agent.direction == NORTH)
                     return false;
+                else  
+                    return false;
             }
             else if (ROW_agent.direction == EAST) {
                 if (agent.direction == SOUTH)
@@ -163,6 +164,8 @@ bool next_to_go(EnvironmentInfo* env_info, int agent_index){
                     else
                         return false;
                 else if (agent.direction == EAST)
+                    return false;
+                else  
                     return false;
             }
             else if (ROW_agent.direction == SOUTH) {
@@ -180,6 +183,8 @@ bool next_to_go(EnvironmentInfo* env_info, int agent_index){
                         return false;
                 else if (agent.direction == SOUTH)
                     return false;
+                else  
+                    return false;
             }
             else if (ROW_agent.direction == WEST) {
                 if (agent.direction == NORTH)
@@ -195,6 +200,8 @@ bool next_to_go(EnvironmentInfo* env_info, int agent_index){
                     else
                         return false;
                 else if (agent.direction == WEST)
+                    return false;
+                else  
                     return false;
             } else 
                 return false;
@@ -487,9 +494,8 @@ bool cars_waiting_to_enter(EnvironmentInfo* env_info, int agent_index){
     return false;
 }
 
-bool intersection_empty(EnvironmentInfo* env_info, int agent_index){
+bool intersection_empty(EnvironmentInfo* env_info){
     EnvironmentAgent *agents = env_info->agents.agents_array;
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
     for (int i = 0; i < env_info->agents.num_agents; i++){
         // If someone is in the intersection
         if (agents[i].state.in_intersection)
@@ -695,12 +701,13 @@ bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
         return false;
     if (agent.state.has_right_of_way) 
         return true;
-    if (!agent.state.has_right_of_way){
+    else {
         if (agent.patience > 100) 
             return true;
         else 
             return false;
     }
+
 }
 
 // Handle patience return 0=do nothing 1=inc 2=reset
@@ -718,7 +725,8 @@ bool proceed_model(float model[STATES][ACTIONS], int state) {
     float stay = model[state][0];
     float move = model[state][1];
     if (move >= stay) return true;
-    if (stay > move) return false; 
+    else return false; 
+
 }
 
 

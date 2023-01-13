@@ -12,8 +12,8 @@ class AngleDial extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: props.cur_angle, // Value of the the angle is
-      last_sent: props.cur_angle, // Value of the the angle is
+      value: props.angle_deg, // Value of the the angle is
+      last_sent: props.angle_deg, // Value of the the angle is
       id: props.agent_id,     // Which agent
       color: props.agent_color,     // Which agent
       socket: props.socket,     // Socket
@@ -62,9 +62,9 @@ class AngleDial extends React.Component {
             min={0}
             max={360}
             width={150}
-            direction={-1}
             knobPosition="right"
-            dataIndex={this.props.cur_angle}
+            direction={-1}
+            dataIndex={this.props.angle_deg}
             onChange={value => {this.handleChange(value)}}
         />
       </div>

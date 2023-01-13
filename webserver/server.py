@@ -2,7 +2,7 @@
 from flask import Flask, render_template, send_file
 from flask_socketio import SocketIO
 import os
-from webserver.gui_utils import guiAgent, guiEnv, guiState, guiSteps, guiLog, read_init, serialize, unserialize
+from webserver.gui_utils import read_init, serialize, unserialize
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -31,8 +31,6 @@ env_info = None
 log_info = []
 while not env_info:
     env_info = read_init(inp)
-    print("READING INPUT")
-print(f"MADE IT HERE with env_info: {env_info}")
 
 #print(f"FINISHED INIT with \n Agents: {agent_list} \n Env Info: {env_info}")
 
@@ -43,7 +41,6 @@ print(f"MADE IT HERE with env_info: {env_info}")
 def envInfo():
     global env_info
     update_sim_info()
-    print(f"In app_rout env info\n\n {env_info}")
     envInfo_string = json.dumps(env_info)
     return envInfo_string
 
@@ -89,6 +86,7 @@ def agent_angle(data):
     a_id = str(data['id'])
     angle = int(data['value'])
     agent_change = {
+                    'kind': 'change',
                     'change': 'angle',
                     'agent_id': a_id,
                     'cur_angle': angle
@@ -105,6 +103,7 @@ def agent_pos(data):
     x = data['x']
     z = data['z']
     agent_change = {
+                    'kind': 'change',
                     'change': 'pos',
                     'agent_id': a_id,
                     'pos_x': x,
@@ -120,6 +119,7 @@ def increment_pos(data):
     a_id = str(data['id'])
     direction = str(data['direction'])
     agent_change = {
+                    'kind': 'change',
                     'change': 'inc_pos',
                     'agent_id': a_id,
                     'inc_dir': direction
@@ -132,6 +132,7 @@ def lights(data):
     a_id = str(data['id'])
     lights = data['lights']
     agent_change = {
+                    'kind': 'change',
                     'change': 'lights',
                     'agent_id': a_id,
                     'lights': lights
@@ -145,6 +146,7 @@ def sim_state(data):
     global out
     state = str(data['state'])
     to_send = {
+                'kind': 'state',
                 'state': state,
               }
     #print(f"Sending state {state}")
@@ -156,6 +158,7 @@ def delete_agent(data):
     a_id = str(data['id'])
     #print(f"Sending Agent {a_id} delete")
     agent_change = {
+                    'kind': 'change',
                     'change': 'delete',
                     'agent_id': a_id,
                     }
@@ -165,6 +168,7 @@ def delete_agent(data):
 def add_agent():
     global out
     agent_change = {
+                    'kind': 'change',
                     'change': 'add',
                     }
     #print(f"Sending Agent add")
@@ -178,6 +182,7 @@ def turn_choice(data):
     if turn == "Random":
         turn = None
     agent_change = {
+                    'kind': 'change',
                     'change': 'turn',
                     'agent_id': a_id,
                     'turn_choice': turn,
@@ -193,6 +198,7 @@ def signal_choice(data):
     if signal == "Random":
         signal = None
     agent_change = {
+                    'kind': 'change',
                     'change': 'signal',
                     'agent_id': a_id,
                     'signal_choice': signal,
@@ -208,6 +214,7 @@ def forward_step(data):
     forward_step = dict(data['forward_step'])
     # Default to MIN
     agent_change = {
+                    'kind': 'change',
                     'change': 'forward_step',
                     'agent_id': a_id,
                     'forward_step': round(forward_step['min'], 2),
@@ -224,12 +231,14 @@ def bounding_box(data):
     print(f"bbox {direction} offset {bbox_offset}")
     if direction == "width":
         agent_change = {
+                        'kind': 'change',
                         'change': 'bbox_offset_w',
                         'agent_id': a_id,
                         'bbox_offset_w': round(bbox_offset, 2),
                         }
     elif direction == "length":
         agent_change = {
+                        'kind': 'change',
                         'change': 'bbox_offset_l',
                         'agent_id': a_id,
                         'bbox_offset_l': round(bbox_offset, 2),

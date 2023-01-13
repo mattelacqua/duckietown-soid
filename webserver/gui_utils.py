@@ -9,230 +9,78 @@ import os
 import signal
 import time
 
-# Check if Scene is all set
-class guiState():
-    state: str
-
-    def __init__(self,
-        state = "running"):
-
-        self.state = state
-
-    # If done return this so that in pause of our function we know what to do
-    def handle_input(self, env):
-        env.state = self.state
-        return self.state 
-
-# Store the # of steps we are
-class guiSteps():
-    step: int
-
-    def __init__(self,
-        step = 0):
-
-        self.step = step
-
-    # If we get a step, return it
-    def handle_input(self, env):
-        return env.state # So it doesn't break. TODO
+def handle_input(env, gui_input):
+    # If its a state update
+    if gui_input['kind'] == 'state':
+        state = gui_input['state']
+        env.state = state
+        return state
 
 
-
-
-# Class for any agent changes
-# IF ADDING ANYTHING MAKE SU?RE TO ADD IT TO UNSERIALIZE TOO
-class guiAgent():
-    change: str     # Should be 'angle' 'pos' 'inc_pos' 'inc_speed'
-    agent_id: str 
-    index: int 
-    color: str
-    cur_pos: List[float]
-    cur_angle: float
-    forward_step: float
-    inc_direction: str
-    lights:  List
-    turn_choice: str
-    signal_choice: str
-    bbox_offset_w: float
-    bbox_offset_l: float
-    state: None
-    learning_state: None
-    log_lights: List
-    log_pos: List
-    log_angle: None
-    log_color: None
-    
-    
-    def __init__(self,
-        change = "",
-        agent_id = "",
-        index = -1,
-        cur_pos = {},
-        cur_angle = -1.0,
-        color = "",
-        inc_direction = "",
-        lights = [],
-        turn_choice= None,
-        forward_step= 0.0,
-        bbox_offset_w= 0.0,
-        bbox_offset_l= 0.0,
-        state= None,
-        learning_state= {},
-        signal_choice= None,
-        log_lights= None,
-        log_pos= None,
-        log_angle= None,
-        log_color= None,
-        ):
-
-        self.change = change
-        self.agent_id = agent_id
-        self.index = index
-        self.color = color
-        self.cur_pos = cur_pos
-        self.cur_angle = cur_angle
-        self.inc_direction = inc_direction
-        self.lights = lights
-        self.turn_choice = turn_choice
-        self.signal_choice = signal_choice
-        self.forward_step = forward_step
-        self.bbox_offset_w = bbox_offset_w
-        self.bbox_offset_l = bbox_offset_l
-        self.state = state
-        self.learning_state = learning_state
-        self.log_lights = log_lights
-        self.log_pos = log_pos
-        self.log_angle = log_angle
-        self.log_color = log_color
-
-
-    # Handle agent input. Based on the kind of change, do xyz
-    def handle_input(self, env):
-        agent_id = self.agent_id
-        cur_pos = self.cur_pos
-        forward_step = self.forward_step
-        cur_angle = math.radians(self.cur_angle)
-        change = self.change
-        lights = self.lights
-        color = self.color
-        turn_choice = self.turn_choice
-        signal_choice = self.signal_choice
-        bbox_offset_l = self.bbox_offset_l
-        bbox_offset_w = self.bbox_offset_w
-
-
+    if gui_input['kind'] == 'change':
+        change = gui_input['change']
         agent_count = 0
         for agent in env.agents:
-            if agent.agent_id == agent_id:
+            if agent.agent_id == gui_input['agent_id']:
                 #print("Changing {0}'s current angle from {1} to {2}".format(agent.agent_id, agent.cur_angle, cur_angle))
                 if change == "angle":
-                    agent.cur_angle = cur_angle
+                    agent.cur_angle = gui_input['cur_angle']
                 elif change == "forward_step":
-                    agent.forward_step = forward_step
+                    agent.forward_step = gui_input['forward_step']
                 elif change == "pos":
-                    agent.cur_pos = cur_pos
+                    agent.cur_pos = [gui_input['pos_x'], 0, gui_input['pos_z']]
                     #Resetting the actions for the agent since pos change will revert
                     agent.actions = []
                 elif change == "inc_pos":
-                    if self.inc_direction == 'N':
+                    if gui_input['inc_dir'] == 'N':
                         agent.cur_pos[2] -= 0.1
-                    elif self.inc_direction == 'S':
+                    elif gui_input['inc_dir'] == 'S':
                         agent.cur_pos[2] += 0.1
-                    elif self.inc_direction == 'E':
+                    elif gui_input['inc_dir'] == 'E':
                         agent.cur_pos[0] += 0.1
-                    elif self.inc_direction == 'W':
+                    elif gui_input['inc_dir'] == 'W':
                         agent.cur_pos[0] -= 0.1
                 elif change == "turn":
-                    agent.turn_choice = turn_choice
+                    agent.turn_choice = gui_input['turn']
                 elif change == "signal":
-                    agent.signal_choice = signal_choice
+                    agent.signal_choice = gui_input['signal']
                 elif change == "bbox_offset_w":
-                    agent.bbox_offset_w = bbox_offset_w
+                    agent.bbox_offset_w = gui_input['bbox_offset_w']
                 elif change == "bbox_offset_l":
-                    agent.bbox_offset_l = bbox_offset_l
+                    agent.bbox_offset_l = gui_input['bbox_offset_l']
                 elif change == "lights":
-                    for light in lights:
+                    for light in gui_input['lights']:
                         agent.set_light(light["light"], light["on"])
                 elif change == "delete":
                     env.agents.remove(agent)
                 
             agent_count = agent_count + 1
+
         if change == "add":
-            new_agent = agents.Agent(agent_id=("agent"+str(agent_count)))
+            new_agent = agents.Agent(agent_id=("agent"+str(agent_count)), random_spawn=True)
             env.agents.append(new_agent)
          
 
         # Return false because not done command
         return env.state 
-# Send information through guiEnv
-class guiEnv():
-    max_NS: int
-    max_EW: int
-    intersection_x: int
-    intersection_z: int
-    grid_w: int
-    grid_h: int
-    road_tile_size: int
-    max_steps: int
-    num_agents: int
-    agents: List[guiAgent]
-    state: guiState
-    map_image: None
 
-    def __init__(self,
-        max_NS = 0,
-        max_EW = 0,
-        intersection_x = 0,
-        intersection_z = 0,
-        grid_w = 0,
-        grid_h = 0,
-        road_tile_size = 0,
-        max_steps = 0,
-        num_agents = 0,
-        agents = [],
-        state = None,
-        map_image = None
-        ):
-
-        self.max_NS = max_NS
-        self.max_EW = max_EW
-        self.intersection_x = intersection_x
-        self.intersection_z = intersection_z
-        self.grid_w = grid_w
-        self.grid_h = grid_h
-        self.road_tile_size = road_tile_size
-        self.max_steps = max_steps
-        self.num_agents = num_agents
-        self.agents = agents
-        self.state = state
-        self.map_image = map_image
-
-
-# Handle resetting from Log
-class guiLog():
-    log_agents: List[guiAgent]
-    log_steps: int 
-
-    def __init__(self, log_agents=[], log_steps=0):
-        self.log_agents = log_agents
-        self.log_steps = log_steps
-
-    def handle_input(self, env):
+    if gui_input['kind'] == 'log':
         for agent in env.agents:
-            for log_agent in self.log_agents:
-                if agent.agent_id == log_agent.agent_id:
-                    agent.cur_pos = log_agent.log_pos
-                    agent.cur_angle = log_agent.log_angle
-                    agent.color = log_agent.log_color
-                    agent.turn_choice = log_agent.turn_choice
+            for log_agent in gui_input['log_agents']:
+                if agent.agent_id == log_agent['id']:
+                    agent.cur_pos = [log_agent['pos_x'], 0, log_agent['pos_z']]
+                    agent.cur_angle = log_agent['log_angle']
+                    agent.color = log_agent['color']
+                    agent.turn_choice = log_agent['turn_choice']
+                    agent.signal_choice = log_agent['signal_choice']
                     agent.curve = agent.get_curve(env)
-                    agent.signal_choice = log_agent.signal_choice
-                    agent.forward_step = log_agent.forward_step
-                    agent.bbox_offset_w = log_agent.bbox_offset_w
-                    agent.bbox_offset_l = log_agent.bbox_offset_l
-                    agent.state = log_agent.state
-                    agent.lights = log_agent.log_lights
-                    agent.step_count = self.log_steps
+                    agent.speed = log_agent['speed']
+                    agent.forward_step = log_agent['forward_step']
+                    agent.bbox_offset_w = log_agent['bbox_offset_w']
+                    agent.bbox_offset_l = log_agent['bbox_offset_l']
+                    agent.state = log_agent['state']
+                    agent.lights = log_agent['lights']
+                    agent.step_count = log_agent['step_count']
 
         return env.state
 
@@ -242,7 +90,6 @@ class guiLog():
 def serialize(obj, fifo):
     tic = time.perf_counter()
     json.dump(obj, fifo)
-    print(f"Dumped {obj}")
     fifo.flush()
     toc = time.perf_counter()
     #print("Serialize Time = {0}".format(toc - tic))
@@ -254,7 +101,6 @@ def unserialize(fifo, log=False):
         try:
             input = json.load(fifo)
             if input:
-                print(f"LOADED {input}")
                 yield input
         except json.decoder.JSONDecodeError:
             break
@@ -275,43 +121,42 @@ def init_server(dt, fifo, env, socket, get_map=False):
     # Serialize the input
     serialize(env_info, fifo)
 
-
     if socket:
         socket.emit("update_sim_info")
 
 def env_info_dict(env):
     c_info_struct = env.c_info_struct
     env_info = {}
-    env_info['intersection_x'] = c_info_struct.intersection_x
-    env_info['intersection_z'] = c_info_struct.intersection_z
-    env_info['robot_length'] = c_info_struct.robot_length
-    env_info['grid_w'] = c_info_struct.grid_w
-    env_info['grid_h'] = c_info_struct.grid_h
-    env_info['road_tile_size'] = c_info_struct.road_tile_size
-    env_info['max_steps'] = c_info_struct.max_steps
-    env_info['num_agents'] = c_info_struct.agents.num_agents
+    env_info['intersection_x'] = int(c_info_struct.intersection_x)
+    env_info['intersection_z'] = int(c_info_struct.intersection_z)
+    env_info['robot_length'] = float(round(c_info_struct.robot_length, 3))
+    env_info['grid_w'] = int(c_info_struct.grid_w)
+    env_info['grid_h'] = int(c_info_struct.grid_h)
+    env_info['road_tile_size'] = float(round(c_info_struct.road_tile_size, 3))
+    env_info['max_steps'] = int(c_info_struct.max_steps)
+    env_info['num_agents'] = int(c_info_struct.agents.num_agents)
 
     agents = []
     for i in range(0, c_info_struct.agents.num_agents):
         agent = c_info_struct.agents.agents_array[i]
         dict_agent = {}
-        dict_agent['id'] = agent.id
-        dict_agent['pos_x'] = agent.pos_x
-        dict_agent['pos_z'] = agent.pos_z
-        dict_agent['prev_pos_x'] = agent.prev_pos_x
-        dict_agent['prev_pos_z'] = agent.prev_pos_z
-        dict_agent['stop_x'] = agent.stop_x
-        dict_agent['stop_z'] = agent.stop_z
-        dict_agent['tile_x'] = agent.tile_x
-        dict_agent['tile_z'] = agent.tile_z
-        dict_agent['angle'] = agent.angle
-        dict_agent['speed'] = agent.speed
-        dict_agent['forward_step'] = agent.forward_step
-        dict_agent['direction'] = agent.direction
-        dict_agent['intersection_arrival'] = agent.intersection_arrival
-        dict_agent['patience'] = agent.patience
-        dict_agent['step_count'] = agent.step_count
-        dict_agent['lookahead'] = agent.lookahead
+        dict_agent['id'] = int(agent.id)
+        dict_agent['pos_x'] = float(round(agent.pos_x, 3))
+        dict_agent['pos_z'] = float(round(agent.pos_z, 3))
+        dict_agent['prev_pos_x'] = float(round(agent.prev_pos_x, 3))
+        dict_agent['prev_pos_z'] = float(round(agent.prev_pos_z, 3))
+        dict_agent['stop_x'] = float(round(agent.stop_x, 3))
+        dict_agent['stop_z'] = float(round(agent.stop_z, 3))
+        dict_agent['tile_x'] = int(agent.tile_x)
+        dict_agent['tile_z'] = int(agent.tile_z)
+        dict_agent['angle'] = float(round(agent.angle, 3))
+        dict_agent['speed'] = float(round(agent.speed, 3))
+        dict_agent['forward_step'] = float(round(agent.forward_step, 3))
+        dict_agent['direction'] = int(agent.direction)
+        dict_agent['intersection_arrival'] = int(agent.intersection_arrival)
+        dict_agent['patience'] = int(agent.patience)
+        dict_agent['step_count'] = int(agent.step_count)
+        dict_agent['lookahead'] = float(round(agent.lookahead, 3))
 
         agent_state = {}
         agent_state['in_intersection'] = agent.state.in_intersection
@@ -328,9 +173,20 @@ def env_info_dict(env):
 
         dict_agent['state']=agent_state
         dict_agent['exists']=agent.exists
+        
+        # Other things not included in c struct
+        dict_agent['agent_id'] = env.agents[i].agent_id
+        dict_agent['color'] = html_color(env.agents[i].color)
+        dict_agent['turn_choice'] = env.agents[i].turn_choice
+        dict_agent['signal_choice'] = env.agents[i].signal_choice
+        dict_agent['lights'] = env.agents[i].lights
+        dict_agent['angle_deg'] = env.agents[i].get_curr_angle(env)
+        dict_agent['bbox_w'] = env.agents[i].bbox_offset_w
+        dict_agent['bbox_l'] = env.agents[i].bbox_offset_l
         agents.append(dict_agent)
 
     env_info['agents'] = agents
+    env_info['state'] = env.state
 
     return env_info
     
@@ -344,73 +200,19 @@ def read_init(fifo, log=False):
     input_list = list(unserialize(fifo, log))
 
     if log:
-        print(f"Input list is {input_list}")
         fifo.seek(0)
 
     if input_list:
         env_info = {}
         for input in input_list:
             env_info = input
-        return env_info
+        if log:
+            return {'step': env_info['agents'][0]['step_count'],
+                    'env_info': env_info}
+        else:
+            return env_info
     else:
         return None
-
-
-    # for each input from init server
-    id_no = 0
-    if input_list:
-        for inputs in input_list:
-
-            # Reset to blank
-            agent_list = []
-            env_info = {} 
-            id_no = 0
-
-            for inp in inputs:
-                #print("READING INIT INPUT: {0}".format(inp))
-                # if agent add relevant info for webserver to have
-                if isinstance(inp, guiAgent):
-                    gui_agent = inp
-                    agent_list.append({
-                                        "id" : id_no,
-                                        "agent_id" : gui_agent.agent_id,
-                                        "cur_pos" : gui_agent.cur_pos,
-                                        "cur_angle" : gui_agent.cur_angle,
-                                        "color" : gui_agent.color,
-                                        "lights" : gui_agent.lights,
-                                        "turn_choice" : gui_agent.turn_choice,
-                                        "signal_choice" : gui_agent.signal_choice,
-                                        "forward_step" : gui_agent.forward_step,
-                                        "bbox_w" : gui_agent.bbox_offset_w,
-                                        "bbox_l" : gui_agent.bbox_offset_l,
-                                        })
-                    id_no += 1
-
-                # if env_info add relevant info for webserver to have
-                if isinstance(inp, guiEnv):
-                    gui_env = inp
-                    env_info["max_NS"] = gui_env.max_NS
-                    env_info["max_EW"] = gui_env.max_EW
-                    env_info["tile_size"] = gui_env.tile_size
-                if isinstance(inp, guiState):
-                    gui_state = inp
-                    env_info["state"] = gui_state.state
-                if isinstance(inp, guiSteps):
-                    gui_steps = inp
-                    env_info["step"] = gui_steps.step
-                    
-    
-            log_list.append({"agent_list" : agent_list,
-                             "env_info" : env_info,
-                             "step" : gui_steps.step})
-    else:
-        return None
-
-    if log:
-        return log_list
-
-    if env_info:
-        return env_info
 
 # Kill old webserver if it exists, otherwise start new subprocess.
 def start_webserver():

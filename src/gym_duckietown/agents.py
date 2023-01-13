@@ -12,6 +12,7 @@ Contains functions for moving agent in ite world scenarios.
 """
 # Stuffing the make command in here
 # Make the decision logic files
+print("(c-decision-logic) Making Clean:")
 make_clean_ret = subprocess.Popen(["make clean"], shell=True, stdout=subprocess.PIPE, cwd="./src/gym_duckietown/decision_logic")
 while True:
     line = make_clean_ret.stdout.readline()
@@ -20,6 +21,7 @@ while True:
     print(line) #output to console in time
     sys.stdout.flush()
 make_ret = subprocess.Popen(["make"], shell=True, stdout=subprocess.PIPE, cwd="./src/gym_duckietown/decision_logic")
+print("(c-decision-logic) Making All:")
 while True:
     line = make_ret.stdout.readline()
     if not line:

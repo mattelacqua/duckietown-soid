@@ -28,11 +28,12 @@ class AgentMap extends React.Component {
     this.props.agents.forEach(function (agent) {
       datasets.push({
         label: agent.agent_id,
-        data: [agent.cur_pos],
+        data: [{x: agent.pos_x, y: agent.pos_z,}],
         backgroundColor: agent.color,
       });
     });
     let new_agents = props.agents;
+    console.log(datasets);
     this.state = {
       agents: new_agents,
       data:{datasets},
@@ -45,7 +46,9 @@ class AgentMap extends React.Component {
 
   update_agent_pos(e, datasetIndex, index, value) {
       e.target.style.cursor = 'default';
-      console.log("Emitting agent_pos");
+      console.log("Emitting agent_pos", value.x, value.y);
+      console.log(index);
+      console.log(value);
       this.state.socket.emit('agent_pos',
         {
           'id': "agent" + datasetIndex,
@@ -68,7 +71,7 @@ class AgentMap extends React.Component {
     nextProps.agents.forEach(function (agent) {
       datasets.push({
         label: agent.agent_id,
-        data: [agent.cur_pos],
+        data: [{x: agent.pos_x, y: agent.pos_z,}],
         backgroundColor: agent.color,
       });
     });
@@ -146,7 +149,8 @@ class AgentMap extends React.Component {
               },
               ticks: {
                 stepSize: this.props.tile_size,
-              }
+              },
+              type: "linear",
 
             }, // End y
             x: {

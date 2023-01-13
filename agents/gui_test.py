@@ -46,7 +46,8 @@ if args.env_name and args.env_name.find("Duckietown") != -1:
         dynamics_rand=args.dynamics_rand,
         full_transparency=True,
         verbose=args.verbose,
-        num_random_agents=args.num_random_agents
+        num_random_agents=args.num_random_agents,
+        max_agents=args.max_agents
     )
 else:
     env = gym.make(args.env_name)
@@ -104,9 +105,7 @@ webserver = gu.start_webserver()
 # Random is None which will be the 3rd agent
 
 # Feed agent information to webserver
-print("INITIALIZING THE WEBSERVER")
 gu.init_server(0, out, env, None, get_map=True)
-print("INITIALIZED")
 
 # Socket Connection
 print("Connecting to Socket")
@@ -130,7 +129,7 @@ def pause(dt):
         # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
         if gui_input:
             gui_input = gui_input[-1]
-            env.state = gui_input.handle_input(env)
+            env.state = gu.handle_input(env, gui_input)
             gu.init_server(0, out, env, socket)
             if env.state == "quit":
                 print("Killing Webserver")
@@ -165,7 +164,7 @@ def update(dt):
 
     if gui_input:
         gui_input = gui_input[-1]
-        state = gui_input.handle_input(env)
+        state = gu.handle_input(env, gui_input)
         if state == "quit":
             print("Killing Webserver")
             webserver.kill()

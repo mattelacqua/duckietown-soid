@@ -969,7 +969,6 @@ class Simulator(gym.Env):
            
         # If we have none, init all as good random ones
         if not self.agents:
-            print("AGENTS?")
             num_random = self.num_random_agents
             if random_agents:
                 num_random = random_agents

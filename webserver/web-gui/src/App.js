@@ -52,19 +52,6 @@ class App extends React.Component{
     // Update from the simulator
     update_from_sim() {
       socket.emit("update_sim_info");
-       // Fetch from our proxy (webserver.py, which when /agents is loaded will return our agents json information),
-      fetch("/agents") // Shorthand for http://localhost:5000/agetns
-          .then((res) => res.json()) // Result becomes a json
-          .then((json) => { // take the json and set the state vars with it
-              let new_ref = json; // Set a new reference so that it will recognize change and update in children.
-              if (!_.isEqual(new_ref, this.state.agents)) {
-                this.setState({
-                    agents: new_ref,
-                    AgentsLoaded: true
-                });
-              } // Endif
-          });
-
       // Fetch for env info
       fetch("/envInfo") // Shorthand for http://localhost:5000/agetns
           .then((res) => res.json()) // Result becomes a json
@@ -75,6 +62,7 @@ class App extends React.Component{
                 console.log("New State: ", new_ref.state);
                 this.setState({
                     env_info: new_ref,
+                    agents: new_ref.agents,
                     EnvLoaded: true,
                     sim_state: new_ref.state
                 });
@@ -97,6 +85,7 @@ class App extends React.Component{
     // When we renderour App, fetch the agent information
     componentDidMount() {
       this.update_from_sim();
+      console.log("updating from sim");
       this.interval = setInterval(() => this.update_from_sim(), 2000);
     }
    
@@ -105,11 +94,11 @@ class App extends React.Component{
         
       //console.log("Rerender From Top. Current State:", this.state.sim_state);
         // If our data didn't load, lets write HTML that we are waiting 
-        if ((!this.state.AgentsLoaded) ||
-           (!this.state.EnvLoaded) ||
+        if ((!this.state.EnvLoaded) ||
            (!this.state.rendered_imgLoaded))
            return <div> 
-            <h1> Loading Agent & Environment State information ... </h1> 
+            <h1> Loading Simpulation information ... </h1> 
+            <h1> Please ensure that the simulator and webserver are running ... </h1> 
         </div> ;
 
         // When our data is loaded, we want to return the HTML/REACT Calls for the APP
@@ -120,9 +109,9 @@ class App extends React.Component{
             {/* Header text */}
             <div className="Modify-wrap">
               <RenderedScene />
-              <Environment  max_NS={this.state.env_info.max_NS} 
-                            max_EW={this.state.env_info.max_EW} 
-                            tile_size={this.state.env_info.tile_size}
+              <Environment  max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
+                            max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
+                            tile_size={this.state.env_info.road_tile_size}
                             sim_state={this.state.sim_state}
                             socket={this.state.socket}
                             sim_step={this.state.env_info.step}/>
@@ -133,9 +122,9 @@ class App extends React.Component{
 
               {this.state.sim_state === 'pause' && 
                   <AgentMap agents={this.state.agents} 
-                          max_NS={this.state.env_info.max_NS} 
-                          max_EW={this.state.env_info.max_EW} 
-                          tile_size={this.state.env_info.tile_size}
+                          max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
+                          max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size} 
+                          tile_size={this.state.env_info.road_tile_size}
                           socket={this.state.socket}/> 
 
               }
