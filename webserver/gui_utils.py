@@ -175,7 +175,7 @@ class guiEnv():
     road_tile_size: int
     max_steps: int
     num_agents: int
-    agents: List(guiAgent)
+    agents: List[guiAgent]
     state: guiState
     map_image: None
 
@@ -241,8 +241,8 @@ class guiLog():
 # Serialize by pickling to fifo
 def serialize(obj, fifo):
     tic = time.perf_counter()
-    pickled = pickle.dumps(obj)
-    fifo.write(pickled)
+    json.dump(obj, fifo)
+    print(f"Dumped {obj}")
     fifo.flush()
     toc = time.perf_counter()
     #print("Serialize Time = {0}".format(toc - tic))
@@ -252,76 +252,87 @@ def unserialize(fifo, log=False):
     tic = time.perf_counter()
     while True:
         try:
-            yield pickle.load(fifo)
-        except EOFError:
+            input = json.load(fifo)
+            if input:
+                print(f"LOADED {input}")
+                yield input
+        except json.decoder.JSONDecodeError:
             break
-            toc = time.perf_counter()
-            #print("EOF Unserialize = {0}".format(toc - tic))
-        #else:
-            #return o
-            #toc = time.perf_counter()
-            #print("Success Unserialize = {0}".format(toc - tic))
+    
     
 
 
 # Init agents in server
 def init_server(dt, fifo, env, socket, get_map=False):
 
-
     tic = time.perf_counter()
     if get_map:
         env.map_jpg(background=True)
         env.map_jpg(background=False)
-    agents = env.agents
-    input_list = []
-    step = env.agents[0].step_count
-
-    # Initialize the server with agent information
-    if agents:
-       input_list.extend(list(map(lambda agent: guiAgent(agent_id=agent.agent_id,
-                                                         cur_pos={'x':round(agent.cur_pos[0], 3),
-                                                                  'y':round(agent.cur_pos[2], 3)},
-                                                         cur_angle=round(math.degrees(agent.cur_angle)),
-                                                         color=html_color(agent.color),
-                                                         turn_choice=agent.turn_choice,
-                                                         signal_choice=agent.signal_choice,
-                                                         forward_step=agent.forward_step,
-                                                         bbox_offset_w=agent.bbox_offset_w,
-                                                         bbox_offset_l=agent.bbox_offset_l,
-                                                         state=agent.state,
-                                                         lights=agent.lights_to_dictlist(),
-                                                         log_lights=agent.lights,
-                                                         log_color=agent.color,
-                                                         log_pos=agent.cur_pos,
-                                                         log_angle=agent.cur_angle
-
-
-
-                                                         ), agents)))
-
-    # Include information about the environment
-    gui_env = guiEnv(max_NS=env.grid_height*env.road_tile_size,
-                     max_EW=env.grid_width*env.road_tile_size,
-                     tile_size=env.road_tile_size)
-
-    input_list.append(gui_env)
-
-    #print(f"Sending The webserver {env.state}")
-    gui_state = guiState(state=env.state)
-    input_list.append(gui_state)
-
-    gui_step = guiSteps(step=step)
-    input_list.append(gui_step)
-
-    toc = time.perf_counter()
+    
+    env_info = env_info_dict(env)
     #print("Data Function Dict Traversal = {0}".format(toc - tic))
     # Serialize the input
-    serialize(input_list, fifo)
+    serialize(env_info, fifo)
 
 
     if socket:
         socket.emit("update_sim_info")
-  
+
+def env_info_dict(env):
+    c_info_struct = env.c_info_struct
+    env_info = {}
+    env_info['intersection_x'] = c_info_struct.intersection_x
+    env_info['intersection_z'] = c_info_struct.intersection_z
+    env_info['robot_length'] = c_info_struct.robot_length
+    env_info['grid_w'] = c_info_struct.grid_w
+    env_info['grid_h'] = c_info_struct.grid_h
+    env_info['road_tile_size'] = c_info_struct.road_tile_size
+    env_info['max_steps'] = c_info_struct.max_steps
+    env_info['num_agents'] = c_info_struct.agents.num_agents
+
+    agents = []
+    for i in range(0, c_info_struct.agents.num_agents):
+        agent = c_info_struct.agents.agents_array[i]
+        dict_agent = {}
+        dict_agent['id'] = agent.id
+        dict_agent['pos_x'] = agent.pos_x
+        dict_agent['pos_z'] = agent.pos_z
+        dict_agent['prev_pos_x'] = agent.prev_pos_x
+        dict_agent['prev_pos_z'] = agent.prev_pos_z
+        dict_agent['stop_x'] = agent.stop_x
+        dict_agent['stop_z'] = agent.stop_z
+        dict_agent['tile_x'] = agent.tile_x
+        dict_agent['tile_z'] = agent.tile_z
+        dict_agent['angle'] = agent.angle
+        dict_agent['speed'] = agent.speed
+        dict_agent['forward_step'] = agent.forward_step
+        dict_agent['direction'] = agent.direction
+        dict_agent['intersection_arrival'] = agent.intersection_arrival
+        dict_agent['patience'] = agent.patience
+        dict_agent['step_count'] = agent.step_count
+        dict_agent['lookahead'] = agent.lookahead
+
+        agent_state = {}
+        agent_state['in_intersection'] = agent.state.in_intersection
+        agent_state['at_intersection_entry'] = agent.state.at_intersection_entry
+        agent_state['intersection_empty'] = agent.state.intersection_empty
+        agent_state['approaching_intersection'] = agent.state.approaching_intersection
+        agent_state['obj_in_range'] = agent.state.obj_in_range
+        agent_state['has_right_of_way'] = agent.state.has_right_of_way
+        agent_state['cars_waiting_to_enter'] = agent.state.cars_waiting_to_enter
+        agent_state['car_entering_range'] = agent.state.car_entering_range
+        agent_state['obj_behind_intersection'] = agent.state.obj_behind_intersection
+        agent_state['is_tailgating'] = agent.state.is_tailgating
+        agent_state['next_to_go'] = agent.state.next_to_go
+
+        dict_agent['state']=agent_state
+        dict_agent['exists']=agent.exists
+        agents.append(dict_agent)
+
+    env_info['agents'] = agents
+
+    return env_info
     
     
 # Read initial positions and env info
@@ -331,9 +342,18 @@ def read_init(fifo, log=False):
     log_list = []
     
     input_list = list(unserialize(fifo, log))
+
     if log:
         print(f"Input list is {input_list}")
         fifo.seek(0)
+
+    if input_list:
+        env_info = {}
+        for input in input_list:
+            env_info = input
+        return env_info
+    else:
+        return None
 
 
     # for each input from init server

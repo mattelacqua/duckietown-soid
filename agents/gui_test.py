@@ -80,14 +80,14 @@ fifo_out = 'webserver/webserver.in'
 fifo_log = 'webserver/webserver.log'
 
 # CLEAR OLD STUFF
-clear = open(fifo_in, 'wb').close()
-clear = open(fifo_out, 'wb').close()
-clear = open(fifo_log, 'wb').close()
+clear = open(fifo_in, 'w').close()
+clear = open(fifo_out, 'w').close()
+clear = open(fifo_log, 'w').close()
 
 # Write new stuff
-out = open(fifo_out, 'wb', os.O_NONBLOCK)
-inp = open(fifo_in, 'rb', os.O_NONBLOCK)
-log = open(fifo_log, 'wb', os.O_NONBLOCK)
+out = open(fifo_out, 'w', os.O_NONBLOCK)
+inp = open(fifo_in, 'r', os.O_NONBLOCK)
+log = open(fifo_log, 'w', os.O_NONBLOCK)
 
 # Start up the webserver before reading so that it clears write file
 webserver = gu.start_webserver()
@@ -104,7 +104,9 @@ webserver = gu.start_webserver()
 # Random is None which will be the 3rd agent
 
 # Feed agent information to webserver
+print("INITIALIZING THE WEBSERVER")
 gu.init_server(0, out, env, None, get_map=True)
+print("INITIALIZED")
 
 # Socket Connection
 print("Connecting to Socket")
