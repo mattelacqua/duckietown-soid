@@ -29,8 +29,8 @@ logger = open(fifo_log, "rb")
 # Read initial positions of agents and info about the environment
 agent_list, env_info = None, None
 log_info = []
-while not agent_list or not env_info:
-    agent_list, env_info = read_init(inp)
+while not env_info:
+    env_info = read_init(inp)
 
 #print(f"FINISHED INIT with \n Agents: {agent_list} \n Env Info: {env_info}")
 
@@ -50,9 +50,6 @@ def envInfo():
     update_sim_info()
     envInfo_string = json.dumps(env_info)
     return envInfo_string
-
-
-
 
 @app.route("/mapImage")
 def mapImage():

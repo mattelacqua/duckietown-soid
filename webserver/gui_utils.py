@@ -3,26 +3,11 @@ from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Un
 import numpy as np
 import math
 import pickle
+import json
 import subprocess
 import os
 import signal
 import time
-
-# Send information through guiEnv
-class guiEnv():
-    max_NS: int
-    max_EW: int
-    tile_size: int
-    map_image: None
-
-    def __init__(self,
-        max_NS = 0,
-        max_EW = 0,
-        tile_size = 0):
-
-        self.max_NS = max_NS
-        self.max_EW = max_EW
-        self.tile_size = tile_size
 
 # Check if Scene is all set
 class guiState():
@@ -59,6 +44,7 @@ class guiSteps():
 class guiAgent():
     change: str     # Should be 'angle' 'pos' 'inc_pos' 'inc_speed'
     agent_id: str 
+    index: int 
     color: str
     cur_pos: List[float]
     cur_angle: float
@@ -70,6 +56,7 @@ class guiAgent():
     bbox_offset_w: float
     bbox_offset_l: float
     state: None
+    learning_state: None
     log_lights: List
     log_pos: List
     log_angle: None
@@ -79,6 +66,7 @@ class guiAgent():
     def __init__(self,
         change = "",
         agent_id = "",
+        index = -1,
         cur_pos = {},
         cur_angle = -1.0,
         color = "",
@@ -89,6 +77,7 @@ class guiAgent():
         bbox_offset_w= 0.0,
         bbox_offset_l= 0.0,
         state= None,
+        learning_state= {},
         signal_choice= None,
         log_lights= None,
         log_pos= None,
@@ -98,6 +87,7 @@ class guiAgent():
 
         self.change = change
         self.agent_id = agent_id
+        self.index = index
         self.color = color
         self.cur_pos = cur_pos
         self.cur_angle = cur_angle
@@ -109,6 +99,7 @@ class guiAgent():
         self.bbox_offset_w = bbox_offset_w
         self.bbox_offset_l = bbox_offset_l
         self.state = state
+        self.learning_state = learning_state
         self.log_lights = log_lights
         self.log_pos = log_pos
         self.log_angle = log_angle
@@ -173,6 +164,49 @@ class guiAgent():
 
         # Return false because not done command
         return env.state 
+# Send information through guiEnv
+class guiEnv():
+    max_NS: int
+    max_EW: int
+    intersection_x: int
+    intersection_z: int
+    grid_w: int
+    grid_h: int
+    road_tile_size: int
+    max_steps: int
+    num_agents: int
+    agents: List(guiAgent)
+    state: guiState
+    map_image: None
+
+    def __init__(self,
+        max_NS = 0,
+        max_EW = 0,
+        intersection_x = 0,
+        intersection_z = 0,
+        grid_w = 0,
+        grid_h = 0,
+        road_tile_size = 0,
+        max_steps = 0,
+        num_agents = 0,
+        agents = [],
+        state = None,
+        map_image = None
+        ):
+
+        self.max_NS = max_NS
+        self.max_EW = max_EW
+        self.intersection_x = intersection_x
+        self.intersection_z = intersection_z
+        self.grid_w = grid_w
+        self.grid_h = grid_h
+        self.road_tile_size = road_tile_size
+        self.max_steps = max_steps
+        self.num_agents = num_agents
+        self.agents = agents
+        self.state = state
+        self.map_image = map_image
+
 
 # Handle resetting from Log
 class guiLog():
@@ -350,19 +384,13 @@ def read_init(fifo, log=False):
                              "env_info" : env_info,
                              "step" : gui_steps.step})
     else:
-        return None, None
+        return None
 
     if log:
         return log_list
 
-    if agent_list and env_info:
-        return agent_list, env_info
-    elif agent_list:
-        return agent_list, None
-    elif env_info:
-        return None, env_info
-    else:
-        return None, None
+    if env_info:
+        return env_info
 
 # Kill old webserver if it exists, otherwise start new subprocess.
 def start_webserver():
