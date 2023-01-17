@@ -111,7 +111,7 @@ gu.init_server(0, out, env, None, get_map=True)
 print("Connecting to Socket")
 socket = socketio.Client()
 while True:
-    try:    socket.connect('http://127.0.0.1:5000', wait=True)
+    try:    socket.connect('http://127.0.0.1:5001', wait=True)
     except Exception as e: pass
     else:   break
 
@@ -192,7 +192,7 @@ def update(dt):
     env.step(learning=True)
     # Log the info
     if env.agents[0].step_count % 10 == 0 or env.agents[0].step_count == 1:
-        #print("Logging")
+        print("Logging internal")
         gu.init_server(1, log, env, socket)
 
     # render the cam

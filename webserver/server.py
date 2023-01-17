@@ -258,19 +258,19 @@ def log_step(data):
     if step != 0:
         step = int(round(step / 10))
 
-    print(f"Log step {step}")
-
     # Get it if it exists
     try: log_step = log_info[step]
     except: return ""
 
     print(f"Log step {log_step}")
     log_change = {
+                'kind': 'log',
                 'change': 'log',
                 'log': log_step
     }
+    print(f"Sending out a log change")
     serialize(log_change, out)
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, port=5001)
 

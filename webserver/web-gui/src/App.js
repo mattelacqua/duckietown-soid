@@ -71,7 +71,7 @@ class App extends React.Component{
 
       // Get the rendered image
       const image = new Image();
-      image.src = 'http://localhost:5000/renderedScene';
+      image.src = 'http://localhost:5001/renderedScene';
 
       this.setState({
         rendered_img: image,
@@ -114,7 +114,7 @@ class App extends React.Component{
                             tile_size={this.state.env_info.road_tile_size}
                             sim_state={this.state.sim_state}
                             socket={this.state.socket}
-                            sim_step={this.state.env_info.step}/>
+                            sim_step={this.state.env_info.sim_step}/>
 
               <Buttons sim_state={this.state.sim_state} 
                        update_from_sim={this.update_from_sim}

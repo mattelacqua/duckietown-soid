@@ -8,7 +8,7 @@ class RenderedScene extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      src: "http://localhost:5000/renderedScene",
+      src: "http://localhost:5001/renderedScene",
       key: Date.now(),
     };
 
@@ -18,14 +18,14 @@ class RenderedScene extends React.Component {
 
   tick() {
     this.setState({
-      src: "http://localhost:5000/renderedScene",
+      src: "http://localhost:5001/renderedScene",
       key: Date.now(),
     }) 
   }
 
   error_tick() {
     this.setState({
-      src: "http://localhost:5000/renderedScene",
+      src: "http://localhost:5001/renderedScene",
       key: Date.now(),
     });
   }

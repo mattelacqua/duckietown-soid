@@ -66,21 +66,39 @@ def handle_input(env, gui_input):
 
     if gui_input['kind'] == 'log':
         for agent in env.agents:
-            for log_agent in gui_input['log_agents']:
-                if agent.agent_id == log_agent['id']:
+            for log_agent in gui_input['log']['agents']:
+                if agent.agent_id == log_agent['agent_id']:
                     agent.cur_pos = [log_agent['pos_x'], 0, log_agent['pos_z']]
-                    agent.cur_angle = log_agent['log_angle']
-                    agent.color = log_agent['color']
+                    agent.cur_angle = log_agent['angle']
+                    agent.color = from_html_color(log_agent['color'])
                     agent.turn_choice = log_agent['turn_choice']
                     agent.signal_choice = log_agent['signal_choice']
                     agent.curve = agent.get_curve(env)
                     agent.speed = log_agent['speed']
                     agent.forward_step = log_agent['forward_step']
-                    agent.bbox_offset_w = log_agent['bbox_offset_w']
-                    agent.bbox_offset_l = log_agent['bbox_offset_l']
+                    agent.direction = agent.get_direction(env)
+                    agent.intersection_arrival = log_agent['intersection_arrival']
+                    agent.patience = log_agent['patience']
+                    agent.step_count = log_agent['step_count']
+                    agent.lookahead = log_agent['lookahead']
+                    agent.states['in_intersection'] = log_agent['state']['in_intersection']
+                    agent.states['at_intersection_entry'] = log_agent['state']['at_intersection_entry']
+                    agent.states['intersection_empty'] = log_agent['state']['intersection_empty']
+                    agent.states['approaching_intersection'] = log_agent['state']['approaching_intersection']
+                    agent.states['obj_in_range'] = log_agent['state']['obj_in_range']
+                    agent.states['has_right_of_way'] = log_agent['state']['has_right_of_way']
+                    agent.states['cars_waiting_to_enter'] = log_agent['state']['cars_waiting_to_enter']
+                    agent.states['car_entering_range'] = log_agent['state']['car_entering_range']
+                    agent.states['obj_behind_intersection'] = log_agent['state']['obj_behind_intersection']
+                    agent.states['is_tailgating'] = log_agent['state']['is_tailgating']
+                    agent.states['next_to_go'] = log_agent['state']['next_to_go']
+                    agent.bbox_offset_w = log_agent['bbox_w']
+                    agent.bbox_offset_l = log_agent['bbox_l']
                     agent.state = log_agent['state']
                     agent.lights = log_agent['lights']
                     agent.step_count = log_agent['step_count']
+
+                    agent.state = pickle.loads(eval(log_agent['car_state']))
 
         return env.state
 
@@ -90,6 +108,7 @@ def handle_input(env, gui_input):
 def serialize(obj, fifo):
     tic = time.perf_counter()
     json.dump(obj, fifo)
+    fifo.write('\n')
     fifo.flush()
     toc = time.perf_counter()
     #print("Serialize Time = {0}".format(toc - tic))
@@ -97,13 +116,20 @@ def serialize(obj, fifo):
 # Unserialize from fifo
 def unserialize(fifo, log=False):
     tic = time.perf_counter()
-    while True:
-        try:
-            input = json.load(fifo)
-            if input:
-                yield input
-        except json.decoder.JSONDecodeError:
-            break
+    if log:
+        lines = fifo.readlines()
+        for line in lines:
+            line.strip()
+            json_line = json.loads(line)
+            yield json_line
+    else:
+        while True:
+            try:
+                input = json.load(fifo)
+                if input:
+                    yield input
+            except json.decoder.JSONDecodeError:
+                break
     
     
 
@@ -183,10 +209,12 @@ def env_info_dict(env):
         dict_agent['angle_deg'] = env.agents[i].get_curr_angle(env)
         dict_agent['bbox_w'] = env.agents[i].bbox_offset_w
         dict_agent['bbox_l'] = env.agents[i].bbox_offset_l
+        dict_agent['car_state']= str(pickle.dumps(env.agents[i].state))
         agents.append(dict_agent)
 
     env_info['agents'] = agents
     env_info['state'] = env.state
+    env_info['sim_step'] = env.agents[0].step_count
 
     return env_info
     
@@ -254,9 +282,8 @@ def from_html_color(color: str):
         "Cyan": "cyan",
         "#F5CD00": "yellow",
         "Orange": "orange",
-        "indigo": "midnight"
+        "Indigo": "midnight"
     }
     color = colors[color]
     return color
     
-

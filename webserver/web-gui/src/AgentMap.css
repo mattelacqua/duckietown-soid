@@ -1,6 +1,6 @@
 .AgentMap {
     background-color: alabster;
-    background-image: url("http://localhost:5000/mapImage");
+    background-image: url("http://localhost:5001/mapImage");
     float: 'left';
     width: 100%;
     padding: 2em;
