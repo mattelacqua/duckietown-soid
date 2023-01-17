@@ -262,7 +262,7 @@ def log_step(data):
     try: log_step = log_info[step]
     except: return ""
 
-    print(f"Log step {log_step}")
+    print(f"Log step {json.dumps(log_step, indent=2)}")
     log_change = {
                 'kind': 'log',
                 'change': 'log',
