@@ -259,6 +259,18 @@ def start_webserver():
     return webserver
 
 def start_node():
+    cmd = ['pgrep -f .*.*start.js']
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE)
+    my_pid, err = process.communicate()
+    print(my_pid)
+
+    if len(my_pid.splitlines()) >0:
+       print("Old NJS SCRIPT Running Killing.")
+       os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
+    else:
+      print("Old NJS SCRIPT not Running, Starting up new")    
+      
     cmd = ['pgrep -f .*npm.*start']
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
     stderr=subprocess.PIPE)
@@ -270,16 +282,7 @@ def start_node():
     else:
       print("Old NJS not Running, Starting up new")
 
-    cmd = ['pgrep -f .*start.js']
-    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE)
-    my_pid, err = process.communicate()
 
-    if len(my_pid.splitlines()) >0:
-       print("Old NJS SCRIPT Running Killing.")
-       os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
-    else:
-      print("Old NJS SCRIPT not Running, Starting up new")
 
 
     node = subprocess.Popen(["npm","start", "--prefix", "./webserver/web-gui"])
