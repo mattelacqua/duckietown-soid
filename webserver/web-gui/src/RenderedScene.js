@@ -43,7 +43,7 @@ class RenderedScene extends React.Component {
               float: 'left',
               height: '450px',
               width: '600px',
-              backgroundImage: "url('http://localhost:5000/mapImageBackground')",
+              backgroundImage: "url('http://localhost:5001/mapImageBackground')",
               backgroundSize: "cover",
               background: "gray15",
             }}>
