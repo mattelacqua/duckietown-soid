@@ -92,6 +92,7 @@ log = open(fifo_log, 'w', os.O_NONBLOCK)
 
 # Start up the webserver before reading so that it clears write file
 webserver = gu.start_webserver()
+node = gu.start_node()
 
 # Set up initial agent speeds, turns and contols
 #env.agents[0].forward_step = 0.44
