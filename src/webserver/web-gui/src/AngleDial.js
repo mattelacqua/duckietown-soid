@@ -4,6 +4,7 @@ import React from "react";
 // Import Basic Knob from react-dial-kknob
 //import { Basic } from "react-dial-knob";
 import CircularSlider from '@fseehawer/react-circular-slider'
+import App from "./App";
 
 // Component for AngleDial (rendered from Agent)
 class AngleDial extends React.Component {
@@ -12,25 +13,37 @@ class AngleDial extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: props.angle_deg, // Value of the the angle is
-      last_sent: props.angle_deg, // Value of the the angle is
+      value: 0, // Value of the the angle is
+      last_sent: 0, // Value of the the angle is
       id: props.agent_id,     // Which agent
       color: props.agent_color,     // Which agent
       socket: props.socket,     // Socket
     };
+    this.tick = this.tick.bind(this);
   }
 
   // Update the dial state on new changes 
   handleChange = (newValue) => {
     this.setState({value: newValue});
-    this.state.socket.emit('agent_angle',
+  };
+
+  // Emit tick
+  tick(){
+      if (this.state.value !== this.state.last_sent) {
+        this.props.update_from_sim();
+        console.log("emitting", this.state.value);
+        this.state.socket.emit('agent_angle',
                     {
                         'id':this.state.id,         // Pass the agent_id stored in state
                         'value':this.state.value    // Pass the cur_angle stored in state
                     }); // End emit
-    this.setState({last_sent: this.state.value}); 
-  };
+       this.setState({last_sent: this.state.value}); 
+     }
+  }
 
+  componentDidMount() {
+    this.interval = setInterval(() => this.tick(), 2000);
+  }
   // Render the Dial component from the react-dial-knob package
   render() {
     const color = this.props.agent_color

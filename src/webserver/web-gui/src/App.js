@@ -56,22 +56,21 @@ class App extends React.Component{
     // Update from the simulator
     async update_from_sim() {
       socket.emit("update_sim_info");
+      console.log("UPDATING FROM SIM");
       // Fetch for env info
       const response = await fetch("/envInfo") // Shorthand for http://localhost:5000/agetns
           .then((res) => res.json()) // Result becomes a json
           .then((json) => { // take the json and set the state vars with it
               let new_ref = json;
               if (!_.isEqual(new_ref, this.state.env_info)) {
-                console.log("Old State: ", this.state.env_info.state);
-                console.log("New State: ", new_ref.state);
                 this.setState({
                     env_info: new_ref,
                     EnvLoaded: true,
                     sim_state: new_ref.state
                 });
+                console.log("Got new info", new_ref);
               } // Endif
           });
-        console.log("UPDATE RESPONSE", response);
 
       // Get the rendered image
       const image = new Image();
@@ -142,7 +141,8 @@ class App extends React.Component{
             <div className="Agents-wrap">
               {this.state.sim_state === 'pause' && 
                   <Agents agents={this.state.env_info.agents}
-                          socket={this.state.socket}/>
+                          socket={this.state.socket}
+                          update_from_sim={this.update_from_sim}/>
               }
             </div>
         </div>

@@ -10,14 +10,13 @@ class Buttons extends React.Component {
     super(props);
     this.state = {
         sim_state: this.props.sim_state,
-        env_info: this.props.env_info,
         socket: this.props.socket
     };
     this.handleClick = this.handleClick.bind(this);
   }
-
+  
   // Handle the click
-  handleClick(state) {
+  async handleClick(state) {
     if (state !== "add_agent" && state !=="query") {
 
       this.setState({
@@ -37,9 +36,12 @@ class Buttons extends React.Component {
           this.state.socket.emit('add_agent');
         }
         if (state === "query"){
+          const delay = ms => new Promise(res => setTimeout(res, ms));
           this.props.update_from_sim();
-          this.state.socket.emit('query', this.state.env_info);
-          console.log("HERE", this.state.envInfo);
+          await delay(2000)
+          this.props.update_from_sim();
+          this.state.socket.emit('query', this.props.env_info);
+          console.log("HERE", this.props.env_info);
         }
   }
 }

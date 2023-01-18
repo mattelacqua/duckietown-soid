@@ -24,7 +24,7 @@ def handle_input(env, gui_input):
             if agent.agent_id == gui_input['agent_id']:
                 #print("Changing {0}'s current angle from {1} to {2}".format(agent.agent_id, agent.cur_angle, cur_angle))
                 if change == "angle":
-                    agent.cur_angle = gui_input['cur_angle']
+                    agent.cur_angle = math.radians(gui_input['cur_angle'])
                     agent.deg_angle = agent.get_curr_angle(env)
                     agent.direction = agent.get_direction(env)
                 elif change == "forward_step":
@@ -63,9 +63,6 @@ def handle_input(env, gui_input):
             env.agents.append(new_agent)
          
 
-        # Return false because not done command
-        return env.state 
-
     if gui_input['kind'] == 'log':
         for agent in env.agents:
             for log_agent in gui_input['log']['agents']:
@@ -101,8 +98,9 @@ def handle_input(env, gui_input):
                     agent.step_count = log_agent['step_count']
 
                     agent.state = pickle.loads(eval(log_agent['car_state']))
+    
 
-        return env.state
+    return env.state
 
 
 
@@ -125,13 +123,18 @@ def unserialize(fifo, log=False):
             json_line = json.loads(line)
             yield json_line
     else:
-        while True:
+        lines = fifo.readlines()
+        if lines:
+            lines[-1].strip()
+            json_line = json.loads(lines[-1])
+            yield json_line
+        """while True:
             try:
                 input = json.load(fifo)
                 if input:
                     yield input
             except json.decoder.JSONDecodeError:
-                break
+                break"""
     
     
 
@@ -235,6 +238,7 @@ def read_init(fifo, log=False):
     if input_list:
         env_info = {}
         for input in input_list:
+            print(len(input_list))
             env_info = input
         if log:
             return {'step': env_info['agents'][0]['step_count'],

@@ -107,7 +107,8 @@ class Agent extends React.Component {
                             agent_id={this.state.agent_id} 
                             agent_color={this.state.color} 
                             angle_pass={this.angle_pass} 
-                            socket={this.state.socket} />
+                            socket={this.state.socket} 
+                            update_from_sim={this.props.update_from_sim}/>
 
                   {/* Render Agent Information */}
      

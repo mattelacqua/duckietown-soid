@@ -59,7 +59,8 @@ class Agents extends React.Component {
                            lights={agent.lights} 
                            bbox_w={agent.bbox_w} 
                            bbox_l={agent.bbox_l} 
-                           socket={this.state.socket} />
+                           socket={this.state.socket} 
+                           update_from_sim={this.props.update_from_sim}/>
                     ))
           );
     }
