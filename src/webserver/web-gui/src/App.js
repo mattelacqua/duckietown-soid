@@ -29,7 +29,7 @@ import io from 'socket.io-client';
 const socket = io();
 
 const headers = new Headers();
-headers.set('Accept', 'application/json');
+headers.set('Accept', '*');
 headers.set('Access-Control-Allow-Credentials', 'true');
 headers.set('Access-Control-Allow-Origin', 'true');
 headers.set('Content-Type', 'application/json');
@@ -57,8 +57,9 @@ class App extends React.Component{
     async update_from_sim() {
       socket.emit("update_sim_info");
       console.log("UPDATING FROM SIM");
+      console.log("headers:", headers)
       // Fetch for env info
-      const response = await fetch("/envInfo",{ headers : this.headers} 
+      const response = await fetch("/envInfo",{ headers : headers} 
        ) // Shorthand for http://localhost:5000/agetns
           .then((res) => res.json()) // Result becomes a json
           .then((json) => { // take the json and set the state vars with it

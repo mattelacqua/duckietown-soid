@@ -63,11 +63,7 @@ def mapImageBackground():
 def renderedScene():
     return send_file("images/rendered_scene.jpg", mimetype='image/jpeg')
 
-# Home page for website, has all information we want on it
-@app.route("/")
-@cross_origin()
-def index():
-    return render_template("agents.html", agent_list=agent_list, env_info=env_info)
+
 
 #Connect and Disconnect
 @socketio.on('connect')
