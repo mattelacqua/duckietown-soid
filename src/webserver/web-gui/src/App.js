@@ -28,6 +28,12 @@ import io from 'socket.io-client';
 // Create the socket
 const socket = io();
 
+const headers = new Headers();
+headers.set('Accept', 'application/json');
+headers.set('Access-Control-Allow-Credentials', 'true');
+headers.set('Access-Control-Allow-Origin', 'true');
+headers.set('Content-Type', 'application/json');
+
 // Our top level class (gets rendered in index.html)
 class App extends React.Component{
 
@@ -48,10 +54,10 @@ class App extends React.Component{
     }
 
     // Update from the simulator
-    update_from_sim() {
+    async update_from_sim() {
       socket.emit("update_sim_info");
       // Fetch for env info
-      fetch("/envInfo") // Shorthand for http://localhost:5000/agetns
+      const response = await fetch("/envInfo") // Shorthand for http://localhost:5000/agetns
           .then((res) => res.json()) // Result becomes a json
           .then((json) => { // take the json and set the state vars with it
               let new_ref = json;
@@ -65,6 +71,7 @@ class App extends React.Component{
                 });
               } // Endif
           });
+        console.log("UPDATE RESPONSE", response);
 
       // Get the rendered image
       const image = new Image();

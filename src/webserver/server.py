@@ -8,7 +8,7 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 import json
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 # Fix payload issue
 from engineio.payload import Payload
@@ -18,6 +18,7 @@ Payload.max_decode_packets = 100
 template_dir = os.path.abspath('src/webserver/old_html/')
 app = Flask(__name__, template_folder=template_dir)
 CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 socketio = SocketIO(app,cors_allowed_origins="*")
@@ -40,6 +41,7 @@ while not env_info:
 
 # Home page for website, has all information we want on it
 @app.route("/envInfo")
+@cross_origin()
 def envInfo():
     global env_info
     update_sim_info()
@@ -47,19 +49,23 @@ def envInfo():
     return envInfo_string
 
 @app.route("/mapImage")
+@cross_origin()
 def mapImage():
     return send_file("images/empty_map.jpg", mimetype='image/jpeg')
 
 @app.route("/mapImageBackground")
+@cross_origin()
 def mapImageBackground():
     return send_file("images/empty_map_background.jpg", mimetype='image/jpeg')
 
 @app.route("/renderedScene")
+@cross_origin()
 def renderedScene():
     return send_file("images/rendered_scene.jpg", mimetype='image/jpeg')
 
 # Home page for website, has all information we want on it
 @app.route("/")
+@cross_origin()
 def index():
     return render_template("agents.html", agent_list=agent_list, env_info=env_info)
 
