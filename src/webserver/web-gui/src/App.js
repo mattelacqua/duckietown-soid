@@ -58,7 +58,8 @@ class App extends React.Component{
       socket.emit("update_sim_info");
       console.log("UPDATING FROM SIM");
       // Fetch for env info
-      const response = await fetch("/envInfo") // Shorthand for http://localhost:5000/agetns
+      const response = await fetch("/envInfo",{ headers : this.headers} 
+       ) // Shorthand for http://localhost:5000/agetns
           .then((res) => res.json()) // Result becomes a json
           .then((json) => { // take the json and set the state vars with it
               let new_ref = json;
