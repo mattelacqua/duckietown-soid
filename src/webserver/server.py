@@ -40,7 +40,7 @@ while not env_info:
 
 
 # Home page for website, has all information we want on it
-@app.route("/envInfo")
+@app.route("/envInfo.json")
 @cross_origin()
 def envInfo():
     global env_info

@@ -59,7 +59,7 @@ class App extends React.Component{
       console.log("UPDATING FROM SIM");
       console.log("headers:", headers)
       // Fetch for env info
-      const response = await fetch("/envInfo",{ headers : headers} 
+      const response = await fetch("/envInfo.json",{ headers : headers} 
        ) // Shorthand for http://localhost:5000/agetns
           .then((res) => res.json()) // Result becomes a json
           .then((json) => { // take the json and set the state vars with it
