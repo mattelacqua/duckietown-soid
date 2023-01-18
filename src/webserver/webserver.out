@@ -1,4 +1,4 @@
-{"kind": "change", "change": "angle", "agent_id": "agent0", "cur_angle": 180}
+{"kind": "change", "change": "angle", "agent_id": "agent0", "cur_angle": 270}
 {"kind": "change", "change": "angle", "agent_id": "agent1", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "agent2", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "agent1", "cur_angle": 40}
+{"kind": "change", "change": "angle", "agent_id": "agent2", "cur_angle": 360}
+{"kind": "change", "change": "angle", "agent_id": "agent1", "cur_angle": 63}

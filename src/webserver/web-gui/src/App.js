@@ -61,9 +61,11 @@ class App extends React.Component{
       // Fetch for env info
       const response = await fetch("/envInfo.json",{ headers : headers} 
        ) // Shorthand for http://localhost:5000/agetns
-          .then((res) => res.json()) // Result becomes a json
-          .then((json) => { // take the json and set the state vars with it
-              let new_ref = json;
+          .then(res => res.json()) // Result becomes a json
+          .then(result => 
+          {console.log(result)
+          
+              let new_ref = result;
               if (!_.isEqual(new_ref, this.state.env_info)) {
                 this.setState({
                     env_info: new_ref,
@@ -72,7 +74,9 @@ class App extends React.Component{
                 });
                 console.log("Got new info", new_ref);
               } // Endif
-          });
+          }) 
+          .catch(error => console.log('error', error));  // take the json and set the state vars with it
+
 
       // Get the rendered image
       const image = new Image();
