@@ -10,6 +10,7 @@ class Buttons extends React.Component {
     super(props);
     this.state = {
         sim_state: this.props.sim_state,
+        env_info: this.props.env_info,
         socket: this.props.socket
     };
     this.handleClick = this.handleClick.bind(this);
@@ -17,7 +18,7 @@ class Buttons extends React.Component {
 
   // Handle the click
   handleClick(state) {
-    if (state !== "add_agent") {
+    if (state !== "add_agent" && state !=="query") {
 
       this.setState({
         sim_state: state,
@@ -32,9 +33,16 @@ class Buttons extends React.Component {
       console.log("Emitting sim_state", state);
       this.state.socket.emit('sim_state', {'state':state});
     } else {
-        this.state.socket.emit('add_agent');
-    }
+        if (state === "add_agent"){
+          this.state.socket.emit('add_agent');
+        }
+        if (state === "query"){
+          this.props.update_from_sim();
+          this.state.socket.emit('query', this.state.env_info);
+          console.log("HERE", this.state.envInfo);
+        }
   }
+}
   
   // Render the information to screen
   render() {
@@ -56,10 +64,12 @@ class Buttons extends React.Component {
          {this.props.sim_state === 'pause' &&
             <button className='quit' onClick={()=>this.handleClick("quit")}>Quit</button>
          }
+          {this.props.sim_state === 'pause' &&
+            <button className='query' onClick={()=>this.handleClick("query")}>Send Query</button>
+         }
       </div>
       );
     }
 }
-
 
 export default Buttons;

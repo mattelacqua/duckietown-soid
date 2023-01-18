@@ -65,6 +65,7 @@ install_requires = [
     "gevent",
     "eventlet",
     "flask_socketio",
+    "flask-cors",
     "torchvision",
     "tensorboard",
     "python-socketio[client]",

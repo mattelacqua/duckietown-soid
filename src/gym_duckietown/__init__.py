@@ -12,7 +12,7 @@ from duckietown_world.resources import list_maps2
 
 logger = ZLogger("gym-duckietown")
 logger.setLevel(ZLogger.INFO)
-import os
+import os, sys
 
 import pyglet
 
@@ -24,6 +24,10 @@ else:
     pyglet.options["headless"] = True
 
 path = os.path.dirname(os.path.dirname(__file__))
+print(f"PATH IS {os.getcwd()}")
+print(f"Path total: {path}")
+sys.path.append(os.getcwd())
+
 logger.debug(f"gym-duckietown version {__version__} path {path}\n")
 
 from gym.envs.registration import register

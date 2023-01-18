@@ -207,3 +207,4 @@ def get_duckiebot_color_from_colorname(color: str) -> List[float]:
     }
     color = colors[color]
     return color
+

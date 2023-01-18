@@ -37,9 +37,7 @@ class App extends React.Component{
    
         // State contains a list of agents (json format), and a bool for if the data loaded
         this.state = {
-            agents: [],
             env_info: [],
-            AgentsLoaded: false,
             EnvLoaded: false,
             rendred_imgLoaded: false,
             rendered_img: new Image(),
@@ -62,7 +60,6 @@ class App extends React.Component{
                 console.log("New State: ", new_ref.state);
                 this.setState({
                     env_info: new_ref,
-                    agents: new_ref.agents,
                     EnvLoaded: true,
                     sim_state: new_ref.state
                 });
@@ -100,6 +97,10 @@ class App extends React.Component{
             <h1> Loading Simpulation information ... </h1> 
             <h1> Please ensure that the simulator and webserver are running ... </h1> 
         </div> ;
+        else {
+          console.log("LOADED BUT RENDER ISSUES?")
+
+        }
 
         // When our data is loaded, we want to return the HTML/REACT Calls for the APP
         return (
@@ -118,10 +119,11 @@ class App extends React.Component{
 
               <Buttons sim_state={this.state.sim_state} 
                        update_from_sim={this.update_from_sim}
+                       env_info={this.state.env_info}
                        socket={this.state.socket}/>
 
               {this.state.sim_state === 'pause' && 
-                  <AgentMap agents={this.state.agents} 
+                  <AgentMap agents={this.state.env_info.agents} 
                           max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
                           max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size} 
                           tile_size={this.state.env_info.road_tile_size}
@@ -132,7 +134,7 @@ class App extends React.Component{
 
             <div className="Agents-wrap">
               {this.state.sim_state === 'pause' && 
-                  <Agents agents={this.state.agents}
+                  <Agents agents={this.state.env_info.agents}
                           socket={this.state.socket}/>
               }
             </div>

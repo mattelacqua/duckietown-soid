@@ -25,6 +25,8 @@ def handle_input(env, gui_input):
                 #print("Changing {0}'s current angle from {1} to {2}".format(agent.agent_id, agent.cur_angle, cur_angle))
                 if change == "angle":
                     agent.cur_angle = gui_input['cur_angle']
+                    agent.deg_angle = agent.get_curr_angle(env)
+                    agent.direction = agent.get_direction(env)
                 elif change == "forward_step":
                     agent.forward_step = gui_input['forward_step']
                 elif change == "pos":
@@ -255,7 +257,7 @@ def start_webserver():
     else:
       print("Old webserver not Running, Starting up new")
 
-    webserver = subprocess.Popen(["python","webserver/server.py"])
+    webserver = subprocess.Popen(["python","src/webserver/server.py"])
     return webserver
 
 def start_node():
@@ -285,7 +287,7 @@ def start_node():
 
 
 
-    node = subprocess.Popen(["npm","start", "--prefix", "./webserver/web-gui"])
+    node = subprocess.Popen(["npm","start", "--prefix", "src/webserver/web-gui"])
     return node
 
 

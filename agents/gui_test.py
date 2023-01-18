@@ -76,9 +76,9 @@ mouse_handler = mouse.MouseStateHandler()
 env.unwrapped.window.push_handlers(key_handler)
 
 # Webserver handler
-fifo_in = 'webserver/webserver.out'
-fifo_out = 'webserver/webserver.in'
-fifo_log = 'webserver/webserver.log'
+fifo_in = 'src/webserver/webserver.out'
+fifo_out = 'src/webserver/webserver.in'
+fifo_log = 'src/webserver/webserver.log'
 
 # CLEAR OLD STUFF
 clear = open(fifo_in, 'w').close()

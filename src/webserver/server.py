@@ -8,20 +8,22 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 import json
+from flask_cors import CORS
 
 # Fix payload issue
 from engineio.payload import Payload
 Payload.max_decode_packets = 100
 
 # Start up Flask web env
-template_dir = os.path.abspath('webserver/old_html/')
+template_dir = os.path.abspath('src/webserver/old_html/')
 app = Flask(__name__, template_folder=template_dir)
+CORS(app)
 
 
 socketio = SocketIO(app,cors_allowed_origins="*")
-fifo_out = 'webserver/webserver.out'
-fifo_in = 'webserver/webserver.in'
-fifo_log = 'webserver/webserver.log'
+fifo_out = 'src/webserver/webserver.out'
+fifo_in = 'src/webserver/webserver.in'
+fifo_log = 'src/webserver/webserver.log'
 out = open(fifo_out, "w")
 inp = open(fifo_in, "r")
 logger = open(fifo_log, "r")
@@ -270,6 +272,11 @@ def log_step(data):
     }
     print(f"Sending out a log change")
     serialize(log_change, out)
+
+@socketio.on("query")
+def query(env_info):
+    print(f"Recieved the following for env_info")
+    print(json.dumps(env_info, indent=2))
 
 if __name__ == '__main__':
     socketio.run(app, port=5001)

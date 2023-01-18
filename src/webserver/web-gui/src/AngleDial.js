@@ -18,30 +18,18 @@ class AngleDial extends React.Component {
       color: props.agent_color,     // Which agent
       socket: props.socket,     // Socket
     };
-    this.tick = this.tick.bind(this);
   }
 
   // Update the dial state on new changes 
   handleChange = (newValue) => {
     this.setState({value: newValue});
-  };
-
-  // Emit tick
-  tick(){
-      if (this.state.value !== this.state.last_sent) {
-        this.state.socket.emit('agent_angle',
+    this.state.socket.emit('agent_angle',
                     {
                         'id':this.state.id,         // Pass the agent_id stored in state
                         'value':this.state.value    // Pass the cur_angle stored in state
                     }); // End emit
-       this.setState({last_sent: this.state.value}); 
-     }
-  }
-
-  componentDidMount() {
-    this.interval = setInterval(() => this.tick(), 2000);
-  }
-
+    this.setState({last_sent: this.state.value}); 
+  };
 
   // Render the Dial component from the react-dial-knob package
   render() {

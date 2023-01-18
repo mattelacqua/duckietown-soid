@@ -1937,7 +1937,7 @@ class Simulator(gym.Env):
             img = Image.fromarray(img, 'RGB')
             nonwhite_positions = [(x,y) for x in range(img.size[0]) for y in range(img.size[1]) if img.getdata()[x+y*img.size[0]] != (255,0,255)]
             rect = (min([x for x,y in nonwhite_positions]), min([y for x,y in nonwhite_positions]), max([x for x,y in nonwhite_positions]), max([y for x,y in nonwhite_positions]))
-            image_path = "webserver/images"
+            image_path = "src/webserver/images"
             image = img.crop(rect).save(f"{image_path}/empty_map.jpg")
         else:
             img = Image.fromarray(img, 'RGB')
@@ -1948,7 +1948,7 @@ class Simulator(gym.Env):
                     if current_color == (255,  0 , 255):
                         img.putpixel((x,y), (38, 38, 38))
                     
-            image_path = "webserver/images"
+            image_path = "src/webserver/images"
             image = img.save(f"{image_path}/empty_map_background.jpg")
 
         return image
@@ -2305,7 +2305,7 @@ class Simulator(gym.Env):
 
         # Save the image to the directory
         web_img = Image.fromarray(img, 'RGB')
-        image_path = "webserver/images"
+        image_path = "src/webserver/images"
         web_img.save(f"{image_path}/rendered_scene.jpg")
 
         if self.distortion and not self.undistort and mode != "free_cam":
