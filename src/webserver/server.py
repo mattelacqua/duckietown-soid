@@ -278,7 +278,7 @@ def log_step(data):
 @socketio.on("query")
 def query(env_info):
     print(f"Recieved the following for env_info")
-    print(json.dumps(env_info, indent=2))
+    query_info = json.loads(env_info)
 
 if __name__ == '__main__':
     socketio.run(app, port=5001)
