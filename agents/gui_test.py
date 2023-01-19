@@ -130,7 +130,7 @@ def pause(dt):
         # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
         if gui_input:
             gui_input = gui_input[-1]
-            env.state = gu.handle_input(env, gui_input)
+            env.state, input_return = gu.handle_input(env, gui_input)
             gu.init_server(0, out, env, socket)
             if env.state == "quit":
                 print("Killing Webserver")
@@ -142,6 +142,9 @@ def pause(dt):
                 exit()
             elif env.state == "run":
                 print("Resuming Simulation")
+            elif env.state == "query_result":
+                print(input_return)
+                env.state = 'pause'
 
         # Render any changes from last thing serialized
         env.render(mode=args.cam_mode)

@@ -276,9 +276,16 @@ def log_step(data):
     serialize(log_change, out)
 
 @socketio.on("query")
-def query(env_info):
-    print(f"Recieved the following for env_info")
-    query_info = json.loads(env_info)
+def query(query_info):
+    print(f"Recieved the following for query_info")
+    query_info = json.loads(query_info)
+    query_blob = {
+                    'kind': 'query',
+                    'query_info': query_info\
+                }
+    serialize(query_blob, out)
+                  
+    
 
 if __name__ == '__main__':
     socketio.run(app, port=5001)

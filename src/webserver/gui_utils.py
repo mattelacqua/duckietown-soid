@@ -8,6 +8,7 @@ import subprocess
 import os
 import signal
 import time
+from webserver import counterfactual as cf
 
 def handle_input(env, gui_input):
     # If its a state update
@@ -99,8 +100,26 @@ def handle_input(env, gui_input):
 
                     agent.state = pickle.loads(eval(log_agent['car_state']))
     
+    if gui_input['kind'] == 'query':
+        print("\n\n Initial Query INFO")
+        print(json.dumps(gui_input['query_info'], indent=2))
 
-    return env.state
+        query_blob = cf.get_query_blob(env, gui_input['query_info'])
+
+        print("\n\n Final Query Blob")
+        print(json.dumps(query_blob, indent=2))
+
+        klee_file = cf.generate_klee_file(query_blob)
+        soid_query = cf.generate_soid_query(query_blob)
+        soid_result = cf.invoke_soid(soid_query, klee_file)
+        
+        
+        env.state = 'query_result'
+        return env.state, soid_result
+        
+
+
+    return env.state, None
 
 
 

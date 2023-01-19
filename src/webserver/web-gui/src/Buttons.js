@@ -40,8 +40,23 @@ class Buttons extends React.Component {
           this.props.update_from_sim();
           await delay(2000)
           this.props.update_from_sim();
-          this.state.socket.emit('query', this.props.env_info);
-          console.log("HERE", this.props.env_info);
+          
+          // Add the counterfactuals to the queryy
+          let env_info = this.props.env_info.agents.map((agent) => (
+            // TODO FIX THIS SO COUNTERFACTUALS HAS THE COUNTERFACTUALS.
+            agent['counterfactuals'] = null
+          ));
+          this.state.socket.emit('query', 
+            {
+              'query': {
+                'is_factual': false ,
+                'is_existential': false ,
+                'behavior': 'CHANGE ME TO QUERY BEHAVIOR' ,
+              },
+              'env_info': env_info
+            }
+            );
+          console.log("Sending this as a query", env_info);
         }
   }
 }
