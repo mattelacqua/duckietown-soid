@@ -99,6 +99,8 @@ def handle_input(env, gui_input):
                     agent.step_count = log_agent['step_count']
 
                     agent.state = pickle.loads(eval(log_agent['car_state']))
+                    agent.counterfactuals = log_agent['counterfactuals']
+
     
     if gui_input['kind'] == 'query':
         print("\n\n Initial Query INFO")
@@ -234,6 +236,35 @@ def env_info_dict(env):
         dict_agent['bbox_w'] = env.agents[i].bbox_offset_w
         dict_agent['bbox_l'] = env.agents[i].bbox_offset_l
         dict_agent['car_state']= str(pickle.dumps(env.agents[i].state))
+        
+        range_dict = {
+            'is_gt': False,
+            'is_lt': False,
+            'is_gte': False,
+            'is_lte': False,
+            'low_bound': -1.0,
+            'high_bound': -1.0,
+        }
+        counterfactual = {
+            'is_pos_x:' : False, 
+            'is_pos_z:' : False, 
+            'is_angle:' : False, 
+            'is_forward_step:' : False, 
+            'is_light:' : False, 
+            'lights:' : None, 
+            'is_value:' : False, 
+            'is_range:' : False, 
+            'range:' : range_dict,
+        }
+
+        dict_agent['counterfactuals'] = {
+            'pos_x': counterfactual,
+            'pos_z': counterfactual,
+            'angle': counterfactual,
+            'forward_step': counterfactual,
+            'lights': counterfactual,
+        }
+
         agents.append(dict_agent)
 
     env_info['agents'] = agents

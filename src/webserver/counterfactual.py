@@ -104,7 +104,7 @@ def get_query_blob(env, query_info):
         env_info = query_info['env_info']
         environment = {
             'intersection_x': env_info['intersection_x'],
-            'intersection_y': env_info['intersection_y'],
+            'intersection_z': env_info['intersection_z'],
             'robot_length': env_info['robot_length'],
             'grid_w': env_info['grid_w'],
             'grid_h': env_info['grid_h'],
@@ -118,61 +118,57 @@ def get_query_blob(env, query_info):
         def get_agent(agent_info):
             # if they can be counterfactual, make sure the check is there.
             def parse_symbolic_cf(cf):
-                symbolic = {
-                    """
-                    {
-                        is_pos_x: bool,
-                        is_pos_y: bool,
-                        is_angle: bool,
-                        is_forward_step: bool,
-                        is_light: bool,
-                        lights: {...},
-                        is_value: bool,
-                        is_range: bool,
-                        range: {
-                            is_gt: bool,
-                            is_lt: bool,
-                            is_gte: bool,
-                            is_lte: bool,
-                        }
-
-                        range: {
-                            low_bound: float/inf ,
-                            high_bound: float/inf ,
-                        },
-                    }
-                    """
+                """
+                {
+                    is_pos_x: bool,
+                    is_pos_y: bool,
+                    is_angle: bool,
+                    is_forward_step: bool,
+                    is_light: bool,
+                    lights: {...},
+                    is_value: bool,
+                    is_range: bool,
+                    range: {
+                        is_gt: bool,
+                        is_lt: bool,
+                        is_gte: bool,
+                        is_lte: bool,
+                        low_bound: float/inf ,
+                        high_bound: float/inf ,
+                    },
                 }
+                """                
+                symbolic = cf
                 return symbolic
 
             agent = {
                 'concrete' : {
                     'id': agent_info['id'],
                     'agent_id': agent_info['agent_id'],
-                    'pos_x': None if agent_info['counterfactual']['pos_x'] 
+                    'pos_x': None if agent_info['counterfactuals']['pos_x'] 
                         else agent_info['pos_x'],
-                    'pos_y': None if agent_info['counterfactual']['pos_y'] 
-                        else agent_info['pos_y'],
-                    'angle': None if agent_info['counterfactual']['angle'] 
+                    'pos_z': None if agent_info['counterfactuals']['pos_z'] 
+                        else agent_info['pos_z'],
+                    'angle': None if agent_info['counterfactuals']['angle'] 
                         else agent_info['angle'],
-                    'forward_step': None if agent_info['counterfactual']['forward_step'] 
+                    'forward_step': None if agent_info['counterfactuals']['forward_step'] 
                         else agent_info['forward_step'],
-                    'lights': None if agent_info['counterfactual']['lights'] 
+                    'lights': None if agent_info['counterfactuals']['lights'] 
                         else agent_info['lights'],
                     'lookahead': agent_info['lookahead'],
                     'color': agent_info['color'],
                 },
                 'symbolic' : {
-                    'pos_x': None if not agent_info['counterfactual']['pos_x'] 
-                        else parse_symbolic_cf(agent_info['counterfactual']['pos_x']),
-                    'pos_y': None if not agent_info['counterfactual']['pos_y'] 
-                        else parse_symbolic_cf(agent_info['counterfactual']['pos_y']),
-                    'angle': None if not agent_info['counterfactual']['angle'] 
-                        else parse_symbolic_cf(agent_info['counterfactual']['angle']),
-                    'forward_step': None if not agent_info['counterfactual']['forward_step'] 
-                        else parse_symbolic_cf(agent_info['counterfactual']['forward_step']),
-                    'forward_step': None if not agent_info['counterfactual']['lights'] 
-                        else parse_symbolic_cf(agent_info['counterfactual']['lights']),
+                    'pos_x': None if not agent_info['counterfactuals']['pos_x'] 
+                        else parse_symbolic_cf(agent_info['counterfactuals']['pos_x']),
+                    'pos_y': None if not agent_info['counterfactuals']['pos_z'] 
+                        else parse_symbolic_cf(agent_info['counterfactuals']['pos_z']),
+                    'angle': None if not agent_info['counterfactuals']['angle'] 
+                        else parse_symbolic_cf(agent_info['counterfactuals']['angle']),
+                    'forward_step': None if not agent_info['counterfactuals']['forward_step'] 
+                        else parse_symbolic_cf(agent_info['counterfactuals']['forward_step']),
+                    'lights': None if not agent_info['counterfactuals']['lights'] 
+                        else parse_symbolic_cf(agent_info['counterfactuals']['lights']),
                 },
                 'state' : {
                     'intersection_arrival': agent_info['intersection_arrival'],
@@ -184,7 +180,7 @@ def get_query_blob(env, query_info):
             }
             return agent
 
-        agents_info = query_info['agents']
+        agents_info = query_info['env_info']['agents']
         agents = {}
         for agent in agents_info:
             agents[agent['agent_id']] = get_agent(agent)
@@ -200,18 +196,19 @@ def get_query_blob(env, query_info):
         return query
 
     # Print the json we are working with
-    print("\n\n Initial Query Info")
-    print(json.dumps(query_info, indent=2))
     environment = get_environment(query_info)
     agents = get_agents(query_info)
     query = get_query(query_info)
-    query_blob = {
-        'environment': environment ,
-        'agents': agents ,
-        'query': query ,
-    }
+    query_blob = {}
+    query_blob['environment'] = environment
+    print("agents")
+    print(agents)
+    print("query")
+    print(query)
+    query_blob['agents'] = dict(agents)
+    query_blob['query'] = dict(query)
 
-    return None
+    return query_blob
 
 # Generate the klee file
 def generate_klee_file(query_blob):
@@ -283,7 +280,7 @@ def generate_soid_query(query_info):
     return None
 
 # Invoke the soid and return the result
-def invoke_soid(soid_query):
+def invoke_soid(soid_query, klee_file):
     """
     This function will invoke soid given the path to the files and the soid queries.
     Will likely need assistance from Sam on this. General outline is described in doc.

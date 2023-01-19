@@ -278,12 +278,14 @@ def log_step(data):
 @socketio.on("query")
 def query(query_info):
     print(f"Recieved the following for query_info")
-    query_info = json.loads(query_info)
+
     query_blob = {
                     'kind': 'query',
                     'query_info': query_info\
                 }
+    print("Serializing")
     serialize(query_blob, out)
+    print("Serialized")
                   
     
 

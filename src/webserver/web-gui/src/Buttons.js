@@ -42,10 +42,6 @@ class Buttons extends React.Component {
           this.props.update_from_sim();
           
           // Add the counterfactuals to the queryy
-          let env_info = this.props.env_info.agents.map((agent) => (
-            // TODO FIX THIS SO COUNTERFACTUALS HAS THE COUNTERFACTUALS.
-            agent['counterfactuals'] = null
-          ));
           this.state.socket.emit('query', 
             {
               'query': {
@@ -53,10 +49,10 @@ class Buttons extends React.Component {
                 'is_existential': false ,
                 'behavior': 'CHANGE ME TO QUERY BEHAVIOR' ,
               },
-              'env_info': env_info
+              'env_info': this.props.env_info
             }
             );
-          console.log("Sending this as a query", env_info);
+          console.log("Sending this as a query", this.props.env_info);
         }
   }
 }
