@@ -29,6 +29,19 @@ bool intersection_dir_agents(EnvironmentInfo* env_info, int agent_index, Directi
     return dir_waiting_agents;
 }
 
+bool next_to_go_agents(EnvironmentInfo* env_info, int agent_index){
+    EnvironmentAgent *agents = env_info->agents.agents_array;
+    bool next_to_go_agents = false;
+    for (int i = 0; i < env_info->agents.num_agents; i++){
+        // If not us, and at intersection line, and are facing the given direction, return true.
+        if (i != agent_index && agents[i].state.next_to_go){
+            next_to_go_agents = true;
+            break;
+        }
+    }
+    return next_to_go_agents;
+}
+
 bool intersection_tile(EnvironmentInfo* env_info, int tile_x, int tile_z){
     if (tile_x == env_info->intersection_x && tile_z == env_info->intersection_z)
         return true;
@@ -112,6 +125,8 @@ bool next_to_go(EnvironmentInfo* env_info, int agent_index){
     
     // If not at intersection entry, it doesn't matter
     if (!agent.state.at_intersection_entry)
+        return false;
+    else if (next_to_go_agents(env_info, agent_index))
         return false;
     else {
         // Is there antoher car in the intersection
@@ -576,13 +591,12 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
     if (in_bounds(env_info, agent_index)){
         EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
         // If we are facing north
-        fflush(stdout);
         if (agent.direction == NORTH){
             // If we are in the intersection or just below it, check more
             if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x, agent.tile_z - 1)){
                 // Check relative to stop line.
                 float stop_line = (env_info->intersection_z + 1) * env_info->road_tile_size;
-                if (agent.pos_z > stop_line - env_info->robot_length/2.0 &&
+                if (agent.pos_z > stop_line - env_info->robot_length/1.5 &&
                     agent.pos_z < stop_line + env_info->robot_length)
                     return true;
                 else // if not at the stop line
@@ -595,7 +609,7 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
             if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x-1, agent.tile_z)){
                 // Check relative to stop line.
                 float stop_line = (env_info->intersection_x + 1) * env_info->road_tile_size;
-                if (agent.pos_x > stop_line - env_info->robot_length/2 &&
+                if (agent.pos_x > stop_line - env_info->robot_length/1.5 &&
                     agent.pos_x < stop_line + env_info->robot_length)
                     return true;
                 else // if not at the stop line
@@ -612,7 +626,7 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
                     modifier = 1;
                 float stop_line = (env_info->intersection_z + modifier) * env_info->road_tile_size;
                 if (agent.pos_z > stop_line - env_info->robot_length &&
-                    agent.pos_z < stop_line + env_info->robot_length/2)
+                    agent.pos_z < stop_line + env_info->robot_length/1.5)
                     return true;
                 else // if not at the stop line
                     return false;
@@ -628,7 +642,7 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
                     modifier = 1;
                 float stop_line = (env_info->intersection_x + modifier) * env_info->road_tile_size;
                 if (agent.pos_x > stop_line - env_info->robot_length &&
-                    agent.pos_x < stop_line + env_info->robot_length/2)
+                    agent.pos_x < stop_line + env_info->robot_length/1.5)
                     return true;
                 else // if not at the stop line
                     return false;

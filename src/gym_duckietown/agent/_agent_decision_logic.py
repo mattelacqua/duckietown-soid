@@ -54,12 +54,22 @@ def handle_proceed(self, should_proceed):
             action = np.array([0.0, 0.0])
             self.actions = [(action, Action.STOP)] + no_intersection_stop_actions
             # Turn on break lights
-        if self.states['in_intersection'] or self.states['at_intersection_entry']:
-            self.turn_off_all_lights()
-            self.signal_for_turn(self.signal_choice)
         self.turn_on_light('back_right')
         self.turn_on_light('back_left')
-    
+        if self.actions:
+            if self.actions[0][1] == Action.INTERSECTION_FORWARD or \
+               self.states['in_intersection'] or self.states['at_intersection_entry']:
+                self.turn_off_all_lights()
+                self.signal_for_turn(self.signal_choice)
+            if self.actions[0][1] == Action.INTERSECTION_STOP or \
+               self.actions[0][1] == Action.STOP:
+                self.turn_on_light('back_right')
+                self.turn_on_light('back_left')
+            if self.actions[0][1] == Action.FORWARD_STEP:
+                self.turn_off_all_lights()
+                if self.states['in_intersection'] or self.states['at_intersection_entry']:
+                    self.signal_for_turn(self.signal_choice)
+
     elif should_proceed:
         no_stop_actions = []
         for action in self.actions:
@@ -68,22 +78,24 @@ def handle_proceed(self, should_proceed):
                 no_stop_actions.append(action)
             
 
+        self.actions = no_stop_actions
+
         if self.actions:
-            if self.actions[0] == Action.INTERSECTION_STOP:
-                self.turn_on_light('back_right')
-                self.turn_on_light('back_left')
-            if self.actions[0] == Action.INTERSECTION_FORWARD or \
+            if self.actions[0][1] == Action.INTERSECTION_FORWARD or \
                self.states['in_intersection'] or self.states['at_intersection_entry']:
                 self.turn_off_all_lights()
                 self.signal_for_turn(self.signal_choice)
-            if self.actions[0] == Action.FORWARD_STEP:
+            if self.actions[0][1] == Action.INTERSECTION_STOP or \
+               self.actions[0][1] == Action.STOP:
+                self.turn_on_light('back_right')
+                self.turn_on_light('back_left')
+            if self.actions[0][1] == Action.FORWARD_STEP:
                 self.turn_off_all_lights()
+                if self.states['in_intersection'] or self.states['at_intersection_entry']:
+                    self.signal_for_turn(self.signal_choice)
 
-
-        self.actions = no_stop_actions
         if not self.actions:
             self.actions = [()]
-            self.turn_off_all_lights()
 
 # Check if we are next in line to go in ROW
 def next_to_go(self, env):
