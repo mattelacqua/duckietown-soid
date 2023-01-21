@@ -21,7 +21,7 @@ bool intersection_dir_agents(EnvironmentInfo* env_info, int agent_index, Directi
     bool dir_waiting_agents = false;
     for (int i = 0; i < env_info->agents.num_agents; i++){
         // If not us, and at intersection line, and are facing the given direction, return true.
-        if (i != agent_index && agents[i].state.at_intersection_entry && agents[i].direction == direction){
+        if (i != agent_index && (agents[i].state.at_intersection_entry || agents[i].state.in_intersection) && agents[i].initial_direction == direction){
             dir_waiting_agents = true;
             break;
         }
@@ -118,7 +118,7 @@ bool next_to_go(EnvironmentInfo* env_info, int agent_index){
         int ROW_agent_index = -1;
         for (int i = 0; i < env_info->agents.num_agents; i++){
             // If not us, at entry, and has right of way
-            if (i != agent_index && agents[i].state.at_intersection_entry && agents[i].state.has_right_of_way){
+            if (i != agent_index && (agents[i].state.at_intersection_entry || agents[i].state.in_intersection) && agents[i].state.has_right_of_way){
                 ROW_agent_index = i;
                 break;
             }
@@ -231,6 +231,7 @@ bool has_right_of_way(EnvironmentInfo* env_info, int agent_index){
     bool e_agents = intersection_dir_agents(env_info, agent_index, EAST);
     bool w_agents = intersection_dir_agents(env_info, agent_index, WEST);
     // If already in then we must finish
+
     bool already_in = false;
     if(in_intersection)
         already_in = true;
@@ -354,6 +355,179 @@ bool has_right_of_way(EnvironmentInfo* env_info, int agent_index){
         return true;
 }
 
+bool safe_to_enter(EnvironmentInfo* env_info, int agent_index){
+    EnvironmentAgent *agents = env_info->agents.agents_array;
+    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    
+    // If we have the right of way its always safe to go.
+    if (agent.state.has_right_of_way)
+        return true;
+
+    // If we are already in the intersection
+    if (agent.state.in_intersection)
+        return true;
+
+    // If we are outside of intersection area, safe.
+    if (!agent.state.in_intersection && !agent.state.approaching_intersection && !agent.state.at_intersection_entry)
+        return true;
+        
+    // If we are at the entry, we are not next to go, we shouldn't be checking 
+    if (agent.state.at_intersection_entry && (!agent.state.next_to_go && !agent.state.has_right_of_way))
+        return false;
+    
+    // Get the intersection grid positions we will be in
+    int ROW_agent_index = -1;
+    for (int i = 0; i < env_info->agents.num_agents; i++){
+        // If not us, at entry or in it, and has right of way
+        if (i != agent_index && (agents[i].state.at_intersection_entry || agents[i].state.in_intersection) && agents[i].state.has_right_of_way){
+            ROW_agent_index = i;
+            break;
+        }
+    }
+    
+    // If theres not another agent going before us, then its safe to enter
+    if (ROW_agent_index == -1)
+        return true;
+    
+    bool ROW_agent_nw = false;
+    bool ROW_agent_ne = false;
+    bool ROW_agent_sw = false;
+    bool ROW_agent_se = false;
+    bool agent_nw = false;
+    bool agent_ne = false;
+    bool agent_sw = false;
+    bool agent_se = false;
+
+    EnvironmentAgent ROW_agent = env_info->agents.agents_array[ROW_agent_index];
+
+    // Handle the ROW agent information
+    if (ROW_agent.initial_direction == NORTH){
+        if (ROW_agent.signal_choice == STRAIGHT){
+            ROW_agent_se = true;
+            ROW_agent_ne = true;
+        }
+        if (ROW_agent.signal_choice == LEFT){
+            ROW_agent_se = true;
+            ROW_agent_ne = true;
+            ROW_agent_nw = true;
+        }
+        if (ROW_agent.signal_choice == RIGHT){
+            ROW_agent_se = true;
+        }
+    }
+    if (ROW_agent.initial_direction == EAST){
+        if (ROW_agent.signal_choice == STRAIGHT){
+            ROW_agent_sw = true;
+            ROW_agent_se = true;
+        }
+        if (ROW_agent.signal_choice == LEFT){
+            ROW_agent_sw = true;
+            ROW_agent_se = true;
+            ROW_agent_ne = true;
+        }
+        if (ROW_agent.signal_choice == RIGHT){
+            ROW_agent_sw = true;
+        }
+    }   
+    if (ROW_agent.initial_direction == SOUTH){
+        if (ROW_agent.signal_choice == STRAIGHT){
+            ROW_agent_nw = true;
+            ROW_agent_sw = true;
+        }
+        if (ROW_agent.signal_choice == LEFT){
+            ROW_agent_nw = true;
+            ROW_agent_sw = true;
+            ROW_agent_se = true;
+        }
+        if (ROW_agent.signal_choice == RIGHT){
+            ROW_agent_nw = true;
+        }
+    }
+    if (ROW_agent.initial_direction == WEST){
+        if (ROW_agent.signal_choice == STRAIGHT){
+            ROW_agent_nw = true;
+            ROW_agent_ne = true;
+        }
+        if (ROW_agent.signal_choice == LEFT){
+            ROW_agent_ne = true;
+            ROW_agent_nw = true;
+            ROW_agent_sw = true;
+        }
+        if (ROW_agent.signal_choice == RIGHT){
+            ROW_agent_ne = true;
+        }
+    } 
+
+    // For our agent
+    if (agent.initial_direction == NORTH){
+        if (agent.turn_choice == STRAIGHT){
+            agent_se = true;
+            agent_ne = true;
+        }
+        if (agent.turn_choice == LEFT){
+            agent_se = true;
+            agent_ne = true;
+            agent_nw = true;
+        }
+        if (agent.turn_choice == RIGHT){
+            agent_se = true;
+        }
+    }
+    if (agent.initial_direction == EAST){
+        if (agent.turn_choice == STRAIGHT){
+            agent_sw = true;
+            agent_se = true;
+        }
+        if (agent.turn_choice == LEFT){
+            agent_sw = true;
+            agent_se = true;
+            agent_ne = true;
+        }
+        if (agent.turn_choice == RIGHT){
+            agent_sw = true;
+        }
+    }   
+    if (agent.initial_direction == SOUTH){
+        if (agent.turn_choice == STRAIGHT){
+            agent_nw = true;
+            agent_sw = true;
+        }
+        if (agent.turn_choice == LEFT){
+            agent_nw = true;
+            agent_sw = true;
+            agent_se = true;
+        }
+        if (agent.turn_choice == RIGHT){
+            agent_nw = true;
+        }
+    }
+    if (agent.initial_direction == WEST){
+        if (agent.turn_choice == STRAIGHT){
+            agent_nw = true;
+            agent_ne = true;
+        }
+        if (agent.turn_choice == LEFT){
+            agent_ne = true;
+            agent_nw = true;
+            agent_sw = true;
+        }
+        if (agent.turn_choice == RIGHT){
+            agent_ne = true;
+        }
+    } 
+
+    // Check for intersections
+    if ((ROW_agent_nw && agent_nw) ||
+        (ROW_agent_ne && agent_ne) ||
+        (ROW_agent_sw && agent_sw) ||
+        (ROW_agent_se && agent_se)){
+
+        return false;
+        }
+
+    return true;
+}
+ 
 
 
 // Get the current direction of an agent
@@ -699,7 +873,7 @@ bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
     EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
     if (agent.state.is_tailgating) 
         return false;
-    if (agent.state.has_right_of_way) 
+    if (agent.state.has_right_of_way || agent.state.safe_to_enter) 
         return true;
     else {
         if (agent.patience > 100) 
@@ -763,7 +937,7 @@ int get_learning_state(EnvironmentInfo* env_info, int agent_index){
         model_row += 8;
     if (agent.state.car_entering_range)
         model_row += 4;
-    if (agent.state.obj_behind_intersection)
+    if (agent.state.safe_to_enter)
         model_row += 2;
     if (agent.state.is_tailgating)
         model_row += 1;
@@ -795,6 +969,7 @@ void print_all(EnvironmentInfo* env_info) {
         printf("prev_pos_x: %f prev_pos_z %f \n", agents[i].prev_pos_x, agents[i].prev_pos_z);
         printf("stop_x: %f stop_z %f \n", agents[i].stop_x, agents[i].stop_z);
         printf("tile_x: %d tile_z %d \n", agents[i].tile_x, agents[i].tile_z);
+        printf("turn_choice: %d signal_choice %d \n", agents[i].turn_choice, agents[i].signal_choice);
         printf("angle: %f speed: %f forward_step: %f direction: %d intersection_arrival: %d step_count: %d\n", 
             agents[i].angle, 
             agents[i].speed, 
@@ -810,7 +985,7 @@ void print_all(EnvironmentInfo* env_info) {
         printf("%d has_right_of_way\n", agents[i].state.has_right_of_way);
         printf("%d cars_waiting_to_enter\n", agents[i].state.cars_waiting_to_enter);
         printf("%d car_entering_range\n", agents[i].state.car_entering_range);
-        printf("%d obj_behind_intersection\n", agents[i].state.obj_behind_intersection);
+        printf("%d safe_to_enter\n", agents[i].state.safe_to_enter);
         printf("%d is_tailgating\n\n", agents[i].state.is_tailgating);
     }
 }

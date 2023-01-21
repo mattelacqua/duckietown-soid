@@ -49,6 +49,7 @@ typedef struct {
     bool approaching_intersection ;
     bool obj_in_range ;
     bool has_right_of_way ;
+    bool safe_to_enter ;
     bool cars_waiting_to_enter ;
     bool car_entering_range ;
     bool obj_behind_intersection ;
@@ -71,6 +72,9 @@ typedef struct {
     float speed ;
     float forward_step ;
     Direction direction ;
+    Direction initial_direction ;
+    TurnChoice signal_choice ;
+    TurnChoice turn_choice ;
     int intersection_arrival ;
     int patience ;
     int step_count ;

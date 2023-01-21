@@ -53,6 +53,12 @@ def handle_proceed(self, should_proceed):
         if not self.actions or (self.actions[0][1] != Action.INTERSECTION_STOP and self.actions[0][1] != Action.STOP):
             action = np.array([0.0, 0.0])
             self.actions = [(action, Action.STOP)] + no_intersection_stop_actions
+            # Turn on break lights
+        if self.states['in_intersection'] or self.states['at_intersection_entry']:
+            self.turn_off_all_lights()
+            self.signal_for_turn(self.signal_choice)
+        self.turn_on_light('back_right')
+        self.turn_on_light('back_left')
     
     elif should_proceed:
         no_stop_actions = []
@@ -60,10 +66,24 @@ def handle_proceed(self, should_proceed):
             # If we have a stop move, take it out
             if action[1] != Action.STOP:
                 no_stop_actions.append(action)
+            
+
+        if self.actions:
+            if self.actions[0] == Action.INTERSECTION_STOP:
+                self.turn_on_light('back_right')
+                self.turn_on_light('back_left')
+            if self.actions[0] == Action.INTERSECTION_FORWARD or \
+               self.states['in_intersection'] or self.states['at_intersection_entry']:
+                self.turn_off_all_lights()
+                self.signal_for_turn(self.signal_choice)
+            if self.actions[0] == Action.FORWARD_STEP:
+                self.turn_off_all_lights()
+
 
         self.actions = no_stop_actions
         if not self.actions:
             self.actions = [()]
+            self.turn_off_all_lights()
 
 # Check if we are next in line to go in ROW
 def next_to_go(self, env):
@@ -83,6 +103,12 @@ def has_right_of_way(self, env):
     dl.has_right_of_way.restype = c_bool
     return dl.has_right_of_way(env.c_info_struct, int(self.index))
         
+# Check if we have the right of way
+def safe_to_enter(self, env):
+    dl.safe_to_enter.argtypes = [POINTER(EnvironmentInfo), c_int]
+    dl.safe_to_enter.restype = c_bool
+    return dl.safe_to_enter(env.c_info_struct, int(self.index))
+
 # Check if we are at an intersection
 def in_intersection(self, env):
     # C callout
@@ -215,4 +241,3 @@ def approaching_intersection(self, env):
     dl.approaching_intersection.argtypes = [POINTER(EnvironmentInfo), c_int]
     dl.approaching_intersection.restype = c_bool
     return dl.approaching_intersection(env.c_info_struct, self.index)
-    

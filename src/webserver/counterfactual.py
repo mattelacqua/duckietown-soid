@@ -227,7 +227,7 @@ def generate_klee_file(query_blob):
     2. Gathering of the agent's learning state.
         a. create an EnvInfo struct (types.c) using the variables from above.
             - You will have to compute any computed value here as well. These are
-                - prev_pos_x, prev_pos_y, stop_x, stop_z, tile_x, tile_z, angle_deg, direction
+                - prev_pos_x, prev_pos_z, stop_x, stop_z, tile_x, tile_z, angle_deg, direction
         b. gather the agent's learning state information by calling the following functions and updating the agent's learning state in the the EnvInfo struct in sequence
             - This means 10 for loops (because some learning states require other learning states info)
             The functions in order are:

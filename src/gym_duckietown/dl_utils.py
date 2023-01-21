@@ -32,6 +32,7 @@ class AgentState(Structure):
                 ('approaching_intersection', c_bool),
                 ('obj_in_range', c_bool),
                 ('has_right_of_way', c_bool),
+                ('safe_to_enter', c_bool),
                 ('cars_waiting_to_enter', c_bool),
                 ('car_entering_range', c_bool),
                 ('obj_behind_intersection', c_bool),
@@ -53,6 +54,9 @@ class EnvironmentAgent(Structure):
                 ('speed', c_float),
                 ('forward_step', c_float),
                 ('direction', c_int),
+                ('initial_direction', c_int),
+                ('signal_choice', c_int),
+                ('turn_choice', c_int),
                 ('intersection_arrival', c_int),
                 ('patience', c_int),
                 ('step_count', c_int),
@@ -93,6 +97,9 @@ class EnvironmentAgentArray(Structure):
                 self.agents_array[i].speed = c_float(round(agent.speed, 3))
                 self.agents_array[i].forward_step = c_float(round(agent.forward_step, 3))
                 self.agents_array[i].direction = get_dl_direction(agent.direction)
+                self.agents_array[i].initial_direction = get_dl_direction(agent.initial_direction)
+                self.agents_array[i].signal_choice = get_turn_choice(agent.signal_choice)
+                self.agents_array[i].turn_choice = get_turn_choice(agent.turn_choice)
                 self.agents_array[i].intersection_arrival = c_int(agent.intersection_arrival) 
                 self.agents_array[i].patience = c_int(agent.patience)
                 self.agents_array[i].step_count = c_int(round(agent.step_count, 3))
@@ -104,11 +111,13 @@ class EnvironmentAgentArray(Structure):
                                                         agent.states['approaching_intersection'],
                                                         agent.states['obj_in_range'],
                                                         agent.states['has_right_of_way'],
+                                                        agent.states['safe_to_enter'],
                                                         agent.states['cars_waiting_to_enter'],
                                                         agent.states['car_entering_range'],
                                                         agent.states['obj_behind_intersection'],
                                                         agent.states['is_tailgating'],
                                                         agent.states['next_to_go'])
+                
                 self.agents_array[i].exists = c_bool(True)
             else:
                 self.agents_array[i].id = c_int(-1)
@@ -128,6 +137,9 @@ class EnvironmentAgentArray(Structure):
                 self.agents_array[i].speed = c_float(0.0)
                 self.agents_array[i].forward_step = c_float(0.0)
                 self.agents_array[i].direction = Direction.NORTH
+                self.agents_array[i].initial_direction = Direction.NORTH
+                self.agents_array[i].signal_choice = TurnChoice.STRAIGHT
+                self.agents_array[i].turn_choice = TurnChoice.STRAIGHT
                 self.agents_array[i].intersection_arrival = c_int(-1)
                 self.agents_array[i].patience = c_int(-1)
                 self.agents_array[i].step_count = c_int(-1)

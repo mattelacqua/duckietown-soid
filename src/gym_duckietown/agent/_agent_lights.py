@@ -11,6 +11,14 @@ def turn_on_light(self, light):
 def turn_off_light(self, light):
     self.lights[light][3] = False
 
+# Turn off Specific Light
+def turn_off_all_lights(self):
+    self.lights['front_right'][3] = False
+    self.lights['front_left'][3] = False
+    self.lights['back_right'][3] = False
+    self.lights['back_left'][3] = False
+    self.lights['center'][3] = False
+
 # Set light
 def set_light(self, light, on):
     if on:

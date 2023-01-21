@@ -14,11 +14,14 @@ def get_state(self, env):
     self.states['approaching_intersection'] = self.approaching_intersection(env)
     self.states['obj_in_range'] = self.object_in_range(env, location="Ahead", radius = radius)
     self.states['has_right_of_way'] = self.has_right_of_way(env)
+    self.states['safe_to_enter'] = self.safe_to_enter(env)
+    self.states['cars_waiting_to_enter'] = self.cars_waiting_to_enter(env)
     self.states['cars_waiting_to_enter'] = self.cars_waiting_to_enter(env)
     self.states['car_entering_range'] = self.car_entering_range(env, radius=radius)
     self.states['obj_behind_intersection'] = self.object_in_range(env, location="Behind", intersection=True, radius=radius)
     self.states['obj_behind_no_intersection'] =  self.object_in_range(env, location="Behind", intersection=False, radius=radius)
     self.states['is_tailgating'] =  self.is_tailgating(env)
+    self.states['next_to_go'] =  self.next_to_go(env)
 
 # Reward profile for q learning
 def get_reward(self, env, done_code):

@@ -113,6 +113,7 @@ class Agent():
         self.turn_choice = None
         self.curve = 0
         self.signal_choice = None
+        self.initial_direction = ""
         self.stop_point = None       
         self.patience = 0       
 
@@ -159,6 +160,7 @@ class Agent():
                                         handle_proceed, \
                                         next_to_go, \
                                         has_right_of_way, \
+                                        safe_to_enter, \
                                         in_intersection, \
                                         at_intersection_entry,\
                                         intersection_empty, \
@@ -178,6 +180,7 @@ class Agent():
     # Import Lights
     from .agent._agent_lights import    turn_on_light, \
                                         turn_off_light, \
+                                        turn_off_all_lights, \
                                         set_light, \
                                         lights_to_dictlist, \
                                         signal_for_turn

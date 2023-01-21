@@ -529,6 +529,8 @@ class Simulator(gym.Env):
         for agent in self.agents: 
             agent.states['has_right_of_way'] = agent.has_right_of_way(env)
         for agent in self.agents: 
+            agent.states['safe_to_enter'] = agent.safe_to_enter(env)
+        for agent in self.agents: 
             agent.states['cars_waiting_to_enter'] = agent.cars_waiting_to_enter(env)
         for agent in self.agents: 
             agent.states['car_entering_range'] = agent.car_entering_range(env, radius=radius)
@@ -820,6 +822,8 @@ class Simulator(gym.Env):
 
             # set the curve
             agent.curve = agent.get_curve(self)
+            agent.direction = agent.get_direction(self)
+            agent.initial_direction = agent.get_direction(self)
         
 
         # Generate the first camera image
@@ -980,7 +984,7 @@ class Simulator(gym.Env):
         # If still no, make a default one ( no random agents )
         if not self.agents:
             print("HERE strange.")
-            new_agent = Agent(self, cur_pos=[0, 0, 0], cur_angle=0, agent_id="agent" + str(x), random_spawn=True)
+            new_agenv = Agent(self, cur_pos=[0, 0, 0], cur_angle=0, agent_id="agent" + str(x), random_spawn=True)
         
 
     def _load_objects(self, map_data: MapFormat1):
@@ -2393,11 +2397,16 @@ class Simulator(gym.Env):
                 stat.draw()  
                 #8 
                 stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 12)
-                stat.text = (f"car_behind_us_in_range: {self.agents[0].learning_state[8]}")
+                stat.text = (f"safe_to_enter: {self.agents[0].learning_state[8]}")
                 stat.draw()  
                 #9 
                 stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 13)
                 stat.text = (f"is_tailgating: {self.agents[0].learning_state[9]}")
+                stat.draw()  
+                #10
+                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 14)
+                next_to_go = self.agents[0].states["next_to_go"]
+                stat.text = (f"next_to_go: {next_to_go}")
                 stat.draw()  
 
             else:
@@ -2541,6 +2550,8 @@ class Simulator(gym.Env):
         agent.lights["back_left"][3] = False
         agent.lights["back_right"][3] = False
         agent.lights["center"][3] = False
+        
+        # Set the states
         agent.states['in_intersection'] = False
         agent.states['at_intersection_entry'] = False
         agent.states['intersection_empty'] = False
@@ -2553,6 +2564,7 @@ class Simulator(gym.Env):
         agent.states['obj_behind_no_intersection'] = False
         agent.states['is_tailgating'] = False
         agent.states['next_to_go'] = False
+        agent.states['safe_to_enter'] = False
         
 
 
