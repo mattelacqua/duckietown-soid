@@ -106,11 +106,11 @@ class App extends React.Component{
         if ((!this.state.EnvLoaded) ||
            (!this.state.rendered_imgLoaded))
            return <div> 
-            <h1> Loading Simpulation information ... </h1> 
+            <h1> Loading Simulation information ... </h1> 
             <h1> Please ensure that the simulator and webserver are running ... </h1> 
         </div> ;
         else {
-          console.log("LOADED BUT RENDER ISSUES?")
+          //console.log("LOADED BUT RENDER ISSUES?")
 
         }
 

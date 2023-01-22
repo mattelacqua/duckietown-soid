@@ -149,7 +149,7 @@ def get_query_blob(env, query_info):
                         else agent_info['pos_x'],
                     'pos_z': None if agent_info['counterfactuals']['pos_z'] 
                         else agent_info['pos_z'],
-                    'angle': None if agent_info['counterfactuals']['angle'] 
+                    'angle': None if agent_info['counterfactuals']['angle']
                         else agent_info['angle'],
                     'forward_step': None if agent_info['counterfactuals']['forward_step'] 
                         else agent_info['forward_step'],
@@ -163,7 +163,7 @@ def get_query_blob(env, query_info):
                         else parse_symbolic_cf(agent_info['counterfactuals']['pos_x']),
                     'pos_y': None if not agent_info['counterfactuals']['pos_z'] 
                         else parse_symbolic_cf(agent_info['counterfactuals']['pos_z']),
-                    'angle': None if not agent_info['counterfactuals']['angle'] 
+                    'angle': None if not agent_info['counterfactuals']['angle']
                         else parse_symbolic_cf(agent_info['counterfactuals']['angle']),
                     'forward_step': None if not agent_info['counterfactuals']['forward_step'] 
                         else parse_symbolic_cf(agent_info['counterfactuals']['forward_step']),

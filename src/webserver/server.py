@@ -89,11 +89,13 @@ def agent_angle(data):
     global out
     a_id = str(data['id'])
     angle = int(data['value'])
+    counterfactual = data['counterfactual']
     agent_change = {
                     'kind': 'change',
                     'change': 'angle',
                     'agent_id': a_id,
-                    'cur_angle': angle
+                    'cur_angle': angle,
+                    'counterfactual': counterfactual
                     }
 
     #print(f"Sending Agent {a_id} angle {angle}")
@@ -277,15 +279,12 @@ def log_step(data):
 
 @socketio.on("query")
 def query(query_info):
-    print(f"Recieved the following for query_info")
 
     query_blob = {
                     'kind': 'query',
                     'query_info': query_info\
                 }
-    print("Serializing")
     serialize(query_blob, out)
-    print("Serialized")
                   
     
 

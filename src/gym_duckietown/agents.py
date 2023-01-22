@@ -149,7 +149,36 @@ class Agent():
         self.misc = None
         self.q_state = -1
 
+        # Gui Counterfactuals
+        range_dict = {
+            'is_gt': False,
+            'is_lt': False,
+            'is_gte': False,
+            'is_lte': False,
+            'low_bound': 0.0,
+            'high_bound': 0.0,
+        }
 
+        counterfactual = {
+            'is_pos_x:' : False, 
+            'is_pos_z:' : False, 
+            'is_angle:' : False, 
+            'is_forward_step:' : False, 
+            'is_light:' : False, 
+            'lights:' : None, 
+            'is_value:' : False, 
+            'is_range:' : False, 
+            'value:' : 0.0,
+            'range:' : range_dict,
+        }
+
+        self.counterfactuals = {
+            'pos_x': counterfactual,
+            'pos_z': counterfactual,
+            'angle': counterfactual,
+            'forward_step': counterfactual,
+            'lights': counterfactual,
+        }
 
     # Import things for learning
     from .agent._agent_learning import  get_reward, \

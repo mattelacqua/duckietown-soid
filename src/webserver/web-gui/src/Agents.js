@@ -34,6 +34,7 @@ class Agents extends React.Component {
                     /* Render an Agent component, with props: agent_id, cur_angle, cur_pos, color */
                     <Agent agent_id={agent.agent_id} 
                            id={agent.id}
+                           index={agent.index}
                            pos_x={agent.pos_x}
                            pos_z={agent.pos_z}
                            prev_pos_x={agent.prev_pos_x}

@@ -36,6 +36,7 @@ class Agent extends React.Component {
     this.state = {
       agent_id: props.agent_id,
       id: props.id,
+      index: props.index,
       pos_x: props.pos_x,
       pos_z: props.pos_z,
       prev_pos_x: props.prev_pos_x,
@@ -69,6 +70,7 @@ class Agent extends React.Component {
     this.setState({ 
       agent_id: nextProps.agent_id,
       id: nextProps.id,
+      index: nextProps.index,
       pos_x: nextProps.pos_x,
       pos_z: nextProps.pos_z,
       prev_pos_x: nextProps.prev_pos_x,
