@@ -2333,10 +2333,10 @@ class Simulator(gym.Env):
 
         if self.window is None:
             config = gl.Config(double_buffer=False)
-            self.window = window.Window(
+            self.text_window = window.Window(
                 width=WINDOW_WIDTH, height=WINDOW_HEIGHT, resizable=True, config=config
             )
-            self.text_window = window.Window(
+            self.window = window.Window(
                 width=WINDOW_WIDTH, height=WINDOW_HEIGHT, resizable=True, config=config
             )
         self.text_window.clear()
@@ -2549,7 +2549,8 @@ class Simulator(gym.Env):
         agent.prev_pos = propose_pos
         agent.cur_angle = propose_angle
         agent.curve = agent.get_curve(self)
-        agent.start_direction = agent.get_direction(self)
+        agent.initial_direction = agent.get_direction(self)
+        agent.direction = agent.get_direction(self)
         agent.actions = []
         agent.intersection_arrival = -1
         agent.nearby_objects = []

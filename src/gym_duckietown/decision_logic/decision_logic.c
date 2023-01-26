@@ -929,9 +929,7 @@ bool is_tailgating(EnvironmentInfo* env_info, int agent_index){
 }
 
 
-
 // Good agent proceed: 0=stop 1=proceed
-
 bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
     EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
     // If we are tailgating we dont move

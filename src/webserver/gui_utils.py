@@ -20,50 +20,23 @@ def handle_input(env, gui_input):
 
     if gui_input['kind'] == 'change':
         change = gui_input['change']
-        agent_count = 0
-        for agent in env.agents:
-            if agent.agent_id == gui_input['agent_id']:
-                #print("Changing {0}'s current angle from {1} to {2}".format(agent.agent_id, agent.cur_angle, cur_angle))
-                if change == "angle":
-                    agent.cur_angle = math.radians(gui_input['cur_angle'])
-                    agent.deg_angle = agent.get_curr_angle(env)
-                    agent.direction = agent.get_direction(env)
-                    if gui_input['counterfactual']:
-                        agent.counterfactuals['angle'] = gui_input['counterfactual']
-                elif change == "forward_step":
-                    agent.forward_step = gui_input['forward_step']
-                elif change == "pos":
-                    agent.cur_pos = [gui_input['pos_x'], 0, gui_input['pos_z']]
-                    #Resetting the actions for the agent since pos change will revert
-                    agent.actions = []
-                elif change == "inc_pos":
-                    if gui_input['inc_dir'] == 'N':
-                        agent.cur_pos[2] -= 0.1
-                    elif gui_input['inc_dir'] == 'S':
-                        agent.cur_pos[2] += 0.1
-                    elif gui_input['inc_dir'] == 'E':
-                        agent.cur_pos[0] += 0.1
-                    elif gui_input['inc_dir'] == 'W':
-                        agent.cur_pos[0] -= 0.1
-                elif change == "turn":
-                    agent.turn_choice = gui_input['turn']
-                elif change == "signal":
-                    agent.signal_choice = gui_input['signal']
-                elif change == "bbox_offset_w":
-                    agent.bbox_offset_w = gui_input['bbox_offset_w']
-                elif change == "bbox_offset_l":
-                    agent.bbox_offset_l = gui_input['bbox_offset_l']
-                elif change == "lights":
-                    for light in gui_input['lights']:
-                        agent.set_light(light["light"], light["on"])
-                elif change == "delete":
-                    env.agents.remove(agent)
+        agent = env.agents[int(gui_input['agent_id'])]
+        if change == "angle":
+            agent.cur_angle = math.radians(gui_input['cur_angle'])
+            agent.deg_angle = agent.get_curr_angle(env)
+            agent.direction = agent.get_direction(env)
+        elif change == "pos":
+            agent.cur_pos = [gui_input['pos_x'], 0, gui_input['pos_z']]
+            agent.actions = []
+        elif change == "delete":
+            env.agents.remove(agent)
                 
-            agent_count = agent_count + 1
-
-        if change == "add":
-            new_agent = agents.Agent(agent_id=("agent"+str(agent_count)), random_spawn=True)
-            env.agents.append(new_agent)
+    if gui_input['kind'] == 'add_agent':
+        new_agent = agents.Agent(env, agent_id=("agent"+str(len(env.agents))), random_spawn=True)
+        directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
+        colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
+        env.agents.append(new_agent)
+        env.spawn_random_agent(new_agent, directions, colors)
          
 
     if gui_input['kind'] == 'log':
@@ -89,11 +62,12 @@ def handle_input(env, gui_input):
                     agent.states['approaching_intersection'] = log_agent['state']['approaching_intersection']
                     agent.states['obj_in_range'] = log_agent['state']['obj_in_range']
                     agent.states['has_right_of_way'] = log_agent['state']['has_right_of_way']
+                    agent.states['next_to_go'] = log_agent['state']['next_to_go']
+                    agent.states['safe_to_enter'] = log_agent['state']['safe_to_enter']
                     agent.states['cars_waiting_to_enter'] = log_agent['state']['cars_waiting_to_enter']
                     agent.states['car_entering_range'] = log_agent['state']['car_entering_range']
                     agent.states['obj_behind_intersection'] = log_agent['state']['obj_behind_intersection']
                     agent.states['is_tailgating'] = log_agent['state']['is_tailgating']
-                    agent.states['next_to_go'] = log_agent['state']['next_to_go']
                     agent.bbox_offset_w = log_agent['bbox_w']
                     agent.bbox_offset_l = log_agent['bbox_l']
                     agent.state = log_agent['state']
@@ -120,6 +94,7 @@ def handle_input(env, gui_input):
         
 
 
+    env.c_info_struct = agents.EnvironmentInfo(env)
     return env.state, None
 
 
@@ -216,11 +191,12 @@ def env_info_dict(env):
         agent_state['approaching_intersection'] = agent.state.approaching_intersection
         agent_state['obj_in_range'] = agent.state.obj_in_range
         agent_state['has_right_of_way'] = agent.state.has_right_of_way
+        agent_state['next_to_go'] = agent.state.next_to_go
+        agent_state['safe_to_enter'] = agent.state.safe_to_enter
         agent_state['cars_waiting_to_enter'] = agent.state.cars_waiting_to_enter
         agent_state['car_entering_range'] = agent.state.car_entering_range
         agent_state['obj_behind_intersection'] = agent.state.obj_behind_intersection
         agent_state['is_tailgating'] = agent.state.is_tailgating
-        agent_state['next_to_go'] = agent.state.next_to_go
 
         dict_agent['state']=agent_state
         dict_agent['exists']=agent.exists

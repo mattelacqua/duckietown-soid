@@ -24,6 +24,16 @@
     padding-bottom: 10em;
     overflow:hidden;
 }
+.dial-wrap {
+    display:flex;
+    flex-direction:row;
+    justify-content: space-between;
+    padding-top: 2em;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-bottom: 10em;
+    overflow:hidden;
+}
 .App-header {
     background-color: #282c34;
     min-height: 100vh;

@@ -156,6 +156,7 @@ class Agent():
             'is_lt': False,
             'is_gte': False,
             'is_lte': False,
+            'turn_choices': [],
             'low_bound': 0.0,
             'high_bound': 0.0,
         }
@@ -165,21 +166,16 @@ class Agent():
             'is_pos_z:' : False, 
             'is_angle:' : False, 
             'is_forward_step:' : False, 
-            'is_light:' : False, 
-            'lights:' : None, 
+            'is_speed:' : False, 
+            'is_signalchoice:' : False, 
+            'is_turnchoice:' : False, 
             'is_value:' : False, 
             'is_range:' : False, 
             'value:' : 0.0,
             'range:' : range_dict,
         }
 
-        self.counterfactuals = {
-            'pos_x': counterfactual,
-            'pos_z': counterfactual,
-            'angle': counterfactual,
-            'forward_step': counterfactual,
-            'lights': counterfactual,
-        }
+        self.counterfactuals = []
 
     # Import things for learning
     from .agent._agent_learning import  get_reward, \

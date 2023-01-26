@@ -35,10 +35,6 @@ log_info = []
 while not env_info:
     env_info = read_init(inp)
 
-#print(f"FINISHED INIT with \n Agents: {agent_list} \n Env Info: {env_info}")
-
-
-
 # Home page for website, has all information we want on it
 @app.route("/envInfo.json")
 @cross_origin()
@@ -62,8 +58,6 @@ def mapImageBackground():
 @cross_origin()
 def renderedScene():
     return send_file("images/rendered_scene.jpg", mimetype='image/jpeg')
-
-
 
 #Connect and Disconnect
 @socketio.on('connect')
@@ -89,16 +83,13 @@ def agent_angle(data):
     global out
     a_id = str(data['id'])
     angle = int(data['value'])
-    counterfactual = data['counterfactual']
     agent_change = {
                     'kind': 'change',
                     'change': 'angle',
                     'agent_id': a_id,
                     'cur_angle': angle,
-                    'counterfactual': counterfactual
                     }
 
-    #print(f"Sending Agent {a_id} angle {angle}")
     serialize(agent_change, out)
  
 # On socket update change agent angle position (from text)
@@ -115,37 +106,8 @@ def agent_pos(data):
                     'pos_x': x,
                     'pos_z': z,
                     }   
-    #print(f"Sending Agent {a_id} pos {(x, z)}")
     serialize(agent_change, out)
 
-# On socket update change agent angle position (from button press)
-@socketio.on("increment_pos")
-def increment_pos(data):
-    global out
-    a_id = str(data['id'])
-    direction = str(data['direction'])
-    agent_change = {
-                    'kind': 'change',
-                    'change': 'inc_pos',
-                    'agent_id': a_id,
-                    'inc_dir': direction
-                    }
-    serialize(agent_change, out)
-
-@socketio.on("lights")
-def lights(data):
-    global oute
-    a_id = str(data['id'])
-    lights = data['lights']
-    agent_change = {
-                    'kind': 'change',
-                    'change': 'lights',
-                    'agent_id': a_id,
-                    'lights': lights
-                    }
-    #print(f"Sending Agent {a_id} lights {lights}")
-    serialize(agent_change, out)
- 
 # On socket update resume simulation from button press
 @socketio.on("sim_state")
 def sim_state(data):
@@ -155,14 +117,22 @@ def sim_state(data):
                 'kind': 'state',
                 'state': state,
               }
-    #print(f"Sending state {state}")
     serialize(to_send, out)
 
+# add an agent
+@socketio.on("add_agent")
+def add_agent():
+    global out
+    agent_change = {
+                    'kind': 'add_agent',
+                   }
+    serialize(agent_change, out)
 @socketio.on("delete_agent")
+
+# delete an agent
 def delete_agent(data):
     global out
     a_id = str(data['id'])
-    #print(f"Sending Agent {a_id} delete")
     agent_change = {
                     'kind': 'change',
                     'change': 'delete',
@@ -170,91 +140,11 @@ def delete_agent(data):
                     }
     serialize(agent_change, out)
 
-@socketio.on("add_agent")
-def add_agent():
-    global out
-    agent_change = {
-                    'kind': 'change',
-                    'change': 'add',
-                    }
-    #print(f"Sending Agent add")
-    serialize(agent_change, out)
-
-@socketio.on("turn_choice")
-def turn_choice(data):
-    global out
-    a_id = str(data['agent_id'])
-    turn = str(data['turn'])
-    if turn == "Random":
-        turn = None
-    agent_change = {
-                    'kind': 'change',
-                    'change': 'turn',
-                    'agent_id': a_id,
-                    'turn_choice': turn,
-                    }
-    print(f"Setting Turn to {turn} for agent {a_id}")
-    serialize(agent_change, out)
-
-@socketio.on("signal_choice")
-def signal_choice(data):
-    global out
-    a_id = str(data['agent_id'])
-    signal = str(data['signal'])
-    if signal == "Random":
-        signal = None
-    agent_change = {
-                    'kind': 'change',
-                    'change': 'signal',
-                    'agent_id': a_id,
-                    'signal_choice': signal,
-                    }
-    print(f"Setting Signal to {signal} for agent {a_id}")
-    serialize(agent_change, out)
-
-# On socket update change agent forward step (use minimum by default 
-@socketio.on("forward_step")
-def forward_step(data):
-    global out
-    a_id = str(data['id'])
-    forward_step = dict(data['forward_step'])
-    # Default to MIN
-    agent_change = {
-                    'kind': 'change',
-                    'change': 'forward_step',
-                    'agent_id': a_id,
-                    'forward_step': round(forward_step['min'], 2),
-                    }
-    #print(f"Sending Agent {a_id} forward_step min {forward_step}")
-    serialize(agent_change, out)
-
-@socketio.on("bounding_box")
-def bounding_box(data):
-    global out
-    a_id = str(data['id'])
-    direction = str(data['direction'])
-    bbox_offset = float(data['bbox_offset'])
-    print(f"bbox {direction} offset {bbox_offset}")
-    if direction == "width":
-        agent_change = {
-                        'kind': 'change',
-                        'change': 'bbox_offset_w',
-                        'agent_id': a_id,
-                        'bbox_offset_w': round(bbox_offset, 2),
-                        }
-    elif direction == "length":
-        agent_change = {
-                        'kind': 'change',
-                        'change': 'bbox_offset_l',
-                        'agent_id': a_id,
-                        'bbox_offset_l': round(bbox_offset, 2),
-                        }
-    #print(f"Sending Agent {a_id} bbox_offset {bbox_offset} direction {direction}")
-    serialize(agent_change, out)
-
+# Reinstate from log
 @socketio.on("log_step")
 def log_step(data):
-    global logger, agent_list, env_info, log_info
+    global logger, env_info, log_info
+
     step = int(data['step'])
     new_log_info = list(unserialize(logger, log=True))
     if new_log_info:
@@ -277,16 +167,14 @@ def log_step(data):
     print(f"Sending out a log change")
     serialize(log_change, out)
 
+# do a query
 @socketio.on("query")
 def query(query_info):
-
     query_blob = {
                     'kind': 'query',
                     'query_info': query_info\
                 }
     serialize(query_blob, out)
-                  
-    
 
 if __name__ == '__main__':
     socketio.run(app, port=5001)

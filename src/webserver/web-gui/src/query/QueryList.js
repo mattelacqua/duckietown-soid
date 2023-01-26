@@ -1,5 +1,3 @@
-// Import style
-import './Agent.css';
 // Import React
 import React from "react";
 
@@ -11,7 +9,6 @@ class QueryList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      agent_id: props.agent_id,
     };
   }
 
