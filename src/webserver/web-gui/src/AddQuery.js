@@ -41,6 +41,7 @@ class AddQuery extends React.Component {
     // You may have to build more components as well like 'text boxes' or call out to Angle Dial or things like that.
     // I can do some of that or help you learn how. Just reach out and lmk
     // Will end with a button to add the query.
+    // Imagine Dropdown for proposition (pos_x, angle, signal, etc), dropdown for is_value / is_range, depending on that, text input box or 2 text input boxes with a operator drop down between
     return (
             <div>
                 {/* Render */}

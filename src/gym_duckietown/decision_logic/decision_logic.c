@@ -934,25 +934,26 @@ bool is_tailgating(EnvironmentInfo* env_info, int agent_index){
 
 bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
     EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
-    if (agent.state.is_tailgating || !agent.state.safe_to_enter) 
+    // If we are tailgating we dont move
+    if (agent.state.is_tailgating) 
         return false;
-    if (agent.state.has_right_of_way || agent.state.safe_to_enter) 
-        return true;
-    else {
+    // If its not safe to enter, we go into the intersection if we run out of patience
+    if (!agent.state.safe_to_enter){
         if (agent.patience > 100) 
             return true;
         else 
             return false;
     }
-
+    //if (agent.state.has_right_of_way || agent.state.safe_to_enter) 
+    return true;
 }
 
 // Handle patience return 0=do nothing 1=inc 2=reset
 int handle_patience(EnvironmentInfo* env_info, int agent_index){
     EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
-    if (!(agent.state.has_right_of_way || agent.state.safe_to_enter) && agent.state.next_to_go && agent.state.intersection_empty)
+    if ((!agent.state.has_right_of_way && !agent.state.safe_to_enter) && agent.state.next_to_go && agent.state.intersection_empty)
         return 1;
-    if (!(agent.state.has_right_of_way || agent.state.safe_to_enter) && agent.state.next_to_go && !agent.state.intersection_empty)
+    if ((!agent.state.has_right_of_way && !agent.state.safe_to_enter) && agent.state.next_to_go && !agent.state.intersection_empty)
         return 2;
     return 0;
 }
