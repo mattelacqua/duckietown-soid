@@ -3,6 +3,8 @@ import sys
 import os
 import shutil
 import random
+import time
+from datetime import timedelta
 
 # Learning things
 import gym
@@ -127,7 +129,7 @@ def train(args):
 
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
-                    agent.handle_proceed(bool(action))
+                    agent.handle_proceed(env, bool(action))
                     # If the handle proceed needs an initial action, add it
                     if not agent.actions:
                         agent.add_actions(agent.move_forward(env))
@@ -197,12 +199,9 @@ def train(args):
                 print(f"Batch Episodes: {i}")
 
     print("Training finished.\n")
+    return avg_rewards, avg_rewards_index
 
-    print(avg_rewards)
-    plt.plot(avg_rewards_index, avg_rewards)
-    plt.ylabel('Rewards')
-    plt.xlabel('Episode #')
-    plt.show()
+    
 
 # Write the model
 def write_model(directory, reward_profile, episode_batch, model):
@@ -214,6 +213,8 @@ def write_model(directory, reward_profile, episode_batch, model):
         profile = "impatient"
     elif reward_profile == 2:
         profile = "defensive"
+    elif reward_profile == 3:
+        profile = "standard"
 
     model_save = directory + profile + "/" + "episodebatch_" + str(episode_batch)
 
@@ -249,4 +250,11 @@ if __name__ == "__main__":
     args = utils.get_args_from_config(config_name)
 
     # Train 
-    train(args)
+    start = time.time()
+    avg_rewards, avg_rewards_index = train(args)
+    elapsed = time.time() - start
+    print(f"Elapsed Training Time: {str(timedelta(seconds=elapsed))}")
+    plt.plot(avg_rewards_index, avg_rewards)
+    plt.ylabel('Rewards')
+    plt.xlabel('Episode #')
+    plt.show()

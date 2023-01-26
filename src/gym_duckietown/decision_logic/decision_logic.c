@@ -18,10 +18,15 @@ float pos_distance(double x1, double x2, double z1, double z2){
 
 bool intersection_dir_agents(EnvironmentInfo* env_info, int agent_index, Direction direction){
     EnvironmentAgent *agents = env_info->agents.agents_array;
+    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
     bool dir_waiting_agents = false;
     for (int i = 0; i < env_info->agents.num_agents; i++){
-        // If not us, and at intersection line, and are facing the given direction, return true.
-        if (i != agent_index && (agents[i].state.at_intersection_entry || agents[i].state.in_intersection) && agents[i].initial_direction == direction){
+        // If not us, and at intersection line, and are facing the given direction, and arrive at the SAME TIME
+        if (i != agent_index && 
+           (agents[i].state.at_intersection_entry || agents[i].state.in_intersection) && 
+           agents[i].initial_direction == direction && 
+           agents[i].intersection_arrival >= 0 && 
+           agents[i].intersection_arrival == agent.intersection_arrival){
             dir_waiting_agents = true;
             break;
         }
@@ -126,102 +131,143 @@ bool next_to_go(EnvironmentInfo* env_info, int agent_index){
     // If not at intersection entry, it doesn't matter
     if (!agent.state.at_intersection_entry)
         return false;
-    else if (next_to_go_agents(env_info, agent_index))
+    
+    // If someone else is next to go then we are not
+    if (next_to_go_agents(env_info, agent_index))
         return false;
-    else {
-        // Is there antoher car in the intersection
-        int ROW_agent_index = -1;
-        for (int i = 0; i < env_info->agents.num_agents; i++){
-            // If not us, at entry, and has right of way
-            if (i != agent_index && (agents[i].state.at_intersection_entry || agents[i].state.in_intersection) && agents[i].state.has_right_of_way){
-                ROW_agent_index = i;
-                break;
-            }
-        }
-        bool n_agents = intersection_dir_agents(env_info, agent_index, NORTH);
-        bool s_agents = intersection_dir_agents(env_info, agent_index, SOUTH);
-        bool e_agents = intersection_dir_agents(env_info, agent_index, EAST);
-        bool w_agents = intersection_dir_agents(env_info, agent_index, WEST);
-        // If no ROW agent, we have ROW
-        if (ROW_agent_index == -1)
-            return false;
-        else {
-            EnvironmentAgent ROW_agent = env_info->agents.agents_array[ROW_agent_index];
-            if (ROW_agent.direction == NORTH) {
-                if (agent.direction == EAST)
-                    return true;
-                else if (agent.direction == SOUTH)
-                    if (!e_agents)
-                        return true;
-                    else
-                        return false;
-                else if (agent.direction == WEST)
-                    if (!e_agents && !s_agents)
-                        return true;
-                    else
-                        return false;
-                else if (agent.direction == NORTH)
-                    return false;
-                else  
-                    return false;
-            }
-            else if (ROW_agent.direction == EAST) {
-                if (agent.direction == SOUTH)
-                    return true;
-                else if (agent.direction == WEST)
-                    if (!s_agents)
-                        return true;
-                    else
-                        return false;
-                else if (agent.direction == NORTH)
-                    if (!s_agents && !w_agents)
-                        return true;
-                    else
-                        return false;
-                else if (agent.direction == EAST)
-                    return false;
-                else  
-                    return false;
-            }
-            else if (ROW_agent.direction == SOUTH) {
-                if (agent.direction == WEST)
-                    return true;
-                else if (agent.direction == NORTH)
-                    if (!w_agents)
-                        return true;
-                    else
-                        return false;
-                else if (agent.direction == EAST)
-                    if (!w_agents && !n_agents)
-                        return true;
-                    else
-                        return false;
-                else if (agent.direction == SOUTH)
-                    return false;
-                else  
-                    return false;
-            }
-            else if (ROW_agent.direction == WEST) {
-                if (agent.direction == NORTH)
-                    return true;
-                else if (agent.direction == EAST)
-                    if (!n_agents)
-                        return true;
-                    else
-                        return false;
-                else if (agent.direction == SOUTH)
-                    if (!n_agents && !e_agents)
-                        return true;
-                    else
-                        return false;
-                else if (agent.direction == WEST)
-                    return false;
-                else  
-                    return false;
-            } else 
-                return false;
+        
+    // General case
+
+    // Is there antoher car in the intersection with ROW
+    int ROW_agent_index = -1;
+    int lowest_ROW_agent_arrival = 1500;
+    for (int i = 0; i < env_info->agents.num_agents; i++){
+        // If not us, at entry, and has right of way
+        if (i != agent_index && 
+        (agents[i].state.at_intersection_entry || agents[i].state.in_intersection) && 
+        agents[i].state.has_right_of_way &&
+        agents[i].intersection_arrival < lowest_ROW_agent_arrival){
+            ROW_agent_index = i;
+            lowest_ROW_agent_arrival = i;
         }
     }
+
+    // If no ROW agent, we have ROW
+    if (ROW_agent_index == -1)
+        return false;
+        
+    // Check if we are next in line
+    EnvironmentAgent ROW_agent = env_info->agents.agents_array[ROW_agent_index];
+    // Check if there is another car that arrive before me
+    bool cars_before_me = false;
+    bool cars_same_as_me = false;
+    for (int i = 0; i < env_info->agents.num_agents; i++){
+        if (i != agent_index && 
+           (agents[i].state.in_intersection || agents[i].state.at_intersection_entry) && 
+           agents[i].intersection_arrival >= 0 && 
+           agent.intersection_arrival >= 0 && 
+           agents[i].intersection_arrival < agent.intersection_arrival &&
+           i != ROW_agent_index){ // Not the same as the one whos turn it is
+            cars_before_me = true;
+            break;
+        }
+        if (i != agent_index && 
+           (agents[i].state.in_intersection || agents[i].state.at_intersection_entry) && 
+           agents[i].intersection_arrival >= 0 && 
+           agent.intersection_arrival >= 0 && 
+           agents[i].intersection_arrival == agent.intersection_arrival &&
+           i != ROW_agent_index){
+            cars_same_as_me = true;
+        }
+    }    
+    
+    // If theres cars before me after the current ROW one, I'm not next to go
+    if (cars_before_me) 
+        return false;
+
+    // If theres not cars before me after the current ROW one, and none the same as me, I am next to go
+    if (!cars_same_as_me) 
+        return true;
+
+    // Figure out which agents have the same arrival time as me and are facing a direction to decide if we go
+    bool n_agents = intersection_dir_agents(env_info, agent_index, NORTH);
+    bool s_agents = intersection_dir_agents(env_info, agent_index, SOUTH);
+    bool e_agents = intersection_dir_agents(env_info, agent_index, EAST);
+    bool w_agents = intersection_dir_agents(env_info, agent_index, WEST);
+
+    if (ROW_agent.direction == NORTH) {
+        if (agent.direction == EAST)
+            return true;
+        else if (agent.direction == SOUTH)
+            if (!e_agents)
+                return true;
+            else
+                return false;
+        else if (agent.direction == WEST)
+            if (!e_agents && !s_agents)
+                return true;
+            else
+                return false;
+        else if (agent.direction == NORTH)
+            return false;
+        else  
+            return false;
+    }
+    else if (ROW_agent.direction == EAST) {
+        if (agent.direction == SOUTH)
+            return true;
+        else if (agent.direction == WEST)
+            if (!s_agents)
+                return true;
+            else
+                return false;
+        else if (agent.direction == NORTH)
+            if (!s_agents && !w_agents)
+                return true;
+            else
+                return false;
+        else if (agent.direction == EAST)
+            return false;
+        else  
+            return false;
+    }
+    else if (ROW_agent.direction == SOUTH) {
+        if (agent.direction == WEST)
+            return true;
+        else if (agent.direction == NORTH)
+            if (!w_agents)
+                return true;
+            else
+                return false;
+        else if (agent.direction == EAST)
+            if (!w_agents && !n_agents)
+                return true;
+            else
+                return false;
+        else if (agent.direction == SOUTH)
+            return false;
+        else  
+            return false;
+    }
+    else if (ROW_agent.direction == WEST) {
+        if (agent.direction == NORTH)
+            return true;
+        else if (agent.direction == EAST)
+            if (!n_agents)
+                return true;
+            else
+                return false;
+        else if (agent.direction == SOUTH)
+            if (!n_agents && !e_agents)
+                return true;
+            else
+                return false;
+        else if (agent.direction == WEST)
+            return false;
+        else  
+            return false;
+    } else 
+            return false;
 }
 
 // Get right of way for our cars. 
@@ -229,35 +275,59 @@ bool has_right_of_way(EnvironmentInfo* env_info, int agent_index){
     EnvironmentAgent *agents = env_info->agents.agents_array;
     EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
     
-    // Init function informaation
-    bool in_intersection = agent.state.in_intersection;
-    // Is there antoher car in the intersection
-    bool other_car_in_intersection = false;
+    // Check if there is another car that arrive before me
+    bool cars_before_me = false;
+    bool cars_same_as_me = false;
     for (int i = 0; i < env_info->agents.num_agents; i++){
-        if (i != agent_index && agents[i].state.in_intersection){
-            other_car_in_intersection = true;
+        if (i != agent_index && 
+           (agents[i].state.in_intersection || agents[i].state.at_intersection_entry) && 
+           agents[i].intersection_arrival >= 0 && 
+           agent.intersection_arrival >= 0 && 
+           agents[i].intersection_arrival < agent.intersection_arrival){
+            cars_before_me = true;
             break;
         }
-    }
+        if (i != agent_index && 
+           (agents[i].state.in_intersection || agents[i].state.at_intersection_entry) && 
+           agents[i].intersection_arrival >= 0 && 
+           agent.intersection_arrival >= 0 && 
+           agents[i].intersection_arrival == agent.intersection_arrival){
+            cars_same_as_me = true;
+        }
+    }    
+
+    // Is there antoher car in the intersection
+    bool in_intersection = agent.state.in_intersection;
+    bool other_car_in_intersection = !agent.state.intersection_empty;
     bool at_intersection_entry = agent.state.at_intersection_entry;
-    Direction direction = agent.direction;
-    bool n_agents = intersection_dir_agents(env_info, agent_index, NORTH);
-    bool s_agents = intersection_dir_agents(env_info, agent_index, SOUTH);
-    bool e_agents = intersection_dir_agents(env_info, agent_index, EAST);
-    bool w_agents = intersection_dir_agents(env_info, agent_index, WEST);
+
+
     // If already in then we must finish
-
-    bool already_in = false;
     if(in_intersection)
-        already_in = true;
-
-    // Is another care already moving
-    bool other_car_in = false;
-    if(other_car_in_intersection && at_intersection_entry) 
-        other_car_in = true;
+        return true;
 
     bool right_of_way = false;
+    // If there are cars the same as me, grab our ROW like so
     if (at_intersection_entry){
+
+        // If there is already another car in the intersection we do not have ROW
+        if(other_car_in_intersection)
+            return false;
+
+        // If cars got there before me, we do not have ROW
+        if(cars_before_me)
+            return false;
+
+        // If no cars got there the same as me, then its this
+        if(!cars_same_as_me)
+            return true;        
+        
+        // Tiebreak for rightmost (intersection_dir_agents checks if matching arrival time)
+        Direction direction = agent.direction;
+        bool n_agents = intersection_dir_agents(env_info, agent_index, NORTH);
+        bool s_agents = intersection_dir_agents(env_info, agent_index, SOUTH);
+        bool e_agents = intersection_dir_agents(env_info, agent_index, EAST);
+        bool w_agents = intersection_dir_agents(env_info, agent_index, WEST);
         if (direction == NORTH){
             // S
             //E W
@@ -354,20 +424,12 @@ bool has_right_of_way(EnvironmentInfo* env_info, int agent_index){
             else 
                 right_of_way = true;
         } 
-        // If already in intersection, we have row
-        if(already_in)
-            return true;
         
-        // If other car is in and we don't have ROW, then don't go
-        else if (other_car_in)
-            return false;
-        
-        // any strange case
-        else
-            return right_of_way;
+        return right_of_way;
     } 
-    else 
-        return true;
+
+    // Not in intersection or at entry
+    return true;
 }
 
 bool safe_to_enter(EnvironmentInfo* env_info, int agent_index){
@@ -379,167 +441,155 @@ bool safe_to_enter(EnvironmentInfo* env_info, int agent_index){
         return true;
 
     // If we are already in the intersection
-    if (agent.state.in_intersection)
-        return true;
+    //if (agent.state.in_intersection)
+    //    return true;
 
-    // If we are outside of intersection area, safe.
-    if (!agent.state.in_intersection && !agent.state.approaching_intersection && !agent.state.at_intersection_entry)
-        return true;
-        
-    // If we are at the entry, we are not next to go, we shouldn't be checking 
-    if (agent.state.at_intersection_entry && (!agent.state.next_to_go && !agent.state.has_right_of_way))
-        return false;
-    
     // Get the intersection grid positions we will be in
-    int ROW_agent_index = -1;
+    int intersection_agent_index = -1;
     for (int i = 0; i < env_info->agents.num_agents; i++){
-        // If not us, at entry or in it, and has right of way
-        if (i != agent_index && (agents[i].state.at_intersection_entry || agents[i].state.in_intersection) && agents[i].state.has_right_of_way){
-            ROW_agent_index = i;
-            break;
+        // If not us, at entry or in it, and has right of way (could be multiple)
+        if (i != agent_index && (
+            agents[i].state.at_intersection_entry || agents[i].state.in_intersection)){
+            intersection_agent_index = i;
+
+            // Set intersection agent index
+            bool intersection_agent_nw = false;
+            bool intersection_agent_ne = false;
+            bool intersection_agent_sw = false;
+            bool intersection_agent_se = false;
+            bool agent_nw = false;
+            bool agent_ne = false;
+            bool agent_sw = false;
+            bool agent_se = false;
+
+            EnvironmentAgent intersection_agent = env_info->agents.agents_array[intersection_agent_index];
+
+            // Handle the intersection agent information
+            if (intersection_agent.initial_direction == NORTH){
+                if (intersection_agent.signal_choice == STRAIGHT){
+                    intersection_agent_se = true;
+                    intersection_agent_ne = true;
+                }
+                if (intersection_agent.signal_choice == LEFT){
+                    intersection_agent_se = true;
+                    intersection_agent_ne = true;
+                    intersection_agent_nw = true;
+                }
+                if (intersection_agent.signal_choice == RIGHT){
+                    intersection_agent_se = true;
+                }
+            }
+            if (intersection_agent.initial_direction == EAST){
+                if (intersection_agent.signal_choice == STRAIGHT){
+                    intersection_agent_sw = true;
+                    intersection_agent_se = true;
+                }
+                if (intersection_agent.signal_choice == LEFT){
+                    intersection_agent_sw = true;
+                    intersection_agent_se = true;
+                    intersection_agent_ne = true;
+                }
+                if (intersection_agent.signal_choice == RIGHT){
+                    intersection_agent_sw = true;
+                }
+            }   
+            if (intersection_agent.initial_direction == SOUTH){
+                if (intersection_agent.signal_choice == STRAIGHT){
+                    intersection_agent_nw = true;
+                    intersection_agent_sw = true;
+                }
+                if (intersection_agent.signal_choice == LEFT){
+                    intersection_agent_nw = true;
+                    intersection_agent_sw = true;
+                    intersection_agent_se = true;
+                }
+                if (intersection_agent.signal_choice == RIGHT){
+                    intersection_agent_nw = true;
+                }
+            }
+            if (intersection_agent.initial_direction == WEST){
+                if (intersection_agent.signal_choice == STRAIGHT){
+                    intersection_agent_nw = true;
+                    intersection_agent_ne = true;
+                }
+                if (intersection_agent.signal_choice == LEFT){
+                    intersection_agent_ne = true;
+                    intersection_agent_nw = true;
+                    intersection_agent_sw = true;
+                }
+                if (intersection_agent.signal_choice == RIGHT){
+                    intersection_agent_ne = true;
+                }
+            } 
+
+            // For our agent
+            if (agent.initial_direction == NORTH){
+                if (agent.turn_choice == STRAIGHT){
+                    agent_se = true;
+                    agent_ne = true;
+                }
+                if (agent.turn_choice == LEFT){
+                    agent_se = true;
+                    agent_ne = true;
+                    agent_nw = true;
+                }
+                if (agent.turn_choice == RIGHT){
+                    agent_se = true;
+                }
+            }
+            if (agent.initial_direction == EAST){
+                if (agent.turn_choice == STRAIGHT){
+                    agent_sw = true;
+                    agent_se = true;
+                }
+                if (agent.turn_choice == LEFT){
+                    agent_sw = true;
+                    agent_se = true;
+                    agent_ne = true;
+                }
+                if (agent.turn_choice == RIGHT){
+                    agent_sw = true;
+                }
+            }   
+            if (agent.initial_direction == SOUTH){
+                if (agent.turn_choice == STRAIGHT){
+                    agent_nw = true;
+                    agent_sw = true;
+                }
+                if (agent.turn_choice == LEFT){
+                    agent_nw = true;
+                    agent_sw = true;
+                    agent_se = true;
+                }
+                if (agent.turn_choice == RIGHT){
+                    agent_nw = true;
+                }
+            }
+            if (agent.initial_direction == WEST){
+                if (agent.turn_choice == STRAIGHT){
+                    agent_nw = true;
+                    agent_ne = true;
+                }
+                if (agent.turn_choice == LEFT){
+                    agent_ne = true;
+                    agent_nw = true;
+                    agent_sw = true;
+                }
+                if (agent.turn_choice == RIGHT){
+                    agent_ne = true;
+                }
+            } 
+
+            // Check for intersections
+            if ((intersection_agent_nw && agent_nw) ||
+               (intersection_agent_ne && agent_ne) ||
+               (intersection_agent_sw && agent_sw) ||
+               (intersection_agent_se && agent_se)){
+                return false;
+            }
         }
     }
-    
-    // If theres not another agent going before us, then its safe to enter
-    if (ROW_agent_index == -1)
-        return true;
-    
-    bool ROW_agent_nw = false;
-    bool ROW_agent_ne = false;
-    bool ROW_agent_sw = false;
-    bool ROW_agent_se = false;
-    bool agent_nw = false;
-    bool agent_ne = false;
-    bool agent_sw = false;
-    bool agent_se = false;
-
-    EnvironmentAgent ROW_agent = env_info->agents.agents_array[ROW_agent_index];
-
-    // Handle the ROW agent information
-    if (ROW_agent.initial_direction == NORTH){
-        if (ROW_agent.signal_choice == STRAIGHT){
-            ROW_agent_se = true;
-            ROW_agent_ne = true;
-        }
-        if (ROW_agent.signal_choice == LEFT){
-            ROW_agent_se = true;
-            ROW_agent_ne = true;
-            ROW_agent_nw = true;
-        }
-        if (ROW_agent.signal_choice == RIGHT){
-            ROW_agent_se = true;
-        }
-    }
-    if (ROW_agent.initial_direction == EAST){
-        if (ROW_agent.signal_choice == STRAIGHT){
-            ROW_agent_sw = true;
-            ROW_agent_se = true;
-        }
-        if (ROW_agent.signal_choice == LEFT){
-            ROW_agent_sw = true;
-            ROW_agent_se = true;
-            ROW_agent_ne = true;
-        }
-        if (ROW_agent.signal_choice == RIGHT){
-            ROW_agent_sw = true;
-        }
-    }   
-    if (ROW_agent.initial_direction == SOUTH){
-        if (ROW_agent.signal_choice == STRAIGHT){
-            ROW_agent_nw = true;
-            ROW_agent_sw = true;
-        }
-        if (ROW_agent.signal_choice == LEFT){
-            ROW_agent_nw = true;
-            ROW_agent_sw = true;
-            ROW_agent_se = true;
-        }
-        if (ROW_agent.signal_choice == RIGHT){
-            ROW_agent_nw = true;
-        }
-    }
-    if (ROW_agent.initial_direction == WEST){
-        if (ROW_agent.signal_choice == STRAIGHT){
-            ROW_agent_nw = true;
-            ROW_agent_ne = true;
-        }
-        if (ROW_agent.signal_choice == LEFT){
-            ROW_agent_ne = true;
-            ROW_agent_nw = true;
-            ROW_agent_sw = true;
-        }
-        if (ROW_agent.signal_choice == RIGHT){
-            ROW_agent_ne = true;
-        }
-    } 
-
-    // For our agent
-    if (agent.initial_direction == NORTH){
-        if (agent.turn_choice == STRAIGHT){
-            agent_se = true;
-            agent_ne = true;
-        }
-        if (agent.turn_choice == LEFT){
-            agent_se = true;
-            agent_ne = true;
-            agent_nw = true;
-        }
-        if (agent.turn_choice == RIGHT){
-            agent_se = true;
-        }
-    }
-    if (agent.initial_direction == EAST){
-        if (agent.turn_choice == STRAIGHT){
-            agent_sw = true;
-            agent_se = true;
-        }
-        if (agent.turn_choice == LEFT){
-            agent_sw = true;
-            agent_se = true;
-            agent_ne = true;
-        }
-        if (agent.turn_choice == RIGHT){
-            agent_sw = true;
-        }
-    }   
-    if (agent.initial_direction == SOUTH){
-        if (agent.turn_choice == STRAIGHT){
-            agent_nw = true;
-            agent_sw = true;
-        }
-        if (agent.turn_choice == LEFT){
-            agent_nw = true;
-            agent_sw = true;
-            agent_se = true;
-        }
-        if (agent.turn_choice == RIGHT){
-            agent_nw = true;
-        }
-    }
-    if (agent.initial_direction == WEST){
-        if (agent.turn_choice == STRAIGHT){
-            agent_nw = true;
-            agent_ne = true;
-        }
-        if (agent.turn_choice == LEFT){
-            agent_ne = true;
-            agent_nw = true;
-            agent_sw = true;
-        }
-        if (agent.turn_choice == RIGHT){
-            agent_ne = true;
-        }
-    } 
-
-    // Check for intersections
-    if ((ROW_agent_nw && agent_nw) ||
-        (ROW_agent_ne && agent_ne) ||
-        (ROW_agent_sw && agent_sw) ||
-        (ROW_agent_se && agent_se)){
-
-        return false;
-        }
-
+    // No possible collisions return true
     return true;
 }
  
@@ -596,7 +646,7 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
             if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x, agent.tile_z - 1)){
                 // Check relative to stop line.
                 float stop_line = (env_info->intersection_z + 1) * env_info->road_tile_size;
-                if (agent.pos_z > stop_line - env_info->robot_length/1.5 &&
+                if (agent.pos_z > stop_line - env_info->robot_length * 0.20 &&
                     agent.pos_z < stop_line + env_info->robot_length)
                     return true;
                 else // if not at the stop line
@@ -609,7 +659,7 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
             if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x-1, agent.tile_z)){
                 // Check relative to stop line.
                 float stop_line = (env_info->intersection_x + 1) * env_info->road_tile_size;
-                if (agent.pos_x > stop_line - env_info->robot_length/1.5 &&
+                if (agent.pos_x > stop_line - env_info->robot_length * 0.20 &&
                     agent.pos_x < stop_line + env_info->robot_length)
                     return true;
                 else // if not at the stop line
@@ -626,7 +676,7 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
                     modifier = 1;
                 float stop_line = (env_info->intersection_z + modifier) * env_info->road_tile_size;
                 if (agent.pos_z > stop_line - env_info->robot_length &&
-                    agent.pos_z < stop_line + env_info->robot_length/1.5)
+                    agent.pos_z < stop_line + env_info->robot_length * 0.20)
                     return true;
                 else // if not at the stop line
                     return false;
@@ -642,7 +692,7 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
                     modifier = 1;
                 float stop_line = (env_info->intersection_x + modifier) * env_info->road_tile_size;
                 if (agent.pos_x > stop_line - env_info->robot_length &&
-                    agent.pos_x < stop_line + env_info->robot_length/1.5)
+                    agent.pos_x < stop_line + env_info->robot_length * 0.20)
                     return true;
                 else // if not at the stop line
                     return false;
@@ -682,11 +732,11 @@ bool cars_waiting_to_enter(EnvironmentInfo* env_info, int agent_index){
     return false;
 }
 
-bool intersection_empty(EnvironmentInfo* env_info){
+bool intersection_empty(EnvironmentInfo* env_info, int agent_index){
     EnvironmentAgent *agents = env_info->agents.agents_array;
     for (int i = 0; i < env_info->agents.num_agents; i++){
         // If someone is in the intersection
-        if (agents[i].state.in_intersection)
+        if (i != agent_index && agents[i].state.in_intersection)
             return false;
     }
     return true;
@@ -873,8 +923,6 @@ bool is_tailgating(EnvironmentInfo* env_info, int agent_index){
             //printf("curr_distance behind %f\n", curr_distance);
             if (curr_distance < (env_info->robot_length * 2.5))
                 return true;
-            else
-                return false;
         }
     }
     return false;
@@ -886,7 +934,7 @@ bool is_tailgating(EnvironmentInfo* env_info, int agent_index){
 
 bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
     EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
-    if (agent.state.is_tailgating) 
+    if (agent.state.is_tailgating || !agent.state.safe_to_enter) 
         return false;
     if (agent.state.has_right_of_way || agent.state.safe_to_enter) 
         return true;
@@ -902,9 +950,9 @@ bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
 // Handle patience return 0=do nothing 1=inc 2=reset
 int handle_patience(EnvironmentInfo* env_info, int agent_index){
     EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
-    if (!agent.state.has_right_of_way && agent.state.next_to_go && agent.state.intersection_empty)
+    if (!(agent.state.has_right_of_way || agent.state.safe_to_enter) && agent.state.next_to_go && agent.state.intersection_empty)
         return 1;
-    if (!agent.state.has_right_of_way && agent.state.next_to_go && !agent.state.intersection_empty)
+    if (!(agent.state.has_right_of_way || agent.state.safe_to_enter) && agent.state.next_to_go && !agent.state.intersection_empty)
         return 2;
     return 0;
 }
@@ -930,7 +978,7 @@ int get_learning_state(EnvironmentInfo* env_info, int agent_index){
     # 5: we have the right of way +16
     # 6: cars waiting to get in +8
     # 7: car entering our range +4
-    # 8: car behind us and we are in intersection + 2
+    # 8: safe to enter 
     # 9: tailgating +1 
     *************************************************************/
     EnvironmentAgent agent = env_info->agents.agents_array[agent_index];

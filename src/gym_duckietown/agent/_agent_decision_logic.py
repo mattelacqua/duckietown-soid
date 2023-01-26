@@ -23,10 +23,10 @@ def proceed(self, env, good_agent=False, use_model=False, model=None, state=None
         dl.proceed_good_agent.argtypes = [POINTER(EnvironmentInfo), c_int]
         dl.proceed_good_agent.restype = c_bool
         proceed = dl.proceed_good_agent(env.c_info_struct, self.index)
-        self.handle_proceed(proceed)
+        self.handle_proceed(env, proceed)
 
         dl.handle_patience.argtypes = [POINTER(EnvironmentInfo), c_int]
-        dl.handle_patience.restype = c_bool
+        dl.handle_patience.restype = c_int
         
         handle_patience_ret = dl.handle_patience(env.c_info_struct, self.index)
         if handle_patience_ret == 1:
@@ -42,10 +42,10 @@ def proceed(self, env, good_agent=False, use_model=False, model=None, state=None
         dl.proceed_model.restype = c_bool
 
         should_proceed = dl.proceed_model(model, state)
-        self.handle_proceed(should_proceed)
+        self.handle_proceed(env, should_proceed)
 
 # Handle whether or not we should proceed, filter out bad actions
-def handle_proceed(self, should_proceed):
+def handle_proceed(self, env, should_proceed):
     if not should_proceed:
         no_intersection_stop_actions = []
 
@@ -94,8 +94,22 @@ def handle_proceed(self, should_proceed):
                 if self.states['in_intersection'] or self.states['at_intersection_entry']:
                     self.signal_for_turn(self.signal_choice)
 
+            #if self.states['in_intersection']:
+            #    self.intersection_arrival = -1
+
+            """
+            prev_tile_x, prev_tile_z = env.get_grid_coords(self.prev_pos)
+            tile_x, tile_z = env.get_grid_coords(self.prev_pos)
+            prev_tile = env._get_tile(prev_tile_x, prev_tile_z)
+            cur_tile = env._get_tile(tile_x, tile_z)
+            if prev_tile and cur_tile:
+                if prev_tile['kind'] == '4way' and cur_tile['kind'] != '4way':
+                    self.intersection_arrival = -1
+            """
+
         if not self.actions:
             self.actions = [()]
+
 
 # Check if we are next in line to go in ROW
 def next_to_go(self, env):
@@ -154,9 +168,9 @@ def cars_waiting_to_enter(self, env):
 # Check if anyone other than us is currently in the intersection
 def intersection_empty(self, env):
     # c callout
-    dl.intersection_empty.argtypes = [POINTER(EnvironmentInfo)]
+    dl.intersection_empty.argtypes = [POINTER(EnvironmentInfo), c_int]
     dl.intersection_empty.restype = c_bool
-    return dl.intersection_empty(env.c_info_struct)
+    return dl.intersection_empty(env.c_info_struct, int(self.index))
 
 
 # See if there is an object within one tile block of a car infront of us

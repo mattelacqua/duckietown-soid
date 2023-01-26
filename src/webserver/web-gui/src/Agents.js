@@ -58,6 +58,7 @@ class Agents extends React.Component {
                            turn_choice={agent.turn_choice} 
                            signal_choice={agent.signal_choice} 
                            lights={agent.lights} 
+                           counterfactuals={agent.counterfactuals}
                            bbox_w={agent.bbox_w} 
                            bbox_l={agent.bbox_l} 
                            socket={this.state.socket} 

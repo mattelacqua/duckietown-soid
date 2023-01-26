@@ -113,6 +113,7 @@ class Agent():
         self.turn_choice = None
         self.curve = 0
         self.signal_choice = None
+        self.intersection_arrival = -1
         self.initial_direction = ""
         self.stop_point = None       
         self.patience = 0       

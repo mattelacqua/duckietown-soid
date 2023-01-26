@@ -372,6 +372,7 @@ class Simulator(gym.Env):
 
         # Window for displaying the environment to humans
         self.window = None
+        self.text_window = None
 
         # Invisible window to render into (shadow OpenGL context)
         self.shadow_window = pyglet.window.Window(width=1, height=1, visible=False)
@@ -529,6 +530,8 @@ class Simulator(gym.Env):
         for agent in self.agents: 
             agent.states['has_right_of_way'] = agent.has_right_of_way(env)
         for agent in self.agents: 
+            agent.states['next_to_go'] = agent.next_to_go(env)
+        for agent in self.agents: 
             agent.states['safe_to_enter'] = agent.safe_to_enter(env)
         for agent in self.agents: 
             agent.states['cars_waiting_to_enter'] = agent.cars_waiting_to_enter(env)
@@ -549,6 +552,7 @@ class Simulator(gym.Env):
 
         if self.window:
             self.window.clear()
+            self.text_window.clear()
             self.close()
         
         # Step count since episode start
@@ -1797,8 +1801,8 @@ class Simulator(gym.Env):
 
             # Put the state into a dictionary
             agent.direction = agent.get_direction(self)
-            agent.get_state(self)
-            agent.get_learning_state(self)
+            #agent.get_state(self)
+            #agent.get_learning_state(self)
 
             # Generate the state 
             if learning and agent.in_bounds(self):
@@ -1823,7 +1827,15 @@ class Simulator(gym.Env):
             agent.done = d.done
             agent.misc = misc
 
-            self.c_info_struct = EnvironmentInfo(self)
+        # Initialize the states
+        self.get_agents_states()
+        
+        # Set the new info_struct
+        self.c_info_struct = EnvironmentInfo(self)
+        
+        # Get the relative learning state?
+        for agent in self.agents: 
+            agent.get_learning_state(self)
 
         return 
 
@@ -2292,6 +2304,7 @@ class Simulator(gym.Env):
         if close:
             if self.window:
                 self.window.close()
+                self.text_window.close()
             return
 
         top_down = mode == "top_down"
@@ -2323,6 +2336,12 @@ class Simulator(gym.Env):
             self.window = window.Window(
                 width=WINDOW_WIDTH, height=WINDOW_HEIGHT, resizable=True, config=config
             )
+            self.text_window = window.Window(
+                width=WINDOW_WIDTH, height=WINDOW_HEIGHT, resizable=True, config=config
+            )
+        self.text_window.clear()
+        self.text_window.switch_to()
+        self.text_window.dispatch_events()
         self.window.clear()
         self.window.switch_to()
         self.window.dispatch_events()
@@ -2354,70 +2373,79 @@ class Simulator(gym.Env):
        
         # Display position/state information
         if mode != "free_cam":
-            x, y, z = self.agents[0].cur_pos
-            if self.agents[0].learning_state:
-                self.text_label.text = (
-                    f"pos: ({x:.2f}, {y:.2f}, {z:.2f}), angle: "
-                    f"{np.rad2deg(self.agents[0].cur_angle):.1f} deg, steps: {self.agents[0].step_count}, "
-                    f"speed: {self.agents[0].speed:.2f} m/s, "
-                    f"forward_step: {self.agents[0].forward_step:.2f}\n"
-                )
-                self.text_label.draw()
+            starting_x = 0
+            self.text_window.switch_to()
+            for agent in self.agents:
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y= 20 * 20)
+                stat.text = (f"Agent {agent.index}, {agent.color}, Step: {agent.step_count}")
+                stat.draw()  
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 19)
+                x, y, z = agent.cur_pos
+                stat.text = (f"pos: ({x:.2f}, {y:.2f}, {z:.2f})")
+                stat.draw()  
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 18)
+                stat.text = (f"angle: {np.rad2deg(self.agents[0].cur_angle):.1f} direction: {agent.direction} ")
+                stat.draw()  
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 17)
+                stat.text = (f"speed: {agent.speed:.2f}")
+                stat.draw()  
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 16)
+                stat.text = (f"forward_step: {agent.forward_step:.2f}")
+                stat.draw()  
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 15)
+                stat.text = (f"turn: {agent.turn_choice} signal: {agent.signal_choice}")
+                stat.draw()  
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 14)
+                stat.text = (f"patience: {agent.patience} int_arrival: {agent.intersection_arrival}")
+                stat.draw()  
                 #0 
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 4)
-                stat.text = (f"in_int: {self.agents[0].learning_state[0]}")
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 13)
+                stat.text = (f"in_int: {agent.states['in_intersection']}")
                 stat.draw()  
                 #1 
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 5)
-                stat.text = (f"at_int: {self.agents[0].learning_state[1]}")
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 12)
+                stat.text = (f"at_int: {agent.states['at_intersection_entry']}")
                 stat.draw()  
                 #2 
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 6)
-                stat.text = (f"empty_int: {self.agents[0].learning_state[2]}")
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 11)
+                stat.text = (f"empty_int: {agent.states['intersection_empty']}")
                 stat.draw()  
                 #3 
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 7)
-                stat.text = (f"appr_int: {self.agents[0].learning_state[3]}")
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 10)
+                stat.text = (f"appr_int: {agent.states['approaching_intersection']}")
                 stat.draw()  
                 #4 
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 8)
-                stat.text = (f"obj_in_range: {self.agents[0].learning_state[4]}")
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 9)
+                stat.text = (f"obj_in_range: {agent.states['obj_in_range']}")
                 stat.draw()  
                 #5 
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 9)
-                stat.text = (f"has_right_of_way: {self.agents[0].learning_state[5]}")
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 8)
+                stat.text = (f"has_right_of_way: {agent.states['has_right_of_way']}")
                 stat.draw()  
                 #6 
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 10)
-                stat.text = (f"cars_waiting_to_enter: {self.agents[0].learning_state[6]}")
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 7)
+                stat.text = (f"cars_waiting_to_enter: {agent.states['cars_waiting_to_enter']}")
                 stat.draw()  
                 #7 
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 11)
-                stat.text = (f"car_entering_range: {self.agents[0].learning_state[7]}")
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 6)
+                stat.text = (f"car_entering_range: {agent.states['car_entering_range']}")
                 stat.draw()  
                 #8 
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 12)
-                stat.text = (f"safe_to_enter: {self.agents[0].learning_state[8]}")
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 5)
+                stat.text = (f"safe_to_enter: {agent.states['safe_to_enter']}")
                 stat.draw()  
                 #9 
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 13)
-                stat.text = (f"is_tailgating: {self.agents[0].learning_state[9]}")
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 4)
+                stat.text = (f"is_tailgating: {agent.states['is_tailgating']}")
                 stat.draw()  
                 #10
-                stat = pyglet.text.Label(font_name="Arial", font_size=10, x=5, y=WINDOW_HEIGHT - 19 * 14)
-                next_to_go = self.agents[0].states["next_to_go"]
+                stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 3)
+                next_to_go = agent.states["next_to_go"]
                 stat.text = (f"next_to_go: {next_to_go}")
                 stat.draw()  
+                starting_x += 1
+            self.text_window.dispatch_events()
 
-            else:
-                self.text_label.text = (
-                    f"pos: ({x:.2f}, {y:.2f}, {z:.2f}), angle: "
-                    f"{np.rad2deg(self.agents[0].cur_angle):.1f} deg, steps: {self.agents[0].step_count}, "
-                    f"speed: {self.agents[0].speed:.2f} m/s, "
-                    f"forward_step: {self.agents[0].forward_step:.2f}\n"
-                    f"turn_choice: {self.agents[0].turn_choice:.2f}\n"
-                )
-                self.text_label.draw()
         
 
         # Force execution of queued commands

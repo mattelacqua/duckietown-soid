@@ -27,6 +27,7 @@ import ForwardStep from './ForwardStep.js'
 // Import Forward Step 
 import BoundingBox from './BoundingBox.js'
 
+import AgentQuery from './AgentQuery.js'
 // Agent Component (gets rendered in app)
 class Agent extends React.Component {
 
@@ -60,6 +61,7 @@ class Agent extends React.Component {
       turn_choice: props.turn_choice,
       signal_choice: props.signal_choice,
       lights: props.lights,
+      counterfactuals: props.counterfactuals,
       bbox_w: props.bbox_w,
       bbox_l: props.bbox_l,
       socket: props.socket,
@@ -94,6 +96,7 @@ class Agent extends React.Component {
       turn_choice: nextProps.turn_choice,
       signal_choice: nextProps.signal_choice,
       lights: nextProps.lights,
+      counterfactuals: nextProps.counterfactuals,
       bbox_w: nextProps.bbox_w,
       bbox_l: nextProps.bbox_l,
       socket: nextProps.socket,
@@ -105,12 +108,12 @@ class Agent extends React.Component {
     return (
             <div>
                 {/* Render a Dial */}
-                <AngleDial  angle_deg={this.state.angle_deg} 
+                {/*<AngleDial  angle_deg={this.state.angle_deg} 
                             agent_id={this.state.agent_id} 
                             agent_color={this.state.color} 
                             angle_pass={this.angle_pass} 
                             socket={this.state.socket} 
-                            update_from_sim={this.props.update_from_sim}/>
+                            update_from_sim={this.props.update_from_sim}/>*/}
 
                   {/* Render Agent Information */}
      
@@ -145,22 +148,35 @@ class Agent extends React.Component {
                               lights={this.state.lights} 
                               bbox_w={this.state.bbox_w} 
                               bbox_l={this.state.bbox_l} />
-                <TurnChoice  agent_id={this.state.agent_id} 
-                             turn_choice={this.state.turn_choice}
-                             socket={this.state.socket} />
-                <SignalChoice   agent_id={this.state.agent_id} 
-                                signal_choice={this.state.signal_choice}
-                                socket={this.state.socket} />
-                <ForwardStep forward_step={this.state.forward_step} 
-                             agent_id={this.state.agent_id} 
-                             agent_color={this.state.color} 
-                             socket={this.state.socket} />
-                <BoundingBox width={this.state.bbox_w} 
-                             length={this.state.bbox_l} 
-                             agent_id={this.state.agent_id} 
-                             agent_color={this.state.color} 
-                             socket={this.state.socket} />
-                <DeleteAgent  agent_id={this.state.agent_id}
+
+                <AgentQuery   agent_id={this.state.agent_id}
+                              id={this.state.agent_id}
+                              pos_x={this.state.pos_x}
+                              pos_z={this.state.pos_z}
+                              prev_pos_x={this.state.prev_pos_x}
+                              prev_pos_z={this.state.prev_pos_z}
+                              stop_x={this.state.stop_x}
+                              stop_z={this.state.stop_z}
+                              tile_x={this.state.tile_x}
+                              tile_z={this.state.tile_z}
+                              angle={this.state.angle}
+                              angle_deg={this.state.angle_deg}
+                              speed={this.state.speed}
+                              forward_step={this.state.forward_step}
+                              direction={this.state.direction}
+                              intersection_arrival={this.state.intersection_arrival}
+                              patience={this.state.patience}
+                              step_count={this.state.step_count}
+                              lookahead={this.state.lookahead}
+                              states={this.state.states}
+                              exists={this.state.exists}
+                              color={this.state.color} 
+                              turn_choice={this.state.turn_choice} 
+                              signal_choice={this.state.signal_choice} 
+                              lights={this.state.lights} 
+                              counterfactual={this.state.counterfactuals} 
+                              bbox_w={this.state.bbox_w} 
+                              bbox_l={this.state.bbox_l} 
                               socket={this.state.socket} />
              </div>
           );

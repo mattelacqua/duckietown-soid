@@ -173,8 +173,6 @@ def get_curr_tile(self, env):
     tile = env._get_tile(tile_x, tile_z)
     return tile
 
-
-
 # Get duckiebot mesh
 def get_duckiebot_mesh(color: str) -> ObjMesh:
     change_materials: Dict[str, MatInfo]

@@ -2,6 +2,7 @@
 import os
 import sys
 import time
+from datetime import timedelta
 
 # Learning things
 import gym
@@ -84,8 +85,8 @@ def test(args):
                 if agent.agent_id == "agent0":
                     # Get initial State (Will be the row of the model)
                     agent.proceed(env, use_model=True, model=model, state=agent.get_learning_state(env))
-                    print(agent.q_state)
-                    print(agent.learning_state)
+                    #print(agent.q_state)
+                    #print(agent.learning_state)
                     #agent.proceed(env, good_agent=True)
                 else:
                     agent.proceed(env, good_agent=True)
@@ -108,7 +109,7 @@ def test(args):
                 max_steps += 1
             elif done_code == 'collision':
                 collisions += 1 
-            if args.render_steps > 0 and epochs % args.render_steps == 0:
+            if args.render_steps_test > 0 and epochs % args.render_steps_test == 0:
                 env.render(mode=args.cam_mode)
             epochs += 1
         steps += env.agents[0].step_count
@@ -143,4 +144,7 @@ if __name__ == "__main__":
     args = utils.get_args_from_config(config_name)
 
     # Test 
+    start = time.time()
     test(args)
+    elapsed = time.time() - start
+    print(f"Elapsed Training Time: {str(timedelta(seconds=elapsed))}")
