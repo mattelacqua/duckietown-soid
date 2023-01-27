@@ -3,44 +3,41 @@ import React from "react";
 import Select from 'react-select';
 
 // Component to spit out agent information
-class QueryType extends React.Component {
+class Operator extends React.Component {
 
   // Construct so it takes properties and they are information
   constructor(props) {
     super(props);
     this.state = {
-      query_type: 'is_pos_x',
+      selection: '>',
     };
 
     this.handleChoice = this.handleChoice.bind(this);
   }
 
   // Handle the click
-  handleChoice(type) {
+  handleChoice(operator) {
     // Update our state
     this.setState({
-      query_type: type,
+      selection: operator,
     });
     
     // Do the callback to set the type
-    this.props.set_type(type);
+    this.props.set_operator(operator);
   }
   
   // Render the information to screen
   render() {
     const options = [
-          { value: 'is_pos_x', label: 'x position' },
-          { value: 'is_pos_z', label: 'z position' },
-          { value: 'is_angle', label: 'angle' },
-          { value: 'is_forward_step', label: 'forward step (acceleration)' },
-          { value: 'is_speed', label: 'Speed' },
-          { value: 'is_signalchoice', label: 'Signal Choice' },
-          { value: 'is_turnchoice', label: 'Turn Choice' }
+          { value: '>', label: '>' },
+          { value: '<', label: '<' },
+          { value: '>=', label: '>=' },
+          { value: '<=', label: '<=' },
     ];
 
     return( 
       <div>
-        <p> <br />Query Type: </p>
+        <p> <br /> Operator : </p>
         <Select
           options={options} // Options to display in the dropdown
           onChange= {new_option => {this.handleChoice(new_option.value)}}
@@ -49,4 +46,5 @@ class QueryType extends React.Component {
   }
 }
 
-export default QueryType;
+
+export default Operator;

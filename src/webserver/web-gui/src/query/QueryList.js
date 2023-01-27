@@ -15,14 +15,17 @@ class QueryList extends React.Component {
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)
   render() {
 
+    const agent_id = this.props.agent.id;
     return (
-            <div>
-                {/* 
-                Going to be some sort of map over each counterfactual to display their information
-                Will also include a button of some sort to delete. Will have to get the socket through props
-                and pass to button.
-                */}
+            this.props.agent.counterfactuals.map((counterfactual, index) => (
+              <div>
+              <QueryInfo counterfactual={counterfactual}
+                          color={this.props.agent.color} />
+
+              <DeleteQuery counterfactuals={this.props.agent.counterfactuals}
+                            index={index} />
              </div>
+            ))
           );
     }
 }

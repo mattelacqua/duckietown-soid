@@ -29,7 +29,8 @@ class AgentQuery extends React.Component {
     */
     return (
             <div>
-                <AddQuery agent={this.props.agent}/>
+                <AddQuery agent={this.props.agent}
+                          socket={this.props.socket}/>
                 <QueryList  agent={this.props.agent} 
                             socket={this.props.socket}/>
              </div>

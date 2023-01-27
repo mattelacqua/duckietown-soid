@@ -67,7 +67,6 @@ class AgentMap extends React.Component {
     let data = {
       datasets
     };
-    console.log("Data", data);
     
     // Load background image
     const image = new Image();

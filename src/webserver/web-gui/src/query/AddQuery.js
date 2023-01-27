@@ -2,7 +2,11 @@
 import React from "react";
 
 import QueryType from "./QueryType.js";
+import SingleDirection from "./SingleDirection.js";
+import MultiDirection from "./MultiDirection.js";
+import QueryRange from "./QueryRange.js";
 
+import ValueType from "./ValueType.js";
 
 // Agent Component (gets rendered in app)
 class AddQuery extends React.Component {
@@ -32,6 +36,12 @@ class AddQuery extends React.Component {
       }
     };
     this.set_type = this.set_type.bind(this); // Bind this to update_from sim 
+    this.set_value_type = this.set_value_type.bind(this); // Bind this to update_from sim 
+    this.set_single_direction = this.set_single_direction.bind(this); // Bind this to update_from sim 
+    this.set_multi_direction = this.set_multi_direction.bind(this); // Bind this to update_from sim 
+    this.set_bound = this.set_bound.bind(this); // Bind this to update_from sim 
+    this.set_operator = this.set_operator.bind(this); // Bind this to update_from sim 
+    this.handleClick = this.handleClick.bind(this); // Bind this to update_from sim 
   }
 
   // Callback function for query_type to set our state function
@@ -127,9 +137,101 @@ class AddQuery extends React.Component {
         is_turnchoice: true,
       });
     }
-    console.log(this.state);
   }
 
+    // Callback function for query_type to set our state function
+    set_value_type(type){
+      console.log("Value type call back got", type);
+      //Value
+      if (type === 'is_value'){
+        this.setState({
+          is_value: true,
+          is_range: false,
+        });
+      }
+  
+      //Range
+      if (type === 'is_range'){
+        this.setState({
+          is_value: false,
+          is_range: true,
+        });
+      }
+    }
+
+    // Callback function for setting a single direction to set our state function
+    set_single_direction(value){
+      this.setState({
+        value: value,
+      });
+    }
+    
+    // Callback function for seting mutliple directions
+    set_multi_direction(directions){
+      this.setState({
+        range: {
+          is_gt: false,
+          is_lt: false,
+          is_gte: false,
+          is_lte: false,
+          turn_choices: directions,
+          low_bound: 0.0,
+          high_bound: 0.0,
+        }
+      });
+    }
+
+    // Callback function for setting the boundss
+    set_bound(value, bound){
+      var range = {...this.state.range}
+      if (bound === 'low'){
+        range.low_bound = value;
+      }
+      if (bound === 'high'){
+        range.high_bound = value;
+      }
+      this.setState({range});
+    }    
+
+    // Callback function for setting the operartor
+    set_operator(operator){
+      var range = {...this.state.range}
+      if (operator === '>'){
+        range.is_gt = true;
+        range.is_lt = false;
+        range.is_gte = false;
+        range.is_lte = false;
+      }
+      if (operator === '<'){
+        range.is_gt = false;
+        range.is_lt = true;
+        range.is_gte = false;
+        range.is_lte = false;
+      }     
+      if (operator === '>='){
+        range.is_gt = false;
+        range.is_lt = false;
+        range.is_gte = true;
+        range.is_lte = false;
+      }     
+      if (operator === '<='){
+        range.is_gt = false;
+        range.is_lt = false;
+        range.is_gte = false;
+        range.is_lte = true;
+      }     
+      this.setState({range});
+    }    
+  
+  handleClick(){
+    this.props.socket.emit(
+      "add_counterfactual",
+      {
+        index: this.props.agent.id,
+        counterfactual: this.state,
+      }
+    )
+  }
 
   // Render the agent component 
   render() {
@@ -139,6 +241,173 @@ class AddQuery extends React.Component {
     // I can do some of that or help you learn how. Just reach out and lmk
     // Will end with a button to add the query.
     // Imagine Dropdown for proposition (pos_x, angle, signal, etc), dropdown for is_value / is_range, depending on that, text input box or 2 text input boxes with a operator drop down between
+    let input_value;
+    if (this.state.is_value){
+      // x position value
+      if (this.state.is_pos_x) {
+        console.log("Agent", this.props.agent.pos_x);
+        input_value =  
+          <form>
+            <label>
+              Agent x position:   
+              <input type="text" 
+                    defaultValue={this.props.agent.pos_x}
+                    value={this.state.value}
+                    onChange = {value =>
+                      this.setState({
+                        value: value,
+                      })
+                    }
+              />
+            </label>  
+          </form>
+      }
+      // Z position value
+      if (this.state.is_pos_z) {
+        input_value =  
+          <form>
+            <label>
+              Agent z position:   
+              <input type="text" 
+                    defaultValue={this.props.agent.pos_x}
+                    value={this.state.value}
+                    onChange = {value =>
+                      this.setState({
+                        value: value,
+                      })
+                    }
+              />
+            </label>  
+          </form>
+      }    
+      // Angle Value
+      if (this.state.is_angle) {
+        input_value =  
+          <form>
+            <label>
+              Agent angle:   
+              <input type="text" 
+                    defaultValue={this.props.agent.angle_deg}
+                    value={this.state.value}
+                    onChange = {value =>
+                      this.setState({
+                        value: value,
+                      })
+                    }
+              />
+            </label>  
+          </form>
+      }       
+      // Forward Step Value
+      if (this.state.is_forward_step) {
+        input_value =  
+          <form>
+            <label>
+              Agent forward_step:   
+              <input type="text" 
+                    defaultValue={this.props.agent.forward_Step}
+                    value={this.state.value}
+                    onChange = {value =>
+                      this.setState({
+                        value: value,
+                      })
+                    }
+              />
+            </label>  
+          </form>
+      }       
+      // Speed Value
+      if (this.state.is_speed) {
+        input_value =  
+          <form>
+            <label>
+              Agent z position:   
+              <input type="text" 
+                    defaultValue={this.props.agent.speed}
+                    value={this.state.value}
+                    onChange = {value =>
+                      this.setState({
+                        value: value,
+                      })
+                    }
+              />
+            </label>  
+          </form>
+      }    
+      // Signal Choice 
+      if (this.state.is_signalchoice) {
+        input_value =  
+          <SingleDirection  direction={this.props.agent.signal_choice}
+                            set_single_direction={this.set_single_direction}
+                            signal_or_turn="Signal"
+          />
+      }
+      // Signal Choice 
+      if (this.state.is_turnchoice) {
+        input_value =  
+          <SingleDirection  direction={this.props.agent.turn_choice}
+                            set_single_direction={this.set_single_direction}
+                            signal_or_turn="Turn"
+          />
+      }
+    };
+    if (this.state.is_range){
+      // x position value
+      if (this.state.is_pos_x) {
+        input_value =  
+          <QueryRange default_val={this.props.agent.pos_x}
+                        set_bound={this.set_bound}
+                        set_operator={this.set_operator}
+          />
+      }
+      // Z position value
+      if (this.state.is_pos_z) {
+        input_value =
+          <QueryRange default_val={this.props.agent.pos_z}
+                      set_bound={this.set_bound}
+                      set_operator={this.set_operator}
+          />
+      }    
+      // Angle Value
+      if (this.state.is_angle) {
+        input_value =  
+          <QueryRange default_val={this.props.agent.angle}
+                      set_bound={this.set_bound}
+                      set_operator={this.set_operator}
+        />
+      }       
+      // Forward Step Value
+      if (this.state.is_forward_step) {
+        input_value =  
+          <QueryRange default_val={this.props.agent.forward_step}
+                      set_bound={this.set_bound}
+                      set_operator={this.set_operator}
+          />
+      }       
+      // Speed Value
+      if (this.state.is_speed) {
+        input_value =  
+          <QueryRange  default_val={this.props.agent.forward_step}
+                       set_bound={this.set_bound}
+                       set_operator={this.set_operator}
+          />
+      }    
+      // Signal Choice 
+      if (this.state.is_signalchoice) {
+        input_value =  
+          <MultiDirection direction={this.props.agent.signal_choice}
+                          set_multi_direction={this.set_single_direction}
+          />
+      }
+      // Signal Choice 
+      if (this.state.is_turnchoice) {
+        input_value =  
+          <MultiDirection  direction={this.props.agent.turn_choice}
+                           set_multi_direction={this.set_single_direction}
+          />
+      }
+    }
+
     return (
             <div>
                 {/* Render */}
@@ -151,6 +420,12 @@ class AddQuery extends React.Component {
                             is_turnchoice={this.state.is_turnchoice}
                             set_type={this.set_type}
                 />
+                <ValueType  is_value={this.state.is_value}
+                            is_range={this.state.is_range}
+                            set_value_type={this.set_value_type}
+                />
+                {input_value}
+                <button onClick= {this.handleClick}> Add Query  </button>
              </div>
           );
     }

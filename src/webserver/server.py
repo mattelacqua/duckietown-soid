@@ -176,6 +176,17 @@ def query(query_info):
                 }
     serialize(query_blob, out)
 
+@socketio.on("add_counterfactual")
+def add_counterfactual(data):
+    counterfactual_wrap = {
+        'kind': 'counterfactual',
+        'change': 'add',
+        'agent_id': data['index'],
+        'counterfactual': data['counterfactual'],
+    }
+    print(counterfactual_wrap)
+    #serialize(counterfactual_wrap, out)
+
 if __name__ == '__main__':
     socketio.run(app, port=5001)
 

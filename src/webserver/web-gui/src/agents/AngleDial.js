@@ -31,8 +31,6 @@ class AngleDial extends React.Component {
   tick(){
     // If we have a new value
     if (this.state.value !== this.state.last_sent) {
-      console.log("Angle Change:", this.state.value);
-      console.log("this.props.agent.index", this.props.agent.index);
       this.props.socket.emit(
         'agent_angle',
         {
