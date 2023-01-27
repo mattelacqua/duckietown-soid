@@ -21,13 +21,12 @@ class QueryRange extends React.Component {
                 <label>
                   Low bound:   
                   <input type="text" 
-                        defaultValue={this.props.default_val}
-                        onChange = {value =>
-                          this.setState({
-                            low_bound: value,
-                          })
-                        }
-                  />
+                    value={this.state.value}
+                    onChange = {(e) => {
+                      this.props.set_bound(e.target.value, "low");
+                    }
+                    }
+              />
                 </label>  
               </form>
               <Operator set_operator={this.props.set_operator}/>
@@ -36,10 +35,9 @@ class QueryRange extends React.Component {
                   High bound:   
                   <input type="text" 
                         defaultValue={this.props.default_val}
-                        onChange = {value =>
-                          this.setState({
-                            high_bound: value,
-                          })
+                        onChange = {(e) => {
+                          this.props.set_bound(e.target.value, "high");
+                        }
                         }
                   />
                 </label>  

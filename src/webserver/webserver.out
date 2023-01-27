@@ -1,6 +1,10 @@
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 360}
-{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 90}
-{"kind": "counterfactual", "change": "add", "agent_id": 0, "counterfactual": {"is_pos_x": false, "is_pos_z": false, "is_angle": true, "is_forward_step": false, "is_speed": false, "is_signalchoice": false, "is_turnchoice": false, "is_value": false, "is_range": true, "value": 0, "range": {"is_gt": false, "is_lt": true, "is_gte": false, "is_lte": false, "turn_choices": [], "low_bound": 0, "high_bound": 0}}}
-{"kind": "counterfactual", "change": "add", "agent_id": 0, "counterfactual": {"is_pos_x": false, "is_pos_z": false, "is_angle": false, "is_forward_step": false, "is_speed": false, "is_signalchoice": true, "is_turnchoice": false, "is_value": true, "is_range": false, "value": "Right", "range": {"is_gt": false, "is_lt": true, "is_gte": false, "is_lte": false, "turn_choices": [], "low_bound": 0, "high_bound": 0}}}
-{"kind": "counterfactual", "change": "add", "agent_id": 0, "counterfactual": {"is_pos_x": false, "is_pos_z": false, "is_angle": false, "is_forward_step": false, "is_speed": false, "is_signalchoice": true, "is_turnchoice": false, "is_value": false, "is_range": true, "value": [{"direction": "Right", "selected": true}, {"direction": "Left", "selected": true}, {"direction": "Straight", "selected": true}], "range": {"is_gt": false, "is_lt": true, "is_gte": false, "is_lte": false, "turn_choices": [], "low_bound": 0, "high_bound": 0}}}
+{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
+{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 360}
+{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 270}
+{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 347}
+{"kind": "add_agent"}
+{"kind": "add_agent"}
+{"kind": "change", "change": "angle", "agent_id": "3", "cur_angle": 360}
+{"kind": "change", "change": "angle", "agent_id": "4", "cur_angle": 180}
+{"kind": "change", "change": "pos", "agent_id": "4", "pos_x": 1.984, "pos_z": 1.305}
+{"kind": "change", "change": "pos", "agent_id": "4", "pos_x": 1.984, "pos_z": 1.305}
