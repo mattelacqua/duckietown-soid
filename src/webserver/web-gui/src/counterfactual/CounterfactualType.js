@@ -3,13 +3,13 @@ import React from "react";
 import Select from 'react-select';
 
 // Component to spit out agent information
-class QueryType extends React.Component {
+class CounterfactualType extends React.Component {
 
   // Construct so it takes properties and they are information
   constructor(props) {
     super(props);
     this.state = {
-      query_type: 'is_pos_x',
+      cf_type: 'is_pos_x',
     };
 
     this.handleChoice = this.handleChoice.bind(this);
@@ -19,7 +19,7 @@ class QueryType extends React.Component {
   handleChoice(type) {
     // Update our state
     this.setState({
-      query_type: type,
+      cf_type: type,
     });
     
     // Do the callback to set the type
@@ -40,7 +40,7 @@ class QueryType extends React.Component {
 
     return( 
       <div>
-        <p> <br />Query Type: </p>
+        <p> <br />Counterfactual Type: </p>
         <Select
           options={options} // Options to display in the dropdown
           onChange= {new_option => {this.handleChoice(new_option.value)}}
@@ -49,4 +49,4 @@ class QueryType extends React.Component {
   }
 }
 
-export default QueryType;
+export default CounterfactualType;

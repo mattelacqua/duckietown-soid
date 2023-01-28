@@ -1,15 +1,15 @@
 // Import React
 import React from "react";
 
-import QueryType from "./QueryType.js";
+import CounterfactualType from "./CounterfactualType.js";
 import SingleDirection from "./SingleDirection.js";
 import MultiDirection from "./MultiDirection.js";
-import QueryRange from "./QueryRange.js";
+import CounterfactualRange from "./CounterfactualRange.js";
 
 import ValueType from "./ValueType.js";
 
 // Agent Component (gets rendered in app)
-class AddQuery extends React.Component {
+class AddCounterfactual extends React.Component {
 
   // Construct it with state so we can keep track of relevant information
   constructor(props) {
@@ -26,25 +26,23 @@ class AddQuery extends React.Component {
       is_range: false,
       value: 0.0,
       range: {
-        is_gt: false,
-        is_lt: false,
-        is_gte: false,
-        is_lte: false,
         turn_choices: [],
         low_bound: 0.0,
         high_bound: 0.0,
       }
     };
+
     this.set_type = this.set_type.bind(this); // Bind this to update_from sim 
     this.set_value_type = this.set_value_type.bind(this); // Bind this to update_from sim 
     this.set_single_direction = this.set_single_direction.bind(this); // Bind this to update_from sim 
     this.set_multi_direction = this.set_multi_direction.bind(this); // Bind this to update_from sim 
     this.set_bound = this.set_bound.bind(this); // Bind this to update_from sim 
-    this.set_operator = this.set_operator.bind(this); // Bind this to update_from sim 
     this.handleClick = this.handleClick.bind(this); // Bind this to update_from sim 
+
+    console.log("RENDERED IT");
   }
 
-  // Callback function for query_type to set our state function
+  // Callback function for Counterfactual_type to set our state function
   set_type(type){
     console.log("Call back got", type);
     //Pos x
@@ -139,7 +137,7 @@ class AddQuery extends React.Component {
     }
   }
 
-    // Callback function for query_type to set our state function
+    // Callback function for Counterfactual_type to set our state function
     set_value_type(type){
       console.log("Value type call back got", type);
       //Value
@@ -170,10 +168,6 @@ class AddQuery extends React.Component {
     set_multi_direction(directions){
       this.setState({
         range: {
-          is_gt: false,
-          is_lt: false,
-          is_gte: false,
-          is_lte: false,
           turn_choices: directions,
           low_bound: 0.0,
           high_bound: 0.0,
@@ -193,36 +187,6 @@ class AddQuery extends React.Component {
       this.setState({range});
     }    
 
-    // Callback function for setting the operartor
-    set_operator(operator){
-      var range = {...this.state.range}
-      if (operator === '>'){
-        range.is_gt = true;
-        range.is_lt = false;
-        range.is_gte = false;
-        range.is_lte = false;
-      }
-      if (operator === '<'){
-        range.is_gt = false;
-        range.is_lt = true;
-        range.is_gte = false;
-        range.is_lte = false;
-      }     
-      if (operator === '>='){
-        range.is_gt = false;
-        range.is_lt = false;
-        range.is_gte = true;
-        range.is_lte = false;
-      }     
-      if (operator === '<='){
-        range.is_gt = false;
-        range.is_lt = false;
-        range.is_gte = false;
-        range.is_lte = true;
-      }     
-      this.setState({range});
-    }    
-  
   handleClick(){
     this.props.socket.emit(
       "add_counterfactual",
@@ -232,15 +196,7 @@ class AddQuery extends React.Component {
       }
     )
   }
-  handleKeyPress(){
-    this.props.socket.emit(
-      "add_counterfactual",
-      {
-        index: this.props.agent.id,
-        counterfactual: this.state,
-      }
-    )
-  }
+
   // Render the agent component 
   render() {
     let input_value;
@@ -362,55 +318,50 @@ class AddQuery extends React.Component {
       // x position value
       if (this.state.is_pos_x) {
         input_value =  
-          <QueryRange default_val={this.props.agent.pos_x}
+          <CounterfactualRange default_val={this.props.agent.pos_x}
                         set_bound={this.set_bound}
-                        set_operator={this.set_operator}
           />
       }
       // Z position value
       if (this.state.is_pos_z) {
         input_value =
-          <QueryRange default_val={this.props.agent.pos_z}
+          <CounterfactualRange default_val={this.props.agent.pos_z}
                       set_bound={this.set_bound}
-                      set_operator={this.set_operator}
           />
       }    
       // Angle Value
       if (this.state.is_angle) {
         input_value =  
-          <QueryRange default_val={this.props.agent.angle}
+          <CounterfactualRange default_val={this.props.agent.angle}
                       set_bound={this.set_bound}
-                      set_operator={this.set_operator}
         />
       }       
       // Forward Step Value
       if (this.state.is_forward_step) {
         input_value =  
-          <QueryRange default_val={this.props.agent.forward_step}
+          <CounterfactualRange default_val={this.props.agent.forward_step}
                       set_bound={this.set_bound}
-                      set_operator={this.set_operator}
           />
       }       
       // Speed Value
       if (this.state.is_speed) {
         input_value =  
-          <QueryRange  default_val={this.props.agent.forward_step}
+          <CounterfactualRange  default_val={this.props.agent.forward_step}
                        set_bound={this.set_bound}
-                       set_operator={this.set_operator}
           />
       }    
       // Signal Choice 
       if (this.state.is_signalchoice) {
         input_value =  
           <MultiDirection direction={this.props.agent.signal_choice}
-                          set_multi_direction={this.set_single_direction}
+                          set_multi_direction={this.set_multi_direction}
           />
       }
       // Signal Choice 
       if (this.state.is_turnchoice) {
         input_value =  
           <MultiDirection  direction={this.props.agent.turn_choice}
-                           set_multi_direction={this.set_single_direction}
+                           set_multi_direction={this.set_multi_direction}
           />
       }
     }
@@ -418,7 +369,7 @@ class AddQuery extends React.Component {
     return (
             <div>
                 {/* Render */}
-                <QueryType  is_pos_x={this.state.is_pos_x}
+                <CounterfactualType  is_pos_x={this.state.is_pos_x}
                             is_pos_z={this.state.is_pos_z}
                             is_angle={this.state.is_angle}
                             is_forward_step={this.state.is_forward_step}
@@ -432,11 +383,11 @@ class AddQuery extends React.Component {
                             set_value_type={this.set_value_type}
                 />
                 {input_value}
-                <button onClick= {this.handleClick}> Add Query  </button>
+                <button onClick= {this.handleClick}> Add Counterfactual  </button>
              </div>
           );
     }
 }
 
 // Allow it to be called in other functions
-export default AddQuery;
+export default AddCounterfactual;

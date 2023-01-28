@@ -2,7 +2,7 @@ import React from "react";
 import '../environment/Buttons.css';
 
 // Component to spit out agent information
-class DeleteAgent extends React.Component {
+class DeleteCounterfactual extends React.Component {
 
   constructor(props) {
     super(props);
@@ -11,8 +11,13 @@ class DeleteAgent extends React.Component {
   }
 
   handleClick = () => {
-    console.log('deleting query ' + this.props.index);
-    this.props.socket.emit('delete_counterfactual', {'index':this.props.index});
+    console.log('deleting counterfactual ' + this.props.index);
+    this.props.socket.emit(
+      'delete_counterfactual', 
+      {
+        'index':this.props.index,
+        'agent_index': this.props.agent_index,
+      });
   }
 
   // Render the information to screen
@@ -26,4 +31,4 @@ class DeleteAgent extends React.Component {
 }
 
 
-export default DeleteAgent;
+export default DeleteCounterfactual;

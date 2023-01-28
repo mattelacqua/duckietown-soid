@@ -152,10 +152,6 @@ class Agent():
 
         # Gui Counterfactuals
         range_dict = {
-            'is_gt': False,
-            'is_lt': False,
-            'is_gte': False,
-            'is_lte': False,
             'turn_choices': [],
             'low_bound': 0.0,
             'high_bound': 0.0,

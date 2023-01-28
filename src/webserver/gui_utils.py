@@ -38,6 +38,12 @@ def handle_input(env, gui_input):
         env.agents.append(new_agent)
         env.spawn_random_agent(new_agent, directions, colors)
          
+    if gui_input['kind'] == 'counterfactual':
+        if gui_input['change'] == 'add':
+            env.agents[int(gui_input['agent_id'])].counterfactuals.append(gui_input['counterfactual'])
+
+        if gui_input['change'] == 'delete':
+            env.agents[int(gui_input['agent_index'])].counterfactuals.pop(int(gui_input['index']))
 
     if gui_input['kind'] == 'log':
         for agent in env.agents:

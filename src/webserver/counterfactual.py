@@ -116,60 +116,52 @@ def get_query_blob(env, query_info):
 
     def get_agents(query_info):
         def get_agent(agent_info):
-            # if they can be counterfactual, make sure the check is there.
-            def parse_symbolic_cf(cf):
-                """
-                {
-                    is_pos_x: bool,
-                    is_pos_y: bool,
-                    is_angle: bool,
-                    is_forward_step: bool,
-                    is_light: bool,
-                    lights: {...},
-                    is_value: bool,
-                    is_range: bool,
-                    range: {
-                        is_gt: bool,
-                        is_lt: bool,
-                        is_gte: bool,
-                        is_lte: bool,
-                        low_bound: float/inf ,
-                        high_bound: float/inf ,
-                    },
-                }
-                """                
-                symbolic = cf
-                return symbolic
+            
+            def has_symbolic(counterfactuals, kind):
+                for counterfactual in counterfactuals:
+                    if kind == 'is_pos_x' and counterfactual['is_pos_x']:
+                        return True
+                    if kind == 'is_pos_z' and counterfactual['is_pos_z']:
+                        return True
+                    if kind == 'is_angle' and counterfactual['is_angle']:
+                        return True
+                    if kind == 'is_forward_step' and counterfactual['is_forward_step']:
+                        return True
+                    if kind == 'is_speed' and counterfactual['is_speed']:
+                        return True
+                    if kind == 'is_turnchoice' and counterfactual['is_turnchoice']:
+                        return True
+                    if kind == 'is_signalchoice' and counterfactual['is_signalchoice']:
+                        return True
+                return False
+
+
+            symbolic = []
+            for counterfactual in agent_info['counterfactuals']:
+                symbolic.append(counterfactual)
 
             agent = {
                 'concrete' : {
                     'id': agent_info['id'],
                     'agent_id': agent_info['agent_id'],
-                    'pos_x': None if agent_info['counterfactuals']['pos_x'] 
+                    'pos_x': None if has_symbolic(agent_info['counterfactuals'], 'is_pos_x')
                         else agent_info['pos_x'],
-                    'pos_z': None if agent_info['counterfactuals']['pos_z'] 
+                    'pos_z': None if has_symbolic(agent_info['counterfactuals'], 'is_pos_z')
                         else agent_info['pos_z'],
-                    'angle': None if agent_info['counterfactuals']['angle']
+                    'angle': None if has_symbolic(agent_info['counterfactuals'], 'is_angle')
                         else agent_info['angle'],
-                    'forward_step': None if agent_info['counterfactuals']['forward_step'] 
+                    'forward_step': None if has_symbolic(agent_info['counterfactuals'], 'is_forward_step')
                         else agent_info['forward_step'],
-                    'lights': None if agent_info['counterfactuals']['lights'] 
-                        else agent_info['lights'],
+                    'speed': None if has_symbolic(agent_info['counterfactuals'], 'is_speed')
+                        else agent_info['speed'],
+                    'turn_choice': None if has_symbolic(agent_info['counterfactuals'], 'is_turnchoice')
+                        else agent_info['turn_choice'],
+                    'signal_choice': None if has_symbolic(agent_info['counterfactuals'], 'is_signalchoice')
+                        else agent_info['signal_choice'],
                     'lookahead': agent_info['lookahead'],
                     'color': agent_info['color'],
                 },
-                'symbolic' : {
-                    'pos_x': None if not agent_info['counterfactuals']['pos_x'] 
-                        else parse_symbolic_cf(agent_info['counterfactuals']['pos_x']),
-                    'pos_y': None if not agent_info['counterfactuals']['pos_z'] 
-                        else parse_symbolic_cf(agent_info['counterfactuals']['pos_z']),
-                    'angle': None if not agent_info['counterfactuals']['angle']
-                        else parse_symbolic_cf(agent_info['counterfactuals']['angle']),
-                    'forward_step': None if not agent_info['counterfactuals']['forward_step'] 
-                        else parse_symbolic_cf(agent_info['counterfactuals']['forward_step']),
-                    'lights': None if not agent_info['counterfactuals']['lights'] 
-                        else parse_symbolic_cf(agent_info['counterfactuals']['lights']),
-                },
+                'symbolic' : symbolic,
                 'state' : {
                     'intersection_arrival': agent_info['intersection_arrival'],
                     'patience': agent_info['patience'],

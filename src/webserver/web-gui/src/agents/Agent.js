@@ -7,7 +7,7 @@ import React from "react";
 import AgentInfo from './AgentInfo.js'
 
 // Import Agent Query
-import AgentQuery from './AgentQuery.js'
+import AgentCounterfactual from './AgentCounterfactual'
 
 // Agent Component (gets rendered in app)
 class Agent extends React.Component {
@@ -25,7 +25,7 @@ class Agent extends React.Component {
       <div>
         <AgentInfo  agent={this.props.agent} />
 
-        <AgentQuery agent={this.props.agent}
+        <AgentCounterfactual agent={this.props.agent}
                     socket={this.props.socket} />
     </div>
     );

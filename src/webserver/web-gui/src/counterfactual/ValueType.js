@@ -9,7 +9,7 @@ class ValueType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      query_type: 'is_pos_x',
+      range_type: 'is_pos_x',
     };
 
     this.handleChoice = this.handleChoice.bind(this);
@@ -19,7 +19,7 @@ class ValueType extends React.Component {
   handleChoice(type) {
     // Update our state
     this.setState({
-      query_type: type,
+      range_type: type,
     });
     
     // Do the callback to set the type

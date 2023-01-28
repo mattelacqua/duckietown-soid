@@ -178,14 +178,33 @@ def query(query_info):
 
 @socketio.on("add_counterfactual")
 def add_counterfactual(data):
+    counterfactual = data['counterfactual']
+    
+    # filter for turn choices
+    turnchoices = []
+    for choice in counterfactual['range']['turn_choices']:
+        if choice['selected']:
+            turnchoices.append(choice['direction'])
+    counterfactual['range']['turn_choices'] = turnchoices
+
     counterfactual_wrap = {
         'kind': 'counterfactual',
         'change': 'add',
         'agent_id': data['index'],
-        'counterfactual': data['counterfactual'],
+        'counterfactual': counterfactual,
     }
-    print(counterfactual_wrap)
-    #serialize(counterfactual_wrap, out)
+    #print(counterfactual_wrap)
+    serialize(counterfactual_wrap, out)
+
+@socketio.on("delete_counterfactual")
+def delete_counterfactual(data):
+    counterfactual_wrap = {
+        'kind': 'counterfactual',
+        'change': 'delete',
+        'index': data['index'],
+        'agent_index': data['agent_index'],
+    }
+    serialize(counterfactual_wrap, out)
 
 if __name__ == '__main__':
     socketio.run(app, port=5001)

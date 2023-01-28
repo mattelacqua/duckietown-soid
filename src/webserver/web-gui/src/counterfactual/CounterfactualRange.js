@@ -1,14 +1,15 @@
 // Import React
 import React from "react";
-import Operator from "./Operator.js";
 
 // Agent Component (gets rendered in app)
-class QueryRange extends React.Component {
+class CounterfactualRange extends React.Component {
 
   // Construct it with state so we can keep track of relevant information
   constructor(props) {
     super(props);
     this.state = {
+      low_bound: props.default_val,
+      high_bound: props.default_val,
     };
   }
 
@@ -19,9 +20,9 @@ class QueryRange extends React.Component {
             <div>
               <form>
                 <label>
-                  Low bound:   
+                  Low bound {'(MIN for min possible value)'}:   
                   <input type="text" 
-                    value={this.state.value}
+                    value={this.props.default_val}
                     onChange = {(e) => {
                       this.props.set_bound(e.target.value, "low");
                     }
@@ -29,12 +30,11 @@ class QueryRange extends React.Component {
               />
                 </label>  
               </form>
-              <Operator set_operator={this.props.set_operator}/>
               <form>
                 <label>
-                  High bound:   
+                  High bound {'(MAX for max possible value)'}:   
                   <input type="text" 
-                        defaultValue={this.props.default_val}
+                        value={this.props.default_val}
                         onChange = {(e) => {
                           this.props.set_bound(e.target.value, "high");
                         }
@@ -48,4 +48,4 @@ class QueryRange extends React.Component {
 }
 
 // Allow it to be called in other functions
-export default QueryRange;
+export default CounterfactualRange;
