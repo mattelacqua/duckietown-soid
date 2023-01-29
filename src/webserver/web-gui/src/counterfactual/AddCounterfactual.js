@@ -5,6 +5,7 @@ import CounterfactualType from "./CounterfactualType.js";
 import SingleDirection from "./SingleDirection.js";
 import MultiDirection from "./MultiDirection.js";
 import CounterfactualRange from "./CounterfactualRange.js";
+import CounterfactualValue from "./CounterfactualValue.js";
 
 import ValueType from "./ValueType.js";
 
@@ -37,6 +38,7 @@ class AddCounterfactual extends React.Component {
     this.set_single_direction = this.set_single_direction.bind(this); // Bind this to update_from sim 
     this.set_multi_direction = this.set_multi_direction.bind(this); // Bind this to update_from sim 
     this.set_bound = this.set_bound.bind(this); // Bind this to update_from sim 
+    this.set_value = this.set_value.bind(this); // Bind this to update_from sim 
     this.handleClick = this.handleClick.bind(this); // Bind this to update_from sim 
 
     console.log("RENDERED IT");
@@ -187,6 +189,11 @@ class AddCounterfactual extends React.Component {
       this.setState({range});
     }    
 
+    // Callback function for setting the boundss
+    set_value(value){
+      this.setState({value: value});
+    }    
+
   handleClick(){
     this.props.socket.emit(
       "add_counterfactual",
@@ -199,107 +206,52 @@ class AddCounterfactual extends React.Component {
 
   // Render the agent component 
   render() {
-    let input_value;
+    let input_component;
     if (this.state.is_value){
       // x position value
       if (this.state.is_pos_x) {
         console.log("Agent", this.props.agent.pos_x);
-        input_value =  
-          <form>
-            <label>
-              Agent x position:   
-              <input type="text" 
-                    value={this.state.value}
-                    onChange = {(e) => {
-                      console.log("change value", e);
-                      this.setState({
-                        value: e.target.value,
-                      });
-                    }
-                    }
-              />
-            </label>  
-          </form>
+        input_component = 
+          < CounterfactualValue label_string = 'Agent x-position'
+                                default_val = {this.props.agent.pos_x}
+                                set_value = {this.set_value}
+            />
       }
       // Z position value
       if (this.state.is_pos_z) {
-        input_value =  
-          <form>
-            <label>
-              Agent z position:   
-              <input type="text" 
-                    value={this.state.value}
-                    onChange = {(e) => {
-                      console.log("change value", e);
-                      this.setState({
-                        value: e.target.value,
-                      });
-                    }
-                    }
-              />
-            </label>  
-          </form>
+        input_component =  
+          < CounterfactualValue label_string = 'Agent z-position'
+                                default_val = {this.props.agent.pos_z}
+                                set_value = {this.set_value}
+            />
       }    
       // Angle Value
       if (this.state.is_angle) {
-        input_value =  
-          <form>
-            <label>
-              Agent angle:   
-              <input type="text" 
-                    value={this.state.value}
-                    onChange = {(e) => {
-                      console.log("change value", e);
-                      this.setState({
-                        value: e.target.value,
-                      });
-                    }
-                    }
-              />
-            </label>  
-          </form>
+        input_component =  
+          < CounterfactualValue label_string = 'Agent angle'
+                                default_val = {this.props.agent.angle_deg}
+                                set_value = {this.set_value}
+            />
       }       
       // Forward Step Value
       if (this.state.is_forward_step) {
-        input_value =  
-          <form>
-            <label>
-              Agent forward_step:   
-              <input type="text" 
-                    value={this.state.value}
-                    onChange = {(e) => {
-                      console.log("change value", e);
-                      this.setState({
-                        value: e.target.value,
-                      });
-                    }
-                    }
-              />
-            </label>  
-          </form>
+        input_component =  
+          < CounterfactualValue label_string = 'Agent forward-step'
+                                default_val = {this.props.agent.forward_step}
+                                set_value = {this.set_value}
+            />
       }       
       // Speed Value
       if (this.state.is_speed) {
-        input_value =  
-          <form>
-            <label>
-              Agent z position:   
-              <input type="text" 
-                    value={this.state.value}
-                    onChange = {(e) => {
-                      console.log("change value", e);
-                      this.setState({
-                        value: e.target.value,
-                      });
-                    }
-                    }
-              />
-            </label>  
-          </form>
+        input_component =  
+          < CounterfactualValue label_string = 'Agent speed'
+                                default_val = {this.props.agent.speed}
+                                set_value = {this.set_value}
+            />
       }    
       // Signal Choice 
       if (this.state.is_signalchoice) {
-        input_value =  
+        input_component =  
           <SingleDirection  direction={this.props.agent.signal_choice}
                             set_single_direction={this.set_single_direction}
                             signal_or_turn="Signal"
@@ -307,7 +259,7 @@ class AddCounterfactual extends React.Component {
       }
       // Signal Choice 
       if (this.state.is_turnchoice) {
-        input_value =  
+        input_component =  
           <SingleDirection  direction={this.props.agent.turn_choice}
                             set_single_direction={this.set_single_direction}
                             signal_or_turn="Turn"
@@ -317,49 +269,49 @@ class AddCounterfactual extends React.Component {
     if (this.state.is_range){
       // x position value
       if (this.state.is_pos_x) {
-        input_value =  
+        input_component =  
           <CounterfactualRange default_val={this.props.agent.pos_x}
                         set_bound={this.set_bound}
           />
       }
       // Z position value
       if (this.state.is_pos_z) {
-        input_value =
+        input_component =
           <CounterfactualRange default_val={this.props.agent.pos_z}
                       set_bound={this.set_bound}
           />
       }    
       // Angle Value
       if (this.state.is_angle) {
-        input_value =  
-          <CounterfactualRange default_val={this.props.agent.angle}
+        input_component =  
+          <CounterfactualRange default_val={this.props.agent.angle_deg}
                       set_bound={this.set_bound}
         />
       }       
       // Forward Step Value
       if (this.state.is_forward_step) {
-        input_value =  
+        input_component =  
           <CounterfactualRange default_val={this.props.agent.forward_step}
                       set_bound={this.set_bound}
           />
       }       
       // Speed Value
       if (this.state.is_speed) {
-        input_value =  
+        input_component =  
           <CounterfactualRange  default_val={this.props.agent.forward_step}
                        set_bound={this.set_bound}
           />
       }    
       // Signal Choice 
       if (this.state.is_signalchoice) {
-        input_value =  
+        input_component =  
           <MultiDirection direction={this.props.agent.signal_choice}
                           set_multi_direction={this.set_multi_direction}
           />
       }
       // Signal Choice 
       if (this.state.is_turnchoice) {
-        input_value =  
+        input_component =  
           <MultiDirection  direction={this.props.agent.turn_choice}
                            set_multi_direction={this.set_multi_direction}
           />
@@ -382,7 +334,8 @@ class AddCounterfactual extends React.Component {
                             is_range={this.state.is_range}
                             set_value_type={this.set_value_type}
                 />
-                {input_value}
+                {input_component}
+
                 <button onClick= {this.handleClick}> Add Counterfactual  </button>
              </div>
           );

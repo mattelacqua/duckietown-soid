@@ -22,7 +22,7 @@ class CounterfactualRange extends React.Component {
                 <label>
                   Low bound {'(MIN for min possible value)'}:   
                   <input type="text" 
-                    value={this.props.default_val}
+                    value={this.state.low_bound}
                     onChange = {(e) => {
                       this.props.set_bound(e.target.value, "low");
                     }
@@ -34,7 +34,7 @@ class CounterfactualRange extends React.Component {
                 <label>
                   High bound {'(MAX for max possible value)'}:   
                   <input type="text" 
-                        value={this.props.default_val}
+                        value={this.state.high_bound}
                         onChange = {(e) => {
                           this.props.set_bound(e.target.value, "high");
                         }
