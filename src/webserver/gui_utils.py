@@ -114,7 +114,7 @@ def handle_input(env, gui_input):
         klee_file = cf.generate_klee_file(query_blob)
         soid_query = cf.generate_soid_query(query_blob)
         soid_result = cf.invoke_soid(soid_query, klee_file)
-        
+        print("klee_file generated")
         
         env.state = 'query_result'
         return env.state, soid_result

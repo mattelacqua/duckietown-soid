@@ -1,0 +1,145 @@
+ Initial Query INFO
+
+<other>
+
+
+
+
+agents
+{'agent0': {'concrete': {'id': 0, 'agent_id': 'agent0', 'pos_x': None, 'pos_z': None, 'angle': None, 'forward_step': None, 'lights': None, 'lookahead': 0.585, 'color': 'DarkBlue'}, 'symbolic': {'pos_x': {'is_pos_x:': False, 'is_pos_z:': False, 'is_angle:': False, 'is_forward_step:': False, 'is_light:': False, 'lights:': None, 'is_value:': False, 'is_range:': False, 'range:': {'is_gt': False, 'is_lt': False, 'is_gte': False, 'is_lte': False, 'low_bound': -1, 'high_bound': -1}}, 'pos_y': {'is_pos_x:': False, 'is_pos_z:': False, 'is_angle:': False, 'is_forward_step:': False, 'is_light:': False, 'lights:': None, 'is_value:': False, 'is_range:': False, 'range:': {'is_gt': False, 'is_lt': False, 'is_gte': False, 'is_lte': False, 'low_bound': -1, 'high_bound': -1}}, 'angle': {'is_pos_x:': False, 'is_pos_z:': False, 'is_angle:': False, 'is_forward_step:': False, 'is_light:': False, 'lights:': None, 'is_value:': False, 'is_range:': False, 'range:': {'is_gt': False, 'is_lt': False, 'is_gte': False, 'is_lte': False, 'low_bound': -1, 'high_bound': -1}}, 'forward_step': {'is_pos_x:': False, 'is_pos_z:': False, 'is_angle:': False, 'is_forward_step:': False, 'is_light:': False, 'lights:': None, 'is_value:': False, 'is_range:': False, 'range:': {'is_gt': False, 'is_lt': False, 'is_gte': False, 'is_lte': False, 'low_bound': -1, 'high_bound': -1}}, 'lights': {'is_pos_x:': False, 'is_pos_z:': False, 'is_angle:': False, 'is_forward_step:': False, 'is_light:': False, 'lights:': None, 'is_value:': False, 'is_range:': False, 'range:': {'is_gt': False, 'is_lt': False, 'is_gte': False, 'is_lte': False, 'low_bound': -1, 'high_bound': -1}}}, 'state': {'intersection_arrival': -1, 'patience': 0, 'step_count': 0, 'turn_choice': 'Straight', 'signal_choice': 'Straight'}}}
+query
+{'is_factual': False, 'is_existential': False, 'behavior': 'CHANGE ME TO QUERY BEHAVIOR'}
+
+
+ Final Query Blob
+{
+  "environment": {
+    "intersection_x": 2,
+    "intersection_z": 2,
+    "robot_length": 0.18,
+    "grid_w": 5,
+    "grid_h": 5,
+    "road_tile_size": 0.585,
+    "max_steps": 1500,
+    "num_agents": 1
+  },
+  "agents": {
+    "agent0": {
+      "concrete": {
+        "id": 0,
+        "agent_id": "agent0",
+        "pos_x": null,
+        "pos_z": null,
+        "angle": null,
+        "forward_step": null,
+        "lights": null,
+        "lookahead": 0.585,
+        "color": "DarkBlue"
+      },
+      "symbolic": {
+        "pos_x": {
+          "is_pos_x:": false,
+          "is_pos_z:": false,
+          "is_angle:": false,
+          "is_forward_step:": false,
+          "is_light:": false,
+          "lights:": null,
+          "is_value:": false,
+          "is_range:": false,
+          "range:": {
+            "is_gt": false,
+            "is_lt": false,
+            "is_gte": false,
+            "is_lte": false,
+            "low_bound": -1,
+            "high_bound": -1
+          }
+        },
+        "pos_y": {
+          "is_pos_x:": false,
+          "is_pos_z:": false,
+          "is_angle:": false,
+          "is_forward_step:": false,
+          "is_light:": false,
+          "lights:": null,
+          "is_value:": false,
+          "is_range:": false,
+          "range:": {
+            "is_gt": false,
+            "is_lt": false,
+            "is_gte": false,
+            "is_lte": false,
+            "low_bound": -1,
+            "high_bound": -1
+          }
+        },
+        "angle": {
+          "is_pos_x:": false,
+          "is_pos_z:": false,
+          "is_angle:": false,
+          "is_forward_step:": false,
+          "is_light:": false,
+          "lights:": null,
+          "is_value:": false,
+          "is_range:": false,
+          "range:": {
+            "is_gt": false,
+            "is_lt": false,
+            "is_gte": false,
+            "is_lte": false,
+            "low_bound": -1,
+            "high_bound": -1
+          }
+        },
+        "forward_step": {
+          "is_pos_x:": false,
+          "is_pos_z:": false,
+          "is_angle:": false,
+          "is_forward_step:": false,
+          "is_light:": false,
+          "lights:": null,
+          "is_value:": false,
+          "is_range:": false,
+          "range:": {
+            "is_gt": false,
+            "is_lt": false,
+            "is_gte": false,
+            "is_lte": false,
+            "low_bound": -1,
+            "high_bound": -1
+          }
+        },
+        "lights": {
+          "is_pos_x:": false,
+          "is_pos_z:": false,
+          "is_angle:": false,
+          "is_forward_step:": false,
+          "is_light:": false,
+          "lights:": null,
+          "is_value:": false,
+          "is_range:": false,
+          "range:": {
+            "is_gt": false,
+            "is_lt": false,
+            "is_gte": false,
+            "is_lte": false,
+            "low_bound": -1,
+            "high_bound": -1
+          }
+        }
+      },
+      "state": {
+        "intersection_arrival": -1,
+        "patience": 0,
+        "step_count": 0,
+        "turn_choice": "Straight",
+        "signal_choice": "Straight"
+      }
+    }
+  },
+  "query": {
+    "is_factual": false,
+    "is_existential": false,
+    "behavior": "CHANGE ME TO QUERY BEHAVIOR"
+  }
+}

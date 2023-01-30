@@ -1,0 +1,146 @@
+{
+  "environment": {
+    "intersection_x": 2,
+    "intersection_z": 2,
+    "robot_length": 0.18,
+    "grid_w": 5,
+    "grid_h": 5,
+    "road_tile_size": 0.585,
+    "max_steps": 1500,
+    "num_agents": 3
+  },
+  "agents": {
+    "agent0": {
+      "concrete": {
+        "id": 0,
+        "agent_id": "agent0",
+        "pos_x": 1.609,
+        "pos_z": null,
+        "angle": 1.571,
+        "forward_step": 0.51,
+        "speed": 0,
+        "turn_choice": "Left",
+        "signal_choice": null,
+        "lookahead": 0.585,
+        "color": "DarkBlue"
+      },
+      "symbolic": [
+        {
+          "is_pos_x": false,
+          "is_pos_z": false,
+          "is_angle": false,
+          "is_forward_step": false,
+          "is_speed": false,
+          "is_signalchoice": true,
+          "is_turnchoice": false,
+          "is_value": true,
+          "is_range": false,
+          "value": "Right",
+          "range": {
+            "turn_choices": [],
+            "low_bound": 0,
+            "high_bound": 0
+          }
+        },
+        {
+          "is_pos_x": false,
+          "is_pos_z": false,
+          "is_angle": false,
+          "is_forward_step": false,
+          "is_speed": false,
+          "is_signalchoice": true,
+          "is_turnchoice": false,
+          "is_value": false,
+          "is_range": true,
+          "value": "Right",
+          "range": {
+            "turn_choices": [
+              "Left",
+              "Straight"
+            ],
+            "low_bound": 0,
+            "high_bound": 0
+          }
+        },
+        {
+          "is_pos_x": false,
+          "is_pos_z": true,
+          "is_angle": false,
+          "is_forward_step": false,
+          "is_speed": false,
+          "is_signalchoice": false,
+          "is_turnchoice": false,
+          "is_value": true,
+          "is_range": false,
+          "value": "1",
+          "range": {
+            "turn_choices": [
+              "Left",
+              "Straight"
+            ],
+            "low_bound": 0,
+            "high_bound": 0
+          }
+        }
+      ],
+      "state": {
+        "intersection_arrival": -1,
+        "patience": 0,
+        "step_count": 0,
+        "turn_choice": "Left",
+        "signal_choice": "Left"
+      }
+    },
+    "agent1": {
+      "concrete": {
+        "id": 1,
+        "agent_id": "agent1",
+        "pos_x": 1.609,
+        "pos_z": 2.839,
+        "angle": 1.571,
+        "forward_step": 0.45,
+        "speed": 0,
+        "turn_choice": "Straight",
+        "signal_choice": "Straight",
+        "lookahead": 0.585,
+        "color": "FireBrick"
+      },
+      "symbolic": [],
+      "state": {
+        "intersection_arrival": -1,
+        "patience": 0,
+        "step_count": 0,
+        "turn_choice": "Straight",
+        "signal_choice": "Straight"
+      }
+    },
+    "agent2": {
+      "concrete": {
+        "id": 2,
+        "agent_id": "agent2",
+        "pos_x": 0.31,
+        "pos_z": 1.609,
+        "angle": 6.283,
+        "forward_step": 0.51,
+        "speed": 0,
+        "turn_choice": "Left",
+        "signal_choice": "Left",
+        "lookahead": 0.585,
+        "color": "Indigo"
+      },
+      "symbolic": [],
+      "state": {
+        "intersection_arrival": -1,
+        "patience": 0,
+        "step_count": 0,
+        "turn_choice": "Left",
+        "signal_choice": "Left"
+      }
+    }
+  },
+  "query": {
+    "is_factual": false,
+    "is_existential": false,
+    "behavior": "CHANGE ME TO QUERY BEHAVIOR"
+  }
+}
