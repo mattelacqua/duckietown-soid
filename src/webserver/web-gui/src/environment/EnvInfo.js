@@ -24,12 +24,12 @@ class EnvInfo extends React.Component {
   // Render the information to screen
   render() {
     return (
-      <div>
+      <div style={{
+        paddingLeft: '10px',
+        }}>
           {/* HTML FOR ALL THE INFORMATION */}
-          <p> Max NS: {this.state.max_NS}  Max EW: {this.state.max_EW} </p>
-          <p> Tile Size: {this.state.tile_size} </p>
-          <p> Sim State: {"" + this.state.sim_state} </p>
-          <p> Sim Step: {"" + this.state.sim_step} </p>
+          <p> Sim State: {this.state.sim_state} </p>
+          <p> Sim Step: {this.state.sim_step} </p>
       </div>
       );
     }

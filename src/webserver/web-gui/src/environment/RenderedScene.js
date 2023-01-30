@@ -1,4 +1,5 @@
 import React from "react";
+import LogStep from "./LogStep.js"
 
 
 // Component to spit out agent information
@@ -57,6 +58,11 @@ class RenderedScene extends React.Component {
                         width: '600px',
                 }} /> 
           <span> Rendered Scene </span>
+          {this.props.sim_state === 'pause' &&
+            <LogStep  step={this.props.sim_step}
+                      max_step={this.props.sim_step}
+                      socket={this.props.socket}/>
+          }
       </div>
       
       );

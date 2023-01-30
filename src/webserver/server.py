@@ -117,6 +117,7 @@ def sim_state(data):
                 'kind': 'state',
                 'state': state,
               }
+    print(f"GETTING THE {state}")
     serialize(to_send, out)
 
 # add an agent
@@ -149,10 +150,6 @@ def log_step(data):
     new_log_info = list(unserialize(logger, log=True))
     if new_log_info:
         log_info = new_log_info
-
-    # Get the closest step possible
-    if step != 0:
-        step = int(round(step / 10))
 
     # Get it if it exists
     try: log_step = log_info[step]

@@ -45,8 +45,6 @@ class AngleDial extends React.Component {
   render() {
     const color = this.props.agent.color
     return (
-      <div>
-        <p> Angle Dial </p>
         <CircularSlider
           label={this.props.agent.agent_id}
           labelColor={color}
@@ -65,7 +63,6 @@ class AngleDial extends React.Component {
           dataIndex={this.props.agent.angle_deg}
           onChange={value => {this.handleChange(value)}}
         />
-      </div>
     )
   } // End Render
 } // End Class

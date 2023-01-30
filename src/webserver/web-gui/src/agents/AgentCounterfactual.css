@@ -1,0 +1,6 @@
+.CounterFactual-style {
+    justify-content: center;
+    display: inline;
+    flex-direction: row;
+    overflow: scroll;
+}

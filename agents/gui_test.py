@@ -168,7 +168,7 @@ def update(dt):
 
     if gui_input:
         gui_input = gui_input[-1]
-        state = gu.handle_input(env, gui_input)
+        state, query_ret  = gu.handle_input(env, gui_input)
         if state == "quit":
             print("Killing Webserver")
             webserver.kill()
@@ -194,10 +194,10 @@ def update(dt):
             agent.proceed(env,good_agent=True)
 
     env.step(learning=True)
+
     # Log the info
-    if env.agents[0].step_count % 10 == 0 or env.agents[0].step_count == 1:
-        print("Logging internal")
-        gu.init_server(1, log, env, socket)
+    #print(f"Logging Step {env.agents[0].step_count}")
+    gu.init_server(1, log, env, socket)
 
     # render the cam
     env.render(mode=args.cam_mode)

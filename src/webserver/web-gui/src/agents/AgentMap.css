@@ -1,9 +1,13 @@
 .AgentMap {
     background-color: alabster;
     background-image: url("http://localhost:5001/mapImage");
-    float: 'left';
+    display: flex;
+    float: left;
     width: 100%;
-    padding: 2em;
-    overflow: hidden;
+    padding: 3em;
+    overflow: scroll;
 }
 
+.text {
+    float: left;
+}

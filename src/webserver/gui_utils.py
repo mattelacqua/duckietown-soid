@@ -15,7 +15,7 @@ def handle_input(env, gui_input):
     if gui_input['kind'] == 'state':
         state = gui_input['state']
         env.state = state
-        return state
+        return state, None
 
 
     if gui_input['kind'] == 'change':
@@ -244,7 +244,6 @@ def read_init(fifo, log=False):
     if input_list:
         env_info = {}
         for input in input_list:
-            print(len(input_list))
             env_info = input
         if log:
             return {'step': env_info['agents'][0]['step_count'],

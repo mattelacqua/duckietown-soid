@@ -20,6 +20,7 @@ class LogStep extends React.Component {
 
   // Update the dial state on new changes 
   handleChange = (newValue) => {
+    console.log("SENDING OUT LOG STEP")
     this.state.socket.emit('log_step',
                     {
                         'step':this.state.step,         // Pass the agent_id stored in state
@@ -37,7 +38,7 @@ class LogStep extends React.Component {
               maxValue = {this.state.max_step}
               minValue = {0}
               value={this.state.step}
-              step = {10}
+              step = {1}
               onChangeComplete={value => {this.handleChange(value, )}}
               onChange={value => this.setState({ step:value })}
           />

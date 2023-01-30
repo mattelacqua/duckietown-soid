@@ -107,7 +107,9 @@ class App extends React.Component{
     // Div to clump app up into one component to render
     <div className = "App"> 
         <div className="Modify-wrap">
-          <RenderedScene />
+          <RenderedScene sim_state={this.state.sim_state}
+                         sim_step={this.state.env_info.sim_step}
+                         socket={this.state.socket}/>
           <Environment  max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
                         max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
                         tile_size={this.state.env_info.road_tile_size}
@@ -127,6 +129,7 @@ class App extends React.Component{
                     tile_size={this.state.env_info.road_tile_size}
                     socket={this.state.socket}
                     />}
+
         </div>
 
         <div className="Agents-wrap">

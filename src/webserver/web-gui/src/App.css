@@ -14,17 +14,20 @@
     padding: 1em;
     overflow:hidden;
 }
-.Agents-wrap {
-    display:flex;
-    flex-direction:row;
-    justify-content: space-between;
-    padding-top: 2em;
+.angleDialWrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 2em;
+    margin-right: 2em;
+    margin-left: 2em;
     padding-left: 2em;
     padding-right: 2em;
-    padding-bottom: 10em;
+    padding-top: 2em;
+    padding-bottom: 2em;
     overflow:hidden;
 }
-.dial-wrap {
+.Agents-wrap {
     display:flex;
     flex-direction:row;
     justify-content: space-between;
