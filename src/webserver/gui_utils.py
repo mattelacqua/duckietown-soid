@@ -83,6 +83,7 @@ def handle_input(env, gui_input):
                     agent.state = pickle.loads(eval(log_agent['car_state']))
                     agent.counterfactuals = log_agent['counterfactuals']
 
+                    agent.initial_direction = log_agent['initial_direction']
     
     if gui_input['kind'] == 'query':
         query_blob = cf.get_query_blob(env, gui_input['query_info'])
@@ -218,6 +219,7 @@ def env_info_dict(env):
         dict_agent['bbox_l'] = env.agents[i].bbox_offset_l
         dict_agent['car_state']= str(pickle.dumps(env.agents[i].state))
         dict_agent['counterfactuals'] = env.agents[i].counterfactuals
+        dict_agent['initial_direction'] = env.agents[i].initial_direction
 
         agents.append(dict_agent)
 

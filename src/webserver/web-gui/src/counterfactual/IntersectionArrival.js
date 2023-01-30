@@ -2,7 +2,7 @@
 import React from "react";
 
 // Agent Component (gets rendered in app)
-class CounterfactualValue extends React.Component {
+class IntersectionArrival extends React.Component {
 
   // Construct it with state so we can keep track of relevant information
   constructor(props) {
@@ -19,8 +19,8 @@ class CounterfactualValue extends React.Component {
             <div>
               <form>
                 <label>
-                  {this.props.label_string}:   
-                  <input type="text" 
+                  {"Intersection Arrival"}:   
+                  <input type="number" 
                         value={this.state.value}
                         onChange = {(e) => {
                           this.setState({value:e.target.value});
@@ -36,4 +36,4 @@ class CounterfactualValue extends React.Component {
 }
 
 // Allow it to be called in other functions
-export default CounterfactualValue;
+export default IntersectionArrival;

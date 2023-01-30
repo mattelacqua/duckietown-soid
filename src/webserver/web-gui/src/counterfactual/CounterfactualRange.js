@@ -24,6 +24,7 @@ class CounterfactualRange extends React.Component {
                   <input type="text" 
                     value={this.state.low_bound}
                     onChange = {(e) => {
+                      this.setState({low_bound:e.target.value});
                       this.props.set_bound(e.target.value, "low");
                     }
                     }
@@ -36,6 +37,7 @@ class CounterfactualRange extends React.Component {
                   <input type="text" 
                         value={this.state.high_bound}
                         onChange = {(e) => {
+                          this.setState({high_bound:e.target.value});
                           this.props.set_bound(e.target.value, "high");
                         }
                         }

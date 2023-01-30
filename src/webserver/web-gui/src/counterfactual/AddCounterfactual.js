@@ -6,6 +6,8 @@ import SingleDirection from "./SingleDirection.js";
 import MultiDirection from "./MultiDirection.js";
 import CounterfactualRange from "./CounterfactualRange.js";
 import CounterfactualValue from "./CounterfactualValue.js";
+import InitialDirection from "./InitialDirection.js";
+import IntersectionArrival from "./IntersectionArrival";
 
 import ValueType from "./ValueType.js";
 
@@ -26,6 +28,8 @@ class AddCounterfactual extends React.Component {
       is_value: false,
       is_range: false,
       value: 0.0,
+      initial_direction: '',
+      intersection_arrival: this.props.agent.intersection_arrival,
       range: {
         turn_choices: [],
         low_bound: 0.0,
@@ -39,6 +43,8 @@ class AddCounterfactual extends React.Component {
     this.set_multi_direction = this.set_multi_direction.bind(this); // Bind this to update_from sim 
     this.set_bound = this.set_bound.bind(this); // Bind this to update_from sim 
     this.set_value = this.set_value.bind(this); // Bind this to update_from sim 
+    this.set_initial_direction = this.set_initial_direction.bind(this); // Bind this to update_from sim 
+    this.set_intersection_arrival = this.set_intersection_arrival.bind(this); // Bind this to update_from sim 
     this.handleClick = this.handleClick.bind(this); // Bind this to update_from sim 
 
     console.log("RENDERED IT");
@@ -194,6 +200,16 @@ class AddCounterfactual extends React.Component {
       this.setState({value: value});
     }    
 
+    // Callback function for setting the boundss
+    set_initial_direction(value){
+      this.setState({initial_direction: value});
+    }    
+
+    // Callback function for setting the boundss
+    set_intersection_arrival(value){
+      this.setState({intersection_arrival: value});
+    }
+
   handleClick(){
     this.props.socket.emit(
       "add_counterfactual",
@@ -212,10 +228,10 @@ class AddCounterfactual extends React.Component {
       if (this.state.is_pos_x) {
         console.log("Agent", this.props.agent.pos_x);
         input_component = 
-          < CounterfactualValue label_string = 'Agent x-position'
-                                default_val = {this.props.agent.pos_x}
-                                set_value = {this.set_value}
-            />
+            < CounterfactualValue label_string = 'Agent x-position'
+                                  default_val = {this.props.agent.pos_x}
+                                  set_value = {this.set_value}
+              />
       }
       // Z position value
       if (this.state.is_pos_z) {
@@ -334,6 +350,9 @@ class AddCounterfactual extends React.Component {
                             is_range={this.state.is_range}
                             set_value_type={this.set_value_type}
                 />
+                <InitialDirection set_initial_direction={this.set_initial_direction} />
+                <IntersectionArrival  default_val={this.state.intersection_arrival}
+                                      set_intersection_arrival={this.set_intersection_arrival} />
                 {input_component}
 
                 <button onClick= {this.handleClick}> Add Counterfactual  </button>
