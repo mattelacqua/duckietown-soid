@@ -241,6 +241,108 @@ def generate_klee_file(query_blob):
     6. Return a file descriptor (or maybe path) to the generated klee file.
 
     """
+    query = json.loads(query_blob)
+    klee_file = open("klee_file.c", 'w', encoding="utf-8")
+    klee_file.write("#include \"src/gym_duckietown/decision_logic/types.c\"\n")
+    klee_file.write("int main(int argc, char **argv) {\n")
+    klee_file.write("EnvironmentInfo *info = malloc(sizeof(EnvironmentInfo));\n")
+    klee_file.write("klee_open_merge();\n")
+
+    environment = query["environment"]
+    klee_file.write(f'info->intersection_x = { environment["intersection_x"] };\n')
+    klee_file.write(f'info->intersection_z = { environment["intersection_z"] };\n')
+    klee_file.write(f'info->robot_length = { environment["robot_length"] };\n')
+    klee_file.write(f'info->grid_w = { environment["grid_w"] };\n')
+    klee_file.write(f'info->grid_h = { environment["grid_h"] };\n')
+    klee_file.write(f'info->road_tile_size = { environment["road_tile_size"] };\n')
+    klee_file.write(f'info->max_steps = { environment["max_steps"] };\n')
+    
+    klee_file.write(f'EnvironmentAgentArray *agents = malloc(sizeof(EnvironmentAgent) * { environment["num_agents"] });\n')
+    
+    agents = query["agents"]
+    for i in range(environment["num_agents"]):
+        agent = agents[f'agent{i}']
+        klee_file.write(f'EnvironmentAgent *agent{i} = malloc(sizeof(EnvironmentAgent));\n')
+        klee_file.write(f'agent{i}->id = { agent["concrete"]["id"] };\n')
+        klee_file.write(f'klee_make_symbolic( &agent{i}->pos_x, sizeof(float), "pos_x");\n')
+        klee_file.write(f'klee_make_symbolic( &agent{i}->pos_z, sizeof(float), "pos_z");\n')
+        klee_file.write(f'klee_make_symbolic( &agent{i}->angle, sizeof(float), "angle");\n')
+        klee_file.write(f'klee_make_symbolic( &agent{i}->forward_step, sizeof(float), "forward_step");\n')
+        klee_file.write(f'klee_make_symbolic( &agent{i}->lookahead, sizeof(float), "lookahead");\n')
+        
+        #ask about concretes : if concrete is null then there is a symbolic
+        klee_file.write(f'klee_assume( agent{i}->pos_x == { agent["concrete"]["pos_x"] } );\n')
+        klee_file.write(f'klee_assume( agent{i}->pos_z == { agent["concrete"]["pos_z"] } );\n') 
+        klee_file.write(f'klee_assume( agent{i}->angle == { agent["concrete"]["angle"] } );\n')
+        klee_file.write(f'klee_assume( agent{i}->forward_step == { agent["concrete"]["forward_step"] } );\n')
+        klee_file.write(f'klee_assume( agent{i}->speed == { agent["concrete"]["speed"] } );\n')
+        #turn choice vs signal choice --> direction is calculated using getdirection but where do these go?
+        klee_file.write(f'klee_assume( agent{i}->direction == \"{ agent["concrete"]["turn_choice"] }\" );\n')
+        #color doesn't exist
+        
+        #this concrete has no symbolic equivalent --> ignore lookahead
+        
+        #git pull again
+        
+        #all of the symbolics are in the same query
+        #change to all gte/lte
+        klee_file.write(f'klee_assume( agent{i}->lookahead == { agent["concrete"]["lookahead"] });\n')
+        for j in range(len(agent["symbolic"])):
+            counterfactual = agent["symbolic"][j]
+            if counterfactual["is_pos_x"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'klee_assume( agent{i}->pos_x == {counterfactual["value"]} );\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'klee_assume( agent{i}->pos_x > {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}->pos_x < {counterfactual["range"]["high_bound"]});\n')
+            if counterfactual["is_pos_z"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'klee_assume( agent{i}->pos_z == {counterfactual["value"]} );\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'klee_assume( agent{i}->pos_z > {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}->pos_z < {counterfactual["range"]["high_bound"]});\n') 
+            if counterfactual["is_angle"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'klee_assume( agent{i}->angle == {counterfactual["value"]} );\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'klee_assume( agent{i}->angle > {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}->angle < {counterfactual["range"]["high_bound"]});\n')   
+            if counterfactual["is_forward_step"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'klee_assume( agent{i}->is_forward_step == {counterfactual["value"]} );\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'klee_assume( agent{i}->is_forward_step > {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}->is_forward_step < {counterfactual["range"]["high_bound"]});\n')
+            if counterfactual["is_speed"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'klee_assume( agent{i}->speed == {counterfactual["value"]} );\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'klee_assume( agent{i}->speed > {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}->speed < {counterfactual["range"]["high_bound"]});\n')
+            if counterfactual["is_signalchoice"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'klee_assume( agent{i}->direction == \"{counterfactual["value"]}\" );\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'klee_assume( agent{i}->direction ==')
+                    for k in range(len(counterfactual["range"]["turn_choices"])):
+                        if k == 0:
+                            klee_file.write(f' \"{counterfactual["range"]["turn_choices"][0]}\"')
+                        else:
+                            klee_file.write(f' || agent{i}->direction == \"{counterfactual["range"]["turn_choices"][k]}\"')
+                    klee_file.write(");\n")
+                        # turn_choice = counterfactual["range"]["turn_choices"][k]
+        klee_file.write(f'agents->agents_array[{i}] = *agent{i};\n')
+        klee_file.write(f'agents->num_agents += 1;\n')
+    
+    
+    
+    klee_file.write("}\n")
+    
+    
+    
+    # print(agents)
+    # return file_descriptor, file_path
+    return None
     # return file_descriptor, file_path
     return None
 
