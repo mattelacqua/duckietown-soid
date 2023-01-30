@@ -196,6 +196,7 @@ class Agent():
                                         in_bounds, \
                                         get_learning_state, \
                                         intersection_detected, \
+                                        get_stop_pos, \
                                         approaching_intersection
                                         
 
@@ -213,8 +214,7 @@ class Agent():
                                         straighten_out
 
     # Import Intersection Detection/Handling Functions
-    from .agent._agent_intersection import  handle_intersection, \
-                                            get_stop_pos
+    from .agent._agent_intersection import  handle_intersection
         
     # Import Object Detection/Handling Functions
     from .agent._agent_objects import   get_nearby_obstacles, \

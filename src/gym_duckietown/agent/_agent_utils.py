@@ -72,28 +72,28 @@ def get_curve(self, env, straight=False, follow_pos=None):
         if not follow_tile:
             return None
         if tile['kind'] == '4way' and follow_tile['kind'] != ['4way']:
-            if self.start_direction == 'N' and self.turn_choice == 'Left':
+            if self.initial_direction == 'N' and self.turn_choice == 'Left':
                 direction = 'W'
-            elif self.start_direction == 'N' and self.turn_choice == 'Right':
+            elif self.initial_direction == 'N' and self.turn_choice == 'Right':
                 direction = 'E'
-            elif self.start_direction == 'S' and self.turn_choice == 'Left':
+            elif self.initial_direction == 'S' and self.turn_choice == 'Left':
                 direction = 'E'
-            elif self.start_direction == 'S' and self.turn_choice == 'Right':
+            elif self.initial_direction == 'S' and self.turn_choice == 'Right':
                 direction = 'W'
-            elif self.start_direction == 'E' and self.turn_choice == 'Left':
+            elif self.initial_direction == 'E' and self.turn_choice == 'Left':
                 direction = 'N'
-            elif self.start_direction == 'E' and self.turn_choice == 'Right':
+            elif self.initial_direction == 'E' and self.turn_choice == 'Right':
                 direction = 'S'
-            elif self.start_direction == 'W' and self.turn_choice == 'Left':
+            elif self.initial_direction == 'W' and self.turn_choice == 'Left':
                 direction = 'S'
-            elif self.start_direction == 'W' and self.turn_choice == 'Right':
+            elif self.initial_direction == 'W' and self.turn_choice == 'Right':
                 direction = 'N'
             straight=True
         if tile['kind'] != '4way' and follow_tile['kind'] == ['4way']:
-            direction = self.start_direction
+            direction = self.initial_direction
             straight=False
         if tile['kind'] == '4way' and follow_tile['kind'] == ['4way']:
-            direction = self.start_direction
+            direction = self.initial_direction
             straight=False
         if tile['kind'] != '4way' and follow_tile['kind'] != ['4way']:
             straight=True
@@ -104,7 +104,7 @@ def get_curve(self, env, straight=False, follow_pos=None):
             straight=True
         elif tile['kind'] == '4way':
             straight=False
-            direction=self.start_direction
+            direction=self.initial_direction
 
         
     if straight:

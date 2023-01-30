@@ -21,6 +21,47 @@ typedef enum {
 } TurnChoice ;
 
 typedef struct {
+    int x;
+    int z;
+} TilePos ;
+
+TilePos *make_TilePos(int x, int z)
+{
+    TilePos *p;
+    TilePos initial = {x, z};
+    p = malloc(sizeof(TilePos));
+    *p = initial;
+
+    return p;
+}
+
+void free_TilePos(TilePos *p)
+{
+    free(p);
+}
+
+typedef struct {
+    float x;
+    float z;
+} StopPos ;
+
+TilePos *make_StopPos(float x, float z)
+{
+    StopPos *p;
+    StopPos initial = {x, z};
+    p = malloc(sizeof(StopPos));
+    *p = initial;
+
+    return p;
+}
+
+void free_StopPos(TilePos *p)
+{
+    free(p);
+}
+
+
+typedef struct {
     TurnChoice turn_choice;
     TurnChoice signal_choice;
     Action action;

@@ -25,6 +25,14 @@ class IntersectionAction(Structure):
                 ('signal_choice', c_int),
                 ('action', c_int)]
 
+class TilePos(Structure):
+    _fields_ = [('x', c_int),
+                ('z', c_int)]
+
+class StopPos(Structure):
+    _fields_ = [('x', c_float),
+                ('z', c_float)]
+
 class AgentState(Structure):
     _fields_ = [('in_intersection', c_bool),
                 ('at_intersection_entry', c_bool),

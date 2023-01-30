@@ -11,7 +11,50 @@
 /************************************************
  * HELPERS
 ************************************************/
-float pos_distance(double x1, double x2, double z1, double z2){
+// Return a size 2 array of tile positions, index 0 is x, index 1 is z
+TilePos *get_tile_pos(float pos_x, float pos_z, float road_tile_size){
+    double x = (double) pos_x;
+    double z = (double) pos_z;
+    double tile_size = (double) road_tile_size;
+
+    int i = (int)floor(x / tile_size);
+    int j = (int)floor(z / tile_size);
+    TilePos *tile_pos = make_TilePos(i, j);
+
+    return tile_pos;
+
+}
+
+StopPos *get_stop_pos(int tile_x, int tile_z, float road_tile_size, Direction direction, float speed){
+    if (speed > 0.35)
+        speed = 0.30;
+    float stop_portion = speed * road_tile_size;
+    float stop_x = 0.0;
+    float stop_z = 0.0;
+
+    if (direction == NORTH){
+        stop_x = (tile_x * road_tile_size) - (road_tile_size/2.0);
+        stop_z = ((tile_z + 1) * road_tile_size) - (road_tile_size - stop_portion);
+    }
+    else if (direction == WEST){
+        stop_x = ((tile_x + 1) * road_tile_size) - (road_tile_size - stop_portion);
+        stop_z = (tile_z * road_tile_size) - (road_tile_size/2.0);
+    }
+    else if (direction == SOUTH){
+        stop_x = (tile_x * road_tile_size) + (road_tile_size/2.0);
+        stop_z = (tile_z * road_tile_size) + (road_tile_size - stop_portion);
+    }
+    else if (direction == EAST){
+        stop_x = (tile_x * road_tile_size) + (road_tile_size - stop_portion);
+        stop_z = (tile_z * road_tile_size) + (road_tile_size/2.0);
+    }
+
+    StopPos *stop_pos = make_StopPos(stop_x, stop_z);
+
+    return stop_pos;
+}
+
+int pos_distance(double x1, double x2, double z1, double z2){
     double gdistance = (((x2-x1)*(x2-x1)) + ((z2-z1)*(z2-z1)));
     return (float) sqrt(gdistance);
 }

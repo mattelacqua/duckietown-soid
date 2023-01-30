@@ -267,3 +267,22 @@ def approaching_intersection(self, env):
     dl.approaching_intersection.argtypes = [POINTER(EnvironmentInfo), c_int]
     dl.approaching_intersection.restype = c_bool
     return dl.approaching_intersection(env.c_info_struct, self.index)
+
+# Get the stopping points (~3/4 through the tile)
+def get_stop_pos(self, env):
+    # Get state information
+    tile_x, tile_z = env.get_grid_coords(self.cur_pos) 
+    tile_size = env.road_tile_size
+    direction = self.direction
+
+    # Adjust stop point based on speed
+    # Treat agents above .30 as the same. Its just how it goes.
+    speed = self.speed
+
+    dl.get_stop_pos.argtypes = [c_int, c_int, c_float, c_int, c_float]
+    dl.get_stop_pos.restype = c_void_p
+    stop_pos = StopPos.from_address(dl.get_stop_pos(int(tile_x), int(tile_z), float(tile_size), get_dl_direction(direction), float(speed)))
+    stop_x = round(float(stop_pos.x), 3)
+    stop_z = round(float(stop_pos.z), 3)
+
+    return stop_x, stop_z
