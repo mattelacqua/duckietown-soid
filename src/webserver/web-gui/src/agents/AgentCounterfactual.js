@@ -1,5 +1,5 @@
 // Import style
-import './Agent.css';
+import '../counterfactual/AgentCounterfactual.css';
 // Import React
 import React from "react";
 
@@ -32,9 +32,11 @@ class AgentCounterfactual extends React.Component {
                 <AddCounterfactual agent={this.props.agent}
                           socket={this.props.socket}/>
 
+          
                 <CounterfactualList  agent={this.props.agent} 
                             socket={this.props.socket}/>
-             </div>
+         
+            </div>
           );
     }
 }

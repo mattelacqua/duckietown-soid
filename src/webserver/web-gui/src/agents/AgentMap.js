@@ -11,8 +11,10 @@ import {
 import { Line } from 'react-chartjs-2';
 import 'chartjs-plugin-dragdata';
 
-import './AgentMap.css'
-import '../App.css'
+import './AngleDial.css';
+import './AgentMap.css';
+import '../App.css';
+
 
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
@@ -165,17 +167,18 @@ class AgentMap extends React.Component {
                 width: "450px",
               }}/>
 
-        <span> Drag and Drop Position / Angle Adjustments </span>
+      <span> Drag and Drop Position / Angle Adjustments </span>
 
-        <div classname = "dial-wrap">
-          {this.props.agents.map((agent) => ( 
-            <AngleDial  agent={agent}
-                        socket={this.props.socket}
-                        />
-          ))}
-        </div>
-      </div>
-    );
+
+      <div class = "angle-dialwrap">
+        {this.props.agents.map((agent) => ( 
+          <AngleDial  agent={agent}
+                      socket={this.props.socket}
+                      />
+        ))}
+    </div>
+    </div>
+  );
   }// End render
 } // end component
 

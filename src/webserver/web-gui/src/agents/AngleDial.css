@@ -1,0 +1,12 @@
+.angle-dialwrap {
+    display: inline;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-top: 2em;
+    padding-bottom: 2em;
+    float: left;
+    overflow:hidden;
+}

@@ -16,7 +16,7 @@
 }
 .Agents-wrap {
     display:flex;
-    flex-direction:row;
+    flex-direction: row;
     justify-content: space-between;
     padding-top: 2em;
     padding-left: 2em;
@@ -26,7 +26,7 @@
 }
 .dial-wrap {
     display:flex;
-    flex-direction:row;
+    flex-direction: row;
     justify-content: space-between;
     padding-top: 2em;
     padding-left: 2em;

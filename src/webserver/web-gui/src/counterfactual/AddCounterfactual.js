@@ -9,6 +9,8 @@ import CounterfactualValue from "./CounterfactualValue.js";
 
 import ValueType from "./ValueType.js";
 
+import './AgentCounterfactual.css';
+
 // Agent Component (gets rendered in app)
 class AddCounterfactual extends React.Component {
 
@@ -338,6 +340,7 @@ class AddCounterfactual extends React.Component {
 
                 <button onClick= {this.handleClick}> Add Counterfactual  </button>
              </div>
+             
           );
     }
 }
