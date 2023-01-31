@@ -45,7 +45,7 @@ typedef struct {
     float z;
 } StopPos ;
 
-TilePos *make_StopPos(float x, float z)
+StopPos *make_StopPos(float x, float z)
 {
     StopPos *p;
     StopPos initial = {x, z};
@@ -55,7 +55,7 @@ TilePos *make_StopPos(float x, float z)
     return p;
 }
 
-void free_StopPos(TilePos *p)
+void free_StopPos(StopPos *p)
 {
     free(p);
 }

@@ -1,4 +1,4 @@
-from gym_duckietown import agents, simulator, objects, logger
+from gym_duckietown import agents, simulator, objects, logger, dl_utils
 from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Union
 import numpy as np
 import math
@@ -30,6 +30,19 @@ def handle_input(env, gui_input):
             agent.actions = []
         elif change == "delete":
             env.agents.remove(agent)
+        elif change == "initial_direction":
+            print(gui_input['initial_direction'])
+            if gui_input['initial_direction'] == '0':
+                agent.initial_direction = 'N'
+            elif gui_input['initial_direction'] == '1':
+                agent.initial_direction = 'S'
+            elif gui_input['initial_direction'] == '2':
+                agent.initial_direction = 'E'
+            elif gui_input['initial_direction'] == '3':
+                agent.initial_direction = 'W'
+                
+        elif change == "intersection_arrival":
+            agent.intersection_arrival = gui_input['intersection_arrival']
                 
     if gui_input['kind'] == 'add_agent':
         new_agent = agents.Agent(env, agent_id=("agent"+str(len(env.agents))), random_spawn=True)
@@ -220,7 +233,7 @@ def env_info_dict(env):
         dict_agent['bbox_l'] = env.agents[i].bbox_offset_l
         dict_agent['car_state']= str(pickle.dumps(env.agents[i].state))
         dict_agent['counterfactuals'] = env.agents[i].counterfactuals
-        dict_agent['initial_direction'] = env.agents[i].initial_direction
+        dict_agent['initial_direction'] = dl_utils.get_dl_direction(env.agents[i].initial_direction)
 
         agents.append(dict_agent)
 

@@ -6,8 +6,6 @@ import SingleDirection from "./SingleDirection.js";
 import MultiDirection from "./MultiDirection.js";
 import CounterfactualRange from "./CounterfactualRange.js";
 import CounterfactualValue from "./CounterfactualValue.js";
-import InitialDirection from "./InitialDirection.js";
-import IntersectionArrival from "./IntersectionArrival";
 
 import ValueType from "./ValueType.js";
 
@@ -350,9 +348,6 @@ class AddCounterfactual extends React.Component {
                             is_range={this.state.is_range}
                             set_value_type={this.set_value_type}
                 />
-                <InitialDirection set_initial_direction={this.set_initial_direction} />
-                <IntersectionArrival  default_val={this.state.intersection_arrival}
-                                      set_intersection_arrival={this.set_intersection_arrival} />
                 {input_component}
 
                 <button onClick= {this.handleClick}> Add Counterfactual  </button>

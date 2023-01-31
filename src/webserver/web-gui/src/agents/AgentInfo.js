@@ -18,10 +18,11 @@ class AgentInfo extends React.Component {
     const color = this.props.agent.color;
     const collapse_options = {
         collapse: true,
-        collapseText: '<--- show more --->',
-        expandText: '--> show less <---',
-        minHeight: 50,
-        maxHeight: 150,
+        collapseText: '<------ show more ------>',
+        expandText: '-----> show less <------',
+        minHeight: 100,
+        maxHeight: 400,
+        display: 'float',
         textStyle: {
           color: color,
           padding: '10px',
@@ -58,7 +59,7 @@ class AgentInfo extends React.Component {
             angle: {agent.angle} {"\n"}
             angle_deg: {agent.angle_deg} {"\n"}
             current_direction: {agent.direction} {"\n"}
-            initial_direction: {agent.intial_direction} {"\n"}
+            initial_direction: {agent.initial_direction} {"\n"}
 
             {"\n"} Agent State: {"\n"}
             speed: {agent.speed} {"\n"}

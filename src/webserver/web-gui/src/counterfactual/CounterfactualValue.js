@@ -10,6 +10,7 @@ class CounterfactualValue extends React.Component {
     this.state = {
       value: props.default_val,
     };
+    this.props.set_value(props.default_value);
   }
 
   // Render the agent component 

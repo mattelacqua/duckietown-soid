@@ -8,7 +8,7 @@ class IntersectionArrival extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: props.default_val,
+      value: props.agent.intersection_arrival,
     };
   }
 
@@ -24,7 +24,12 @@ class IntersectionArrival extends React.Component {
                         value={this.state.value}
                         onChange = {(e) => {
                           this.setState({value:e.target.value});
-                          this.props.set_value(e.target.value);
+                          this.props.socket.emit(
+                            "intersection_arrival",
+                            {
+                              agent_index: this.props.agent.id,
+                              intersection_arrival: e.target.value,
+                            });
                           }
                         }
                   />

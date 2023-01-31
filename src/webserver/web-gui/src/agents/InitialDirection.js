@@ -22,17 +22,22 @@ class InitialDirection extends React.Component {
       initial_direction: direction,
     });
     
-    // Do the callback to set the type
-    this.props.set_initial_direction(direction);
+    // Send the new direction to socket
+    this.props.socket.emit(
+      'initial_direction', 
+      {
+       agent_index: this.props.agent.id,
+       initial_direction: direction,
+      });
   }
   
   // Render the information to screen
   render() {
     const options = [
-          { value: 'N', label: 'N' },
-          { value: 'S', label: 'S' },
-          { value: 'E', label: 'E' },
-          { value: 'W', label: 'W' },
+          { value: '0', label: 'N' },
+          { value: '1', label: 'S' },
+          { value: '2', label: 'E' },
+          { value: '3', label: 'W' },
     ];
 
     return( 
@@ -40,6 +45,7 @@ class InitialDirection extends React.Component {
         <p> <br />Initial Direction: </p>
         <Select
           options={options} // Options to display in the dropdown
+          defaultValue={this.props.agent.initial_direction}
           onChange= {new_option => {this.handleChoice(new_option.value)}}
           />
       </div>);

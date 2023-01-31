@@ -6,8 +6,14 @@ import React from "react";
 // Import Agent Info Screen
 import AgentInfo from './AgentInfo.js'
 
-// Import Agent Query
-import AgentCounterfactual from './AgentCounterfactual'
+// Import Agent Counterfactual
+import AgentCounterfactual from './AgentCounterfactual.js'
+
+// Import Agent IntersectionArrival
+import IntersectionArrival from './IntersectionArrival.js'
+
+// Import Agent InitialDirection
+import InitialDirection from './InitialDirection.js'
 
 // Agent Component (gets rendered in app)
 class Agent extends React.Component {
@@ -25,6 +31,11 @@ class Agent extends React.Component {
       <div>
         <AgentInfo  agent={this.props.agent} />
 
+        <IntersectionArrival agent={this.props.agent}
+                            socket={this.props.socket} />
+
+        <InitialDirection agent={this.props.agent}
+                          socket={this.props.socket} />
         <AgentCounterfactual agent={this.props.agent}
                     socket={this.props.socket} />
     </div>

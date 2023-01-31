@@ -5,101 +5,6 @@ from gym_duckietown.dl_utils import *
 
 # get the query blob from the query info
 def get_query_blob(env, query_info):
-    """
-    Query info will have structure:
-    {
-        query: {
-            Contains what will be symbolic for what agent
-        }
-        env_info: {
-            Contains all concrete information or reference to symbolic
-
-            base information
-
-            agents: {
-                agentx: {
-                    counterfactuals: {
-                        Contains all counterfactuals for each agent. (Need to add hooks from front end)
-                    }
-                }
-            }
-        }
-    }
-
-    General query blob structure:
-    {
-        environment: {
-            intersection_x: ... ,
-            intersection_y: ... ,
-            tile_size: ... ,
-            etc... ,
-        } ,
-        agents: {
-            agent0: {
-                concrete: {
-                    pos_x: 2.2 ,
-                    pos_y: 1.8 ,
-                    etc... ,
-                }
-                symbolic: { (must be expressed in formula form)
-                    angle: {
-                        is_operator: true,
-                        is_logical: false,
-                        is_arithmetic: true,
-                        operator: <=,
-                        proposition: None,
-                        lchild: {
-                            is_operator: false,
-                            is_logical: false,
-                            is_arithmetic: false,
-                            operator: None,
-                            proposition: angle,
-                            lchild: None,
-                            rchild: None,
-                        } ,
-                        rchild: {
-                            is_operator: false,
-                            is_logical: false,
-                            is_arithmetic: false,
-                            operator: None,
-                            proposition: 270,
-                            lchild: None,
-                            rchild: None,
-                        } ,
-                    } 
-                    lookahead: {...},
-                    etc... ,
-                },
-                state: {
-                    turn_choice : ... ,
-                    patience : ... ,
-                    intersection_arrival : ... ,
-                } ,
-            } ,
-            agent1: {
-                concrete: {
-                    angle: ... ,
-                    speed: ... ,
-                    etc... ,
-                }
-                symbolic: {
-                    pos_x: {...} ,
-                    pos_y: {...},
-                    etc...
-                } ,        
-                state: {
-                    etc... ,
-                }
-            } ,
-            etc... , 
-        },
-        query: {
-            is_factual: false 
-            is_existential: true 
-            behavior: 'move'
-        }
-    }
-    """
 
     def get_environment(query_info):
         env_info = query_info['env_info']
@@ -148,18 +53,17 @@ def get_query_blob(env, query_info):
                         else agent_info['turn_choice'],
                     'signal_choice': None if has_symbolic(agent_info['counterfactuals'], 'is_signalchoice')
                         else agent_info['signal_choice'],
-                    'initial_direction': None if has_symbolic(agent_info['counterfactuals'], 'initial_direction')
-                        else agent_info['initial_direction'],
-                    'intersection_arrival': None if has_symbolic(agent_info['counterfactuals'], 'intersection_arrival')
-                        else agent_info['intersection_arrival'],
                     'lookahead': agent_info['lookahead'],
                 },
                 'symbolic' : symbolic,
                 'state' : {
+                    'initial_direction': agent_info['initial_direction'],
+                    'intersection_arrival': agent_info['intersection_arrival'],
                     'patience': agent_info['patience'],
                     'step_count': agent_info['step_count'],
                     'turn_choice': agent_info['turn_choice'],
                     'signal_choice': agent_info['signal_choice'],
+                    'q_table': agent_info['q_table'],
                 },
             }
             return agent
@@ -185,10 +89,6 @@ def get_query_blob(env, query_info):
     query = get_query(query_info)
     query_blob = {}
     query_blob['environment'] = environment
-    print("agents")
-    print(agents)
-    print("query")
-    print(query)
     query_blob['agents'] = dict(agents)
     query_blob['query'] = dict(query)
 
@@ -198,13 +98,6 @@ def get_query_blob(env, query_info):
 def generate_klee_file(query_blob):
     """
     This function will generate the klee file used by soid. 
-    
-    TODOs.:
-    4. Call out to the proceed_model function given the model number and the agent's q_table.
-        - I will add the q_table to the agent's object sometime this week.
-    5. Generate the klee makefile
-        - see doc.
-    6. Return a file descriptor (or maybe path) to the generated klee file.
 
     """
     #query = json.loads(query_blob)
@@ -316,13 +209,19 @@ def generate_klee_file(query_blob):
             
         # Get stateful things
         # Lookhead
-        klee_file.write(f'    klee_assume( agent{i}.lookahead == { agent["concrete"]["lookahead"] }); // Concrete Val \n')
+        klee_file.write(f'    klee_assume( agent{i}.lookahead == { agent["concrete"]["lookahead"] }); // Concrete State Val \n')
         
+        # intersection_arrival
+        klee_file.write(f'    klee_assume( agent{i}.intersection_arrival == { agent["state"]["intersection_arrival"] }); // Concrete State Val \n')
+
+        # initial_direction
+        klee_file.write(f'    klee_assume( agent{i}.initial_direction == { get_dl_direction(agent["state"]["initial_direction"])}); // Concrete State Val \n')
+
         # patience
-        klee_file.write(f'    klee_assume( agent{i}.patience == { agent["state"]["patience"] }); // Concrete Val \n')
+        klee_file.write(f'    klee_assume( agent{i}.patience == { agent["state"]["patience"] }); // Concrete State Val \n')
         
         # Stepcount
-        klee_file.write(f'    klee_assume( agent{i}.step_count == { agent["state"]["step_count"] }); // Concrete Val \n')
+        klee_file.write(f'    klee_assume( agent{i}.step_count == { agent["state"]["step_count"] }); // Concrete State Val \n')
 
         # Handle the symbolic values
         for j in range(len(agent["symbolic"])):
@@ -393,14 +292,6 @@ def generate_klee_file(query_blob):
                             klee_file.write(f' || agent{i}.turn_choice == {counterfactual["range"]["turn_choices"][k].upper()}')
                     klee_file.write("); // Symbolic Range\n")
 
-            # Symbolic_intersection_arrival
-            if counterfactual["intersection_arrival"]:
-                    klee_file.write(f"    klee_assume( agent{i}.intersection_arrival == {counterfactual['intersection_arrival']}")
-
-            # Symbolic_initial_direction
-            if counterfactual["initial_direction"]:
-                    klee_file.write(f"    klee_assume( agent{i}.initial_direction == {get_dl_direction(counterfactual['initial_direction'])}")
-  
         # Seet the state for inferred variables
         # prev pos
         klee_file.write(f'    agent{i}.prev_pos_z = agent{i}.pos_x; // Calculated Variable\n')
@@ -495,6 +386,25 @@ def generate_klee_file(query_blob):
     klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
     klee_file.write("        agents->agents_array[i].state.is_tailgating = is_tailgating(info, i);\n")
     klee_file.write("     }\n")
+
+    
+    # handle the q table nd proceed model ONLY FOR AGENT 0
+    klee_file.write("    // Q table stuff\n")
+    
+    agent = agents['agent0']
+    for m in range(1024):
+        for n in range(2):
+            klee_file.write(f"   info->agents.agents_array[{i}].q_table[{m}][{n}] = {agent['state']['q_table'][m][n]};\n")
+
+
+    # Get learning state row
+    klee_file.write("\n    // Learning Row\n")
+    klee_file.write("    int mrow = get_learning_state(info, 0);\n")
+
+    klee_file.write("\n    // Invoke proceed\n")
+    klee_file.write("    bool will_proceed = proceed_model(agents->agents_array[0].q_table, mrow);\n")
+
+
 
     
     klee_file.write("}\n")

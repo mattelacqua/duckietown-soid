@@ -11,6 +11,8 @@ class CounterfactualRange extends React.Component {
       low_bound: props.default_val,
       high_bound: props.default_val,
     };
+    this.props.set_bound(props.default_val, "low");
+    this.props.set_bound(props.default_val, "high");
   }
 
   // Render the agent component 

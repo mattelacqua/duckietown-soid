@@ -92,7 +92,35 @@ def agent_angle(data):
 
     serialize(agent_change, out)
  
-# On socket update change agent angle position (from text)
+# On socket update change agent angle
+@socketio.on("initial_direction")
+def initial_direction(data):
+    global out
+    a_id = int(data['agent_index'])
+    initial_direction = str(data['initial_direction'])
+    agent_change = {
+                    'kind': 'change',
+                    'change': 'initial_direction',
+                    'agent_id': a_id,
+                    'initial_direction': initial_direction,
+                    }
+    serialize(agent_change, out)
+
+# On socket update change agent angle
+@socketio.on("intersection_arrival")
+def intersection_arrival(data):
+    global out
+    a_id = int(data['agent_index'])
+    intersection_arrival = int(data['intersection_arrival'])
+    agent_change = {
+                    'kind': 'change',
+                    'change': 'intersection_arrival',
+                    'agent_id': a_id,
+                    'intersection_arrival': intersection_arrival,
+                    }
+    serialize(agent_change, out)
+
+# On socket update change agent angle position (from map)
 @socketio.on("agent_pos")
 def agent_pos(data):
     global out
