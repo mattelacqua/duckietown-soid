@@ -26,6 +26,7 @@ import gym_duckietown.utils as utils
 import gym_duckietown.event_wrappers as event
 
 import socketio
+from learn_types import *
 
 # Parse args
 args = utils.get_args_from_config(sys.argv[1])
@@ -104,6 +105,21 @@ node = gu.start_node()
 #env.agents[1].turn_choice = "Straight" 
 #env.agents[1].curve = env.agents[1].get_curve(env)
 # Random is None which will be the 3rd agent
+def read_model(path):
+        
+    model = path
+
+    # Read new model into a q table
+    inp = open(model, 'r', os.O_NONBLOCK)
+    table = []
+    for line in inp.readlines():
+        line.strip()
+        table.append(list(float(i) for i in line.split(",")))
+    inp.close()
+    return table
+
+model = QTable(read_model(args.test_model_path))
+env.agents[0].q_table = model
 
 # Feed agent information to webserver
 gu.init_server(0, out, env, None, get_map=True)
@@ -201,6 +217,8 @@ def update(dt):
 
     # render the cam
     env.render(mode=args.cam_mode)
+
+
 
 if __name__ == '__main__':
 

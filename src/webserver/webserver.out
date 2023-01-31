@@ -1,9 +1,3 @@
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 360}
-{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 360}
-{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 180}
-{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 162}
-{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 53}
-{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 175}
-{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 359}
-{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 132}
-{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 82}
+{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
+{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 270}
+{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 360}

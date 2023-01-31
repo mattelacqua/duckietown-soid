@@ -54,7 +54,7 @@ StopPos *get_stop_pos(int tile_x, int tile_z, float road_tile_size, Direction di
     return stop_pos;
 }
 
-int pos_distance(double x1, double x2, double z1, double z2){
+float pos_distance(double x1, double x2, double z1, double z2){
     double gdistance = (((x2-x1)*(x2-x1)) + ((z2-z1)*(z2-z1)));
     return (float) sqrt(gdistance);
 }

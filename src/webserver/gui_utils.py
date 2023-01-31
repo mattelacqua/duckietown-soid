@@ -206,6 +206,7 @@ def env_info_dict(env):
         agent_state['is_tailgating'] = agent.state.is_tailgating
 
         dict_agent['state']=agent_state
+        dict_agent['q_table']=[[float(agent.q_table[m][0]), float(agent.q_table[m][1])] for m in range(1024)]
         dict_agent['exists']=agent.exists
         
         # Other things not included in c struct

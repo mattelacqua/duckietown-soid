@@ -66,6 +66,7 @@ def test(args):
 
         # Set reward profile for agent 0
         env.agents[0].reward_profile = args.reward_profile
+        env.agents[0].q_table = model
 
         # Learn until episode over
         epochs = 0
@@ -84,7 +85,7 @@ def test(args):
                 # Save state and info for agent 0
                 if agent.agent_id == "agent0":
                     # Get initial State (Will be the row of the model)
-                    agent.proceed(env, use_model=True, model=model, state=agent.get_learning_state(env))
+                    agent.proceed(env, use_model=True, model=agent.q_table, state=agent.get_learning_state(env))
                     #print(agent.q_state)
                     #print(agent.learning_state)
                     #agent.proceed(env, good_agent=True)

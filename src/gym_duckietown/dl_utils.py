@@ -70,17 +70,18 @@ class EnvironmentAgent(Structure):
                 ('step_count', c_int),
                 ('lookahead', c_float),
                 ('state', AgentState),
+                ('q_table', ((c_float * 2) * 1024)),
                 ('exists', c_bool)]
 
 
 class EnvironmentAgentArray(Structure):
     _fields_ = [('num_agents', c_int),
-                ('agents_array', POINTER(EnvironmentAgent))]
+                ('agents_array', (EnvironmentAgent * 8))]
 
 
     def __init__(self, env, agents):
         elems = (EnvironmentAgent * env.max_agents)() # Size
-        self.agents_array = cast(elems, POINTER(EnvironmentAgent))
+        self.agents_array = elems
         self.num_agents = c_int(len(env.agents))
 
         for i in range(env.max_agents):
@@ -126,6 +127,13 @@ class EnvironmentAgentArray(Structure):
                                                         agent.states['is_tailgating'],
                                                         agent.states['next_to_go'])
                 
+                # handle q table
+                table_spaces = ((c_float * 2) * 1024)() # Size
+                self.agents_array[i].q_table = table_spaces
+                for m in range(1024):
+                    for n in range(2):
+                        self.agents_array[i].q_table[m][n] = c_float(agent.q_table.qt[m][n])
+
                 self.agents_array[i].exists = c_bool(True)
             else:
                 self.agents_array[i].id = c_int(-1)
@@ -154,6 +162,14 @@ class EnvironmentAgentArray(Structure):
                 self.agents_array[i].lookahead = c_float(-1.0)
 
                 self.agents_array[i].state = AgentState(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                
+                # handle q table
+                table_spaces = ((c_float * 2) * 1024)() # Size
+                self.agents_array[i].q_table = table_spaces
+                for m in range(1024):
+                    for n in range(2):
+                        self.agents_array[i].q_table[m][n] = 0.0
+
                 self.agents_array[i].exists = c_bool(False)
 
 class EnvironmentInfo(Structure):

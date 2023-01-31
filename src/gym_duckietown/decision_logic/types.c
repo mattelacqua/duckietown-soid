@@ -121,12 +121,13 @@ typedef struct {
     int step_count ;
     float lookahead ;
     AgentState state ;
+    float q_table[1024][2];
     bool exists ;
 } EnvironmentAgent ;
 
 typedef struct {
     int num_agents;
-    EnvironmentAgent* agents_array;
+    EnvironmentAgent agents_array[8];
 } EnvironmentAgentArray ;
 
 // Environment Info

@@ -1,4 +1,5 @@
 from .dl_utils import *
+from learn_types import *
 from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Union
 import numpy as np
 from gym_duckietown import objects
@@ -71,6 +72,7 @@ class Agent():
     obs: np.ndarray
     misc: dict
     q_state: int
+    q_table: QTable
     lookahead: float
 
     def __init__(self,
@@ -149,6 +151,7 @@ class Agent():
         self.obs = None
         self.misc = None
         self.q_state = -1
+        self.q_table = QTable([[0.0 for i in range(2)] for j in range(1024)])
 
         # Gui Counterfactuals
         range_dict = {
