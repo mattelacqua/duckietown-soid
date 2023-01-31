@@ -22,6 +22,7 @@
         "turn_choice": "Left",
         "signal_choice": null,
         "lookahead": 0.585,
+        "initial_direction": "N",
         "color": "DarkBlue"
       },
       "symbolic": [
@@ -103,6 +104,7 @@
         "turn_choice": "Straight",
         "signal_choice": "Straight",
         "lookahead": 0.585,
+        "initial_direction": "N",
         "color": "FireBrick"
       },
       "symbolic": [],
@@ -126,6 +128,7 @@
         "turn_choice": "Left",
         "signal_choice": "Left",
         "lookahead": 0.585,
+        "initial_direction": "N",
         "color": "Indigo"
       },
       "symbolic": [],
