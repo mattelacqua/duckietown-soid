@@ -451,7 +451,7 @@ def generate_soid_query(query_info):
     klee_prefix = "src/webserver/soid_files/klee/"
     make = klee_prefix + 'makefile'
 
-    query = soid.Soid('GUI Query', counterfactual.single) # We will use single for existential queries, many for (factual)
+    query = soid.Soid('GUI Query', counterfactual.single) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
 
     """
     See the declare in https://gitlab.com/rose-yale/soid/-/blob/main/examples/car/queries/car.py for how this works.
@@ -475,8 +475,45 @@ def generate_soid_query(query_info):
         S = {"""This will include agent things"""}
         P = {"""This will just have the proceed_ret value"""}
 
+        """
+        Hints for E and S
+        For each agent the possible symbolic variables are:
+            pos_x, pos_z
+            angle
+            speed
+            forward_step
+            turn_choice
+            signal_choice
+        
+        This is done from the perspective of Agent0. So, its state would consist of things it has control over at the moment (if you were driving)
+            forward_step (acceleration)
+            turn_choice
+            signal_choice
+        
+        The environment would be 
+            Agent0's pos_x, posz
+            Agent0's angle
+            Agent0's speed
+            For every other agent:
+                pos_x, pos_z
+                angle
+                speed
+                forward_step
+                turn_choice
+                signal_choice
+
+        *** Note that these might not exist, e.g. if we don't have any counterfactuals / symbolic values for any other agents, then environment will be much smaller.
+
+        *** You may want to preprocess into a dataformat that makes sense to you. It could be having lists that point to the info in the json blob to keep track of:
+            e.g. environment_blob_info = []
+                    environment_blob_info.append(<counterfactual for agent0 posx, posz, angle, speed>)
+                    for every agent that isnt agent 0
+                        environment_blob_info.extend(<all counterfactuals for agent>)
+            this will be useful so you have fast access when you are doing the constraint adding below.
+        """
+
     """
-    Now we have to register the actual constraints now that the variables are linked. See https://gitlab.com/rose-yale/soid/-/blob/main/examples/car/queries/causal_signaling.py. We just build the constraints. List of available keywords to us (Like And, Equal, etc are: https://gitlab.com/rose-yale/soid/-/blob/main/soid/soidlib/soidlib.py line 264. Getting Sam to add Or, LessThanEqualTo, GreaterThanEqualTo.) You can use filler names for now.
+    Now we have to register the actual constraints now that the variables are linked. See https://gitlab.com/rose-yale/soid/-/blob/main/examples/car/queries/causal_signaling.py. We just build the constraints. List of available keywords to us (Like And, Equal, etc are: https://gitlab.com/rose-yale/soid/-/blob/main/soid/soidlib/soidlib.py line 264. Getting Sam to add Or, LT, LTE, GT, GTE) You can use filler names for now.
 
     """
     @soid.register
