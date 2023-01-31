@@ -488,7 +488,9 @@ def generate_klee_file(query_blob):
     
     klee_file.close()
     
+    #makefile
     makefile = open("makefile",'w', encoding="utf-8")
+    
     makefile.write("cc=clang++-9 -std=c++14\n\n")
     makefile.write("BC=./inter.bc\n\n")
     makefile.write("KLEE=../../../klee/include/klee\n")
@@ -505,6 +507,7 @@ def generate_klee_file(query_blob):
     makefile.write("	rm -rf ./klee-out-*\n")
     makefile.write("	rm -rf ./klee-last\n")
     
+    makefile.close()
     
     
     # print(agents)
