@@ -205,7 +205,7 @@ def generate_soid_query(query_info):
         for tagged_cf in t_state:
             a_id = int(tagged_cf['id'])
             if tagged_cf['is_cf']:
-                counterfactual = tagged_cf['counterfactual']
+                counterfactual = tagged_cf['cf']
                 if counterfactual['is_pos_x']:
                     S[f'agent{a_id}.pos_x'] = soid.soidlib.types.float(f'agent{a_id}.pos_x', pp=None, raw=None)
                 if counterfactual['is_pos_z']:
@@ -221,6 +221,7 @@ def generate_soid_query(query_info):
                 if counterfactual['is_signalchoice']:
                     S[f'agent{a_id}.signal_choice'] = soid.soidlib.types.int(f'agent{a_id}.signal_choice', pp=None, raw=None)
             elif tagged_cf['is_val']:
+                val_type = tagged_cf['val_type']
                 if val_type == 'lookahead':
                     S[f'agent{a_id}.lookahead'] = soid.soidlib.types.float(f'agent{a_id}.lookahead', pp=None, raw=None)
                 if val_type == 'intersection_arrival':
@@ -235,65 +236,85 @@ def generate_soid_query(query_info):
         # declare behaviors
         D = {}
         D[f'will_proceed'] = soid.soidlib.types.bool(f'will_proceed', pp=None, raw=None)
+        
+        return E,S, D
 
     # Register declare
     query.register(declare)
 
     def get_constraint(declare_type, tagged_cf):
         if tagged_cf['is_cf']:
-            counterfactual = tagged_cf['counterfactual']
+            counterfactual = tagged_cf['cf']
             if counterfactual['is_value']:
                 if counterfactual['is_pos_x']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.pos_x"], counterfactual['value'])
+                    return Equal( declare_type[f"agent{tagged_cf['id']}.pos_x"], float(counterfactual['value']))
                 if counterfactual['is_pos_z']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.pos_z"], counterfactual['value'])
+                    return Equal( declare_type[f"agent{tagged_cf['id']}.pos_z"], float(counterfactual['value']))
                 if counterfactual['is_angle']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.angle"], counterfactual['value'])
+                    return Equal( declare_type[f"agent{tagged_cf['id']}.angle"], float(counterfactual['value']))
                 if counterfactual['is_speed']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.speed"], counterfactual['value'])
+                    return Equal( declare_type[f"agent{tagged_cf['id']}.speed"], float(counterfactual['value']))
                 if counterfactual['is_forward_step']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.forward_step"], counterfactual['value'])
+                    return Equal( declare_type[f"agent{tagged_cf['id']}.forward_step"], float(counterfactual['value']))
                 if counterfactual['is_turnchoice']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.turn_choice"], counterfactual['value'])
+                    return Equal( declare_type[f"agent{tagged_cf['id']}.turn_choice"], int(counterfactual['value']))
                 if counterfactual['is_signalchoice']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.signal_choice"], counterfactual['value'])
+                    return Equal( declare_type[f"agent{tagged_cf['id']}.signal_choice"], int(counterfactual['value']))
             if counterfactual['is_range']:
                 low_bound = counterfactual['range']['low_bound']
                 high_bound = counterfactual['range']['high_bound']
                 turn_choices = counterfactual['range']['turn_choices']
                 if counterfactual['is_pos_x']:
                     return  And( 
-                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.pos_x"], low_bound),
-                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.pos_x"], high_bound))
+                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.pos_x"], float(low_bound)),
+                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.pos_x"], float(high_bound)))
                 if counterfactual['is_pos_z']:
                     return  And( 
-                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.pos_z"], low_bound),
-                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.pos_z"], high_bound))
+                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.pos_z"], float(low_bound)),
+                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.pos_z"], float(high_bound)))
                 if counterfactual['is_angle']:
                     return  And( 
-                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.angle"], low_bound),
-                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.angle"], high_bound))
+                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.angle"], float(low_bound)),
+                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.angle"], float(high_bound)))
                 if counterfactual['is_speed']:
                     return  And( 
-                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.speed"], low_bound),
-                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.speed"], high_bound))
+                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.speed"], float(low_bound)),
+                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.speed"], float(high_bound)))
                 if counterfactual['is_forward_step']:
                     return  And( 
-                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.forward_step"], low_bound),
-                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.forward_step"], high_bound))
+                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.forward_step"], float(low_bound)),
+                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.forward_step"], float(high_bound)))
                 if counterfactual['is_turnchoice']:
                     direction_formula = False
                     for direction in turn_choices:
+                        if direction == 'Straight':
+                            direction = 0
+                        if direction == 'Left':
+                            direction = 1
+                        if direction == 'Right':
+                            direction = 2
+                        if not direction_formula:
+                            direction_formula = Equal(declare_type[f"agent{tagged_cf['id']}.signal_choice"], int(direction))
+                            continue
                         direction_formula = Or (
-                            Equal(declare_type[f"agent{tagged_cf['id']}.turn_choice"], direction),
+                            Equal(declare_type[f"agent{tagged_cf['id']}.turn_choice"], int(direction)),
                             direction_formula
                         )
                     return direction_formula
                 if counterfactual['is_signalchoice']:
-                    direction_formula = False
+                    direction_formula = None
                     for direction in turn_choices:
+                        if direction == 'Straight':
+                            direction = 0
+                        if direction == 'Left':
+                            direction = 1
+                        if direction == 'Right':
+                            direction = 2
+                        if not direction_formula:
+                            direction_formula = Equal(declare_type[f"agent{tagged_cf['id']}.signal_choice"], int(direction))
+                            continue
                         direction_formula = Or (
-                            Equal(declare_type[f"agent{tagged_cf['id']}.signal_choice"], direction),
+                            Equal(declare_type[f"agent{tagged_cf['id']}.signal_choice"], int(direction)),
                             direction_formula
                         )
                     return direction_formula
@@ -301,23 +322,32 @@ def generate_soid_query(query_info):
             value = tagged_cf['val']
             val_type = tagged_cf['val_type']
             if val_type == 'lookahead':
-                return Equal(declare_type[f"agent{tagged_cf['id']}.lookahead"], value),
+                return Equal(declare_type[f"agent{tagged_cf['id']}.lookahead"], float(value))
             if val_type == 'intersection_arrival':
-                return Equal(declare_type[f"agent{tagged_cf['id']}.intersection_arrival"], value),
+                return Equal(declare_type[f"agent{tagged_cf['id']}.intersection_arrival"], int(value))
             if val_type == 'initial_direction':
-                return Equal(declare_type[f"agent{tagged_cf['id']}.initial_direction"], value),
+                return Equal(declare_type[f"agent{tagged_cf['id']}.initial_direction"], int(value))
             if val_type == 'patience':
-                return Equal(declare_type[f"agent{tagged_cf['id']}.patience"], value),
+                return Equal(declare_type[f"agent{tagged_cf['id']}.patience"], int(value))
             if val_type == 'step_count':
-                return Equal(declare_type[f"agent{tagged_cf['id']}.step_count"], value),
+                return Equal(declare_type[f"agent{tagged_cf['id']}.step_count"], int(value))
 
     def encode(declare_type, tagged_cf_list):
-        formula = True
+        formula = None
         for tagged_cf in tagged_cf_list:
+            constraint = get_constraint(declare_type, tagged_cf)
+            print(f" Constraint {constraint}")
+            print(f" Constraint.sort {constraint.sort()}")
+            if not formula:
+                formula = constraint
+                continue
+
             formula = And (
                 get_constraint(declare_type, tagged_cf),
                 formula)
-        
+            print(f" Formula {formula.sort()}")
+            
+        print(formula)
         return formula
 
     def environmental( E ):
