@@ -1,5 +1,5 @@
-#include "src/gym_duckietown/decision_logic/types.c"
-#include "src/gym_duckietown/decision_logic/decision_logic.c"
+#include "./src/gym_duckietown/decision_logic/types.c"
+#include "./src/gym_duckietown/decision_logic/decision_logic.c"
 
 int main(int argc, char **argv) {
     EnvironmentInfo *info = malloc(sizeof(EnvironmentInfo));
@@ -20,28 +20,28 @@ int main(int argc, char **argv) {
     // Agent0 Information:
     EnvironmentAgent agent0 = agents->agents_array[0];
     agent0.id = 0;
-    klee_make_symbolic( &agent0.pos_x, sizeof(float), "pos_x");
-    klee_make_symbolic( &agent0.pos_z, sizeof(float), "pos_z");
-    klee_make_symbolic( &agent0.angle, sizeof(float), "angle");
-    klee_make_symbolic( &agent0.forward_step, sizeof(float), "forward_step");
-    klee_make_symbolic( &agent0.lookahead, sizeof(float), "lookahead");
-    klee_make_symbolic( &agent0.signal_choice, sizeof(TurnChoice), "signal_choice");
-    klee_make_symbolic( &agent0.turn_choice, sizeof(TurnChoice), "turn_choice");
-    klee_make_symbolic( &agent0.initial_direction, sizeof(Direction), "initial_direction");
-    klee_make_symbolic( &agent0.intersection_arrival, sizeof(int), "intersection_arrival");
-    klee_make_symbolic( &agent0.patience, sizeof(int), "patience");
-    klee_make_symbolic( &agent0.step_count, sizeof(int), "step_count");
-    klee_assume( agent0.pos_x == 1.619 ); // Concrete Val 
-    klee_assume( agent0.angle == 1.571 ); // Concrete Val 
+    klee_make_symbolic( &agent0.pos_x, sizeof(float), "agent0.pos_x");
+    klee_make_symbolic( &agent0.pos_z, sizeof(float), "agent0.pos_z");
+    klee_make_symbolic( &agent0.angle, sizeof(float), "agent0.angle");
+    klee_make_symbolic( &agent0.forward_step, sizeof(float), "agent0.forward_step");
+    klee_make_symbolic( &agent0.lookahead, sizeof(float), "agent0.lookahead");
+    klee_make_symbolic( &agent0.signal_choice, sizeof(TurnChoice), "agent0.signal_choice");
+    klee_make_symbolic( &agent0.turn_choice, sizeof(TurnChoice), "agent0.turn_choice");
+    klee_make_symbolic( &agent0.initial_direction, sizeof(Direction), "agent0.initial_direction");
+    klee_make_symbolic( &agent0.intersection_arrival, sizeof(int), "agent0.intersection_arrival");
+    klee_make_symbolic( &agent0.patience, sizeof(int), "agent0.patience");
+    klee_make_symbolic( &agent0.step_count, sizeof(int), "agent0.step_count");
+    klee_assume( agent0.pos_x == 1.316 ); // Concrete Val 
+    klee_assume( agent0.angle == 4.712 ); // Concrete Val 
     klee_assume( agent0.forward_step == 0.51 ); // Concrete Val 
-    klee_assume( agent0.signal_choice == "Left" ); // Concrete Val 
-    klee_assume( agent0.turn_choice == "Left" ); // Concrete Val 
+    klee_assume( agent0.signal_choice == "Right" ); // Concrete Val 
+    klee_assume( agent0.turn_choice == "Right" ); // Concrete Val 
     klee_assume( agent0.lookahead == 0.585); // Concrete State Val 
     klee_assume( agent0.intersection_arrival == 3); // Concrete State Val 
-    klee_assume( agent0.initial_direction == 0); // Concrete State Val 
+    klee_assume( agent0.initial_direction == 1); // Concrete State Val 
     klee_assume( agent0.patience == 0); // Concrete State Val 
     klee_assume( agent0.step_count == 0); // Concrete State Val 
-    klee_assume( agent0.pos_z == 2.478 ); // Symbolic Value
+    klee_assume( agent0.pos_z == 0.2 ); // Symbolic Value
     agent0.prev_pos_z = agent0.pos_x; // Calculated Variable
     agent0.prev_pos_z = agent0.pos_z; // Calculated Variable
     agent0.direction = get_direction(agent0.angle/3.14*180); // Calculated Variable
@@ -70,28 +70,28 @@ int main(int argc, char **argv) {
     // Agent1 Information:
     EnvironmentAgent agent1 = agents->agents_array[1];
     agent1.id = 1;
-    klee_make_symbolic( &agent1.pos_x, sizeof(float), "pos_x");
-    klee_make_symbolic( &agent1.pos_z, sizeof(float), "pos_z");
-    klee_make_symbolic( &agent1.angle, sizeof(float), "angle");
-    klee_make_symbolic( &agent1.forward_step, sizeof(float), "forward_step");
-    klee_make_symbolic( &agent1.lookahead, sizeof(float), "lookahead");
-    klee_make_symbolic( &agent1.signal_choice, sizeof(TurnChoice), "signal_choice");
-    klee_make_symbolic( &agent1.turn_choice, sizeof(TurnChoice), "turn_choice");
-    klee_make_symbolic( &agent1.initial_direction, sizeof(Direction), "initial_direction");
-    klee_make_symbolic( &agent1.intersection_arrival, sizeof(int), "intersection_arrival");
-    klee_make_symbolic( &agent1.patience, sizeof(int), "patience");
-    klee_make_symbolic( &agent1.step_count, sizeof(int), "step_count");
-    klee_assume( agent1.pos_x == 1.361 ); // Concrete Val 
-    klee_assume( agent1.pos_z == 1.119 ); // Concrete Val 
+    klee_make_symbolic( &agent1.pos_x, sizeof(float), "agent1.pos_x");
+    klee_make_symbolic( &agent1.pos_z, sizeof(float), "agent1.pos_z");
+    klee_make_symbolic( &agent1.angle, sizeof(float), "agent1.angle");
+    klee_make_symbolic( &agent1.forward_step, sizeof(float), "agent1.forward_step");
+    klee_make_symbolic( &agent1.lookahead, sizeof(float), "agent1.lookahead");
+    klee_make_symbolic( &agent1.signal_choice, sizeof(TurnChoice), "agent1.signal_choice");
+    klee_make_symbolic( &agent1.turn_choice, sizeof(TurnChoice), "agent1.turn_choice");
+    klee_make_symbolic( &agent1.initial_direction, sizeof(Direction), "agent1.initial_direction");
+    klee_make_symbolic( &agent1.intersection_arrival, sizeof(int), "agent1.intersection_arrival");
+    klee_make_symbolic( &agent1.patience, sizeof(int), "agent1.patience");
+    klee_make_symbolic( &agent1.step_count, sizeof(int), "agent1.step_count");
+    klee_assume( agent1.pos_x == 1.597 ); // Concrete Val 
+    klee_assume( agent1.pos_z == 2.275 ); // Concrete Val 
+    klee_assume( agent1.angle == 1.571 ); // Concrete Val 
     klee_assume( agent1.forward_step == 0.45 ); // Concrete Val 
-    klee_assume( agent1.signal_choice == "Straight" ); // Concrete Val 
-    klee_assume( agent1.turn_choice == "Straight" ); // Concrete Val 
+    klee_assume( agent1.turn_choice == "Left" ); // Concrete Val 
     klee_assume( agent1.lookahead == 0.585); // Concrete State Val 
-    klee_assume( agent1.intersection_arrival == 1); // Concrete State Val 
-    klee_assume( agent1.initial_direction == 1); // Concrete State Val 
+    klee_assume( agent1.intersection_arrival == 2); // Concrete State Val 
+    klee_assume( agent1.initial_direction == 0); // Concrete State Val 
     klee_assume( agent1.patience == 0); // Concrete State Val 
     klee_assume( agent1.step_count == 0); // Concrete State Val 
-    klee_assume( agent1.angle == 270 ); // Symbolic Value
+    klee_assume( agent1.signal_choice == LEFT ); // Symbolic Value
     agent1.prev_pos_z = agent1.pos_x; // Calculated Variable
     agent1.prev_pos_z = agent1.pos_z; // Calculated Variable
     agent1.direction = get_direction(agent1.angle/3.14*180); // Calculated Variable
@@ -120,28 +120,28 @@ int main(int argc, char **argv) {
     // Agent2 Information:
     EnvironmentAgent agent2 = agents->agents_array[2];
     agent2.id = 2;
-    klee_make_symbolic( &agent2.pos_x, sizeof(float), "pos_x");
-    klee_make_symbolic( &agent2.pos_z, sizeof(float), "pos_z");
-    klee_make_symbolic( &agent2.angle, sizeof(float), "angle");
-    klee_make_symbolic( &agent2.forward_step, sizeof(float), "forward_step");
-    klee_make_symbolic( &agent2.lookahead, sizeof(float), "lookahead");
-    klee_make_symbolic( &agent2.signal_choice, sizeof(TurnChoice), "signal_choice");
-    klee_make_symbolic( &agent2.turn_choice, sizeof(TurnChoice), "turn_choice");
-    klee_make_symbolic( &agent2.initial_direction, sizeof(Direction), "initial_direction");
-    klee_make_symbolic( &agent2.intersection_arrival, sizeof(int), "intersection_arrival");
-    klee_make_symbolic( &agent2.patience, sizeof(int), "patience");
-    klee_make_symbolic( &agent2.step_count, sizeof(int), "step_count");
-    klee_assume( agent2.pos_x == 0.622 ); // Concrete Val 
-    klee_assume( agent2.pos_z == 1.6 ); // Concrete Val 
-    klee_assume( agent2.angle == 6.283 ); // Concrete Val 
+    klee_make_symbolic( &agent2.pos_x, sizeof(float), "agent2.pos_x");
+    klee_make_symbolic( &agent2.pos_z, sizeof(float), "agent2.pos_z");
+    klee_make_symbolic( &agent2.angle, sizeof(float), "agent2.angle");
+    klee_make_symbolic( &agent2.forward_step, sizeof(float), "agent2.forward_step");
+    klee_make_symbolic( &agent2.lookahead, sizeof(float), "agent2.lookahead");
+    klee_make_symbolic( &agent2.signal_choice, sizeof(TurnChoice), "agent2.signal_choice");
+    klee_make_symbolic( &agent2.turn_choice, sizeof(TurnChoice), "agent2.turn_choice");
+    klee_make_symbolic( &agent2.initial_direction, sizeof(Direction), "agent2.initial_direction");
+    klee_make_symbolic( &agent2.intersection_arrival, sizeof(int), "agent2.intersection_arrival");
+    klee_make_symbolic( &agent2.patience, sizeof(int), "agent2.patience");
+    klee_make_symbolic( &agent2.step_count, sizeof(int), "agent2.step_count");
+    klee_assume( agent2.pos_x == 1.97 ); // Concrete Val 
+    klee_assume( agent2.angle == 3.142 ); // Concrete Val 
     klee_assume( agent2.forward_step == 0.51 ); // Concrete Val 
-    klee_assume( agent2.turn_choice == "Right" ); // Concrete Val 
+    klee_assume( agent2.signal_choice == "Straight" ); // Concrete Val 
+    klee_assume( agent2.turn_choice == "Straight" ); // Concrete Val 
     klee_assume( agent2.lookahead == 0.585); // Concrete State Val 
-    klee_assume( agent2.intersection_arrival == 2); // Concrete State Val 
-    klee_assume( agent2.initial_direction == 2); // Concrete State Val 
+    klee_assume( agent2.intersection_arrival == 1); // Concrete State Val 
+    klee_assume( agent2.initial_direction == 3); // Concrete State Val 
     klee_assume( agent2.patience == 0); // Concrete State Val 
     klee_assume( agent2.step_count == 0); // Concrete State Val 
-    klee_assume( agent2.signal_choice == RIGHT || agent2.signal_choice == LEFT || agent2.signal_choice == STRAIGHT); // Symbolic Range
+    klee_assume( agent2.pos_z >= 1.320 && agent2.pos_z <= 1.5); // Symbolic Range
     agent2.prev_pos_z = agent2.pos_x; // Calculated Variable
     agent2.prev_pos_z = agent2.pos_z; // Calculated Variable
     agent2.direction = get_direction(agent2.angle/3.14*180); // Calculated Variable
@@ -2258,5 +2258,7 @@ int main(int argc, char **argv) {
     int mrow = get_learning_state(info, 0);
 
     // Invoke proceed
-    bool will_proceed = proceed_model(agents->agents_array[0].q_table, mrow);
+    bool will_proceed;
+    klee_make_symbolic( &will_proceed, sizeof(bool), "will_proceed");
+    will_proceed = proceed_model(agents->agents_array[0].q_table, mrow);
 }
