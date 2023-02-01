@@ -9,7 +9,8 @@ import CounterfactualValue from "./CounterfactualValue.js";
 
 import ValueType from "./ValueType.js";
 
-import './AgentCounterfactual.css';
+import "./valuetype.css"
+import "../environment/Buttons.css"
 
 // Agent Component (gets rendered in app)
 class AddCounterfactual extends React.Component {
@@ -321,7 +322,7 @@ class AddCounterfactual extends React.Component {
     }
 
     return (
-            <div>
+            <div class = 'value-style'>
                 {/* Render */}
                 <CounterfactualType  is_pos_x={this.state.is_pos_x}
                             is_pos_z={this.state.is_pos_z}
@@ -337,8 +338,9 @@ class AddCounterfactual extends React.Component {
                             set_value_type={this.set_value_type}
                 />
                 {input_component}
-
-                <button onClick= {this.handleClick}> Add Counterfactual  </button>
+                <div class = 'Buttons'> 
+                <button class = 'addcounterfac' onClick= {this.handleClick}> Add Counterfactual  </button>
+                </div>
              </div>
              
           );

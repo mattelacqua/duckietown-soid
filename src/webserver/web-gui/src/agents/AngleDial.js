@@ -4,6 +4,8 @@ import React from "react";
 // Import the circular slider
 import CircularSlider from '@fseehawer/react-circular-slider'
 
+import './AngleDial.css'
+
 // Component for AngleDial (rendered from Agent)
 class AngleDial extends React.Component {
 
@@ -45,9 +47,8 @@ class AngleDial extends React.Component {
   render() {
     const color = this.props.agent.color
     return (
-      <div>
-        <p> Angle Dial </p>
-        <CircularSlider
+      <div class= 'angle-dialwrap'>
+          <CircularSlider
           label={this.props.agent.agent_id}
           labelColor={color}
           labelBottom={true}
@@ -65,7 +66,7 @@ class AngleDial extends React.Component {
           dataIndex={this.props.agent.angle_deg}
           onChange={value => {this.handleChange(value)}}
         />
-      </div>
+       </div>
     )
   } // End Render
 } // End Class

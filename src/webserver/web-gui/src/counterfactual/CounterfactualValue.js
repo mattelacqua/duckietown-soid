@@ -1,6 +1,8 @@
 // Import React
 import React from "react";
 
+import './valuetype.css'
+
 // Agent Component (gets rendered in app)
 class CounterfactualValue extends React.Component {
 
@@ -16,7 +18,7 @@ class CounterfactualValue extends React.Component {
   render() {
 
     return (
-            <div>
+            <div class = 'single-value'>
               <form>
                 <label>
                   {this.props.label_string}:   

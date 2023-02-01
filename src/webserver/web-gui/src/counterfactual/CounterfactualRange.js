@@ -1,6 +1,8 @@
 // Import React
 import React from "react";
 
+import './valuetype.css'
+
 // Agent Component (gets rendered in app)
 class CounterfactualRange extends React.Component {
 
@@ -17,7 +19,7 @@ class CounterfactualRange extends React.Component {
   render() {
 
     return (
-            <div>
+            <div class = 'value-style'>
               <form>
                 <label>
                   Low bound {'(MIN for min possible value)'}:   
@@ -30,6 +32,7 @@ class CounterfactualRange extends React.Component {
               />
                 </label>  
               </form>
+              <div class = 'value-top'>
               <form>
                 <label>
                   High bound {'(MAX for max possible value)'}:   
@@ -42,6 +45,7 @@ class CounterfactualRange extends React.Component {
                   />
                 </label>  
               </form>
+              </div>
             </div>
           );
     }

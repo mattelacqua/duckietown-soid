@@ -2,6 +2,8 @@ import React from "react";
 
 import Select from 'react-select';
 
+import './valuetype.css'
+
 // Component to spit out agent information
 class ValueType extends React.Component {
 
@@ -34,7 +36,7 @@ class ValueType extends React.Component {
     ];
 
     return( 
-      <div>
+      <div class = 'value-style'>
         <p> <br />Value Type: </p>
         <Select
           options={options} // Options to display in the dropdown

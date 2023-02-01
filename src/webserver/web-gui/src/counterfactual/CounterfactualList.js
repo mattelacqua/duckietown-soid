@@ -3,6 +3,8 @@ import React from "react";
 import CounterfactualInfo from "./CounterfactualInfo.js"
 import DeleteCounterfactual from "./DeleteCounterfactual.js"
 
+import './valuetype.css'
+
 // Agent Component (gets rendered in app)
 class CounterfactualList extends React.Component {
 
@@ -17,7 +19,7 @@ class CounterfactualList extends React.Component {
   render() {
     return (
             this.props.agent.counterfactuals.map((counterfactual, index) => (
-              <div>
+              <div class = 'value-style'>
               <CounterfactualInfo counterfactual={counterfactual}
                           color={this.props.agent.color} />
 

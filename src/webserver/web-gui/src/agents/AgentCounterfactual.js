@@ -1,5 +1,5 @@
 // Import style
-import '../counterfactual/AgentCounterfactual.css';
+import './AgentCounterfactual.css';
 // Import React
 import React from "react";
 
