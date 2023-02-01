@@ -9,6 +9,7 @@ import os
 import signal
 import time
 from webserver import counterfactual as cf
+#from webserver import soid_query as sq 
 
 def handle_input(env, gui_input):
     # If its a state update
@@ -105,8 +106,7 @@ def handle_input(env, gui_input):
         print(json.dumps(query_blob, indent=2))
 
         klee_file = cf.generate_klee_file(query_blob)
-        soid_query = cf.generate_soid_query(query_blob)
-        soid_result = cf.invoke_soid(soid_query, klee_file)
+        #soid_result = sq.invoke_soid(query_blob, klee_file)
         
         
         env.state = 'query_result'

@@ -1,18 +1,8 @@
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 180}
+{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 360}
+{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 90}
 {"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 270}
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 180}
-{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 270}
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 180}
-{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 270}
-{"kind": "change", "change": "pos", "agent_id": "0", "pos_x": 1.605, "pos_z": 2.315}
-{"kind": "change", "change": "pos", "agent_id": "0", "pos_x": 1.183, "pos_z": 1.712}
-{"kind": "change", "change": "pos", "agent_id": "0", "pos_x": 1.183, "pos_z": 1.712}
-{"kind": "change", "change": "pos", "agent_id": "0", "pos_x": 1.623, "pos_z": 2.167}
-{"kind": "change", "change": "pos", "agent_id": "2", "pos_x": 1.343, "pos_z": 1.071}
-{"kind": "change", "change": "pos", "agent_id": "2", "pos_x": 1.343, "pos_z": 0.363}
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 180}
-{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 270}
+{"kind": "change", "change": "pos", "agent_id": "1", "pos_x": 1.605, "pos_z": 2.044}
+{"kind": "change", "change": "pos", "agent_id": "1", "pos_x": 1.617, "pos_z": 2.309}
+{"kind": "change", "change": "pos", "agent_id": "1", "pos_x": 1.594, "pos_z": 1.853}
+{"kind": "change", "change": "pos", "agent_id": "0", "pos_x": 0.617, "pos_z": 1.582}
+{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 274}
