@@ -22,8 +22,6 @@
   touch-action: manipulation;
   white-space: nowrap;
   margin-right: 1%;
-  margin-bottom: 10px;
-  margin-top: 20px;
 }
 
 .Buttons button:focus:not(:focus-visible):not(.focus-visible) {
@@ -55,21 +53,38 @@
 
 .add_agent {
     background-color: blue!important;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
 
 .resume {
     background-color: green!important;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
 
 .pause {
     background-color: rgb(211, 133, 17)!important;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
 
 .quit {
     background-color: red!important;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
 
 .query {
   background-color: violet!important;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.addcounterfac {
+  background-color: mediumslateblue!important;
+  margin-top: 10px;
+  justify-content: center;
+  align-items: center;
 }
 

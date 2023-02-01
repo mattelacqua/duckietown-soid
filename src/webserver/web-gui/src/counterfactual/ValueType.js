@@ -34,7 +34,7 @@ class ValueType extends React.Component {
     ];
 
     return( 
-      <div>
+      <div class = 'value-style'>
         <p> <br />Value Type: </p>
         <Select
           options={options} // Options to display in the dropdown

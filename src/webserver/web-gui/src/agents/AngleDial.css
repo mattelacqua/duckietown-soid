@@ -1,13 +1,13 @@
-.angleDialWrap {
+.angle-dialwrap {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
-    margin-bottom: 2em;
-    margin-right: 2em;
-    margin-left: 2em;
-    padding-left: 2em;
-    padding-right: 2em;
-    padding-top: 2em;
-    padding-bottom: 2em;
-    overflow:hidden;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    float: left;
+    overflow: hidden;
 }

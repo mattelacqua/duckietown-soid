@@ -29,6 +29,7 @@ class AgentMap extends React.Component {
 
     this.state = {
       car_radius:0,
+      is_dragging: false,
       socket: props.socket,
     }; // End state
   }
@@ -45,6 +46,7 @@ class AgentMap extends React.Component {
           'x': value.x,
           'z': value.y,
         });
+      this.setState({is_dragging: false,});
   }
 
   update_point_size(chart, size){
@@ -53,6 +55,15 @@ class AgentMap extends React.Component {
     const tile_scale = area / tile_area;
     const car_radius =  tile_scale * 1.5;
     this.setState({car_radius: car_radius});
+  }
+
+  // Check if we should update
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.is_dragging) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   render() {
@@ -107,9 +118,12 @@ class AgentMap extends React.Component {
           dragX: true,
           round: 3,
           showTooltip: true,
-          onDragStart:function (e, datasetIndex, index, value) {},
+          onDragStart:function (e, datasetIndex, index, value) {
+            this.setState({is_dragging: true,});
+          },
           onDrag: function (e, datasetIndex, index, value) {
             e.target.style.cursor = 'grabbing';
+
           },
           onDragEnd: this.update_agent_pos,
         }, // End drag Data
