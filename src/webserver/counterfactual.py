@@ -134,6 +134,7 @@ def generate_klee_file(query_blob):
     klee_file.write(f'    EnvironmentAgentArray *agents = malloc(sizeof(EnvironmentAgentArray));\n')
     klee_file.write(f"    agents->num_agents = {environment['num_agents']};")
     klee_file.write("    info->agents = *agents;")
+
     
     agents = query["agents"]
     # Initialize each agent
@@ -143,33 +144,33 @@ def generate_klee_file(query_blob):
         klee_file.write(f'    EnvironmentAgent agent{i} = agents->agents_array[{i}];\n')
         klee_file.write(f'    agent{i}.id = { agent["concrete"]["id"] };\n')
         # Position
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.pos_x, sizeof(float), "pos_x");\n')
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.pos_z, sizeof(float), "pos_z");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.pos_x, sizeof(float), "agent{i}.pos_x");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.pos_z, sizeof(float), "agent{i}.pos_z");\n')
         
         #angle
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.angle, sizeof(float), "angle");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.angle, sizeof(float), "agent{i}.angle");\n')
         
         # Forward Step
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.forward_step, sizeof(float), "forward_step");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.forward_step, sizeof(float), "agent{i}.forward_step");\n')
         
         # Lookahead
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.lookahead, sizeof(float), "lookahead");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.lookahead, sizeof(float), "agent{i}.lookahead");\n')
         
         # signal_turn
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.signal_choice, sizeof(TurnChoice), "signal_choice");\n')
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.turn_choice, sizeof(TurnChoice), "turn_choice");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.signal_choice, sizeof(TurnChoice), "agent{i}.signal_choice");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.turn_choice, sizeof(TurnChoice), "agent{i}.turn_choice");\n')
         
         # Initial direction
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.initial_direction, sizeof(Direction), "initial_direction");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.initial_direction, sizeof(Direction), "agent{i}.initial_direction");\n')
         
         # Intersection_arrival
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.intersection_arrival, sizeof(int), "intersection_arrival");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.intersection_arrival, sizeof(int), "agent{i}.intersection_arrival");\n')
         
         # patience
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.patience, sizeof(int), "patience");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.patience, sizeof(int), "agent{i}.patience");\n')
         
         # Step count
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.step_count, sizeof(int), "step_count");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}.step_count, sizeof(int), "agent{i}.step_count");\n')
         
         # If concrete is null, then we don't do this, as there will be a symbolic value.
         # concrete_pos_x
@@ -395,7 +396,10 @@ def generate_klee_file(query_blob):
     klee_file.write("    int mrow = get_learning_state(info, 0);\n")
 
     klee_file.write("\n    // Invoke proceed\n")
-    klee_file.write("    bool will_proceed = proceed_model(agents->agents_array[0].q_table, mrow);\n")
+    
+    klee_file.write(f'    bool will_proceed;\n')
+    klee_file.write(f'    klee_make_symbolic( &will_proceed, sizeof(bool), "will_proceed");\n')
+    klee_file.write("    will_proceed = proceed_model(agents->agents_array[0].q_table, mrow);\n")
 
 
 
