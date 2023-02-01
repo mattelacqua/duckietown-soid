@@ -7,7 +7,6 @@ import React from "react";
 import AddCounterfactual from '../counterfactual/AddCounterfactual.js'
 import CounterfactualList from '../counterfactual/CounterfactualList'
 
-import '.AgentCounterfactual.css'
 
 // Agent Component (gets rendered in app)
 class AgentCounterfactual extends React.Component {
