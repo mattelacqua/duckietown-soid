@@ -19,7 +19,7 @@ class IntersectionArrival extends React.Component {
             <div>
               <form>
                 <label>
-                  {"Intersection Arrival"}:   
+                  {"Intersection Arrival Order"}:   
                   <input type="number" 
                         value={this.state.value}
                         onChange = {(e) => {

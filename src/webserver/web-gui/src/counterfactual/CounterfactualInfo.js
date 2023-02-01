@@ -18,10 +18,10 @@ class CounterfactualInfo extends React.Component {
     // Get the values first
     let values;
     if (counterfactual.is_value){
-      values = "Value:" + counterfactual.value.toString();
+      values = "Value:" + counterfactual.value;
     }
     else if (counterfactual.is_range){
-      values = counterfactual.range.low_bound.toString() + " to  " + counterfactual.range.high_bound.toString();
+      values = counterfactual.range.low_bound + " to  " + counterfactual.range.high_bound;
     }   
 
     let cf;

@@ -200,14 +200,6 @@ def generate_klee_file(query_blob):
         if agent["concrete"]["turn_choice"]:
             klee_file.write(f'    klee_assume( agent{i}.turn_choice == \"{ agent["concrete"]["turn_choice"] }\" ); // Concrete Val \n')
 
-        # concrete_initial_direction
-        if agent["concrete"]["initial_direction"]:
-            klee_file.write(f'    klee_assume( agent{i}.initial_direction == { get_dl_direction(agent["concrete"]["initial_direction"]) } ); // Concrete Val \n')
-
-        # concrete_intersection_arrival
-        if agent["concrete"]["intersection_arrival"]:
-            klee_file.write(f'    klee_assume( agent{i}.intersection_arrival == { agent["concrete"]["intersection_arrival"] }); // Concrete Val \n')
-            
         # Get stateful things
         # Lookhead
         klee_file.write(f'    klee_assume( agent{i}.lookahead == { agent["concrete"]["lookahead"] }); // Concrete State Val \n')

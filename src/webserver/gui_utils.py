@@ -109,7 +109,9 @@ def handle_input(env, gui_input):
         #soid_result = sq.invoke_soid(query_blob, klee_file)
         
         
-        env.state = 'query_result'
+        #env.state = 'query_result'
+        env.state = 'pause'
+        soid_result = None
         return env.state, soid_result
         
 

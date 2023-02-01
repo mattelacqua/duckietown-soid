@@ -45,7 +45,7 @@ class InitialDirection extends React.Component {
         <p> <br />Initial Direction: </p>
         <Select
           options={options} // Options to display in the dropdown
-          defaultValue={this.props.agent.initial_direction}
+          defaultValue={{value: this.props.agent.initial_direction.toString(), label: this.props.direction_label}}
           onChange= {new_option => {this.handleChoice(new_option.value)}}
           />
       </div>);

@@ -171,7 +171,6 @@ class Agent():
             'is_value:' : False, 
             'is_range:' : False, 
             'value:' : 0.0,
-            'initial_direction:' : '',
             'range:' : range_dict,
         }
 

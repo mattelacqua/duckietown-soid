@@ -27,6 +27,20 @@ class Agent extends React.Component {
 
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)
   render() {
+    let direction_label;
+    if (this.props.agent.initial_direction === 0){
+      direction_label = 'N'
+    }
+    else if (this.props.agent.initial_direction === 1){
+      direction_label = 'S'
+    }
+    else if (this.props.agent.initial_direction === 2){
+      direction_label = 'E'
+    }
+    else if (this.props.agent.initial_direction === 3){
+      direction_label = 'W'
+    }
+
     return (
       <div>
         <AgentInfo  agent={this.props.agent} />
@@ -35,6 +49,7 @@ class Agent extends React.Component {
                             socket={this.props.socket} />
 
         <InitialDirection agent={this.props.agent}
+                          direction_label={direction_label}
                           socket={this.props.socket} />
         <AgentCounterfactual agent={this.props.agent}
                     socket={this.props.socket} />

@@ -18,8 +18,8 @@ class AgentInfo extends React.Component {
     const color = this.props.agent.color;
     const collapse_options = {
         collapse: true,
-        collapseText: '<------ show more ------>',
-        expandText: '-----> show less <------',
+        collapseText: '<----------- show more ----------->',
+        expandText: '----------> show less <-----------',
         minHeight: 100,
         maxHeight: 400,
         display: 'float',

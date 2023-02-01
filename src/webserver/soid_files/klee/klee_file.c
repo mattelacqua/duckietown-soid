@@ -31,17 +31,17 @@ int main(int argc, char **argv) {
     klee_make_symbolic( &agent0.intersection_arrival, sizeof(int), "intersection_arrival");
     klee_make_symbolic( &agent0.patience, sizeof(int), "patience");
     klee_make_symbolic( &agent0.step_count, sizeof(int), "step_count");
-    klee_assume( agent0.pos_x == 0.136 ); // Concrete Val 
-    klee_assume( agent0.pos_z == 1.609 ); // Concrete Val 
-    klee_assume( agent0.angle == 6.283 ); // Concrete Val 
+    klee_assume( agent0.pos_x == 1.619 ); // Concrete Val 
+    klee_assume( agent0.angle == 1.571 ); // Concrete Val 
     klee_assume( agent0.forward_step == 0.51 ); // Concrete Val 
     klee_assume( agent0.signal_choice == "Left" ); // Concrete Val 
     klee_assume( agent0.turn_choice == "Left" ); // Concrete Val 
-    klee_assume( agent0.initial_direction == 2 ); // Concrete Val 
-    klee_assume( agent0.intersection_arrival == -1); // Concrete Val 
-    klee_assume( agent0.lookahead == 0.585); // Concrete Val 
-    klee_assume( agent0.patience == 0); // Concrete Val 
-    klee_assume( agent0.step_count == 0); // Concrete Val 
+    klee_assume( agent0.lookahead == 0.585); // Concrete State Val 
+    klee_assume( agent0.intersection_arrival == 3); // Concrete State Val 
+    klee_assume( agent0.initial_direction == 0); // Concrete State Val 
+    klee_assume( agent0.patience == 0); // Concrete State Val 
+    klee_assume( agent0.step_count == 0); // Concrete State Val 
+    klee_assume( agent0.pos_z == 2.478 ); // Symbolic Value
     agent0.prev_pos_z = agent0.pos_x; // Calculated Variable
     agent0.prev_pos_z = agent0.pos_z; // Calculated Variable
     agent0.direction = get_direction(agent0.angle/3.14*180); // Calculated Variable
@@ -81,17 +81,17 @@ int main(int argc, char **argv) {
     klee_make_symbolic( &agent1.intersection_arrival, sizeof(int), "intersection_arrival");
     klee_make_symbolic( &agent1.patience, sizeof(int), "patience");
     klee_make_symbolic( &agent1.step_count, sizeof(int), "step_count");
-    klee_assume( agent1.pos_x == 1.609 ); // Concrete Val 
-    klee_assume( agent1.pos_z == 2.839 ); // Concrete Val 
-    klee_assume( agent1.angle == 1.571 ); // Concrete Val 
+    klee_assume( agent1.pos_x == 1.361 ); // Concrete Val 
+    klee_assume( agent1.pos_z == 1.119 ); // Concrete Val 
     klee_assume( agent1.forward_step == 0.45 ); // Concrete Val 
-    klee_assume( agent1.signal_choice == "Right" ); // Concrete Val 
-    klee_assume( agent1.turn_choice == "Right" ); // Concrete Val 
-    klee_assume( agent1.initial_direction == 0 ); // Concrete Val 
-    klee_assume( agent1.intersection_arrival == -1); // Concrete Val 
-    klee_assume( agent1.lookahead == 0.585); // Concrete Val 
-    klee_assume( agent1.patience == 0); // Concrete Val 
-    klee_assume( agent1.step_count == 0); // Concrete Val 
+    klee_assume( agent1.signal_choice == "Straight" ); // Concrete Val 
+    klee_assume( agent1.turn_choice == "Straight" ); // Concrete Val 
+    klee_assume( agent1.lookahead == 0.585); // Concrete State Val 
+    klee_assume( agent1.intersection_arrival == 1); // Concrete State Val 
+    klee_assume( agent1.initial_direction == 1); // Concrete State Val 
+    klee_assume( agent1.patience == 0); // Concrete State Val 
+    klee_assume( agent1.step_count == 0); // Concrete State Val 
+    klee_assume( agent1.angle == 270 ); // Symbolic Value
     agent1.prev_pos_z = agent1.pos_x; // Calculated Variable
     agent1.prev_pos_z = agent1.pos_z; // Calculated Variable
     agent1.direction = get_direction(agent1.angle/3.14*180); // Calculated Variable
@@ -131,17 +131,17 @@ int main(int argc, char **argv) {
     klee_make_symbolic( &agent2.intersection_arrival, sizeof(int), "intersection_arrival");
     klee_make_symbolic( &agent2.patience, sizeof(int), "patience");
     klee_make_symbolic( &agent2.step_count, sizeof(int), "step_count");
-    klee_assume( agent2.pos_x == 2.373 ); // Concrete Val 
-    klee_assume( agent2.pos_z == 1.316 ); // Concrete Val 
-    klee_assume( agent2.angle == 3.142 ); // Concrete Val 
-    klee_assume( agent2.forward_step == 0.37 ); // Concrete Val 
-    klee_assume( agent2.signal_choice == "Straight" ); // Concrete Val 
-    klee_assume( agent2.turn_choice == "Straight" ); // Concrete Val 
-    klee_assume( agent2.initial_direction == 3 ); // Concrete Val 
-    klee_assume( agent2.intersection_arrival == -1); // Concrete Val 
-    klee_assume( agent2.lookahead == 0.585); // Concrete Val 
-    klee_assume( agent2.patience == 0); // Concrete Val 
-    klee_assume( agent2.step_count == 0); // Concrete Val 
+    klee_assume( agent2.pos_x == 0.622 ); // Concrete Val 
+    klee_assume( agent2.pos_z == 1.6 ); // Concrete Val 
+    klee_assume( agent2.angle == 6.283 ); // Concrete Val 
+    klee_assume( agent2.forward_step == 0.51 ); // Concrete Val 
+    klee_assume( agent2.turn_choice == "Right" ); // Concrete Val 
+    klee_assume( agent2.lookahead == 0.585); // Concrete State Val 
+    klee_assume( agent2.intersection_arrival == 2); // Concrete State Val 
+    klee_assume( agent2.initial_direction == 2); // Concrete State Val 
+    klee_assume( agent2.patience == 0); // Concrete State Val 
+    klee_assume( agent2.step_count == 0); // Concrete State Val 
+    klee_assume( agent2.signal_choice == RIGHT || agent2.signal_choice == LEFT || agent2.signal_choice == STRAIGHT); // Symbolic Range
     agent2.prev_pos_z = agent2.pos_x; // Calculated Variable
     agent2.prev_pos_z = agent2.pos_z; // Calculated Variable
     agent2.direction = get_direction(agent2.angle/3.14*180); // Calculated Variable

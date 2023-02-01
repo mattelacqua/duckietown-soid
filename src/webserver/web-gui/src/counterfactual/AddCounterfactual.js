@@ -27,8 +27,6 @@ class AddCounterfactual extends React.Component {
       is_value: false,
       is_range: false,
       value: 0.0,
-      initial_direction: '',
-      intersection_arrival: this.props.agent.intersection_arrival,
       range: {
         turn_choices: [],
         low_bound: 0.0,
