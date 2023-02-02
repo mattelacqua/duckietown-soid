@@ -23,6 +23,7 @@ class SingleDirection extends React.Component {
     });
     
     // Do the callback to set the type
+    console.log('direction', direction);
     this.props.set_single_direction(direction, this.props.signal_or_turn);
   }
   
