@@ -1,3 +1,4 @@
+#include <string.h>
 #include "/tools/soid/soid/soid/soidlib/soidlib.h"
 #include "../../../gym_duckietown/decision_logic/decision_logic.c"
 

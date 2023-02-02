@@ -128,6 +128,7 @@ def generate_klee_file(query_blob):
     # open klee file
     klee_file = open((klee_prefix + "klee_file.c"), 'w', encoding="utf-8")
     # Imports
+    klee_file.write("#include <string.h>\n")
     klee_file.write("#include \"/tools/soid/soid/soid/soidlib/soidlib.h\"\n")
     klee_file.write("#include \"../../../gym_duckietown/decision_logic/decision_logic.c\"\n\n")
     klee_file.write("int main(int argc, char **argv) {\n")
