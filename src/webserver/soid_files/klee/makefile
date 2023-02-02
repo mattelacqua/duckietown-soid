@@ -1,17 +1,18 @@
-cc=clang++-9 -std=c++14
-
+cc=/tools/soid/soid/llvm-project/release/bin/clang -std=c99
+opt=/tools/soid/soid/llvm-project/release/bin/opt
+link=/tools/soid/soid/llvm-project/release/bin/llvm-link
 BC=./inter.bc
 
-KLEE=../../../klee/include/klee
-KEXEC=../../../klee/build/bin/klee
-PRE-LIB-KLEE=-L ../../../klee/build/lib/
+KLEE=/tools/soid/soid/klee-float/include/klee
+KEXEC=/tools/soid/soid/klee-float/build/bin/klee
+PRE-LIB-KLEE=-L /tools/soid/soid/klee-float/build/lib/
 POST-LIB-KLEE=-lkleeRuntest
 
-SOIDLIB=../../../soid/soidlib
+SOIDLIB=/tools/soid/soid/soid/soidlib
 
 symbolic:
-	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone ./klee_file.c -o $(BC)
-	$(KEXEC) -libc=uclibc -libcxx -silent-klee-assume --write-smt2s $(BC)
+	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o $(BC)
+	$(KEXEC) -silent-klee-assume -write-smt2s -use-merge $(BC)
 
 clean:
 	rm -f ./inter.bc

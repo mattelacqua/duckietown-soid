@@ -1,7 +1,28 @@
 import sys
 import os
 import json
-from gym_duckietown.dl_utils import *
+#from gym_duckietown.dl_utils import *
+
+def get_dl_turn_choice(choice):
+    print(f"Printing choice {choice}")
+    if choice == "Straight":
+        return "STRAIGHT"
+    if choice == "Left":
+        return "LEFT" 
+    if choice == "Right":
+        return "RIGHT" 
+    return choice
+
+def get_dl_direction(direction):
+    if direction == 'N':
+        return 'NORTH'
+    if direction == 'S':
+        return 'SOUTH'
+    if direction == 'E':
+        return 'EAST'
+    if direction == 'W':
+        return 'WEST'
+    return direction
 
 # get the query blob from the query info
 def get_query_blob(env, query_info):
@@ -107,8 +128,8 @@ def generate_klee_file(query_blob):
     # open klee file
     klee_file = open((klee_prefix + "klee_file.c"), 'w', encoding="utf-8")
     # Imports
-    klee_file.write("#include \"./src/gym_duckietown/decision_logic/types.c\"\n")
-    klee_file.write("#include \"./src/gym_duckietown/decision_logic/decision_logic.c\"\n\n")
+    klee_file.write("#include \"/tools/soid/soid/soid/soidlib/soidlib.h\"\n")
+    klee_file.write("#include \"../../../gym_duckietown/decision_logic/decision_logic.c\"\n\n")
     klee_file.write("int main(int argc, char **argv) {\n")
     
     # init env_info
@@ -144,78 +165,83 @@ def generate_klee_file(query_blob):
         klee_file.write(f'    EnvironmentAgent agent{i} = agents->agents_array[{i}];\n')
         klee_file.write(f'    agent{i}.id = { agent["concrete"]["id"] };\n')
         # Position
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.pos_x, sizeof(float), "agent{i}.pos_x");\n')
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.pos_z, sizeof(float), "agent{i}.pos_z");\n')
+        klee_file.write(f'    float agent{i}_pos_x, agent{i}_pos_z, agent{i}_angle, agent{i}_forward_step, agent{i}_speed, agent{i}_lookahead;\n')
+        klee_file.write(f'    int agent{i}_signal_choice, agent{i}_turn_choice, agent{i}_initial_direction, agent{i}_intersection_arrival, agent{i}_step_count, agent{i}_patience;\n')
+
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_pos_x, sizeof(float), "agent{i}_pos_x");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_pos_z, sizeof(float), "agent{i}_pos_z");\n')
         
         #angle
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.angle, sizeof(float), "agent{i}.angle");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_angle, sizeof(float), "agent{i}_angle");\n')
         
         # Forward Step
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.forward_step, sizeof(float), "agent{i}.forward_step");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_forward_step, sizeof(float), "agent{i}_forward_step");\n')
         
         # Lookahead
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.lookahead, sizeof(float), "agent{i}.lookahead");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_lookahead, sizeof(float), "agent{i}_lookahead");\n')
         
         # signal_turn
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.signal_choice, sizeof(TurnChoice), "agent{i}.signal_choice");\n')
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.turn_choice, sizeof(TurnChoice), "agent{i}.turn_choice");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_signal_choice, sizeof(TurnChoice), "agent{i}_signal_choice");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_turn_choice, sizeof(TurnChoice), "agent{i}_turn_choice");\n')
         
         # Initial direction
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.initial_direction, sizeof(Direction), "agent{i}.initial_direction");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_initial_direction, sizeof(Direction), "agent{i}_initial_direction");\n')
         
         # Intersection_arrival
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.intersection_arrival, sizeof(int), "agent{i}.intersection_arrival");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_intersection_arrival, sizeof(int), "agent{i}_intersection_arrival");\n')
         
         # patience
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.patience, sizeof(int), "agent{i}.patience");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_patience, sizeof(int), "agent{i}_patience");\n')
         
         # Step count
-        klee_file.write(f'    klee_make_symbolic( &agent{i}.step_count, sizeof(int), "agent{i}.step_count");\n')
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_step_count, sizeof(int), "agent{i}_step_count");\n')
         
         # If concrete is null, then we don't do this, as there will be a symbolic value.
         # concrete_pos_x
         if agent["concrete"]["pos_x"]:
-            klee_file.write(f'    klee_assume( agent{i}.pos_x == { agent["concrete"]["pos_x"] } ); // Concrete Val \n')
+            klee_file.write(f'    klee_assume( agent{i}_pos_x == { agent["concrete"]["pos_x"] } ); // Concrete Val \n')
 
         # concrete_pos_z
         if agent["concrete"]["pos_z"]:
-            klee_file.write(f'    klee_assume( agent{i}.pos_z == { agent["concrete"]["pos_z"] } ); // Concrete Val \n') 
+            klee_file.write(f'    klee_assume( agent{i}_pos_z == { agent["concrete"]["pos_z"] } ); // Concrete Val \n') 
 
         # concrete_angle
         if agent["concrete"]["angle"]:
-            klee_file.write(f'    klee_assume( agent{i}.angle == { agent["concrete"]["angle"] } ); // Concrete Val \n')
+            klee_file.write(f'    klee_assume( agent{i}_angle == { agent["concrete"]["angle"] } ); // Concrete Val \n')
 
         # concrete_forward_Step
         if agent["concrete"]["forward_step"]:
-            klee_file.write(f'    klee_assume( agent{i}.forward_step == { agent["concrete"]["forward_step"] } ); // Concrete Val \n')
+            klee_file.write(f'    klee_assume( agent{i}_forward_step == { agent["concrete"]["forward_step"] } ); // Concrete Val \n')
 
         # concrete_speed
         if agent["concrete"]["speed"]:
-            klee_file.write(f'    klee_assume( agent{i}.speed == { agent["concrete"]["speed"] } ); // Concrete Val \n')
+            klee_file.write(f'    klee_assume( agent{i}_speed == { agent["concrete"]["speed"] } ); // Concrete Val \n')
 
         # concrete_signal_choice
         if agent["concrete"]["signal_choice"]:
-            klee_file.write(f'    klee_assume( agent{i}.signal_choice == \"{ agent["concrete"]["signal_choice"] }\" ); // Concrete Val \n')
+            dl_value = get_dl_turn_choice(agent["concrete"]["signal_choice"])
+            klee_file.write(f'    klee_assume( agent{i}_signal_choice == { dl_value } ); // Concrete Val \n')
 
         # concrete_turn_choice
         if agent["concrete"]["turn_choice"]:
-            klee_file.write(f'    klee_assume( agent{i}.turn_choice == \"{ agent["concrete"]["turn_choice"] }\" ); // Concrete Val \n')
+            dl_value = get_dl_turn_choice(agent["concrete"]["turn_choice"])
+            klee_file.write(f'    klee_assume( agent{i}_turn_choice == { dl_value } ); // Concrete Val \n')
 
         # Get stateful things
         # Lookhead
-        klee_file.write(f'    klee_assume( agent{i}.lookahead == { agent["concrete"]["lookahead"] }); // Concrete State Val \n')
+        klee_file.write(f'    klee_assume( agent{i}_lookahead == { agent["concrete"]["lookahead"] }); // Concrete State Val \n')
         
         # intersection_arrival
-        klee_file.write(f'    klee_assume( agent{i}.intersection_arrival == { agent["state"]["intersection_arrival"] }); // Concrete State Val \n')
+        klee_file.write(f'    klee_assume( agent{i}_intersection_arrival == { agent["state"]["intersection_arrival"] }); // Concrete State Val \n')
 
         # initial_direction
-        klee_file.write(f'    klee_assume( agent{i}.initial_direction == { get_dl_direction(agent["state"]["initial_direction"])}); // Concrete State Val \n')
+        klee_file.write(f'    klee_assume( agent{i}_initial_direction == { get_dl_direction(agent["state"]["initial_direction"])}); // Concrete State Val \n')
 
         # patience
-        klee_file.write(f'    klee_assume( agent{i}.patience == { agent["state"]["patience"] }); // Concrete State Val \n')
+        klee_file.write(f'    klee_assume( agent{i}_patience == { agent["state"]["patience"] }); // Concrete State Val \n')
         
         # Stepcount
-        klee_file.write(f'    klee_assume( agent{i}.step_count == { agent["state"]["step_count"] }); // Concrete State Val \n')
+        klee_file.write(f'    klee_assume( agent{i}_step_count == { agent["state"]["step_count"] }); // Concrete State Val \n')
 
         # Handle the symbolic values
         for j in range(len(agent["symbolic"])):
@@ -223,68 +249,90 @@ def generate_klee_file(query_blob):
             # Symbolic_Pos x
             if counterfactual["is_pos_x"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}.pos_x == {counterfactual["value"]} ); // Symbolic Value\n')
+                    klee_file.write(f'    klee_assume( agent{i}_pos_x == {counterfactual["value"]} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}.pos_x >= {counterfactual["range"]["low_bound"]} && '
+                    klee_file.write(f'    klee_assume( agent{i}_pos_x >= {counterfactual["range"]["low_bound"]} && '
                     f'agent{i}.pos_x <= {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')
 
             # Symbolic_Pos z
             if counterfactual["is_pos_z"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}.pos_z == {counterfactual["value"]} ); // Symbolic Value\n')
+                    klee_file.write(f'    klee_assume( agent{i}_pos_z == {counterfactual["value"]} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}.pos_z >= {counterfactual["range"]["low_bound"]} && '
+                    klee_file.write(f'    klee_assume( agent{i}_pos_z >= {counterfactual["range"]["low_bound"]} && '
                     f'agent{i}.pos_z <= {counterfactual["range"]["high_bound"]}); // Symbolic Range\n') 
 
             # Symbolic_Angle
             if counterfactual["is_angle"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}.angle == {counterfactual["value"]} ); // Symbolic Value\n')
+                    klee_file.write(f'    klee_assume( agent{i}_angle == {counterfactual["value"]} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}.angle >= {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.angle <= {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')   
+                    klee_file.write(f'    klee_assume( agent{i}_angle >= {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}_angle <= {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')   
 
             # Symbolic_forward_step
             if counterfactual["is_forward_step"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}.is_forward_step == {counterfactual["value"]} ); // Symbolic Value\n')
+                    klee_file.write(f'    klee_assume( agent{i}_is_forward_step == {counterfactual["value"]} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}.is_forward_step >= {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.is_forward_step <= {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')
+                    klee_file.write(f'    klee_assume( agent{i}_is_forward_step >= {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}_is_forward_step <= {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')
 
             # Symbolic_speed
             if counterfactual["is_speed"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}.speed == {counterfactual["value"]} ); // Symbolic Value\n')
+                    klee_file.write(f'    klee_assume( agent{i}_speed == {counterfactual["value"]} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}.speed >= {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.speed <= {counterfactual["range"]["high_bound"]});\n')
+                    klee_file.write(f'    klee_assume( agent{i}_speed >= {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}_speed <= {counterfactual["range"]["high_bound"]});\n')
 
             # Symbolic_signal_choice
             if counterfactual["is_signalchoice"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}.signal_choice == {counterfactual["value"].upper()} ); // Symbolic Value\n')
+                    dl_value = get_dl_turn_choice(counterfactual['value'].upper())
+                    klee_file.write(f'    klee_assume( agent{i}_signal_choice == {dl_value} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}.signal_choice ==')
+                    klee_file.write(f'    klee_assume( agent{i}_signal_choice ==')
                     for k in range(len(counterfactual["range"]["turn_choices"])):
                         if k == 0:
-                            klee_file.write(f' {counterfactual["range"]["turn_choices"][0].upper()}')
+                            dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][0].upper())
+                            klee_file.write(f' {dl_value}')
                         else:
-                            klee_file.write(f' || agent{i}.signal_choice == {counterfactual["range"]["turn_choices"][k].upper()}')
+                            dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
+                            klee_file.write(f' || agent{i}_signal_choice == {dl_value}')
                     klee_file.write("); // Symbolic Range\n")
 
             # Symbolic_turn_choice
             if counterfactual["is_turnchoice"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}.turn_choice == {counterfactual["value"].upper()} ); // Symbolic Value\n')
+                    dl_value = get_dl_turn_choice(counterfactual['value'].upper())
+                    klee_file.write(f'    klee_assume( agent{i}_turn_choice == {dl_value} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}.turn_choice ==')
+                    klee_file.write(f'    klee_assume( agent{i}_turn_choice ==')
                     for k in range(len(counterfactual["range"]["turn_choices"])):
                         if k == 0:
-                            klee_file.write(f' {counterfactual["range"]["turn_choices"][0].upper()}')
+                            dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][0].upper())
+                            klee_file.write(f' {dl_value}')
                         else:
-                            klee_file.write(f' || agent{i}.turn_choice == {counterfactual["range"]["turn_choices"][k].upper()}')
+                            dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
+                            klee_file.write(f' || agent{i}_turn_choice == {dl_value}')
                     klee_file.write("); // Symbolic Range\n")
+
+        # Memcpy struct stuff
+        # floats
+        klee_file.write(f'    memcpy( &agent{i}.prev_pos_x, &agent{i}_pos_x, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memcpy( &agent{i}.prev_pos_z, &agent{i}_pos_z, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memcpy( &agent{i}.angle, &agent{i}_angle, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memcpy( &agent{i}.forward_step, &agent{i}_forward_step, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memcpy( &agent{i}.speed, &agent{i}_speed, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memcpy( &agent{i}.lookahead, &agent{i}_lookahead, sizeof(float)); // Memcopy symb -> struct\n')
+        # ints
+        klee_file.write(f'    memcpy( &agent{i}.turn_choice, &agent{i}_turn_choice, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memcpy( &agent{i}.signal_choice, &agent{i}_signal_choice, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memcpy( &agent{i}.patience, &agent{i}_patience, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memcpy( &agent{i}.intersection_arrival, &agent{i}_intersection_arrival, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memcpy( &agent{i}.initial_direction, &agent{i}_initial_direction, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memcpy( &agent{i}.step_count, &agent{i}_step_count, sizeof(int)); // Memcopy symb -> struct\n')
 
         # Seet the state for inferred variables
         # prev pos
@@ -411,16 +459,40 @@ def generate_klee_file(query_blob):
     #makefile
     makefile = open((klee_prefix + "makefile"),'w', encoding="utf-8")
     
-    makefile.write("cc=clang++-9 -std=c++14\n\n")
+    makefile.write("cc=/tools/soid/soid/llvm-project/release/bin/clang -std=c99\n")
+    makefile.write("opt=/tools/soid/soid/llvm-project/release/bin/opt\n")
+    makefile.write("link=/tools/soid/soid/llvm-project/release/bin/llvm-link\n")
+
+    # Inbetween files
+    #makefile.write("BC1=./inter1.bc\n\n")
+    #makefile.write("BC2=./inter2.bc\n\n")
+    #makefile.write("BC3=./inter3.bc\n\n")
     makefile.write("BC=./inter.bc\n\n")
-    makefile.write("KLEE=../../../klee/include/klee\n")
-    makefile.write("KEXEC=../../../klee/build/bin/klee\n")
-    makefile.write("PRE-LIB-KLEE=-L ../../../klee/build/lib/\n")
+    
+    # Paths
+    makefile.write("KLEE=/tools/soid/soid/klee-float/include/klee\n")
+    makefile.write("KEXEC=/tools/soid/soid/klee-float/build/bin/klee\n")
+    makefile.write("PRE-LIB-KLEE=-L /tools/soid/soid/klee-float/build/lib/\n")
     makefile.write("POST-LIB-KLEE=-lkleeRuntest\n\n")
-    makefile.write("SOIDLIB=../../../soid/soidlib\n\n")
+    makefile.write("SOIDLIB=/tools/soid/soid/soid/soidlib\n\n")
     makefile.write("symbolic:\n")
-    makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone ./klee_file.c -o $(BC)\n")
-    makefile.write("	$(KEXEC) -libc=uclibc -libcxx -silent-klee-assume --write-smt2s $(BC)\n")
+    
+    # Compile types.c
+    #makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 /home/mje48/duckietown-soid/src/gym_duckietown/decision_logic/types.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC1)\n")
+
+    # Compile decision_logic.c
+    #makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 /home/mje48/duckietown-soid/src/gym_duckietown/decision_logic/decision_logic.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC2)\n")
+
+    # Compile klee_file.c
+    #makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC3)\n")
+    makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o $(BC)\n")
+    
+    # link
+    #makefile.write("	$(link) $(BC1) $(BC2) $(BC2) -o $(BC) \n")
+
+    # exec klee
+    makefile.write("	$(KEXEC) -silent-klee-assume -write-smt2s -use-merge $(BC)\n")
+
     
     makefile.write("\nclean:\n")
     makefile.write("	rm -f ./inter.bc\n")
@@ -434,3 +506,7 @@ def generate_klee_file(query_blob):
     # return file_descriptor, file_path
     return None
 
+
+if __name__ == '__main__':
+    query_blob = json.load(open('src/webserver/soid_files/query_blobs/query_blob'))
+    generate_klee_file(query_blob)

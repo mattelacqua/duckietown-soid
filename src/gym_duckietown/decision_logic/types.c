@@ -1,3 +1,6 @@
+#include <stdbool.h>
+#include <stdlib.h>
+
 typedef enum {
     NO_ACTION = 0,
     STOP = 1,

@@ -174,31 +174,31 @@ def generate_soid_query(query_info):
             if tagged_cf['is_cf']:
                 counterfactual = tagged_cf['cf']
                 if counterfactual['is_pos_x']:
-                    E[f'agent{a_id}.pos_x'] = soid.soidlib.types.float(f'agent{a_id}.pos_x', pp=None, raw=None)
+                    E[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x', pp=None, raw=None)
                 if counterfactual['is_pos_z']:
-                    E[f'agent{a_id}.pos_z'] = soid.soidlib.types.float(f'agent{a_id}.pos_z', pp=None, raw=None)
+                    E[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z', pp=None, raw=None)
                 if counterfactual['is_angle']:
-                    E[f'agent{a_id}.angle'] = soid.soidlib.types.float(f'agent{a_id}.angle', pp=None, raw=None)
+                    E[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle', pp=None, raw=None)
                 if counterfactual['is_forward_step']:
-                    E[f'agent{a_id}.forward_step'] = soid.soidlib.types.float(f'agent{a_id}.forward_step', pp=None, raw=None)
+                    E[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step', pp=None, raw=None)
                 if counterfactual['is_speed']:
-                    E[f'agent{a_id}.speed'] = soid.soidlib.types.float(f'agent{a_id}.speed', pp=None, raw=None)
+                    E[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed', pp=None, raw=None)
                 if counterfactual['is_turnchoice']:
-                    E[f'agent{a_id}.turn_choice'] = soid.soidlib.types.int(f'agent{a_id}.turn_choice', pp=None, raw=None)
+                    E[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int(f'agent{a_id}_turn_choice', pp=None, raw=None)
                 if counterfactual['is_signalchoice']:
-                    E[f'agent{a_id}.signal_choice'] = soid.soidlib.types.int(f'agent{a_id}.signal_choice', pp=None, raw=None)
+                    E[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int(f'agent{a_id}_signal_choice', pp=None, raw=None)
             elif tagged_cf['is_val']:
                 val_type = tagged_cf['val_type']
                 if val_type == 'lookahead':
-                    E[f'agent{a_id}.lookahead'] = soid.soidlib.types.float(f'agent{a_id}.lookahead', pp=None, raw=None)
+                    E[f'agent{a_id}_lookahead'] = soid.soidlib.types.float(f'agent{a_id}_lookahead', pp=None, raw=None)
                 if val_type == 'intersection_arrival':
-                    E[f'agent{a_id}.intersection_arrival'] = soid.soidlib.types.int(f'agent{a_id}.intersection_arrival', pp=None, raw=None)
+                    E[f'agent{a_id}_intersection_arrival'] = soid.soidlib.types.int(f'agent{a_id}_intersection_arrival', pp=None, raw=None)
                 if val_type == 'initial_direction':
-                    E[f'agent{a_id}.initial_direction'] = soid.soidlib.types.int(f'agent{a_id}.initial_direction', pp=None, raw=None)
+                    E[f'agent{a_id}_initial_direction'] = soid.soidlib.types.int(f'agent{a_id}_initial_direction', pp=None, raw=None)
                 if val_type == 'patience':
-                    E[f'agent{a_id}.patience'] = soid.soidlib.types.int(f'agent{a_id}.patience', pp=None, raw=None)
+                    E[f'agent{a_id}_patience'] = soid.soidlib.types.int(f'agent{a_id}_patience', pp=None, raw=None)
                 if val_type == 'step_count':
-                    E[f'agent{a_id}.step_count'] = soid.soidlib.types.int(f'agent{a_id}.step_count', pp=None, raw=None)
+                    E[f'agent{a_id}_step_count'] = soid.soidlib.types.int(f'agent{a_id}_step_count', pp=None, raw=None)
         
         # declare state
         S = {}
@@ -207,31 +207,31 @@ def generate_soid_query(query_info):
             if tagged_cf['is_cf']:
                 counterfactual = tagged_cf['cf']
                 if counterfactual['is_pos_x']:
-                    S[f'agent{a_id}.pos_x'] = soid.soidlib.types.float(f'agent{a_id}.pos_x', pp=None, raw=None)
+                    S[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x', pp=None, raw=None)
                 if counterfactual['is_pos_z']:
-                    S[f'agent{a_id}.pos_z'] = soid.soidlib.types.float(f'agent{a_id}.pos_z', pp=None, raw=None)
+                    S[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z', pp=None, raw=None)
                 if counterfactual['is_angle']:
-                    S[f'agent{a_id}.angle'] = soid.soidlib.types.float(f'agent{a_id}.angle', pp=None, raw=None)
+                    S[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle', pp=None, raw=None)
                 if counterfactual['is_forward_step']:
-                    S[f'agent{a_id}.forward_step'] = soid.soidlib.types.float(f'agent{a_id}.forward_step', pp=None, raw=None)
+                    S[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step', pp=None, raw=None)
                 if counterfactual['is_speed']:
-                    S[f'agent{a_id}.speed'] = soid.soidlib.types.float(f'agent{a_id}.speed', pp=None, raw=None)
+                    S[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed', pp=None, raw=None)
                 if counterfactual['is_turnchoice']:
-                    S[f'agent{a_id}.turn_choice'] = soid.soidlib.types.int(f'agent{a_id}.turn_choice', pp=None, raw=None)
+                    S[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int(f'agent{a_id}_turn_choice', pp=None, raw=None)
                 if counterfactual['is_signalchoice']:
-                    S[f'agent{a_id}.signal_choice'] = soid.soidlib.types.int(f'agent{a_id}.signal_choice', pp=None, raw=None)
+                    S[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int(f'agent{a_id}_signal_choice', pp=None, raw=None)
             elif tagged_cf['is_val']:
                 val_type = tagged_cf['val_type']
                 if val_type == 'lookahead':
-                    S[f'agent{a_id}.lookahead'] = soid.soidlib.types.float(f'agent{a_id}.lookahead', pp=None, raw=None)
+                    S[f'agent{a_id}_lookahead'] = soid.soidlib.types.float(f'agent{a_id}_lookahead', pp=None, raw=None)
                 if val_type == 'intersection_arrival':
-                    S[f'agent{a_id}.intersection_arrival'] = soid.soidlib.types.int(f'agent{a_id}.intersection_arrival', pp=None, raw=None)
+                    S[f'agent{a_id}_intersection_arrival'] = soid.soidlib.types.int(f'agent{a_id}_intersection_arrival', pp=None, raw=None)
                 if val_type == 'initial_direction':
-                    S[f'agent{a_id}.initial_direction'] = soid.soidlib.types.int(f'agent{a_id}.initial_direction', pp=None, raw=None)
+                    S[f'agent{a_id}_initial_direction'] = soid.soidlib.types.int(f'agent{a_id}_initial_direction', pp=None, raw=None)
                 if val_type == 'patience':
-                    S[f'agent{a_id}.patience'] = soid.soidlib.types.int(f'agent{a_id}.patience', pp=None, raw=None)
+                    S[f'agent{a_id}_patience'] = soid.soidlib.types.int(f'agent{a_id}_patience', pp=None, raw=None)
                 if val_type == 'step_count':
-                    S[f'agent{a_id}.step_count'] = soid.soidlib.types.int(f'agent{a_id}.step_count', pp=None, raw=None)
+                    S[f'agent{a_id}_step_count'] = soid.soidlib.types.int(f'agent{a_id}_step_count', pp=None, raw=None)
         
         # declare behaviors
         D = {}
@@ -247,43 +247,57 @@ def generate_soid_query(query_info):
             counterfactual = tagged_cf['cf']
             if counterfactual['is_value']:
                 if counterfactual['is_pos_x']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.pos_x"], float(counterfactual['value']))
+                    return Equal( declare_type[f"agent{tagged_cf['id']}_pos_x"], float(counterfactual['value']))
                 if counterfactual['is_pos_z']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.pos_z"], float(counterfactual['value']))
+                    return Equal( declare_type[f"agent{tagged_cf['id']}_pos_z"], float(counterfactual['value']))
                 if counterfactual['is_angle']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.angle"], float(counterfactual['value']))
+                    return Equal( declare_type[f"agent{tagged_cf['id']}_angle"], float(counterfactual['value']))
                 if counterfactual['is_speed']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.speed"], float(counterfactual['value']))
+                    return Equal( declare_type[f"agent{tagged_cf['id']}_speed"], float(counterfactual['value']))
                 if counterfactual['is_forward_step']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.forward_step"], float(counterfactual['value']))
+                    return Equal( declare_type[f"agent{tagged_cf['id']}_forward_step"], float(counterfactual['value']))
                 if counterfactual['is_turnchoice']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.turn_choice"], int(counterfactual['value']))
+                    direction = counterfactual['value']
+                    if direction == "Straight":
+                        direction = 0
+                    if direction == "Left":
+                        direction = 1
+                    if direction == "Right":
+                        direction = 2
+                    return Equal( declare_type[f"agent{tagged_cf['id']}_turn_choice"], int(direction))
                 if counterfactual['is_signalchoice']:
-                    return Equal( declare_type[f"agent{tagged_cf['id']}.signal_choice"], int(counterfactual['value']))
+                    direction = counterfactual['value']
+                    if direction == "Straight":
+                        direction = 0
+                    if direction == "Left":
+                        direction = 1
+                    if direction == "Right":
+                        direction = 2
+                    return Equal( declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(direction))
             if counterfactual['is_range']:
                 low_bound = counterfactual['range']['low_bound']
                 high_bound = counterfactual['range']['high_bound']
                 turn_choices = counterfactual['range']['turn_choices']
                 if counterfactual['is_pos_x']:
                     return  And( 
-                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.pos_x"], float(low_bound)),
-                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.pos_x"], float(high_bound)))
+                            FP_GTE(declare_type[f"agent{tagged_cf['id']}_pos_x"], float(low_bound)),
+                            FP_LTE(declare_type[f"agent{tagged_cf['id']}_pos_x"], float(high_bound)))
                 if counterfactual['is_pos_z']:
                     return  And( 
-                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.pos_z"], float(low_bound)),
-                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.pos_z"], float(high_bound)))
+                            FP_GTE(declare_type[f"agent{tagged_cf['id']}_pos_z"], float(low_bound)),
+                            FP_LTE(declare_type[f"agent{tagged_cf['id']}_pos_z"], float(high_bound)))
                 if counterfactual['is_angle']:
                     return  And( 
-                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.angle"], float(low_bound)),
-                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.angle"], float(high_bound)))
+                            FP_GTE(declare_type[f"agent{tagged_cf['id']}_angle"], float(low_bound)),
+                            FP_LTE(declare_type[f"agent{tagged_cf['id']}_angle"], float(high_bound)))
                 if counterfactual['is_speed']:
                     return  And( 
-                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.speed"], float(low_bound)),
-                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.speed"], float(high_bound)))
+                            FP_GTE(declare_type[f"agent{tagged_cf['id']}_speed"], float(low_bound)),
+                            FP_LTE(declare_type[f"agent{tagged_cf['id']}_speed"], float(high_bound)))
                 if counterfactual['is_forward_step']:
                     return  And( 
-                            FP_GTE(declare_type[f"agent{tagged_cf['id']}.forward_step"], float(low_bound)),
-                            FP_LTE(declare_type[f"agent{tagged_cf['id']}.forward_step"], float(high_bound)))
+                            FP_GTE(declare_type[f"agent{tagged_cf['id']}_forward_step"], float(low_bound)),
+                            FP_LTE(declare_type[f"agent{tagged_cf['id']}_forward_step"], float(high_bound)))
                 if counterfactual['is_turnchoice']:
                     direction_formula = False
                     for direction in turn_choices:
@@ -294,10 +308,10 @@ def generate_soid_query(query_info):
                         if direction == 'Right':
                             direction = 2
                         if not direction_formula:
-                            direction_formula = Equal(declare_type[f"agent{tagged_cf['id']}.signal_choice"], int(direction))
+                            direction_formula = Equal(declare_type[f"agent{tagged_cf['id']}_turn_choice"], int(direction))
                             continue
                         direction_formula = Or (
-                            Equal(declare_type[f"agent{tagged_cf['id']}.turn_choice"], int(direction)),
+                            Equal(declare_type[f"agent{tagged_cf['id']}_turn_choice"], int(direction)),
                             direction_formula
                         )
                     return direction_formula
@@ -311,10 +325,10 @@ def generate_soid_query(query_info):
                         if direction == 'Right':
                             direction = 2
                         if not direction_formula:
-                            direction_formula = Equal(declare_type[f"agent{tagged_cf['id']}.signal_choice"], int(direction))
+                            direction_formula = Equal(declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(direction))
                             continue
                         direction_formula = Or (
-                            Equal(declare_type[f"agent{tagged_cf['id']}.signal_choice"], int(direction)),
+                            Equal(declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(direction)),
                             direction_formula
                         )
                     return direction_formula
@@ -322,15 +336,15 @@ def generate_soid_query(query_info):
             value = tagged_cf['val']
             val_type = tagged_cf['val_type']
             if val_type == 'lookahead':
-                return Equal(declare_type[f"agent{tagged_cf['id']}.lookahead"], float(value))
+                return Equal(declare_type[f"agent{tagged_cf['id']}_lookahead"], float(value))
             if val_type == 'intersection_arrival':
-                return Equal(declare_type[f"agent{tagged_cf['id']}.intersection_arrival"], int(value))
+                return Equal(declare_type[f"agent{tagged_cf['id']}_intersection_arrival"], int(value))
             if val_type == 'initial_direction':
-                return Equal(declare_type[f"agent{tagged_cf['id']}.initial_direction"], int(value))
+                return Equal(declare_type[f"agent{tagged_cf['id']}_initial_direction"], int(value))
             if val_type == 'patience':
-                return Equal(declare_type[f"agent{tagged_cf['id']}.patience"], int(value))
+                return Equal(declare_type[f"agent{tagged_cf['id']}_patience"], int(value))
             if val_type == 'step_count':
-                return Equal(declare_type[f"agent{tagged_cf['id']}.step_count"], int(value))
+                return Equal(declare_type[f"agent{tagged_cf['id']}_step_count"], int(value))
 
     def encode(declare_type, tagged_cf_list):
         formula = None
@@ -338,7 +352,7 @@ def generate_soid_query(query_info):
             constraint = get_constraint(declare_type, tagged_cf)
             print(f" Constraint {constraint}")
             print(f" Constraint.sort {constraint.sort()}")
-            if not formula:
+            if formula == None:
                 formula = constraint
                 continue
 

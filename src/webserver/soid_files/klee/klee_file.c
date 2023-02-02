@@ -1,5 +1,5 @@
-#include "./src/gym_duckietown/decision_logic/types.c"
-#include "./src/gym_duckietown/decision_logic/decision_logic.c"
+#include "/tools/soid/soid/soid/soidlib/soidlib.h"
+#include "../../../gym_duckietown/decision_logic/decision_logic.c"
 
 int main(int argc, char **argv) {
     EnvironmentInfo *info = malloc(sizeof(EnvironmentInfo));
@@ -20,28 +20,42 @@ int main(int argc, char **argv) {
     // Agent0 Information:
     EnvironmentAgent agent0 = agents->agents_array[0];
     agent0.id = 0;
-    klee_make_symbolic( &agent0.pos_x, sizeof(float), "agent0.pos_x");
-    klee_make_symbolic( &agent0.pos_z, sizeof(float), "agent0.pos_z");
-    klee_make_symbolic( &agent0.angle, sizeof(float), "agent0.angle");
-    klee_make_symbolic( &agent0.forward_step, sizeof(float), "agent0.forward_step");
-    klee_make_symbolic( &agent0.lookahead, sizeof(float), "agent0.lookahead");
-    klee_make_symbolic( &agent0.signal_choice, sizeof(TurnChoice), "agent0.signal_choice");
-    klee_make_symbolic( &agent0.turn_choice, sizeof(TurnChoice), "agent0.turn_choice");
-    klee_make_symbolic( &agent0.initial_direction, sizeof(Direction), "agent0.initial_direction");
-    klee_make_symbolic( &agent0.intersection_arrival, sizeof(int), "agent0.intersection_arrival");
-    klee_make_symbolic( &agent0.patience, sizeof(int), "agent0.patience");
-    klee_make_symbolic( &agent0.step_count, sizeof(int), "agent0.step_count");
-    klee_assume( agent0.pos_x == 1.316 ); // Concrete Val 
-    klee_assume( agent0.angle == 4.712 ); // Concrete Val 
-    klee_assume( agent0.forward_step == 0.51 ); // Concrete Val 
-    klee_assume( agent0.signal_choice == "Right" ); // Concrete Val 
-    klee_assume( agent0.turn_choice == "Right" ); // Concrete Val 
-    klee_assume( agent0.lookahead == 0.585); // Concrete State Val 
-    klee_assume( agent0.intersection_arrival == 3); // Concrete State Val 
-    klee_assume( agent0.initial_direction == 1); // Concrete State Val 
-    klee_assume( agent0.patience == 0); // Concrete State Val 
-    klee_assume( agent0.step_count == 0); // Concrete State Val 
-    klee_assume( agent0.pos_z == 0.2 ); // Symbolic Value
+    float agent0_pos_x, agent0_pos_z, agent0_angle, agent0_forward_step, agent0_speed, agent0_lookahead;
+    int agent0_signal_choice, agent0_turn_choice, agent0_initial_direction, agent0_intersection_arrival, agent0_step_count, agent0_patience;
+    klee_make_symbolic( &agent0_pos_x, sizeof(float), "agent0_pos_x");
+    klee_make_symbolic( &agent0_pos_z, sizeof(float), "agent0_pos_z");
+    klee_make_symbolic( &agent0_angle, sizeof(float), "agent0_angle");
+    klee_make_symbolic( &agent0_forward_step, sizeof(float), "agent0_forward_step");
+    klee_make_symbolic( &agent0_lookahead, sizeof(float), "agent0_lookahead");
+    klee_make_symbolic( &agent0_signal_choice, sizeof(TurnChoice), "agent0_signal_choice");
+    klee_make_symbolic( &agent0_turn_choice, sizeof(TurnChoice), "agent0_turn_choice");
+    klee_make_symbolic( &agent0_initial_direction, sizeof(Direction), "agent0_initial_direction");
+    klee_make_symbolic( &agent0_intersection_arrival, sizeof(int), "agent0_intersection_arrival");
+    klee_make_symbolic( &agent0_patience, sizeof(int), "agent0_patience");
+    klee_make_symbolic( &agent0_step_count, sizeof(int), "agent0_step_count");
+    klee_assume( agent0_pos_x == 1.316 ); // Concrete Val 
+    klee_assume( agent0_angle == 4.712 ); // Concrete Val 
+    klee_assume( agent0_forward_step == 0.51 ); // Concrete Val 
+    klee_assume( agent0_signal_choice == RIGHT ); // Concrete Val 
+    klee_assume( agent0_turn_choice == RIGHT ); // Concrete Val 
+    klee_assume( agent0_lookahead == 0.585); // Concrete State Val 
+    klee_assume( agent0_intersection_arrival == 3); // Concrete State Val 
+    klee_assume( agent0_initial_direction == 1); // Concrete State Val 
+    klee_assume( agent0_patience == 0); // Concrete State Val 
+    klee_assume( agent0_step_count == 0); // Concrete State Val 
+    klee_assume( agent0_pos_z == 0.2 ); // Symbolic Value
+    memcpy( &agent0.prev_pos_x, &agent0_pos_x, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent0.prev_pos_z, &agent0_pos_z, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent0.angle, &agent0_angle, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent0.forward_step, &agent0_forward_step, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent0.speed, &agent0_speed, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent0.lookahead, &agent0_lookahead, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent0.turn_choice, &agent0_turn_choice, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent0.signal_choice, &agent0_signal_choice, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent0.patience, &agent0_patience, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent0.intersection_arrival, &agent0_intersection_arrival, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent0.initial_direction, &agent0_initial_direction, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent0.step_count, &agent0_step_count, sizeof(int)); // Memcopy symb -> struct
     agent0.prev_pos_z = agent0.pos_x; // Calculated Variable
     agent0.prev_pos_z = agent0.pos_z; // Calculated Variable
     agent0.direction = get_direction(agent0.angle/3.14*180); // Calculated Variable
@@ -70,28 +84,42 @@ int main(int argc, char **argv) {
     // Agent1 Information:
     EnvironmentAgent agent1 = agents->agents_array[1];
     agent1.id = 1;
-    klee_make_symbolic( &agent1.pos_x, sizeof(float), "agent1.pos_x");
-    klee_make_symbolic( &agent1.pos_z, sizeof(float), "agent1.pos_z");
-    klee_make_symbolic( &agent1.angle, sizeof(float), "agent1.angle");
-    klee_make_symbolic( &agent1.forward_step, sizeof(float), "agent1.forward_step");
-    klee_make_symbolic( &agent1.lookahead, sizeof(float), "agent1.lookahead");
-    klee_make_symbolic( &agent1.signal_choice, sizeof(TurnChoice), "agent1.signal_choice");
-    klee_make_symbolic( &agent1.turn_choice, sizeof(TurnChoice), "agent1.turn_choice");
-    klee_make_symbolic( &agent1.initial_direction, sizeof(Direction), "agent1.initial_direction");
-    klee_make_symbolic( &agent1.intersection_arrival, sizeof(int), "agent1.intersection_arrival");
-    klee_make_symbolic( &agent1.patience, sizeof(int), "agent1.patience");
-    klee_make_symbolic( &agent1.step_count, sizeof(int), "agent1.step_count");
-    klee_assume( agent1.pos_x == 1.597 ); // Concrete Val 
-    klee_assume( agent1.pos_z == 2.275 ); // Concrete Val 
-    klee_assume( agent1.angle == 1.571 ); // Concrete Val 
-    klee_assume( agent1.forward_step == 0.45 ); // Concrete Val 
-    klee_assume( agent1.turn_choice == "Left" ); // Concrete Val 
-    klee_assume( agent1.lookahead == 0.585); // Concrete State Val 
-    klee_assume( agent1.intersection_arrival == 2); // Concrete State Val 
-    klee_assume( agent1.initial_direction == 0); // Concrete State Val 
-    klee_assume( agent1.patience == 0); // Concrete State Val 
-    klee_assume( agent1.step_count == 0); // Concrete State Val 
-    klee_assume( agent1.signal_choice == LEFT ); // Symbolic Value
+    float agent1_pos_x, agent1_pos_z, agent1_angle, agent1_forward_step, agent1_speed, agent1_lookahead;
+    int agent1_signal_choice, agent1_turn_choice, agent1_initial_direction, agent1_intersection_arrival, agent1_step_count, agent1_patience;
+    klee_make_symbolic( &agent1_pos_x, sizeof(float), "agent1_pos_x");
+    klee_make_symbolic( &agent1_pos_z, sizeof(float), "agent1_pos_z");
+    klee_make_symbolic( &agent1_angle, sizeof(float), "agent1_angle");
+    klee_make_symbolic( &agent1_forward_step, sizeof(float), "agent1_forward_step");
+    klee_make_symbolic( &agent1_lookahead, sizeof(float), "agent1_lookahead");
+    klee_make_symbolic( &agent1_signal_choice, sizeof(TurnChoice), "agent1_signal_choice");
+    klee_make_symbolic( &agent1_turn_choice, sizeof(TurnChoice), "agent1_turn_choice");
+    klee_make_symbolic( &agent1_initial_direction, sizeof(Direction), "agent1_initial_direction");
+    klee_make_symbolic( &agent1_intersection_arrival, sizeof(int), "agent1_intersection_arrival");
+    klee_make_symbolic( &agent1_patience, sizeof(int), "agent1_patience");
+    klee_make_symbolic( &agent1_step_count, sizeof(int), "agent1_step_count");
+    klee_assume( agent1_pos_x == 1.597 ); // Concrete Val 
+    klee_assume( agent1_pos_z == 2.275 ); // Concrete Val 
+    klee_assume( agent1_angle == 1.571 ); // Concrete Val 
+    klee_assume( agent1_forward_step == 0.45 ); // Concrete Val 
+    klee_assume( agent1_turn_choice == LEFT ); // Concrete Val 
+    klee_assume( agent1_lookahead == 0.585); // Concrete State Val 
+    klee_assume( agent1_intersection_arrival == 2); // Concrete State Val 
+    klee_assume( agent1_initial_direction == 0); // Concrete State Val 
+    klee_assume( agent1_patience == 0); // Concrete State Val 
+    klee_assume( agent1_step_count == 0); // Concrete State Val 
+    klee_assume( agent1_signal_choice == LEFT ); // Symbolic Value
+    memcpy( &agent1.prev_pos_x, &agent1_pos_x, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent1.prev_pos_z, &agent1_pos_z, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent1.angle, &agent1_angle, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent1.forward_step, &agent1_forward_step, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent1.speed, &agent1_speed, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent1.lookahead, &agent1_lookahead, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent1.turn_choice, &agent1_turn_choice, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent1.signal_choice, &agent1_signal_choice, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent1.patience, &agent1_patience, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent1.intersection_arrival, &agent1_intersection_arrival, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent1.initial_direction, &agent1_initial_direction, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent1.step_count, &agent1_step_count, sizeof(int)); // Memcopy symb -> struct
     agent1.prev_pos_z = agent1.pos_x; // Calculated Variable
     agent1.prev_pos_z = agent1.pos_z; // Calculated Variable
     agent1.direction = get_direction(agent1.angle/3.14*180); // Calculated Variable
@@ -120,28 +148,42 @@ int main(int argc, char **argv) {
     // Agent2 Information:
     EnvironmentAgent agent2 = agents->agents_array[2];
     agent2.id = 2;
-    klee_make_symbolic( &agent2.pos_x, sizeof(float), "agent2.pos_x");
-    klee_make_symbolic( &agent2.pos_z, sizeof(float), "agent2.pos_z");
-    klee_make_symbolic( &agent2.angle, sizeof(float), "agent2.angle");
-    klee_make_symbolic( &agent2.forward_step, sizeof(float), "agent2.forward_step");
-    klee_make_symbolic( &agent2.lookahead, sizeof(float), "agent2.lookahead");
-    klee_make_symbolic( &agent2.signal_choice, sizeof(TurnChoice), "agent2.signal_choice");
-    klee_make_symbolic( &agent2.turn_choice, sizeof(TurnChoice), "agent2.turn_choice");
-    klee_make_symbolic( &agent2.initial_direction, sizeof(Direction), "agent2.initial_direction");
-    klee_make_symbolic( &agent2.intersection_arrival, sizeof(int), "agent2.intersection_arrival");
-    klee_make_symbolic( &agent2.patience, sizeof(int), "agent2.patience");
-    klee_make_symbolic( &agent2.step_count, sizeof(int), "agent2.step_count");
-    klee_assume( agent2.pos_x == 1.97 ); // Concrete Val 
-    klee_assume( agent2.angle == 3.142 ); // Concrete Val 
-    klee_assume( agent2.forward_step == 0.51 ); // Concrete Val 
-    klee_assume( agent2.signal_choice == "Straight" ); // Concrete Val 
-    klee_assume( agent2.turn_choice == "Straight" ); // Concrete Val 
-    klee_assume( agent2.lookahead == 0.585); // Concrete State Val 
-    klee_assume( agent2.intersection_arrival == 1); // Concrete State Val 
-    klee_assume( agent2.initial_direction == 3); // Concrete State Val 
-    klee_assume( agent2.patience == 0); // Concrete State Val 
-    klee_assume( agent2.step_count == 0); // Concrete State Val 
-    klee_assume( agent2.pos_z >= 1.320 && agent2.pos_z <= 1.5); // Symbolic Range
+    float agent2_pos_x, agent2_pos_z, agent2_angle, agent2_forward_step, agent2_speed, agent2_lookahead;
+    int agent2_signal_choice, agent2_turn_choice, agent2_initial_direction, agent2_intersection_arrival, agent2_step_count, agent2_patience;
+    klee_make_symbolic( &agent2_pos_x, sizeof(float), "agent2_pos_x");
+    klee_make_symbolic( &agent2_pos_z, sizeof(float), "agent2_pos_z");
+    klee_make_symbolic( &agent2_angle, sizeof(float), "agent2_angle");
+    klee_make_symbolic( &agent2_forward_step, sizeof(float), "agent2_forward_step");
+    klee_make_symbolic( &agent2_lookahead, sizeof(float), "agent2_lookahead");
+    klee_make_symbolic( &agent2_signal_choice, sizeof(TurnChoice), "agent2_signal_choice");
+    klee_make_symbolic( &agent2_turn_choice, sizeof(TurnChoice), "agent2_turn_choice");
+    klee_make_symbolic( &agent2_initial_direction, sizeof(Direction), "agent2_initial_direction");
+    klee_make_symbolic( &agent2_intersection_arrival, sizeof(int), "agent2_intersection_arrival");
+    klee_make_symbolic( &agent2_patience, sizeof(int), "agent2_patience");
+    klee_make_symbolic( &agent2_step_count, sizeof(int), "agent2_step_count");
+    klee_assume( agent2_pos_x == 1.97 ); // Concrete Val 
+    klee_assume( agent2_angle == 3.142 ); // Concrete Val 
+    klee_assume( agent2_forward_step == 0.51 ); // Concrete Val 
+    klee_assume( agent2_signal_choice == STRAIGHT ); // Concrete Val 
+    klee_assume( agent2_turn_choice == STRAIGHT ); // Concrete Val 
+    klee_assume( agent2_lookahead == 0.585); // Concrete State Val 
+    klee_assume( agent2_intersection_arrival == 1); // Concrete State Val 
+    klee_assume( agent2_initial_direction == 3); // Concrete State Val 
+    klee_assume( agent2_patience == 0); // Concrete State Val 
+    klee_assume( agent2_step_count == 0); // Concrete State Val 
+    klee_assume( agent2_pos_z >= 1.320 && agent2.pos_z <= 1.5); // Symbolic Range
+    memcpy( &agent2.prev_pos_x, &agent2_pos_x, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent2.prev_pos_z, &agent2_pos_z, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent2.angle, &agent2_angle, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent2.forward_step, &agent2_forward_step, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent2.speed, &agent2_speed, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent2.lookahead, &agent2_lookahead, sizeof(float)); // Memcopy symb -> struct
+    memcpy( &agent2.turn_choice, &agent2_turn_choice, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent2.signal_choice, &agent2_signal_choice, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent2.patience, &agent2_patience, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent2.intersection_arrival, &agent2_intersection_arrival, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent2.initial_direction, &agent2_initial_direction, sizeof(int)); // Memcopy symb -> struct
+    memcpy( &agent2.step_count, &agent2_step_count, sizeof(int)); // Memcopy symb -> struct
     agent2.prev_pos_z = agent2.pos_x; // Calculated Variable
     agent2.prev_pos_z = agent2.pos_z; // Calculated Variable
     agent2.direction = get_direction(agent2.angle/3.14*180); // Calculated Variable
