@@ -129,8 +129,8 @@ def generate_klee_file(query_blob):
     klee_file = open((klee_prefix + "klee_file.c"), 'w', encoding="utf-8")
     # Imports
     klee_file.write("#include <string.h>\n")
+    klee_file.write("#include \"../../../gym_duckietown/decision_logic/decision_logic.h\"\n\n")
     klee_file.write("#include \"/tools/soid/soid/soid/soidlib/soidlib.h\"\n")
-    klee_file.write("#include \"../../../gym_duckietown/decision_logic/decision_logic.c\"\n\n")
     klee_file.write("int main(int argc, char **argv) {\n")
     
     # init env_info
@@ -448,8 +448,11 @@ def generate_klee_file(query_blob):
     
     klee_file.write(f'    bool will_proceed, __soid__will_proceed;\n')
     klee_file.write(f'    klee_make_symbolic( &__soid__will_proceed, sizeof(bool), "__soid__will_proceed");\n')
+    klee_file.write(f'    klee_close_merge();\n')
     klee_file.write("    will_proceed = proceed_model(agents->agents_array[0].q_table, mrow);\n")
     klee_file.write(f'    klee_assume( will_proceed == __soid__will_proceed);\n')
+    
+    # close merge
 
 
 
@@ -466,9 +469,9 @@ def generate_klee_file(query_blob):
     makefile.write("link=/tools/soid/soid/llvm-project/release/bin/llvm-link\n")
 
     # Inbetween files
-    #makefile.write("BC1=./inter1.bc\n\n")
-    #makefile.write("BC2=./inter2.bc\n\n")
-    #makefile.write("BC3=./inter3.bc\n\n")
+    makefile.write("BC1=./inter1.bc\n\n")
+    makefile.write("BC2=./inter2.bc\n\n")
+    makefile.write("BC3=./inter3.bc\n\n")
     makefile.write("BC=./inter.bc\n\n")
     
     # Paths
@@ -480,23 +483,27 @@ def generate_klee_file(query_blob):
     makefile.write("symbolic:\n")
     
     # Compile types.c
-    #makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 /home/mje48/duckietown-soid/src/gym_duckietown/decision_logic/types.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC1)\n")
+    makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 /home/mje48/duckietown-soid/src/gym_duckietown/decision_logic/types.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC1)\n")
 
     # Compile decision_logic.c
-    #makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 /home/mje48/duckietown-soid/src/gym_duckietown/decision_logic/decision_logic.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC2)\n")
+    makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 /home/mje48/duckietown-soid/src/gym_duckietown/decision_logic/decision_logic.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC2)\n")
 
     # Compile klee_file.c
-    #makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC3)\n")
-    makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o $(BC)\n")
+    makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC3)\n")
+    #makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o $(BC)\n")
     
     # link
-    #makefile.write("	$(link) $(BC1) $(BC2) $(BC2) -o $(BC) \n")
+    makefile.write("	$(link) $(BC1) $(BC2) $(BC3) -o $(BC) \n")
+    #makefile.write("	$(link) $(BC2) $(BC3) -o $(BC) \n")
 
     # exec klee
     makefile.write("	$(KEXEC) -silent-klee-assume -write-smt2s -use-merge $(BC)\n")
 
     
     makefile.write("\nclean:\n")
+    makefile.write("	rm -f ./inter1.bc\n")
+    makefile.write("	rm -f ./inter2.bc\n")
+    makefile.write("	rm -f ./inter3.bc\n")
     makefile.write("	rm -f ./inter.bc\n")
     makefile.write("	rm -rf ./klee-out-*\n")
     makefile.write("	rm -rf ./klee-last\n")

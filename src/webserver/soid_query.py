@@ -350,8 +350,8 @@ def generate_soid_query(query_info):
         formula = None
         for tagged_cf in tagged_cf_list:
             constraint = get_constraint(declare_type, tagged_cf)
-            print(f" Constraint {constraint}")
-            print(f" Constraint.sort {constraint.sort()}")
+            #print(f" Constraint {constraint}")
+            #print(f" Constraint.sort {constraint.sort()}")
             if formula == None:
                 formula = constraint
                 continue

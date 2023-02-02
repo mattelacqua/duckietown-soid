@@ -1,7 +1,7 @@
 #include <string.h>
-#include "/tools/soid/soid/soid/soidlib/soidlib.h"
-#include "../../../gym_duckietown/decision_logic/decision_logic.c"
+#include "../../../gym_duckietown/decision_logic/decision_logic.h"
 
+#include "/tools/soid/soid/soid/soidlib/soidlib.h"
 int main(int argc, char **argv) {
     EnvironmentInfo *info = malloc(sizeof(EnvironmentInfo));
     klee_open_merge();
@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
     klee_assume( agent1_initial_direction == 2); // Concrete State Val 
     klee_assume( agent1_patience == 0); // Concrete State Val 
     klee_assume( agent1_step_count == 82); // Concrete State Val 
-    klee_assume( agent1_signal_choice == RIGHT ); // Symbolic Value
+    klee_assume( agent1_signal_choice == LEFT ); // Symbolic Value
     memcpy( &agent1.prev_pos_x, &agent1_pos_x, sizeof(float)); // Memcopy symb -> struct
     memcpy( &agent1.prev_pos_z, &agent1_pos_z, sizeof(float)); // Memcopy symb -> struct
     memcpy( &agent1.angle, &agent1_angle, sizeof(float)); // Memcopy symb -> struct
@@ -2241,6 +2241,7 @@ int main(int argc, char **argv) {
     // Invoke proceed
     bool will_proceed, __soid__will_proceed;
     klee_make_symbolic( &__soid__will_proceed, sizeof(bool), "__soid__will_proceed");
+    klee_close_merge();
     will_proceed = proceed_model(agents->agents_array[0].q_table, mrow);
     klee_assume( will_proceed == __soid__will_proceed);
 }

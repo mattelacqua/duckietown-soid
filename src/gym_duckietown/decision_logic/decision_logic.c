@@ -3,7 +3,9 @@
 #include <time.h>
 #include <math.h>
 #include <stdlib.h>
-#include "types.c"
+
+#include "types.h"
+#include "decision_logic.h"
 
 #define STATES 1024
 #define ACTIONS 2
