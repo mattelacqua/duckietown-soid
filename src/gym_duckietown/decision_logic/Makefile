@@ -1,10 +1,10 @@
 CC = gcc  # C compiler
 CFLAGS = -fPIC -Wall -Wextra -Wno-unused-but-set-variable -O2 -g  # C flags
-LDFLAGS = -shared   # linking flags
+LDFLAGS = -shared   $(inherited) # linking flags
 RM = rm -f   # rm command
 TARGET_LIB = libdecision_logic.so  # target lib
 
-SRCS = decision_logic.c # source files
+SRCS =  types.c decision_logic.c # source files
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all

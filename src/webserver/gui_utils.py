@@ -98,8 +98,11 @@ def handle_input(env, gui_input):
                     agent.counterfactuals = log_agent['counterfactuals']
 
                     agent.initial_direction = log_agent['initial_direction']
+            agent.log = gui_input['log']
     
     if gui_input['kind'] == 'query':
+        print('getting query blob')
+        print(env.agents[0].log)
         query_blob = cf.get_query_blob(env, gui_input['query_info'])
 
         print("\n\n Final Query Blob")
@@ -236,6 +239,7 @@ def env_info_dict(env):
         dict_agent['car_state']= str(pickle.dumps(env.agents[i].state))
         dict_agent['counterfactuals'] = env.agents[i].counterfactuals
         dict_agent['initial_direction'] = dl_utils.get_dl_direction(env.agents[i].initial_direction)
+        dict_agent['log'] = env.agents[i].log
 
         agents.append(dict_agent)
 

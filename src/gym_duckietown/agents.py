@@ -95,6 +95,7 @@ class Agent():
         self.last_action = None 
         self.intersection_arrival = -1
         self.step_count = 0
+        self.log = None
 
         # Pose
         self.start_tile = start_pose

@@ -42,6 +42,7 @@ class Buttons extends React.Component {
           this.props.update_from_sim();
           
           // Add the counterfactuals to the queryy
+          console.log('ENV INFO FOR QUERY:', this.props.env_info);
           this.state.socket.emit('query', 
             {
               'query': {
