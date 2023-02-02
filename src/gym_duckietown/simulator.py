@@ -561,7 +561,10 @@ class Simulator(gym.Env):
         # Get the random number of agents from 
         if not webserver_reset:
             self.agents = []
-            random_agents = self.np_random.integers(0, self.num_random_agents)
+            if self.num_random_agents > 0:
+                random_agents = self.np_random.integers(0, self.num_random_agents)
+            else:
+                random_agents = 0
             self._load_agents(self.map_data, random_agents=random_agents, webserver_reset=webserver_reset)
 
         # Reset each agent
@@ -590,12 +593,13 @@ class Simulator(gym.Env):
             agent.states['approaching_intersection'] = False
             agent.states['obj_in_range'] = False
             agent.states['has_right_of_way'] = False
+            agent.states['next_to_go'] = False
+            agent.states['safe_to_enter'] = False
             agent.states['cars_waiting_to_enter'] = False
             agent.states['car_entering_range'] = False
             agent.states['obj_behind_intersection'] = False
             agent.states['obj_behind_no_intersection'] = False
             agent.states['is_tailgating'] = False
-            agent.states['next_to_go'] = False
         
                     
 
@@ -987,8 +991,8 @@ class Simulator(gym.Env):
 
         # If still no, make a default one ( no random agents )
         if not self.agents:
-            print("HERE strange.")
-            new_agenv = Agent(self, cur_pos=[0, 0, 0], cur_angle=0, agent_id="agent" + str(x), random_spawn=True)
+            new_agent = Agent(self, cur_pos=[0, 0, 0], cur_angle=0, agent_id="agent0", random_spawn=False)
+            self.agents.append(new_agent)
         
 
     def _load_objects(self, map_data: MapFormat1):
