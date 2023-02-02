@@ -14,20 +14,22 @@
  * HELPERS
 ************************************************/
 // Return a size 2 array of tile positions, index 0 is x, index 1 is z
-TilePos *get_tile_pos(float pos_x, float pos_z, float road_tile_size){
+TilePos get_tile_pos(float pos_x, float pos_z, float road_tile_size){
     double x = (double) pos_x;
     double z = (double) pos_z;
     double tile_size = (double) road_tile_size;
 
-    int i = (int)floor(x / tile_size);
-    int j = (int)floor(z / tile_size);
-    TilePos *tile_pos = make_TilePos(i, j);
+    int i = (int)(x / tile_size);
+    int j = (int)(z / tile_size);
+    TilePos tile_pos;
+    tile_pos.x = i;
+    tile_pos.z = j;
 
     return tile_pos;
 
 }
 
-StopPos *get_stop_pos(int tile_x, int tile_z, float road_tile_size, Direction direction, float speed){
+StopPos get_stop_pos(int tile_x, int tile_z, float road_tile_size, Direction direction, float speed){
     if (speed > 0.35)
         speed = 0.30;
     float stop_portion = speed * road_tile_size;
@@ -51,7 +53,9 @@ StopPos *get_stop_pos(int tile_x, int tile_z, float road_tile_size, Direction di
         stop_z = (tile_z * road_tile_size) + (road_tile_size/2.0);
     }
 
-    StopPos *stop_pos = make_StopPos(stop_x, stop_z);
+    StopPos stop_pos ;
+    stop_pos.x = stop_x;
+    stop_pos.z = stop_x;
 
     return stop_pos;
 }
@@ -62,10 +66,10 @@ float pos_distance(double x1, double x2, double z1, double z2){
 }
 
 bool intersection_dir_agents(EnvironmentInfo* env_info, int agent_index, Direction direction){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent *agents = env_info->agents->agents_array;
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     bool dir_waiting_agents = false;
-    for (int i = 0; i < env_info->agents.num_agents; i++){
+    for (int i = 0; i < env_info->agents->num_agents; i++){
         // If not us, and at intersection line, and are facing the given direction, and arrive at the SAME TIME
         if (i != agent_index && 
            (agents[i].state.at_intersection_entry || agents[i].state.in_intersection) && 
@@ -80,9 +84,9 @@ bool intersection_dir_agents(EnvironmentInfo* env_info, int agent_index, Directi
 }
 
 bool next_to_go_agents(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
+    EnvironmentAgent *agents = env_info->agents->agents_array;
     bool next_to_go_agents = false;
-    for (int i = 0; i < env_info->agents.num_agents; i++){
+    for (int i = 0; i < env_info->agents->num_agents; i++){
         // If not us, and at intersection line, and are facing the given direction, return true.
         if (i != agent_index && agents[i].state.next_to_go){
             next_to_go_agents = true;
@@ -100,8 +104,8 @@ bool intersection_tile(EnvironmentInfo* env_info, int tile_x, int tile_z){
 }
 
 bool is_behind(EnvironmentInfo* env_info, int agent_index, int other_index){
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
-    EnvironmentAgent other = env_info->agents.agents_array[other_index];
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
+    EnvironmentAgent other = env_info->agents->agents_array[other_index];
     // Should always be the same but just in case
     if (agent.direction == other.direction){
         // If north and they are in front of us
@@ -128,7 +132,7 @@ bool is_behind(EnvironmentInfo* env_info, int agent_index, int other_index){
 
 // Check if we are approaching an intersection 
 bool intersection_detected(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     if ((agent.direction == NORTH) && 
         (agent.pos_z < agent.stop_z) && 
         agent.state.approaching_intersection)
@@ -151,7 +155,7 @@ bool intersection_detected(EnvironmentInfo* env_info, int agent_index){
 
 // Check if we are approaching an intersection 
 bool approaching_intersection(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     if ((agent.direction == NORTH) && intersection_tile(env_info, agent.tile_x, agent.tile_z - 1))
         return true;
     else if ((agent.direction == WEST) && intersection_tile(env_info, agent.tile_x - 1, agent.tile_z ))
@@ -170,8 +174,8 @@ bool approaching_intersection(EnvironmentInfo* env_info, int agent_index){
  * STATE FUNCTIONS
 ************************************************/
 bool next_to_go(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent *agents = env_info->agents->agents_array;
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     
     // If not at intersection entry, it doesn't matter
     if (!agent.state.at_intersection_entry)
@@ -186,7 +190,7 @@ bool next_to_go(EnvironmentInfo* env_info, int agent_index){
     // Is there antoher car in the intersection with ROW
     int ROW_agent_index = -1;
     int lowest_ROW_agent_arrival = 1500;
-    for (int i = 0; i < env_info->agents.num_agents; i++){
+    for (int i = 0; i < env_info->agents->num_agents; i++){
         // If not us, at entry, and has right of way
         if (i != agent_index && 
         (agents[i].state.at_intersection_entry || agents[i].state.in_intersection) && 
@@ -202,11 +206,11 @@ bool next_to_go(EnvironmentInfo* env_info, int agent_index){
         return false;
         
     // Check if we are next in line
-    EnvironmentAgent ROW_agent = env_info->agents.agents_array[ROW_agent_index];
+    EnvironmentAgent ROW_agent = env_info->agents->agents_array[ROW_agent_index];
     // Check if there is another car that arrive before me
     bool cars_before_me = false;
     bool cars_same_as_me = false;
-    for (int i = 0; i < env_info->agents.num_agents; i++){
+    for (int i = 0; i < env_info->agents->num_agents; i++){
         if (i != agent_index && 
            (agents[i].state.in_intersection || agents[i].state.at_intersection_entry) && 
            agents[i].intersection_arrival >= 0 && 
@@ -317,13 +321,13 @@ bool next_to_go(EnvironmentInfo* env_info, int agent_index){
 
 // Get right of way for our cars. 
 bool has_right_of_way(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent *agents = env_info->agents->agents_array;
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     
     // Check if there is another car that arrive before me
     bool cars_before_me = false;
     bool cars_same_as_me = false;
-    for (int i = 0; i < env_info->agents.num_agents; i++){
+    for (int i = 0; i < env_info->agents->num_agents; i++){
         if (i != agent_index && 
            (agents[i].state.in_intersection || agents[i].state.at_intersection_entry) && 
            agents[i].intersection_arrival >= 0 && 
@@ -478,8 +482,8 @@ bool has_right_of_way(EnvironmentInfo* env_info, int agent_index){
 }
 
 bool safe_to_enter(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent *agents = env_info->agents->agents_array;
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     
     // If we have the right of way its always safe to go.
     if (agent.state.has_right_of_way)
@@ -491,7 +495,7 @@ bool safe_to_enter(EnvironmentInfo* env_info, int agent_index){
 
     // Get the intersection grid positions we will be in
     int intersection_agent_index = -1;
-    for (int i = 0; i < env_info->agents.num_agents; i++){
+    for (int i = 0; i < env_info->agents->num_agents; i++){
         // If not us, at entry or in it, and has right of way (could be multiple)
         if (i != agent_index && (
             agents[i].state.at_intersection_entry || agents[i].state.in_intersection)){
@@ -507,7 +511,7 @@ bool safe_to_enter(EnvironmentInfo* env_info, int agent_index){
             bool agent_sw = false;
             bool agent_se = false;
 
-            EnvironmentAgent intersection_agent = env_info->agents.agents_array[intersection_agent_index];
+            EnvironmentAgent intersection_agent = env_info->agents->agents_array[intersection_agent_index];
 
             // Handle the intersection agent information
             if (intersection_agent.initial_direction == NORTH){
@@ -656,9 +660,25 @@ char get_direction(float curr_angle){
     }
 }
 
+// Get the current direction of an agent
+Direction get_dl_direction(float curr_angle){
+    if (curr_angle > 45 && curr_angle <= 135) {
+        return NORTH;
+    }
+    else if (curr_angle > 135 && curr_angle <= 225){
+        return WEST;
+    }
+    else if (curr_angle > 225 && curr_angle <= 315){
+        return SOUTH;
+    }
+    else{
+        return EAST;
+    }
+}
+
 // Get if we are in bounds or not
 bool in_bounds(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
 
     // Check if we are out of the bounds 
     if (agent.pos_x < 0 || agent.pos_z < 0 || agent.pos_x > env_info->grid_w * env_info->road_tile_size || agent.pos_z > env_info->grid_h * env_info->road_tile_size){
@@ -671,7 +691,7 @@ bool in_bounds(EnvironmentInfo* env_info, int agent_index){
 
 
 bool in_intersection(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     if (agent.tile_x == env_info->intersection_x && agent.tile_z == env_info->intersection_z){
         //printf("agent %d in intersection", agent_index);
         return true;
@@ -684,7 +704,7 @@ bool in_intersection(EnvironmentInfo* env_info, int agent_index){
 // Check if we are at the intersection entry
 bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
     if (in_bounds(env_info, agent_index)){
-        EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+        EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
         // If we are facing north
         if (agent.direction == NORTH){
             // If we are in the intersection or just below it, check more
@@ -751,9 +771,9 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
 }
 
 bool cars_arrived_before_me(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
-    for (int i = 0; i < env_info->agents.num_agents; i++){
+    EnvironmentAgent *agents = env_info->agents->agents_array;
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
+    for (int i = 0; i < env_info->agents->num_agents; i++){
         // If not us, we are both at intersection, and they arrived first
         if (i != agent_index && 
            (agents[i].intersection_arrival >= 0 && agent.intersection_arrival >= 0) && 
@@ -768,8 +788,8 @@ bool cars_arrived_before_me(EnvironmentInfo* env_info, int agent_index){
 }
 
 bool cars_waiting_to_enter(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
-    for (int i = 0; i < env_info->agents.num_agents; i++){
+    EnvironmentAgent *agents = env_info->agents->agents_array;
+    for (int i = 0; i < env_info->agents->num_agents; i++){
         // If not us, and are at the intersection entry
         if (i != agent_index && agents[i].state.at_intersection_entry)
             return true;
@@ -778,8 +798,8 @@ bool cars_waiting_to_enter(EnvironmentInfo* env_info, int agent_index){
 }
 
 bool intersection_empty(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
-    for (int i = 0; i < env_info->agents.num_agents; i++){
+    EnvironmentAgent *agents = env_info->agents->agents_array;
+    for (int i = 0; i < env_info->agents->num_agents; i++){
         // If someone is in the intersection
         if (i != agent_index && agents[i].state.in_intersection)
             return false;
@@ -788,8 +808,8 @@ bool intersection_empty(EnvironmentInfo* env_info, int agent_index){
 }
 
 bool object_in_range(EnvironmentInfo* env_info, int agent_index, int location){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent *agents = env_info->agents->agents_array;
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     float radius = agent.lookahead;
     if (!in_bounds(env_info, agent_index))
         return false;
@@ -855,7 +875,7 @@ bool object_in_range(EnvironmentInfo* env_info, int agent_index, int location){
         }
 
         // Once bounds are initilized, check if any agent falls inside of them.
-        for (int i = 0; i < env_info->agents.num_agents; i++){
+        for (int i = 0; i < env_info->agents->num_agents; i++){
             // if not us and in the bounds
             if (i != agent_index && 
                (agents[i].pos_x >= object_ahead_range_x_lb) &&
@@ -872,8 +892,8 @@ bool object_in_range(EnvironmentInfo* env_info, int agent_index, int location){
 
 // Check if a car is entering our range
 bool car_entering_range(EnvironmentInfo* env_info, int agent_index, int location){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent *agents = env_info->agents->agents_array;
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     float radius = agent.lookahead;
     float radius_multiplier = 1.5;
     if (!in_bounds(env_info, agent_index))
@@ -940,7 +960,7 @@ bool car_entering_range(EnvironmentInfo* env_info, int agent_index, int location
         }
 
         // Once bounds are initilized, check if any agent falls inside of them.
-        for (int i = 0; i < env_info->agents.num_agents; i++){
+        for (int i = 0; i < env_info->agents->num_agents; i++){
             // if not us and in the bounds and is getting closer to us
             if (i != agent_index && 
                (agents[i].pos_x >= object_ahead_range_x_lb) &&
@@ -957,9 +977,9 @@ bool car_entering_range(EnvironmentInfo* env_info, int agent_index, int location
 }
 
 bool is_tailgating(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent *agents = env_info->agents.agents_array;
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
-    for (int i = 0; i < env_info->agents.num_agents; i++){
+    EnvironmentAgent *agents = env_info->agents->agents_array;
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
+    for (int i = 0; i < env_info->agents->num_agents; i++){
         // If not us, going the same direction, and we are behind them
         if (i != agent_index && 
            agents[i].direction == agent.direction && 
@@ -976,7 +996,7 @@ bool is_tailgating(EnvironmentInfo* env_info, int agent_index){
 
 // Good agent proceed: 0=stop 1=proceed
 bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     // If we are tailgating we dont move
     if (agent.state.is_tailgating) 
         return false;
@@ -993,7 +1013,7 @@ bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index){
 
 // Handle patience return 0=do nothing 1=inc 2=reset
 int handle_patience(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     if ((!agent.state.has_right_of_way && !agent.state.safe_to_enter) && agent.state.next_to_go && agent.state.intersection_empty)
         return 1;
     if ((!agent.state.has_right_of_way && !agent.state.safe_to_enter) && agent.state.next_to_go && !agent.state.intersection_empty)
@@ -1025,7 +1045,7 @@ int get_learning_state(EnvironmentInfo* env_info, int agent_index){
     # 8: safe to enter 
     # 9: tailgating +1 
     *************************************************************/
-    EnvironmentAgent agent = env_info->agents.agents_array[agent_index];
+    EnvironmentAgent agent = env_info->agents->agents_array[agent_index];
     int model_row = 0;
     
     if (agent.state.in_intersection)
@@ -1062,14 +1082,14 @@ void print_all(EnvironmentInfo* env_info) {
     int grid_h = env_info->grid_h;
     float road_tile_size = env_info->road_tile_size;
     int max_steps = env_info->max_steps;
-    int num_agents = env_info->agents.num_agents;
-    fflush(stdout);
+    int num_agents = env_info->agents->num_agents;
+    /*fflush(stdout);
     printf("Environment information: \n");
     printf("Intersection: %d, %d\n", intersection_x, intersection_z);
     printf("Grid Height: %d Grid Width %d Road tile size: %f\n", grid_h, grid_w, road_tile_size);
     printf("Robot Length: %f Max Steps: %d\n",  robot_length, max_steps);
     
-    EnvironmentAgent *agents = env_info->agents.agents_array;
+    EnvironmentAgent *agents = env_info->agents->agents_array;
     for (int i = 0; i < num_agents; i++) {
         printf("Agent %d information \n", agents[i].id);
         printf("pos_x: %f pos_z %f \n", agents[i].pos_x, agents[i].pos_z);
@@ -1095,5 +1115,7 @@ void print_all(EnvironmentInfo* env_info) {
         printf("%d safe_to_enter\n", agents[i].state.safe_to_enter);
         printf("%d is_tailgating\n\n", agents[i].state.is_tailgating);
     }
+    */
+    
 }
 

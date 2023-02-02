@@ -15,9 +15,9 @@
  * HELPERS
 ************************************************/
 // Return a size 2 array of tile positions, index 0 is x, index 1 is z
-TilePos *get_tile_pos(float pos_x, float pos_z, float road_tile_size);
+TilePos get_tile_pos(float pos_x, float pos_z, float road_tile_size);
 
-StopPos *get_stop_pos(int tile_x, int tile_z, float road_tile_size, Direction direction, float speed);
+StopPos get_stop_pos(int tile_x, int tile_z, float road_tile_size, Direction direction, float speed);
 
 float pos_distance(double x1, double x2, double z1, double z2);
 
@@ -46,6 +46,8 @@ bool safe_to_enter(EnvironmentInfo* env_info, int agent_index);
 
 // Get the current direction of an agent
 char get_direction(float curr_angle);
+
+Direction get_dl_direction(float curr_angle);
 
 // Get if we are in bounds or not
 bool in_bounds(EnvironmentInfo* env_info, int agent_index);

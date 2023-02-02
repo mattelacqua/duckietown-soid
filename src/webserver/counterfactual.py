@@ -134,7 +134,7 @@ def generate_klee_file(query_blob):
     klee_file.write("int main(int argc, char **argv) {\n")
     
     # init env_info
-    klee_file.write("    EnvironmentInfo *info = malloc(sizeof(EnvironmentInfo));\n")
+    klee_file.write("    EnvironmentInfo info;\n")
     
     # Klee opent merge
     klee_file.write("    klee_open_merge();\n")
@@ -143,19 +143,19 @@ def generate_klee_file(query_blob):
     
     # Handle env information
     klee_file.write("\n    // Environment Information:\n")
-    klee_file.write(f'    info->intersection_x = { environment["intersection_x"] };\n')
-    klee_file.write(f'    info->intersection_z = { environment["intersection_z"] };\n')
-    klee_file.write(f'    info->robot_length = { environment["robot_length"] };\n')
-    klee_file.write(f'    info->grid_w = { environment["grid_w"] };\n')
-    klee_file.write(f'    info->grid_h = { environment["grid_h"] };\n')
-    klee_file.write(f'    info->road_tile_size = { environment["road_tile_size"] };\n')
-    klee_file.write(f'    info->max_steps = { environment["max_steps"] };\n')
+    klee_file.write(f'    info.intersection_x = { environment["intersection_x"] };\n')
+    klee_file.write(f'    info.intersection_z = { environment["intersection_z"] };\n')
+    klee_file.write(f'    info.robot_length = { environment["robot_length"] };\n')
+    klee_file.write(f'    info.grid_w = { environment["grid_w"] };\n')
+    klee_file.write(f'    info.grid_h = { environment["grid_h"] };\n')
+    klee_file.write(f'    info.road_tile_size = { environment["road_tile_size"] };\n')
+    klee_file.write(f'    info.max_steps = { environment["max_steps"] };\n')
     
     # Init agent array
     klee_file.write("\n    // Agent Array:\n")
-    klee_file.write(f'    EnvironmentAgentArray *agents = malloc(sizeof(EnvironmentAgentArray));\n')
-    klee_file.write(f"    agents->num_agents = {environment['num_agents']};")
-    klee_file.write("    info->agents = *agents;")
+    klee_file.write(f'    EnvironmentAgentArray agents;\n')
+    klee_file.write(f"    agents.num_agents = {environment['num_agents']};\n")
+    klee_file.write("    info.agents = &agents;")
 
     
     agents = query["agents"]
@@ -163,7 +163,7 @@ def generate_klee_file(query_blob):
     for i in range(environment["num_agents"]):
         agent = agents[f'agent{i}']
         klee_file.write(f"\n    // Agent{i} Information:\n")
-        klee_file.write(f'    EnvironmentAgent agent{i} = agents->agents_array[{i}];\n')
+        klee_file.write(f'    EnvironmentAgent agent{i} = agents.agents_array[{i}];\n')
         klee_file.write(f'    agent{i}.id = { agent["concrete"]["id"] };\n')
         # Position
         klee_file.write(f'    float agent{i}_pos_x, agent{i}_pos_z, agent{i}_angle, agent{i}_forward_step, agent{i}_speed, agent{i}_lookahead;\n')
@@ -177,6 +177,9 @@ def generate_klee_file(query_blob):
         
         # Forward Step
         klee_file.write(f'    klee_make_symbolic( &agent{i}_forward_step, sizeof(float), "agent{i}_forward_step");\n')
+        
+        # Speed 
+        klee_file.write(f'    klee_make_symbolic( &agent{i}_speed, sizeof(float), "agent{i}_speed");\n')
         
         # Lookahead
         klee_file.write(f'    klee_make_symbolic( &agent{i}_lookahead, sizeof(float), "agent{i}_lookahead");\n')
@@ -200,23 +203,23 @@ def generate_klee_file(query_blob):
         # If concrete is null, then we don't do this, as there will be a symbolic value.
         # concrete_pos_x
         if agent["concrete"]["pos_x"]:
-            klee_file.write(f'    klee_assume( agent{i}_pos_x == { agent["concrete"]["pos_x"] } ); // Concrete Val \n')
+            klee_file.write(f'    klee_assume( agent{i}_pos_x == (float) { agent["concrete"]["pos_x"] } ); // Concrete Val \n')
 
         # concrete_pos_z
         if agent["concrete"]["pos_z"]:
-            klee_file.write(f'    klee_assume( agent{i}_pos_z == { agent["concrete"]["pos_z"] } ); // Concrete Val \n') 
+            klee_file.write(f'    klee_assume( agent{i}_pos_z == (float) { agent["concrete"]["pos_z"] } ); // Concrete Val \n') 
 
         # concrete_angle
         if agent["concrete"]["angle"]:
-            klee_file.write(f'    klee_assume( agent{i}_angle == { agent["concrete"]["angle"] } ); // Concrete Val \n')
+            klee_file.write(f'    klee_assume( agent{i}_angle == (float) { agent["concrete"]["angle"] } ); // Concrete Val \n')
 
         # concrete_forward_Step
         if agent["concrete"]["forward_step"]:
-            klee_file.write(f'    klee_assume( agent{i}_forward_step == { agent["concrete"]["forward_step"] } ); // Concrete Val \n')
+            klee_file.write(f'    klee_assume( agent{i}_forward_step == (float) { agent["concrete"]["forward_step"] } ); // Concrete Val \n')
 
         # concrete_speed
         if agent["concrete"]["speed"]:
-            klee_file.write(f'    klee_assume( agent{i}_speed == { agent["concrete"]["speed"] } ); // Concrete Val \n')
+            klee_file.write(f'    klee_assume( agent{i}_speed == (float) { agent["concrete"]["speed"] } ); // Concrete Val \n')
 
         # concrete_signal_choice
         if agent["concrete"]["signal_choice"]:
@@ -230,7 +233,7 @@ def generate_klee_file(query_blob):
 
         # Get stateful things
         # Lookhead
-        klee_file.write(f'    klee_assume( agent{i}_lookahead == { agent["concrete"]["lookahead"] }); // Concrete State Val \n')
+        klee_file.write(f'    klee_assume( agent{i}_lookahead == (float) { agent["concrete"]["lookahead"] }); // Concrete State Val \n')
         
         # intersection_arrival
         klee_file.write(f'    klee_assume( agent{i}_intersection_arrival == { agent["state"]["intersection_arrival"] }); // Concrete State Val \n')
@@ -250,42 +253,42 @@ def generate_klee_file(query_blob):
             # Symbolic_Pos x
             if counterfactual["is_pos_x"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}_pos_x == {counterfactual["value"]} ); // Symbolic Value\n')
+                    klee_file.write(f'    klee_assume( agent{i}_pos_x == (float) {counterfactual["value"]} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}_pos_x >= {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.pos_x <= {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')
+                    klee_file.write(f'    klee_assume( agent{i}_pos_x >= (float) {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}.pos_x <= (float) {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')
 
             # Symbolic_Pos z
             if counterfactual["is_pos_z"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}_pos_z == {counterfactual["value"]} ); // Symbolic Value\n')
+                    klee_file.write(f'    klee_assume( agent{i}_pos_z == (float) {counterfactual["value"]} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}_pos_z >= {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.pos_z <= {counterfactual["range"]["high_bound"]}); // Symbolic Range\n') 
+                    klee_file.write(f'    klee_assume( agent{i}_pos_z >= (float) {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}.pos_z <= (float) {counterfactual["range"]["high_bound"]}); // Symbolic Range\n') 
 
             # Symbolic_Angle
             if counterfactual["is_angle"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}_angle == {counterfactual["value"]} ); // Symbolic Value\n')
+                    klee_file.write(f'    klee_assume( agent{i}_angle == (float) {counterfactual["value"]} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}_angle >= {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}_angle <= {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')   
+                    klee_file.write(f'    klee_assume( agent{i}_angle >= (float) {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}_angle <= (float) {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')   
 
             # Symbolic_forward_step
             if counterfactual["is_forward_step"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}_is_forward_step == {counterfactual["value"]} ); // Symbolic Value\n')
+                    klee_file.write(f'    klee_assume( agent{i}_is_forward_step == (float) {counterfactual["value"]} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}_is_forward_step >= {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}_is_forward_step <= {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')
+                    klee_file.write(f'    klee_assume( agent{i}_is_forward_step >= (float) {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}_is_forward_step <= (float) {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')
 
             # Symbolic_speed
             if counterfactual["is_speed"]:
                 if counterfactual["is_value"]:
-                    klee_file.write(f'    klee_assume( agent{i}_speed == {counterfactual["value"]} ); // Symbolic Value\n')
+                    klee_file.write(f'    klee_assume( agent{i}_speed == (float) {counterfactual["value"]} ); // Symbolic Value\n')
                 elif counterfactual["is_range"]:
-                    klee_file.write(f'    klee_assume( agent{i}_speed >= {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}_speed <= {counterfactual["range"]["high_bound"]});\n')
+                    klee_file.write(f'    klee_assume( agent{i}_speed >= (float) {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}_speed <= (float) {counterfactual["range"]["high_bound"]});\n')
 
             # Symbolic_signal_choice
             if counterfactual["is_signalchoice"]:
@@ -321,141 +324,223 @@ def generate_klee_file(query_blob):
 
         # Memcpy struct stuff
         # floats
-        klee_file.write(f'    memcpy( &agent{i}.prev_pos_x, &agent{i}_pos_x, sizeof(float)); // Memcopy symb -> struct\n')
-        klee_file.write(f'    memcpy( &agent{i}.prev_pos_z, &agent{i}_pos_z, sizeof(float)); // Memcopy symb -> struct\n')
-        klee_file.write(f'    memcpy( &agent{i}.angle, &agent{i}_angle, sizeof(float)); // Memcopy symb -> struct\n')
-        klee_file.write(f'    memcpy( &agent{i}.forward_step, &agent{i}_forward_step, sizeof(float)); // Memcopy symb -> struct\n')
-        klee_file.write(f'    memcpy( &agent{i}.speed, &agent{i}_speed, sizeof(float)); // Memcopy symb -> struct\n')
-        klee_file.write(f'    memcpy( &agent{i}.lookahead, &agent{i}_lookahead, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.pos_x, &agent{i}_pos_x, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.pos_z, &agent{i}_pos_z, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.angle, &agent{i}_angle, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.forward_step, &agent{i}_forward_step, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.speed, &agent{i}_speed, sizeof(float)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.lookahead, &agent{i}_lookahead, sizeof(float)); // Memcopy symb -> struct\n')
         # ints
-        klee_file.write(f'    memcpy( &agent{i}.turn_choice, &agent{i}_turn_choice, sizeof(int)); // Memcopy symb -> struct\n')
-        klee_file.write(f'    memcpy( &agent{i}.signal_choice, &agent{i}_signal_choice, sizeof(int)); // Memcopy symb -> struct\n')
-        klee_file.write(f'    memcpy( &agent{i}.patience, &agent{i}_patience, sizeof(int)); // Memcopy symb -> struct\n')
-        klee_file.write(f'    memcpy( &agent{i}.intersection_arrival, &agent{i}_intersection_arrival, sizeof(int)); // Memcopy symb -> struct\n')
-        klee_file.write(f'    memcpy( &agent{i}.initial_direction, &agent{i}_initial_direction, sizeof(int)); // Memcopy symb -> struct\n')
-        klee_file.write(f'    memcpy( &agent{i}.step_count, &agent{i}_step_count, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.turn_choice, &agent{i}_turn_choice, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.signal_choice, &agent{i}_signal_choice, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.patience, &agent{i}_patience, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.intersection_arrival, &agent{i}_intersection_arrival, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.initial_direction, &agent{i}_initial_direction, sizeof(int)); // Memcopy symb -> struct\n')
+        klee_file.write(f'    memmove( &agent{i}.step_count, &agent{i}_step_count, sizeof(int)); // Memcopy symb -> struct\n')
 
-        # Seet the state for inferred variables
+
+        
+        # Set the state for inferred variables
         # prev pos
-        klee_file.write(f'    agent{i}.prev_pos_z = agent{i}.pos_x; // Calculated Variable\n')
-        klee_file.write(f'    agent{i}.prev_pos_z = agent{i}.pos_z; // Calculated Variable\n')
+    for i in range(environment["num_agents"]):
+        klee_file.write(f'    float agent{i}_prev_pos_x, agent{i}_prev_pos_z, agent{i}_stop_x, agent{i}_stop_z;\n')
+        klee_file.write(f'    float __soid__agent{i}_prev_pos_x, __soid__agent{i}_prev_pos_z, __soid__agent{i}_stop_x, __soid__agent{i}_stop_z;\n\n')
+
+        klee_file.write(f'    int agent{i}_tile_x, agent{i}_tile_z, agent{i}_direction;\n')
+        klee_file.write(f'    int __soid__agent{i}_tile_x, __soid__agent{i}_tile_z, __soid__agent{i}_direction;\n')
+
+
         
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_prev_pos_x, sizeof(float), "__soid__agent{i}_prev_pos_x");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_prev_pos_z, sizeof(float), "__soid__agent{i}_prev_pos_z");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_stop_x, sizeof(float), "__soid__agent{i}_stop_x");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_stop_z, sizeof(float), "__soid__agent{i}_stop_z");\n\n')
+
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_tile_x, sizeof(int), "__soid__agent{i}_tile_x");\n\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_tile_z, sizeof(int), "__soid__agent{i}_tile_z");\n\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_direction, sizeof(int), "__soid__agent{i}_direction");\n\n')
+        
+        # Prev pos
+        klee_file.write(f'    agent{i}_prev_pos_x = agent{i}_pos_x; // Calculated Variable\n')
+        klee_file.write(f'    klee_assume( agent{i}_prev_pos_x == __soid__agent{i}_prev_pos_x);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].prev_pos_x, &agent{i}_prev_pos_x, sizeof(float)); // Memcopy symb -> struct\n\n')
+        
+        klee_file.write(f'    agent{i}_prev_pos_z = agent{i}_pos_z; // Calculated Variable\n')
+        klee_file.write(f'    klee_assume( agent{i}_prev_pos_x == __soid__agent{i}_prev_pos_x);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].prev_pos_x, &agent{i}_prev_pos_x, sizeof(float)); // Memcopy symb -> struct\n\n')
+
         # direction
-        klee_file.write(f'    agent{i}.direction = get_direction(agent{i}.angle/3.14*180); // Calculated Variable\n')
+        klee_file.write(f'    agent{i}_direction = get_dl_direction(agent{i}.angle/3.14*180); // Calculated Variable\n')
+        klee_file.write(f'    klee_assume( agent{i}_direction == __soid__agent{i}_direction);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].direction, &agent{i}_direction, sizeof(int)); // Memcopy symb -> struct\n\n')
         
-        # tile pos
-        klee_file.write(f'    TilePos *agent{i}_tile_pos = get_tile_pos(agent{i}.pos_x, agent{i}.pos_z, info->road_tile_size); // Calculated Variable\n')
-        klee_file.write(f'    agent{i}.tile_x = agent{i}_tile_pos->x; // Calculated Variable\n')
-        klee_file.write(f'    agent{i}.tile_z = agent{i}_tile_pos->z; // Calculated Variable\n')
+        # tile 
+        klee_file.write(f'    agent{i}_tile_x = get_tile_pos(agent{i}_pos_x, agent{i}_pos_z, info.road_tile_size).x; // Calculated Variable\n')
+        klee_file.write(f'    klee_assume( agent{i}_tile_x == __soid__agent{i}_tile_x);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].tile_x, &agent{i}_tile_x, sizeof(int)); // Memcopy symb -> struct\n\n')
+
+        klee_file.write(f'    agent{i}_tile_z = get_tile_pos(agent{i}_pos_x, agent{i}_pos_z, info.road_tile_size).z; // Calculated Variable\n')
+        klee_file.write(f'    klee_assume( agent{i}_tile_z == __soid__agent{i}_tile_z);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].tile_z, &agent{i}_tile_z, sizeof(int)); // Memcopy symb -> struct\n\n')
         
         # stop pos
-        klee_file.write(f'    StopPos *agent{i}_stop_pos = get_stop_pos(agent{i}.tile_x, agent{i}.tile_z, info->road_tile_size, agent{i}.direction, agent{i}.speed); // Calculated Variable\n')
-        klee_file.write(f'    agent{i}.stop_x = agent{i}_stop_pos->x; // Calculated Variable\n')
-        klee_file.write(f'    agent{i}.stop_z = agent{i}_stop_pos->z; // Calculated Variable\n')
+        klee_file.write(f'    agent{i}_stop_x = get_stop_pos(agent{i}_tile_x, agent{i}_tile_z, info.road_tile_size, agent{i}_direction, agent{i}_speed).x; // Calculated Variable\n'); 
+        klee_file.write(f'    klee_assume( agent{i}_stop_x == __soid__agent{i}_stop_x);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].stop_x, &agent{i}_stop_x, sizeof(int)); // Memcopy symb -> struct\n\n')
+
+        klee_file.write(f'    agent{i}_stop_z = get_stop_pos(agent{i}_tile_x, agent{i}_tile_z, info.road_tile_size, agent{i}_direction, agent{i}_speed).z; // Calculated Variable\n'); 
+        klee_file.write(f'    klee_assume( agent{i}_stop_z == __soid__agent{i}_stop_z);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].stop_z, &agent{i}_stop_z, sizeof(int)); // Memcopy symb -> struct\n\n')
+        
+        # exists
+        klee_file.write(f'    agent{i}.exists = true; // exist \n\n')
 
         # Initialize states
-        klee_file.write(f'    agent{i}.exists = true; // exist \n\n')
-        klee_file.write(f'    agent{i}.state.in_intersection = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.at_intersection_entry = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.intersection_empty = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.approaching_intersection = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.obj_in_range = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.has_right_of_way = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.safe_to_enter = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.cars_waiting_to_enter = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.car_entering_range = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.obj_behind_intersection = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.is_tailgating = false; //initial states\n')
-        klee_file.write(f'    agent{i}.state.next_to_go = false; //initial states\n\n')
-        
-    klee_file.write("\n     //Setting agent states\n")
+        klee_file.write(f'    bool agent{i}_state_in_intersection, agent{i}_state_at_intersection_entry, agent{i}_state_intersection_empty, agent{i}_state_approaching_intersection, agent{i}_state_obj_in_range, agent{i}_state_has_right_of_way, agent{i}_state_safe_to_enter, agent{i}_state_cars_waiting_to_enter, agent{i}_state_car_entering_range, agent{i}_state_obj_behind_intersection, agent{i}_state_is_tailgating, agent{i}_state_next_to_go; \n')
 
+        klee_file.write(f'    bool __soid__agent{i}_state_in_intersection, __soid__agent{i}_state_at_intersection_entry, __soid__agent{i}_state_intersection_empty, __soid__agent{i}_state_approaching_intersection, __soid__agent{i}_state_obj_in_range, __soid__agent{i}_state_has_right_of_way, __soid__agent{i}_state_safe_to_enter, __soid__agent{i}_state_cars_waiting_to_enter, __soid__agent{i}_state_car_entering_range, __soid__agent{i}_state_obj_behind_intersection, __soid__agent{i}_state_is_tailgating, __soid__agent{i}_state_next_to_go; \n')
+
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_in_intersection, sizeof(bool), "__soid__agent{i}_state_in_intersection");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_at_intersection_entry, sizeof(bool), "__soid__agent{i}_state_at_intersection_entry");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_intersection_empty, sizeof(bool), "__soid__agent{i}_state_intersection_empty");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_approaching_intersection, sizeof(bool), "__soid__agent{i}_state_approaching_intersection");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_obj_in_range, sizeof(bool), "__soid__agent{i}_state_obj_in_range");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_has_right_of_way, sizeof(bool), "__soid__agent{i}_state_has_right_of_way");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_safe_to_enter, sizeof(bool), "__soid__agent{i}_state_safe_to_enter");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_cars_waiting_to_enter, sizeof(bool), "__soid__agent{i}_state_cars_waiting_to_enter");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_car_entering_range, sizeof(bool), "__soid__agent{i}_state_car_entering_range");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_obj_behind_intersection, sizeof(bool), "__soid__agent{i}_state_obj_behind_intersection");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_is_tailgating, sizeof(bool), "__soid__agent{i}_state_is_tailgating");\n')
+        klee_file.write(f'    klee_make_symbolic( &__soid__agent{i}_state_next_to_go, sizeof(bool), "__soid__agent{i}_state_next_to_go");\n')
+
+        klee_file.write("\n     //Setting agent states\n")
+        klee_file.write(f'    agent{i}_state_in_intersection = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_at_intersection_entry = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_intersection_empty = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_approaching_intersection = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_obj_in_range = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_has_right_of_way = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_safe_to_enter = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_cars_waiting_to_enter = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_car_entering_range = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_obj_behind_intersection = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_is_tailgating = false; //initial states\n')
+        klee_file.write(f'    agent{i}_state_next_to_go = false; //initial states\n\n')
+
+    # Copy out agent states
+    klee_file.write("    // Copy out to agent states\n")
     # in_intersection
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.in_intersection = in_intersection(info, i);\n")
-    klee_file.write("     }\n")
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // in_intersection\n")
+        klee_file.write(f"    agent{i}_state_in_intersection = in_intersection(&info, {i});\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_in_intersection == __soid__agent{i}_state_in_intersection);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.in_intersection, &agent{i}_state_in_intersection, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
     # at_intersection_entry
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.at_intersection_entry = at_intersection_entry(info, i);\n")
-    klee_file.write("     }\n")
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // at_intersection_entry\n")
+        klee_file.write(f"    agent{i}_state_at_intersection_entry = at_intersection_entry(&info, {i});\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_at_intersection_entry == __soid__agent{i}_state_at_intersection_entry);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.at_intersection_entry, &agent{i}_state_at_intersection_entry, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
     # intersection_empty
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.intersection_empty = intersection_empty(info, i);\n")
-    klee_file.write("     }\n")
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // intersection_empty\n")
+        klee_file.write(f"    agent{i}_state_intersection_empty = intersection_empty(&info, {i});\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_intersection_empty == __soid__agent{i}_state_intersection_empty);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.intersection_empty, &agent{i}_state_intersection_empty, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
-    # approaching intersection
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.approaching_intersection = approaching_intersection(info, i);\n")
-    klee_file.write("     }\n")
+    # approaching_intersection
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // approaching_intersection\n")
+        klee_file.write(f"    agent{i}_state_approaching_intersection = approaching_intersection(&info, {i});\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_approaching_intersection == __soid__agent{i}_state_approaching_intersection);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.approaching_intersection, &agent{i}_state_approaching_intersection, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
     # obj_in_range
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.obj_in_range = object_in_range(info, i, 1);\n")
-    klee_file.write("     }\n")
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // obj_in_range\n")
+        klee_file.write(f"    agent{i}_state_obj_in_range = object_in_range(&info, {i}, 1);\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_obj_in_range == __soid__agent{i}_state_obj_in_range);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.obj_in_range, &agent{i}_state_obj_in_range, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
-    # Right of way
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.has_right_of_way = has_right_of_way(info, i);\n")
-    klee_file.write("     }\n")
+    # right_of_way
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // right_of_way\n")
+        klee_file.write(f"    agent{i}_state_has_right_of_way = has_right_of_way(&info, {i});\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_has_right_of_way == __soid__agent{i}_state_has_right_of_way);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.has_right_of_way, &agent{i}_state_has_right_of_way, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
-    # Next to go
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.next_to_go = next_to_go(info, i);\n")
-    klee_file.write("     }\n")
+    # next_to_go
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // next_to_go\n")
+        klee_file.write(f"    agent{i}_state_next_to_go = next_to_go(&info, {i});\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_next_to_go == __soid__agent{i}_state_next_to_go);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.next_to_go, &agent{i}_state_next_to_go, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
     # safe_to_enter
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.safe_to_enter = safe_to_enter(info, i);\n")
-    klee_file.write("     }\n")
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // safe_to_enter\n")
+        klee_file.write(f"    agent{i}_state_safe_to_enter = safe_to_enter(&info, {i});\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_safe_to_enter == __soid__agent{i}_state_safe_to_enter);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.safe_to_enter, &agent{i}_state_safe_to_enter, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
     # cars_waiting_to_enter
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.cars_waiting_to_enter = cars_waiting_to_enter(info, i);\n")
-    klee_file.write("     }\n")
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // cars_waiting_to_enter\n")
+        klee_file.write(f"    agent{i}_state_cars_waiting_to_enter = cars_waiting_to_enter(&info, {i});\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_cars_waiting_to_enter == __soid__agent{i}_state_cars_waiting_to_enter);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.cars_waiting_to_enter, &agent{i}_state_cars_waiting_to_enter, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
     # car_entering_range
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.car_entering_range = car_entering_range(info, i, 1);\n")
-    klee_file.write("     }\n")
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // car_entering_range\n")
+        klee_file.write(f"    agent{i}_state_car_entering_range = car_entering_range(&info, {i}, 1);\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_car_entering_range == __soid__agent{i}_state_car_entering_range);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.car_entering_range, &agent{i}_state_car_entering_range, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
     # obj_behind_intersection
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.obj_behind_intersection = car_entering_range(info, i, 1);\n")
-    klee_file.write("     }\n")
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // obj_behind_intersection\n")
+        klee_file.write(f"    agent{i}_state_obj_behind_intersection = object_in_range(&info, {i}, 2);\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_obj_behind_intersection == __soid__agent{i}_state_obj_behind_intersection);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.obj_behind_intersection, &agent{i}_state_obj_behind_intersection, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
     # tailgating
-    klee_file.write("    for(int i = 0; i < agents->num_agents; i++){\n")
-    klee_file.write("        agents->agents_array[i].state.is_tailgating = is_tailgating(info, i);\n")
-    klee_file.write("     }\n")
+    for i in range(environment["num_agents"]):
+        klee_file.write(f"    // is_tailgating\n")
+        klee_file.write(f"    agent{i}_state_is_tailgating = is_tailgating(&info, {i});\n")
+        klee_file.write(f'    klee_assume( agent{i}_state_is_tailgating == __soid__agent{i}_state_is_tailgating);\n')
+        klee_file.write(f'    memmove( &agents.agents_array[{i}].state.is_tailgating, &agent{i}_state_is_tailgating, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
+    
+
+
+    klee_file.write(f'    // Klee Close Merge();\n')
+    klee_file.write(f'    klee_close_merge();\n')
     
     # handle the q table nd proceed model ONLY FOR AGENT 0
     klee_file.write("    // Q table stuff\n")
-    
     agent = agents['agent0']
     for m in range(1024):
         for n in range(2):
-            klee_file.write(f"   info->agents.agents_array[{i}].q_table[{m}][{n}] = {agent['state']['q_table'][m][n]};\n")
+            klee_file.write(f"   info.agents->agents_array[{i}].q_table[{m}][{n}] = {agent['state']['q_table'][m][n]};\n")
 
 
     # Get learning state row
     klee_file.write("\n    // Learning Row\n")
-    klee_file.write("    int mrow = get_learning_state(info, 0);\n")
+    klee_file.write("    int mrow, __soid__mrow;\n")
+    klee_file.write(f'    klee_make_symbolic( &__soid__mrow, sizeof(int), "__soid__mrow_");\n')
+    klee_file.write("    mrow = get_learning_state(&info, 0);\n")
+    klee_file.write(f'    klee_assume( mrow == __soid__mrow);\n')
 
     klee_file.write("\n    // Invoke proceed\n")
     
     klee_file.write(f'    bool will_proceed, __soid__will_proceed;\n')
     klee_file.write(f'    klee_make_symbolic( &__soid__will_proceed, sizeof(bool), "__soid__will_proceed");\n')
-    klee_file.write(f'    klee_close_merge();\n')
-    klee_file.write("    will_proceed = proceed_model(agents->agents_array[0].q_table, mrow);\n")
+    klee_file.write("    will_proceed = proceed_model(agents.agents_array[0].q_table, mrow);\n")
+    #klee_file.write("    will_proceed = proceed_good_agent(&info, mrow);\n")
     klee_file.write(f'    klee_assume( will_proceed == __soid__will_proceed);\n')
-    
-    # close merge
-
-
-
     
     klee_file.write("}\n")
     

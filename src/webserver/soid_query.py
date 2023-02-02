@@ -359,9 +359,9 @@ def generate_soid_query(query_info):
             formula = And (
                 get_constraint(declare_type, tagged_cf),
                 formula)
-            print(f" Formula {formula.sort()}")
+            #print(f" Formula {formula.sort()}")
             
-        print(formula)
+        #print(formula)
         return formula
 
     def environmental( E ):
@@ -380,6 +380,13 @@ def generate_soid_query(query_info):
     print(f"Soid Results:")
     (info, res, models, resources ) = soid.invoke(oracle, make, query)
     print(f"Result: {res} Resources: {resources}")
+    model_prefix = "src/webserver/soid_files/klee/models/"
+    # open klee file
+    model_file = open((model_prefix + "model.out"), 'w', encoding="utf-8")
+    model_file.write(f"{models[0]}")
+    model_file.close()
+
+
     # Ignore info
     # Res is the result
     # Models is empty or models[0] is the model

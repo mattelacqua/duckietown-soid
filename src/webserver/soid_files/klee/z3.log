@@ -1,0 +1,502 @@
+; start Z3 query
+(assert (not false))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_pos_x_ackermann!0 () (_ BitVec 32))
+(assert (not (fp.lt ((_ to_fp 8 24) agent0_pos_x_ackermann!0)
+            ((_ to_fp 8 24) #x3fcae148))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_pos_x_ackermann!33 () (_ BitVec 32))
+(assert (fp.lt ((_ to_fp 8 24) agent0_pos_x_ackermann!33) ((_ to_fp 8 24) #x3fcae148)))
+(assert (not (not (fp.gt ((_ to_fp 8 24) agent0_pos_x_ackermann!33)
+                 ((_ to_fp 8 24) #x3f800000)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_pos_z_ackermann!66 () (_ BitVec 32))
+(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!66)
+                 ((_ to_fp 8 24) #x3fea5e35)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_angle_ackermann!99 () (_ BitVec 32))
+(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_angle_ackermann!99)
+                 ((_ to_fp 8 24) #x3fcb4396)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_forward_step_ackermann!132 () (_ BitVec 32))
+(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_forward_step_ackermann!132)
+                 ((_ to_fp 8 24) #x3ee147ae)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_speed_ackermann!165 () (_ BitVec 32))
+(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!165)
+                 ((_ to_fp 8 24) #x3dd91687)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_signal_choice_ackermann!198 () (_ BitVec 32))
+(assert (not (not (= #x00000002 agent0_signal_choice_ackermann!198))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_turn_choice_ackermann!199 () (_ BitVec 32))
+(assert (not (not (= #x00000002 agent0_turn_choice_ackermann!199))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_lookahead_ackermann!200 () (_ BitVec 32))
+(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_lookahead_ackermann!200)
+                 ((_ to_fp 8 24) #x3f15c28f)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_intersection_arrival_ackermann!233 () (_ BitVec 32))
+(assert (not (not (= #x0000004d agent0_intersection_arrival_ackermann!233))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_step_count_ackermann!234 () (_ BitVec 32))
+(assert (not (not (= #x00000073 agent0_step_count_ackermann!234))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent0_angle_ackermann!235 () (_ BitVec 32))
+(assert (fp.eq ((_ to_fp 8 24) agent0_angle_ackermann!235) ((_ to_fp 8 24) #x3fcb4396)))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent0_angle_ackermann!235))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x42340000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43070000))))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_pos_x_ackermann!236 () (_ BitVec 32))
+(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!236)
+                 ((_ to_fp 8 24) #x3f983127)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_pos_z_ackermann!269 () (_ BitVec 32))
+(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_pos_z_ackermann!269)
+                 ((_ to_fp 8 24) #x3fcb020c)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_forward_step_ackermann!302 () (_ BitVec 32))
+(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_forward_step_ackermann!302)
+                 ((_ to_fp 8 24) #x3ee147ae)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_speed_ackermann!335 () (_ BitVec 32))
+(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!335)
+                 ((_ to_fp 8 24) #x3e374bc7)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_turn_choice_ackermann!368 () (_ BitVec 32))
+(assert (not (not (= #x00000002 agent1_turn_choice_ackermann!368))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_lookahead_ackermann!369 () (_ BitVec 32))
+(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_lookahead_ackermann!369)
+                 ((_ to_fp 8 24) #x3f15c28f)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_intersection_arrival_ackermann!402 () (_ BitVec 32))
+(assert (not (not (= #x0000003c agent1_intersection_arrival_ackermann!402))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_initial_direction_ackermann!403 () (_ BitVec 32))
+(assert (not (not (= #x00000002 agent1_initial_direction_ackermann!403))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_step_count_ackermann!404 () (_ BitVec 32))
+(assert (not (not (= #x00000073 agent1_step_count_ackermann!404))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_angle_ackermann!405 () (_ BitVec 32))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!405))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+(let ((a!2 (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                            ((_ to_fp 8 24) #x42340000))
+                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                             ((_ to_fp 8 24) #x43070000))))))
+  (not a!2))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_angle_ackermann!438 () (_ BitVec 32))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!438))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x42340000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43070000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!438))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+(let ((a!2 (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                            ((_ to_fp 8 24) #x43070000))
+                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                             ((_ to_fp 8 24) #x43610000))))))
+  (not a!2))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_angle_ackermann!471 () (_ BitVec 32))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!471))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x42340000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43070000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!471))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x43070000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43610000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!471))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                            ((_ to_fp 8 24) #x43610000))
+                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                             ((_ to_fp 8 24) #x439d8000)))
+                #x53
+                #x45)))
+  (not (= #x45 a!2)))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_angle_ackermann!504 () (_ BitVec 32))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!504))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x42340000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43070000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!504))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x43070000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43610000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!504))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                            ((_ to_fp 8 24) #x43610000))
+                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                             ((_ to_fp 8 24) #x439d8000)))
+                #x53
+                #x45)))
+  (not (not (= #x01 a!2))))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_angle_ackermann!537 () (_ BitVec 32))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!537))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x42340000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43070000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!537))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x43070000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43610000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!537))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                            ((_ to_fp 8 24) #x43610000))
+                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                             ((_ to_fp 8 24) #x439d8000)))
+                #x53
+                #x45)))
+  (not (not (= #x00 a!2))))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_angle_ackermann!570 () (_ BitVec 32))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!570))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x42340000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43070000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!570))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x43070000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43610000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!570))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                            ((_ to_fp 8 24) #x43610000))
+                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                             ((_ to_fp 8 24) #x439d8000)))
+                #x53
+                #x45)))
+  (not (not (= #x03 a!2))))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_angle_ackermann!603 () (_ BitVec 32))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!603))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x42340000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43070000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!603))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x43070000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43610000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!603))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                            ((_ to_fp 8 24) #x43610000))
+                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                             ((_ to_fp 8 24) #x439d8000)))
+                #x53
+                #x45)))
+  (not (not (= #x02 a!2))))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun __soid__will_proceed_ackermann!636 () (_ BitVec 8))
+(assert (not (not (= ((_ extract 0 0) __soid__will_proceed_ackermann!636) #b1))))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_angle_ackermann!639 () (_ BitVec 32))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!639))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x42340000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43070000))))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!639))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+         ((_ to_fp 8 24) #x43070000))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!639))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+          ((_ to_fp 8 24) #x43610000))))
+(assert (not false))
+(check-sat)
+(reset)
+; end Z3 query
+
+; start Z3 query
+(declare-fun agent1_angle_ackermann!672 () (_ BitVec 32))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!672))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+         ((_ to_fp 8 24) #x42340000))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!672))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+          ((_ to_fp 8 24) #x43070000))))
+(assert (not false))
+(check-sat)
+(reset)
+; end Z3 query
+

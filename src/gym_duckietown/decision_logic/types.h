@@ -30,20 +30,10 @@ typedef struct {
     int z;
 } TilePos ;
 
-extern TilePos *make_TilePos(int x, int z);
-
-
-extern void free_TilePos(TilePos *p);
-
 typedef struct {
     float x;
     float z;
 } StopPos ;
-
-extern StopPos *make_StopPos(float x, float z);
-
-extern void free_StopPos(StopPos *p);
-
 
 typedef struct {
     TurnChoice turn_choice;
@@ -113,6 +103,6 @@ typedef struct {
     int grid_h ;
     float road_tile_size ;
     int max_steps ;
-    EnvironmentAgentArray agents ;
+    EnvironmentAgentArray *agents ;
 } EnvironmentInfo ;
 #endif
