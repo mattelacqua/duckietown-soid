@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
     klee_assume( agent1_initial_direction == 2); // Concrete State Val 
     klee_assume( agent1_patience == 0); // Concrete State Val 
     klee_assume( agent1_step_count == 82); // Concrete State Val 
-    klee_assume( agent1_signal_choice == LEFT ); // Symbolic Value
+    klee_assume( agent1_signal_choice == RIGHT ); // Symbolic Value
     memcpy( &agent1.prev_pos_x, &agent1_pos_x, sizeof(float)); // Memcopy symb -> struct
     memcpy( &agent1.prev_pos_z, &agent1_pos_z, sizeof(float)); // Memcopy symb -> struct
     memcpy( &agent1.angle, &agent1_angle, sizeof(float)); // Memcopy symb -> struct
@@ -2239,7 +2239,8 @@ int main(int argc, char **argv) {
     int mrow = get_learning_state(info, 0);
 
     // Invoke proceed
-    bool will_proceed;
-    klee_make_symbolic( &will_proceed, sizeof(bool), "will_proceed");
+    bool will_proceed, __soid__will_proceed;
+    klee_make_symbolic( &__soid__will_proceed, sizeof(bool), "__soid__will_proceed");
     will_proceed = proceed_model(agents->agents_array[0].q_table, mrow);
+    klee_assume( will_proceed == __soid__will_proceed);
 }

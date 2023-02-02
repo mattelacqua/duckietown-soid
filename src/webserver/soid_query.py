@@ -372,8 +372,8 @@ def generate_soid_query(query_info):
         return encode(S, t_state)
     query.state(state)
 
-    def behavior(E, S, D ):
-        return Equal(D.will_proceed, True) # This will tell us if we ever move
+    def behavior(E, S, P ):
+        return Equal(P.will_proceed, True) # This will tell us if we ever move
     query.behavior(behavior)
 
     # invoke soid

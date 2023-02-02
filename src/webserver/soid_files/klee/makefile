@@ -14,7 +14,7 @@ symbolic:
 	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o $(BC)
 	$(KEXEC) -silent-klee-assume -write-smt2s -use-merge $(BC)
 
-clean:
-	rm -f ./inter.bc
-	rm -rf ./klee-out-*
-	rm -rf ./klee-last
+#clean:
+#	rm -f ./inter.bc
+#	rm -rf ./klee-out-*
+#	rm -rf ./klee-last

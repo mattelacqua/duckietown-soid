@@ -446,9 +446,10 @@ def generate_klee_file(query_blob):
 
     klee_file.write("\n    // Invoke proceed\n")
     
-    klee_file.write(f'    bool will_proceed;\n')
-    klee_file.write(f'    klee_make_symbolic( &will_proceed, sizeof(bool), "will_proceed");\n')
+    klee_file.write(f'    bool will_proceed, __soid__will_proceed;\n')
+    klee_file.write(f'    klee_make_symbolic( &__soid__will_proceed, sizeof(bool), "__soid__will_proceed");\n')
     klee_file.write("    will_proceed = proceed_model(agents->agents_array[0].q_table, mrow);\n")
+    klee_file.write(f'    klee_assume( will_proceed == __soid__will_proceed);\n')
 
 
 
