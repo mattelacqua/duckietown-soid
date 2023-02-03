@@ -28,10 +28,63 @@ def generate_soid_query(query_info):
         
         # If we are on the first agent, who is the agent who's perspective matters
         agent = agents[f'agent{i}']
-        print(agent)
         if i == 0:
             # Go through all of the counterfactuals
+            if agent["concrete"]["pos_x"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'pos_x',
+                    'val': agent["concrete"]["pos_x"],
+                }
+                t_environment.append(tagged_cf)
 
+            if agent["concrete"]["pos_z"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'pos_z',
+                    'val': agent["concrete"]["pos_z"],
+                }
+                t_environment.append(tagged_cf)
+
+            if agent["concrete"]["angle"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'angle',
+                    'val': agent["concrete"]["angle"],
+                }
+                t_environment.append(tagged_cf)
+
+            if agent["concrete"]["forward_step"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'forward_step',
+                    'val': agent["concrete"]["forward_step"],
+                }               
+                t_environment.append(tagged_cf)
+
+            if agent["concrete"]["speed"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'speed',
+                    'val': agent["concrete"]["speed"],
+                }
+                t_environment.append(tagged_cf)
+            
             for counterfactual in agent['symbolic']:
                 tagged_cf = {
                     'id': agent['concrete']['id'],
@@ -108,6 +161,81 @@ def generate_soid_query(query_info):
             })            
 
         if i > 0:
+            # Go through all of the counterfactuals
+            if agent["concrete"]["pos_x"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'pos_x',
+                    'val': agent["concrete"]["pos_x"],
+                }
+                t_environment.append(tagged_cf)
+
+            if agent["concrete"]["pos_z"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'pos_z',
+                    'val': agent["concrete"]["pos_z"],
+                }
+                t_environment.append(tagged_cf)
+
+            if agent["concrete"]["angle"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'angle',
+                    'val': agent["concrete"]["angle"],
+                }
+                t_environment.append(tagged_cf)
+
+            if agent["concrete"]["forward_step"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'forward_step',
+                    'val': agent["concrete"]["forward_step"],
+                }               
+                t_environment.append(tagged_cf)
+
+            if agent["concrete"]["speed"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'speed',
+                    'val': agent["concrete"]["speed"],
+                }
+                t_environment.append(tagged_cf)            
+            if agent["concrete"]["signal_choice"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'signal_choice',
+                    'val': agent["concrete"]["signal_choice"],
+                }
+                t_environment.append(tagged_cf)   
+            if agent["concrete"]["turn_choice"]:
+                tagged_cf = {
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'is_val': True,
+                    'val_type': 'turn_choice',
+                    'val': agent["concrete"]["turn_choice"],
+                }
+                t_environment.append(tagged_cf)   
             for counterfactual in agents[f'agent{i}']['symbolic']:
                 # Each of their counterfactuals will be environment
                 tagged_cf = {
@@ -189,6 +317,20 @@ def generate_soid_query(query_info):
                     E[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int(f'agent{a_id}_signal_choice', pp=None, raw=None)
             elif tagged_cf['is_val']:
                 val_type = tagged_cf['val_type']
+                if val_type == 'pos_x':
+                    E[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x', pp=None, raw=None)
+                if val_type == 'pos_z':
+                    E[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z', pp=None, raw=None)
+                if val_type == 'angle':
+                    E[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle', pp=None, raw=None)
+                if val_type == 'forward_step':
+                    E[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step', pp=None, raw=None)
+                if val_type == 'speed':
+                    E[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed', pp=None, raw=None)
+                if val_type == 'signal_choice':
+                    E[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int(f'agent{a_id}_signal_choice', pp=None, raw=None)
+                if val_type == 'turn_choice':
+                    E[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int(f'agent{a_id}_turn_choice', pp=None, raw=None)
                 if val_type == 'lookahead':
                     E[f'agent{a_id}_lookahead'] = soid.soidlib.types.float(f'agent{a_id}_lookahead', pp=None, raw=None)
                 if val_type == 'intersection_arrival':
@@ -222,6 +364,20 @@ def generate_soid_query(query_info):
                     S[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int(f'agent{a_id}_signal_choice', pp=None, raw=None)
             elif tagged_cf['is_val']:
                 val_type = tagged_cf['val_type']
+                if val_type == 'pos_x':
+                    S[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x', pp=None, raw=None)
+                if val_type == 'pos_z':
+                    S[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z', pp=None, raw=None)
+                if val_type == 'angle':
+                    S[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle', pp=None, raw=None)
+                if val_type == 'forward_step':
+                    S[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step', pp=None, raw=None)
+                if val_type == 'speed':
+                    S[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed', pp=None, raw=None)
+                if val_type == 'signal_choice':
+                    S[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int(f'agent{a_id}_signal_choice', pp=None, raw=None)
+                if val_type == 'turn_choice':
+                    S[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int(f'agent{a_id}_turn_choice', pp=None, raw=None)
                 if val_type == 'lookahead':
                     S[f'agent{a_id}_lookahead'] = soid.soidlib.types.float(f'agent{a_id}_lookahead', pp=None, raw=None)
                 if val_type == 'intersection_arrival':
@@ -235,6 +391,31 @@ def generate_soid_query(query_info):
         
         # declare behaviors
         D = {}
+        for i in range(int(q_environment['num_agents'])):
+            D[f'agent{i}_prev_pos_x'] = soid.soidlib.types.float(f'agent{i}_prev_pos_x', pp=None, raw=None)
+            D[f'agent{i}_prev_pos_z'] = soid.soidlib.types.float(f'agent{i}_prev_pos_z', pp=None, raw=None)
+            D[f'agent{i}_stop_x'] = soid.soidlib.types.float(f'agent{i}_stop_x', pp=None, raw=None)
+            D[f'agent{i}_stop_z'] = soid.soidlib.types.float(f'agent{i}_stop_z', pp=None, raw=None)
+
+            D[f'agent{i}_direction'] = soid.soidlib.types.int(f'agent{i}_direction', pp=None, raw=None)
+            D[f'agent{i}_tile_x'] = soid.soidlib.types.int(f'agent{i}_tile_x', pp=None, raw=None)
+            D[f'agent{i}_tile_z'] = soid.soidlib.types.int(f'agent{i}_tile_z', pp=None, raw=None)
+
+            """
+            D[f'agent{i}_state_in_intersection'] = soid.soidlib.types.bool(f'agent{i}_state_in_intersection', pp=None, raw=None)
+            D[f'agent{i}_state_at_intersection_entry'] = soid.soidlib.types.bool(f'agent{i}_state_at_intersection_entry', pp=None, raw=None)
+            D[f'agent{i}_state_intersection_empty'] = soid.soidlib.types.bool(f'agent{i}_state_intersection_empty', pp=None, raw=None)
+            D[f'agent{i}_state_approaching_intersection'] = soid.soidlib.types.bool(f'agent{i}_state_approaching_intersection', pp=None, raw=None)
+            D[f'agent{i}_state_in_obj_in_range'] = soid.soidlib.types.bool(f'agent{i}_state_in_obj_in_range', pp=None, raw=None)
+            D[f'agent{i}_state_in_has_right_of_way'] = soid.soidlib.types.bool(f'agent{i}_state_in_has_right_of_way', pp=None, raw=None)
+            D[f'agent{i}_state_safe_to_enter'] = soid.soidlib.types.bool(f'agent{i}_state_safe_to_enter', pp=None, raw=None)
+            D[f'agent{i}_state_cars_waiting_to_enter'] = soid.soidlib.types.bool(f'agent{i}_state_cars_waiting_to_enter', pp=None, raw=None)
+            D[f'agent{i}_state_car_entering_range'] = soid.soidlib.types.bool(f'agent{i}_state_car_entering_range', pp=None, raw=None)
+            D[f'agent{i}_state_obj_behind_intersection'] = soid.soidlib.types.bool(f'agent{i}_state_obj_behind_intersection', pp=None, raw=None)
+            D[f'agent{i}_state_is_tailgating'] = soid.soidlib.types.bool(f'agent{i}_state_is_tailgating', pp=None, raw=None)
+            D[f'agent{i}_state_next_to_go'] = soid.soidlib.types.bool(f'agent{i}_state_next_to_go', pp=None, raw=None)
+            """
+        D[f'mrow'] = soid.soidlib.types.int(f'mrow', pp=None, raw=None)
         D[f'will_proceed'] = soid.soidlib.types.bool(f'will_proceed', pp=None, raw=None)
         
         return E,S, D
