@@ -745,13 +745,8 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
             if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x, agent.tile_z - 1)){
                 // Check relative to stop line.
                 float stop_line = (env_info->intersection_z + 1) * env_info->road_tile_size;
-                printf("agent 0 stop_line %f\n", stop_line);
-                printf("agent 0 stop_line  - %f\n", (stop_line - env_info->robot_length * 0.20));
-                printf("agent 0 pos_z  - %f\n", agent.pos_z);
-                printf("agent 0 stop_line  + %f\n", (stop_line + env_info->robot_length));
                 if (agent.pos_z > stop_line - env_info->robot_length * 0.20 &&
                     agent.pos_z < stop_line + env_info->robot_length){
-                    printf("RETURNING TRUE\n");
                     return true;
                     }
                 else // if not at the stop line
@@ -796,7 +791,6 @@ bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
                 if (env_info->intersection_x == 0)
                     modifier = 1;
                 float stop_line = (env_info->intersection_x + modifier) * env_info->road_tile_size;
-                printf("agent 1 stop_line %f\n", stop_line);
                 if (agent.pos_x > stop_line - env_info->robot_length &&
                     agent.pos_x < stop_line + env_info->robot_length * 0.20)
                     return true;

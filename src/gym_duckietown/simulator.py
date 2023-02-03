@@ -517,43 +517,30 @@ class Simulator(gym.Env):
     def get_agents_states(self):
         env = self
         radius = (env.road_tile_size)
-        print("before in_int")
         for agent in self.agents: 
             agent.states['in_intersection'] = agent.in_intersection(env)
-        print("before at_int")
         for agent in self.agents: 
             agent.states['at_intersection_entry'] = agent.at_intersection_entry(env)
-        print("before empty")
         for agent in self.agents: 
             agent.states['intersection_empty'] = agent.intersection_empty(env)
-        print("before approaching")
         for agent in self.agents: 
             agent.states['approaching_intersection'] = agent.approaching_intersection(env)
-        print("before objinrange")
         for agent in self.agents: 
             agent.states['obj_in_range'] = agent.object_in_range(env, location="Ahead", radius = radius)
-        print("before row")
         for agent in self.agents: 
             agent.states['has_right_of_way'] = agent.has_right_of_way(env)
-        print("before ntg")
         for agent in self.agents: 
             agent.states['next_to_go'] = agent.next_to_go(env)
-        print("before ste")
         for agent in self.agents: 
             agent.states['safe_to_enter'] = agent.safe_to_enter(env)
-        print("before cwe")
         for agent in self.agents: 
             agent.states['cars_waiting_to_enter'] = agent.cars_waiting_to_enter(env)
-        print("before cer")
         for agent in self.agents: 
             agent.states['car_entering_range'] = agent.car_entering_range(env, radius=radius)
-        print("before obi")
         for agent in self.agents: 
             agent.states['obj_behind_intersection'] = agent.object_in_range(env, location="Behind", intersection=True, radius=radius)
-        print("before obni")
         for agent in self.agents: 
             agent.states['obj_behind_no_intersection'] =  agent.object_in_range(env, location="Behind", intersection=False, radius=radius)
-        print("before tailgating")
         for agent in self.agents: 
             agent.states['is_tailgating'] =  agent.is_tailgating(env)
     
@@ -750,8 +737,6 @@ class Simulator(gym.Env):
             # If setting from the webserver, use that information for propose angle and position
             if webserver_reset:
                 propose_pos = agent.cur_pos 
-                print("HERE")
-                print(f"Agent current pos{agent.cur_pos}")
                 propose_angle = agent.cur_angle
 
             # If specified from map, use that information
@@ -850,9 +835,7 @@ class Simulator(gym.Env):
         # Generate the first camera image
         #obs = self.render_obs(segment=segment)
         self.c_info_struct = EnvironmentInfo(self)
-        print("Get the struct. Nowstates")
         self.get_agents_states()
-        print("Get the states")
 
 
         # Return first observation

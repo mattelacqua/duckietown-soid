@@ -140,7 +140,6 @@ def in_intersection(self, env):
     # C callout
     dl.in_intersection.argtypes = [POINTER(EnvironmentInfo), c_int]
     dl.in_intersection.restype = c_bool
-    print(env.c_info_struct.agents[0].pos_x)
     in_intersection = dl.in_intersection(env.c_info_struct, int(self.index))
     return in_intersection
 

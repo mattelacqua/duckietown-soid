@@ -110,7 +110,6 @@ class EnvironmentInfo(Structure):
                 self.agents[i].prev_pos_z = c_float(round(agent.prev_pos[2], 3))
 
                 stop_x, stop_z = agent.get_stop_pos(env)
-                print(f"Getting stop pos {stop_x, stop_z}")
                 self.agents[i].stop_x = c_float(round(stop_x, 3))
                 self.agents[i].stop_z = c_float(round(stop_z, 3))
 
@@ -130,7 +129,6 @@ class EnvironmentInfo(Structure):
                 self.agents[i].step_count = c_int(round(agent.step_count, 3))
                 self.agents[i].lookahead = c_float(round(agent.lookahead, 3))
 
-                print("Getting states")
                 self.agents[i].state = AgentState(agent.states['in_intersection'],
                                                         agent.states['at_intersection_entry'],
                                                         agent.states['intersection_empty'],

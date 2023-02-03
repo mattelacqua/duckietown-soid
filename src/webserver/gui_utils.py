@@ -32,7 +32,6 @@ def handle_input(env, gui_input):
         elif change == "delete":
             env.agents.remove(agent)
         elif change == "initial_direction":
-            print(gui_input['initial_direction'])
             if gui_input['initial_direction'] == '0':
                 agent.initial_direction = 'N'
             elif gui_input['initial_direction'] == '1':
@@ -101,8 +100,6 @@ def handle_input(env, gui_input):
             agent.log = gui_input['log']
     
     if gui_input['kind'] == 'query':
-        print('getting query blob')
-        print(env.agents[0].log)
         query_blob = cf.get_query_blob(env, gui_input['query_info'])
 
         print("\n\n Final Query Blob")
