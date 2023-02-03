@@ -85,7 +85,7 @@ learn_agent.forward_step = 0.44
 learn_agent.turn_choice = 'Right' 
 learn_agent.signal_choice = 'Right' 
 learn_agent.curve = learn_agent.get_curve(env)
-learn_agent.reward_profile = 2 
+learn_agent.reward_profile = 3 
 
 env_agent.agent_id = "agent1"
 env_agent.index = 1
@@ -167,7 +167,10 @@ def pause(dt):
 
     # While still getting input
     while env.state == "pause":
-        gui_input = list(gu.unserialize(inp))
+        try:
+            gui_input = list(gu.unserialize(inp))
+        except:
+            pass
         # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
         if gui_input:
             gui_input = gui_input[-1]

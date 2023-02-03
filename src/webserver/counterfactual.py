@@ -53,13 +53,13 @@ def get_query_blob(env, query_info):
 
             def sort_symbolics(counterfactuals):
                 symbolics = {}
-                symbolics['list_pos_x'] = {}
-                symbolics['list_pos_z'] = {}
-                symbolics['list_angle'] = {}
-                symbolics['list_forward_step'] = {}
-                symbolics['list_speed'] = {}
-                symbolics['list_signal_choice'] = {}
-                symbolics['list_turn_choice'] = {}
+                symbolics['list_pos_x'] = []
+                symbolics['list_pos_z'] = []
+                symbolics['list_angle'] = []
+                symbolics['list_forward_step'] = []
+                symbolics['list_speed'] = []
+                symbolics['list_signal_choice'] = []
+                symbolics['list_turn_choice'] = []
                 for counterfactual in counterfactuals:
                     if counterfactual['is_pos_x']:
                         symbolics['list_pos_x'].append(counterfactual)
@@ -71,16 +71,16 @@ def get_query_blob(env, query_info):
                         symbolics['list_forward_step'].append(counterfactual)
                     if counterfactual['is_speed']:
                         symbolics['list_speed'].append(counterfactual)
-                    if counterfactual['is_signal_choice']:
+                    if counterfactual['is_signalchoice']:
                         symbolics['list_signal_choice'].append(counterfactual)
-                    if counterfactual['is_turn_choice']:
+                    if counterfactual['is_turnchoice']:
                         symbolics['list_turn_choice'].append(counterfactual)
 
                 return False
 
-            symbolic = []
+            symbolics = []
             for counterfactual in agent_info['counterfactuals']:
-                symbolic.append(counterfactual)
+                symbolics.append(counterfactual)
 
             agent = {
                 'concrete' : {
@@ -124,21 +124,21 @@ def get_query_blob(env, query_info):
         return agents
 
     def get_log(query_info):
-        agents_info = query_info['log']['agents']
+        agents_info = query_info['env_info']['agents'][0]['log']['agents']
         agents = {}
-        for agent_info in agents_info:
-            agents[agents_info['agent_id']] = {}
-            agents[agents_info['agent_id']]['pos_x'] = agents_info['pos_x']
-            agents[agents_info['agent_id']]['pos_z'] = agents_info['pos_z']
-            agents[agents_info['agent_id']]['angle'] = agents_info['angle']
-            agents[agents_info['agent_id']]['forward_step'] = agents_info['forward_step']
-            agents[agents_info['agent_id']]['signal_choice'] = agents_info['signal_choice']
-            agents[agents_info['agent_id']]['turn_choice'] = agents_info['turn_choice']
-            agents[agents_info['agent_id']]['lookahead'] = agents_info['lookahead']
-            agents[agents_info['agent_id']]['initial_direction'] = agents_info['initial_direction']
-            agents[agents_info['agent_id']]['intersection_arrival'] = agents_info['intersection_arrival']
-            agents[agents_info['agent_id']]['patience'] = agents_info['patience']
-            agents[agents_info['agent_id']]['step_count'] = agents_info['step_count']
+        for index, agent_info in list(enumerate(agents_info)):
+            agents[f'agent{agents_info[index]}'] = {}
+            agents[f'agent{agents_info[index]}']['pos_x'] = agent_info['pos_x']
+            agents[f'agent{agents_info[index]}']['pos_z'] = agent_info['pos_z']
+            agents[f'agent{agents_info[index]}']['angle'] = agent_info['angle']
+            agents[f'agent{agents_info[index]}']['forward_step'] = agent_info['forward_step']
+            agents[f'agent{agents_info[index]}']['signal_choice'] = agent_info['signal_choice']
+            agents[f'agent{agents_info[index]}']['turn_choice'] = agent_info['turn_choice']
+            agents[f'agent{agents_info[index]}']['lookahead'] = agent_info['lookahead']
+            agents[f'agent{agents_info[index]}']['initial_direction'] = agent_info['initial_direction']
+            agents[f'agent{agents_info[index]}']['intersection_arrival'] = agent_info['intersection_arrival']
+            agents[f'agent{agents_info[index]}']['patience'] = agent_info['patience']
+            agents[f'agent{agents_info[index]}']['step_count'] = agent_info['step_count']
         return agents
 
 
@@ -381,13 +381,13 @@ def generate_klee_file(query_blob):
                 klee_file.write(f'agent{i}_signal_choice  == {counterfactual["value"]} ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_signal_choice == ')
-                    for k in range(len(counterfactual["range"]["turn_choices"])):
-                        if k == 0:
-                            dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][0].upper())
-                            klee_file.write(f' {dl_value}')
-                        else:
-                            dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
-                            klee_file.write(f' || agent{i}_signal_choice == {dl_value})')
+                for k in range(len(counterfactual["range"]["turn_choices"])):
+                    if k == 0:
+                        dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][0].upper())
+                        klee_file.write(f' {dl_value}')
+                    else:
+                        dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
+                        klee_file.write(f' || agent{i}_signal_choice == {dl_value})')
             # if less than the last one, do disjunction
             if j < len(agent["symbolic"]["list_signal_choice"]) - 1:
                 klee_file.write(f'|| ')
@@ -403,13 +403,13 @@ def generate_klee_file(query_blob):
                 klee_file.write(f'agent{i}_turn_choice  == {counterfactual["value"]} ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_turn_choice == ')
-                    for k in range(len(counterfactual["range"]["turn_choices"])):
-                        if k == 0:
-                            dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][0].upper())
-                            klee_file.write(f' {dl_value}')
-                        else:
-                            dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
-                            klee_file.write(f' || agent{i}_turn_choice == {dl_value})')
+                for k in range(len(counterfactual["range"]["turn_choices"])):
+                    if k == 0:
+                        dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][0].upper())
+                        klee_file.write(f' {dl_value}')
+                    else:
+                        dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
+                        klee_file.write(f' || agent{i}_turn_choice == {dl_value})')
             # if less than the last one, do disjunction
             if j < len(agent["symbolic"]["list_turn_choice"]) - 1:
                 klee_file.write(f'|| ')
