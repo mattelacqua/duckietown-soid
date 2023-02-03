@@ -28,5 +28,3 @@ clean:
 	rm -f ./inter2.bc
 	rm -f ./inter3.bc
 	rm -f ./inter.bc
-	rm -rf ./klee-out-*
-	rm -rf ./klee-last

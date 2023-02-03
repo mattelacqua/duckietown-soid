@@ -1,20 +1,26 @@
 #include <string.h>
+#include <stdio.h>
 #include "../../../gym_duckietown/decision_logic/decision_logic.h"
-
-#include "/tools/soid/soid/soid/soidlib/soidlib.h"
 int main(int argc, char **argv) {
     EnvironmentInfo info;
-    klee_open_merge();
 
     // Environment Information:
     info.intersection_x = 2;
+    printf("info.intersection_x %d\n",info.intersection_x );
     info.intersection_z = 2;
+    printf("info.intersection_z %d\n",info.intersection_z );
     info.robot_length = 0.18;
+    printf("info.robot_length %f\n", info.robot_length);
     info.grid_w = 5;
+    printf("info.grid_w %d\n", info.grid_w);
     info.grid_h = 5;
+    printf("info.grid_h  %d\n", info.grid_h );
     info.road_tile_size = 0.585;
+    printf("info.road_tile_size %f\n", info.road_tile_size);
     info.max_steps = 1500;
+    printf("info.max_steps %d\n", info.max_steps );
     info.num_agents = 2;
+    printf("info.num_agents%d\n", info.num_agents);
 
     // Agent Array:
 
@@ -22,143 +28,117 @@ int main(int argc, char **argv) {
     info.agents[0].id = 0;
     float agent0_pos_x, agent0_pos_z, agent0_angle, agent0_forward_step, agent0_speed, agent0_lookahead;
     int agent0_signal_choice, agent0_turn_choice, agent0_initial_direction, agent0_intersection_arrival, agent0_step_count, agent0_patience;
-    klee_make_symbolic( &agent0_pos_x, sizeof(float), "agent0_pos_x");
-    klee_make_symbolic( &agent0_pos_z, sizeof(float), "agent0_pos_z");
-    klee_make_symbolic( &agent0_angle, sizeof(float), "agent0_angle");
-    klee_make_symbolic( &agent0_forward_step, sizeof(float), "agent0_forward_step");
-    klee_make_symbolic( &agent0_speed, sizeof(float), "agent0_speed");
-    klee_make_symbolic( &agent0_lookahead, sizeof(float), "agent0_lookahead");
-    klee_make_symbolic( &agent0_signal_choice, sizeof(TurnChoice), "agent0_signal_choice");
-    klee_make_symbolic( &agent0_turn_choice, sizeof(TurnChoice), "agent0_turn_choice");
-    klee_make_symbolic( &agent0_initial_direction, sizeof(Direction), "agent0_initial_direction");
-    klee_make_symbolic( &agent0_intersection_arrival, sizeof(int), "agent0_intersection_arrival");
-    klee_make_symbolic( &agent0_patience, sizeof(int), "agent0_patience");
-    klee_make_symbolic( &agent0_step_count, sizeof(int), "agent0_step_count");
-    klee_assume( agent0_pos_x == (float) 1.585 ); // Concrete Val 
-    klee_assume( agent0_pos_z == (float) 1.842 ); // Concrete Val 
-    klee_assume( agent0_angle == (float) 1.583 ); // Concrete Val 
-    klee_assume( agent0_forward_step == (float) 0.44 ); // Concrete Val 
-    klee_assume( agent0_speed == (float) 0.002 ); // Concrete Val 
-    klee_assume( agent0_signal_choice == RIGHT ); // Concrete Val 
-    klee_assume( agent0_turn_choice == RIGHT ); // Concrete Val 
-    klee_assume( agent0_lookahead == (float) 0.585); // Concrete State Val 
-    klee_assume( agent0_intersection_arrival == 77); // Concrete State Val 
-    klee_assume( agent0_initial_direction == 0); // Concrete State Val 
-    klee_assume( agent0_patience == 0); // Concrete State Val 
-    klee_assume( agent0_step_count == 108); // Concrete State Val 
-    memmove( &info.agents[0].pos_x, &agent0_pos_x, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[0].pos_z, &agent0_pos_z, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[0].angle, &agent0_angle, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[0].forward_step, &agent0_forward_step, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[0].speed, &agent0_speed, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[0].lookahead, &agent0_lookahead, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[0].turn_choice, &agent0_turn_choice, sizeof(int)); // Memcopy symb -> struct
-    memmove( &info.agents[0].signal_choice, &agent0_signal_choice, sizeof(int)); // Memcopy symb -> struct
-    memmove( &info.agents[0].patience, &agent0_patience, sizeof(int)); // Memcopy symb -> struct
-    memmove( &info.agents[0].intersection_arrival, &agent0_intersection_arrival, sizeof(int)); // Memcopy symb -> struct
-    memmove( &info.agents[0].initial_direction, &agent0_initial_direction, sizeof(int)); // Memcopy symb -> struct
-    memmove( &info.agents[0].step_count, &agent0_step_count, sizeof(int)); // Memcopy symb -> struct
+    agent0_pos_x = (float) 1.585; // Concrete Val 
+    agent0_pos_z = (float) 1.842; // Concrete Val 
+    agent0_angle = (float) 1.583; // Concrete Val 
+    agent0_forward_step = (float) 0.44; // Concrete Val 
+    agent0_speed = (float) 0.002; // Concrete Val 
+    agent0_signal_choice = RIGHT; // Concrete Val 
+    agent0_turn_choice = RIGHT; // Concrete Val 
+    agent0_lookahead = (float) 0.585; // Concrete State Val 
+    agent0_intersection_arrival = 77; // Concrete State Val 
+    agent0_initial_direction = 0; // Concrete State Val 
+    agent0_patience = 0; // Concrete State Val 
+    agent0_step_count = 108; // Concrete State Val 
+    info.agents[0].pos_x = agent0_pos_x; // Memcopy symb -> struct
+    printf("info.agents[0].pos_x %f\n",info.agents[0].pos_x );
+    info.agents[0].pos_z = agent0_pos_z; // Memcopy symb -> struct
+    printf("info.agents[0].pos_z %f\n", info.agents[0].pos_z);
+    info.agents[0].angle = agent0_angle; // Memcopy symb -> struct
+    printf("info.agents[0].angle %f\n", info.agents[0].angle);
+    info.agents[0].forward_step = agent0_forward_step; // Memcopy symb -> struct
+    printf("info.agents[0].forward_step %f\n", info.agents[0].forward_step);
+    info.agents[0].speed = agent0_speed; // Memcopy symb -> struct
+    printf("info.agents[0].speed %f\n",info.agents[0].speed );
+    info.agents[0].lookahead = agent0_lookahead; // Memcopy symb -> struct
+    printf("info.agents[0].lookahead %f\n", info.agents[0].lookahead);
+    info.agents[0].turn_choice = agent0_turn_choice; // Memcopy symb -> struct
+    printf("info.agents[0].turn_choice %d\n",info.agents[0].turn_choice );
+    info.agents[0].signal_choice = agent0_signal_choice; // Memcopy symb -> struct
+    printf("info.agents[0].signal_choice %d\n", info.agents[0].signal_choice);
+    info.agents[0].patience = agent0_patience; // Memcopy symb -> struct
+    printf("info.agents[0].patience %d\n", info.agents[0].patience);
+    info.agents[0].intersection_arrival = agent0_intersection_arrival; // Memcopy symb -> struct
+    printf("info.agents[0].intersection_arrival %d\n",info.agents[0].intersection_arrival );
+    info.agents[0].initial_direction = agent0_initial_direction; // Memcopy symb -> struct
+    printf("info.agents[0].initial_direction %d\n", info.agents[0].initial_direction);
+    info.agents[0].step_count = agent0_step_count; // Memcopy symb -> struct
+    printf("info.agents[0].step_count %d\n", info.agents[0].step_count);
 
     // Agent1 Information:
     info.agents[1].id = 1;
     float agent1_pos_x, agent1_pos_z, agent1_angle, agent1_forward_step, agent1_speed, agent1_lookahead;
     int agent1_signal_choice, agent1_turn_choice, agent1_initial_direction, agent1_intersection_arrival, agent1_step_count, agent1_patience;
-    klee_make_symbolic( &agent1_pos_x, sizeof(float), "agent1_pos_x");
-    klee_make_symbolic( &agent1_pos_z, sizeof(float), "agent1_pos_z");
-    klee_make_symbolic( &agent1_angle, sizeof(float), "agent1_angle");
-    klee_make_symbolic( &agent1_forward_step, sizeof(float), "agent1_forward_step");
-    klee_make_symbolic( &agent1_speed, sizeof(float), "agent1_speed");
-    klee_make_symbolic( &agent1_lookahead, sizeof(float), "agent1_lookahead");
-    klee_make_symbolic( &agent1_signal_choice, sizeof(TurnChoice), "agent1_signal_choice");
-    klee_make_symbolic( &agent1_turn_choice, sizeof(TurnChoice), "agent1_turn_choice");
-    klee_make_symbolic( &agent1_initial_direction, sizeof(Direction), "agent1_initial_direction");
-    klee_make_symbolic( &agent1_intersection_arrival, sizeof(int), "agent1_intersection_arrival");
-    klee_make_symbolic( &agent1_patience, sizeof(int), "agent1_patience");
-    klee_make_symbolic( &agent1_step_count, sizeof(int), "agent1_step_count");
-    klee_assume( agent1_pos_x == (float) 1.147 ); // Concrete Val 
-    klee_assume( agent1_pos_z == (float) 1.587 ); // Concrete Val 
-    klee_assume( agent1_angle == (float) 0.017 ); // Concrete Val 
-    klee_assume( agent1_forward_step == (float) 0.44 ); // Concrete Val 
-    klee_assume( agent1_speed == (float) 0.17 ); // Concrete Val 
-    klee_assume( agent1_turn_choice == RIGHT ); // Concrete Val 
-    klee_assume( agent1_lookahead == (float) 0.585); // Concrete State Val 
-    klee_assume( agent1_intersection_arrival == 60); // Concrete State Val 
-    klee_assume( agent1_initial_direction == 2); // Concrete State Val 
-    klee_assume( agent1_patience == 0); // Concrete State Val 
-    klee_assume( agent1_step_count == 108); // Concrete State Val 
-    klee_assume( agent1_signal_choice == RIGHT ); // Symbolic Value
-    memmove( &info.agents[1].pos_x, &agent1_pos_x, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[1].pos_z, &agent1_pos_z, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[1].angle, &agent1_angle, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[1].forward_step, &agent1_forward_step, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[1].speed, &agent1_speed, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[1].lookahead, &agent1_lookahead, sizeof(float)); // Memcopy symb -> struct
-    memmove( &info.agents[1].turn_choice, &agent1_turn_choice, sizeof(int)); // Memcopy symb -> struct
-    memmove( &info.agents[1].signal_choice, &agent1_signal_choice, sizeof(int)); // Memcopy symb -> struct
-    memmove( &info.agents[1].patience, &agent1_patience, sizeof(int)); // Memcopy symb -> struct
-    memmove( &info.agents[1].intersection_arrival, &agent1_intersection_arrival, sizeof(int)); // Memcopy symb -> struct
-    memmove( &info.agents[1].initial_direction, &agent1_initial_direction, sizeof(int)); // Memcopy symb -> struct
-    memmove( &info.agents[1].step_count, &agent1_step_count, sizeof(int)); // Memcopy symb -> struct
+    agent1_pos_x = (float) 1.147; // Concrete Val 
+    agent1_pos_z = (float) 1.587; // Concrete Val 
+    agent1_angle = (float) 0.017; // Concrete Val 
+    agent1_forward_step = (float) 0.44; // Concrete Val 
+    agent1_speed = (float) 0.17; // Concrete Val 
+    agent1_turn_choice = RIGHT; // Concrete Val 
+    agent1_lookahead = (float) 0.585; // Concrete State Val 
+    agent1_intersection_arrival = 60; // Concrete State Val 
+    agent1_initial_direction = 2; // Concrete State Val 
+    agent1_patience = 0; // Concrete State Val 
+    agent1_step_count = 108; // Concrete State Val 
+    agent1_signal_choice = RIGHT ; // Symbolic Value
+    info.agents[1].pos_x = agent1_pos_x; // Memcopy symb -> struct
+    printf("info.agents[1].pos_x %f\n",info.agents[1].pos_x );
+    info.agents[1].pos_z = agent1_pos_z; // Memcopy symb -> struct
+    printf("info.agents[1].pos_z %f\n", info.agents[1].pos_z);
+    info.agents[1].angle = agent1_angle; // Memcopy symb -> struct
+    printf("info.agents[1].angle %f\n", info.agents[1].angle);
+    info.agents[1].forward_step = agent1_forward_step; // Memcopy symb -> struct
+    printf("info.agents[1].forward_step %f\n",info.agents[1].forward_step );
+    info.agents[1].speed = agent1_speed; // Memcopy symb -> struct
+    printf("info.agents[1].speed %f\n", info.agents[1].speed);
+    info.agents[1].lookahead = agent1_lookahead; // Memcopy symb -> struct
+    printf("info.agents[1].lookahead %f\n", info.agents[1].lookahead);
+    info.agents[1].turn_choice = agent1_turn_choice; // Memcopy symb -> struct
+    printf("info.agents[1].turn_choice %d\n", info.agents[1].turn_choice);
+    info.agents[1].signal_choice = agent1_signal_choice; // Memcopy symb -> struct
+    printf(" info.agents[1].signal_choice %d\n",  info.agents[1].signal_choice);
+    info.agents[1].patience = agent1_patience; // Memcopy symb -> struct
+    printf("info.agents[1].patience %d\n", info.agents[1].patience);
+    info.agents[1].intersection_arrival = agent1_intersection_arrival; // Memcopy symb -> struct
+    printf("info.agents[1].intersection_arrival %d\n",info.agents[1].intersection_arrival );
+    info.agents[1].initial_direction = agent1_initial_direction; // Memcopy symb -> struct
+    printf("info.agents[1].initial_direction %d\n", info.agents[1].initial_direction);
+    info.agents[1].step_count = agent1_step_count; // Memcopy symb -> struct
+    printf("info.agents[1].step_count %d\n", info.agents[1].step_count );
+
     float agent0_prev_pos_x, agent0_prev_pos_z, agent0_stop_x, agent0_stop_z;
-    float __soid__agent0_prev_pos_x, __soid__agent0_prev_pos_z, __soid__agent0_stop_x, __soid__agent0_stop_z;
-
     int agent0_tile_x, agent0_tile_z, agent0_direction;
-    int __soid__agent0_tile_x, __soid__agent0_tile_z, __soid__agent0_direction;
-    klee_make_symbolic( &__soid__agent0_prev_pos_x, sizeof(float), "__soid__agent0_prev_pos_x");
-    klee_make_symbolic( &__soid__agent0_prev_pos_z, sizeof(float), "__soid__agent0_prev_pos_z");
-    klee_make_symbolic( &__soid__agent0_stop_x, sizeof(float), "__soid__agent0_stop_x");
-    klee_make_symbolic( &__soid__agent0_stop_z, sizeof(float), "__soid__agent0_stop_z");
-
-    klee_make_symbolic( &__soid__agent0_tile_x, sizeof(int), "__soid__agent0_tile_x");
-
-    klee_make_symbolic( &__soid__agent0_tile_z, sizeof(int), "__soid__agent0_tile_z");
-
-    klee_make_symbolic( &__soid__agent0_direction, sizeof(int), "__soid__agent0_direction");
 
     agent0_prev_pos_x = agent0_pos_x; // Calculated Variable
-    memmove( &info.agents[0].prev_pos_x, &agent0_prev_pos_x, sizeof(float)); // Memcopy symb -> struct
-
-    klee_assume( agent0_prev_pos_x == __soid__agent0_prev_pos_x);
+    info.agents[0].prev_pos_x = agent0_prev_pos_x; // Memcopy symb -> struct
+    printf("info.agents[0].prev_pos_x %f\n", info.agents[0].prev_pos_x);
     agent0_prev_pos_z = agent0_pos_z; // Calculated Variable
-    memmove( &info.agents[0].prev_pos_x, &agent0_prev_pos_x, sizeof(float)); // Memcopy symb -> struct
+    info.agents[0].prev_pos_z = agent0_prev_pos_z; // Memcopy symb -> struct
+    printf("info.agents[0].prev_pos_z %f\n", info.agents[0].prev_pos_z);
 
-    klee_assume( agent0_prev_pos_x == __soid__agent0_prev_pos_x);
     agent0_direction = get_dl_direction(info.agents[0].angle/3.14*180); // Calculated Variable
-    memmove( &info.agents[0].direction, &agent0_direction, sizeof(int)); // Memcopy symb -> struct
+    info.agents[0].direction = agent0_direction; // Memcopy symb -> struct
+    printf("info.agents[0].direction %d\n", info.agents[0].direction);
 
-    klee_assume( agent0_direction == __soid__agent0_direction);
     agent0_tile_x = get_tile_pos_x(agent0_pos_x, agent0_pos_z, info.road_tile_size); // Calculated Variable
-    memmove( &info.agents[0].tile_x, &agent0_tile_x, sizeof(int)); // Memcopy symb -> struct
+    info.agents[0].tile_x = agent0_tile_x; // Memcopy symb -> struct
+    printf("info.agents[0].tile_x %d\n", info.agents[0].tile_x);
 
-    klee_assume( agent0_tile_x == __soid__agent0_tile_x);
     agent0_tile_z = get_tile_pos_z(agent0_pos_x, agent0_pos_z, info.road_tile_size); // Calculated Variable
-    memmove( &info.agents[0].tile_z, &agent0_tile_z, sizeof(int)); // Memcopy symb -> struct
+    info.agents[0].tile_z = agent0_tile_z; // Memcopy symb -> struct
+    printf("info.agents[0].tile_z %d\n", info.agents[0].tile_z);
 
-    klee_assume( agent0_tile_z == __soid__agent0_tile_z);
     agent0_stop_x = get_stop_pos_x(agent0_tile_x, agent0_tile_z, info.road_tile_size, agent0_direction, agent0_speed); // Calculated Variable
-    memmove( &info.agents[0].stop_x, &agent0_stop_x, sizeof(float)); // Memcopy symb -> struct
+    info.agents[0].stop_x = agent0_stop_x; // Memcopy symb -> struct
+    printf("info.agents[0].stop_x %f\n", info.agents[0].stop_x);
 
-    klee_assume( agent0_stop_x == __soid__agent0_stop_x);
     agent0_stop_z = get_stop_pos_z(agent0_tile_x, agent0_tile_z, info.road_tile_size, agent0_direction, agent0_speed); // Calculated Variable
-    memmove( &info.agents[0].stop_z, &agent0_stop_z, sizeof(float)); // Memcopy symb -> struct
+    info.agents[0].stop_z = agent0_stop_z; // Memcopy symb -> struct
+    printf("info.agents[0].stop_z %f\n", info.agents[0].stop_z);
 
-    klee_assume( agent0_stop_z == __soid__agent0_stop_z);
     info.agents[0].exists = true; // exist 
 
     bool agent0_state_in_intersection, agent0_state_at_intersection_entry, agent0_state_intersection_empty, agent0_state_approaching_intersection, agent0_state_obj_in_range, agent0_state_has_right_of_way, agent0_state_safe_to_enter, agent0_state_cars_waiting_to_enter, agent0_state_car_entering_range, agent0_state_obj_behind_intersection, agent0_state_is_tailgating, agent0_state_next_to_go; 
-    bool __soid__agent0_state_in_intersection, __soid__agent0_state_at_intersection_entry, __soid__agent0_state_intersection_empty, __soid__agent0_state_approaching_intersection, __soid__agent0_state_obj_in_range, __soid__agent0_state_has_right_of_way, __soid__agent0_state_safe_to_enter, __soid__agent0_state_cars_waiting_to_enter, __soid__agent0_state_car_entering_range, __soid__agent0_state_obj_behind_intersection, __soid__agent0_state_is_tailgating, __soid__agent0_state_next_to_go; 
-    klee_make_symbolic( &__soid__agent0_state_in_intersection, sizeof(bool), "__soid__agent0_state_in_intersection");
-    klee_make_symbolic( &__soid__agent0_state_at_intersection_entry, sizeof(bool), "__soid__agent0_state_at_intersection_entry");
-    klee_make_symbolic( &__soid__agent0_state_intersection_empty, sizeof(bool), "__soid__agent0_state_intersection_empty");
-    klee_make_symbolic( &__soid__agent0_state_approaching_intersection, sizeof(bool), "__soid__agent0_state_approaching_intersection");
-    klee_make_symbolic( &__soid__agent0_state_obj_in_range, sizeof(bool), "__soid__agent0_state_obj_in_range");
-    klee_make_symbolic( &__soid__agent0_state_has_right_of_way, sizeof(bool), "__soid__agent0_state_has_right_of_way");
-    klee_make_symbolic( &__soid__agent0_state_safe_to_enter, sizeof(bool), "__soid__agent0_state_safe_to_enter");
-    klee_make_symbolic( &__soid__agent0_state_cars_waiting_to_enter, sizeof(bool), "__soid__agent0_state_cars_waiting_to_enter");
-    klee_make_symbolic( &__soid__agent0_state_car_entering_range, sizeof(bool), "__soid__agent0_state_car_entering_range");
-    klee_make_symbolic( &__soid__agent0_state_obj_behind_intersection, sizeof(bool), "__soid__agent0_state_obj_behind_intersection");
-    klee_make_symbolic( &__soid__agent0_state_is_tailgating, sizeof(bool), "__soid__agent0_state_is_tailgating");
-    klee_make_symbolic( &__soid__agent0_state_next_to_go, sizeof(bool), "__soid__agent0_state_next_to_go");
 
      //Setting agent states
     agent0_state_in_intersection = false; //initial states
@@ -175,65 +155,38 @@ int main(int argc, char **argv) {
     agent0_state_next_to_go = false; //initial states
 
     float agent1_prev_pos_x, agent1_prev_pos_z, agent1_stop_x, agent1_stop_z;
-    float __soid__agent1_prev_pos_x, __soid__agent1_prev_pos_z, __soid__agent1_stop_x, __soid__agent1_stop_z;
-
     int agent1_tile_x, agent1_tile_z, agent1_direction;
-    int __soid__agent1_tile_x, __soid__agent1_tile_z, __soid__agent1_direction;
-    klee_make_symbolic( &__soid__agent1_prev_pos_x, sizeof(float), "__soid__agent1_prev_pos_x");
-    klee_make_symbolic( &__soid__agent1_prev_pos_z, sizeof(float), "__soid__agent1_prev_pos_z");
-    klee_make_symbolic( &__soid__agent1_stop_x, sizeof(float), "__soid__agent1_stop_x");
-    klee_make_symbolic( &__soid__agent1_stop_z, sizeof(float), "__soid__agent1_stop_z");
-
-    klee_make_symbolic( &__soid__agent1_tile_x, sizeof(int), "__soid__agent1_tile_x");
-
-    klee_make_symbolic( &__soid__agent1_tile_z, sizeof(int), "__soid__agent1_tile_z");
-
-    klee_make_symbolic( &__soid__agent1_direction, sizeof(int), "__soid__agent1_direction");
 
     agent1_prev_pos_x = agent1_pos_x; // Calculated Variable
-    memmove( &info.agents[1].prev_pos_x, &agent1_prev_pos_x, sizeof(float)); // Memcopy symb -> struct
-
-    klee_assume( agent1_prev_pos_x == __soid__agent1_prev_pos_x);
+    info.agents[1].prev_pos_x = agent1_prev_pos_x; // Memcopy symb -> struct
+    printf("info.agents[1].prev_pos_x %f\n", info.agents[1].prev_pos_x);
     agent1_prev_pos_z = agent1_pos_z; // Calculated Variable
-    memmove( &info.agents[1].prev_pos_x, &agent1_prev_pos_x, sizeof(float)); // Memcopy symb -> struct
+    info.agents[1].prev_pos_z = agent1_prev_pos_z; // Memcopy symb -> struct
+    printf("info.agents[1].prev_pos_z %f\n", info.agents[1].prev_pos_z);
 
-    klee_assume( agent1_prev_pos_x == __soid__agent1_prev_pos_x);
     agent1_direction = get_dl_direction(info.agents[1].angle/3.14*180); // Calculated Variable
-    memmove( &info.agents[1].direction, &agent1_direction, sizeof(int)); // Memcopy symb -> struct
+    info.agents[1].direction = agent1_direction; // Memcopy symb -> struct
+    printf("info.agents[1].direction %d\n", info.agents[1].direction);
 
-    klee_assume( agent1_direction == __soid__agent1_direction);
     agent1_tile_x = get_tile_pos_x(agent1_pos_x, agent1_pos_z, info.road_tile_size); // Calculated Variable
-    memmove( &info.agents[1].tile_x, &agent1_tile_x, sizeof(int)); // Memcopy symb -> struct
+    info.agents[1].tile_x = agent1_tile_x; // Memcopy symb -> struct
+    printf("info.agents[1].tile_x %d\n", info.agents[1].tile_x);
 
-    klee_assume( agent1_tile_x == __soid__agent1_tile_x);
     agent1_tile_z = get_tile_pos_z(agent1_pos_x, agent1_pos_z, info.road_tile_size); // Calculated Variable
-    memmove( &info.agents[1].tile_z, &agent1_tile_z, sizeof(int)); // Memcopy symb -> struct
+    info.agents[1].tile_z = agent1_tile_z; // Memcopy symb -> struct
+    printf("info.agents[1].tile_z %d\n",  info.agents[1].tile_z);
 
-    klee_assume( agent1_tile_z == __soid__agent1_tile_z);
     agent1_stop_x = get_stop_pos_x(agent1_tile_x, agent1_tile_z, info.road_tile_size, agent1_direction, agent1_speed); // Calculated Variable
-    memmove( &info.agents[1].stop_x, &agent1_stop_x, sizeof(float)); // Memcopy symb -> struct
+    info.agents[1].stop_x = agent1_stop_x; // Memcopy symb -> struct
+    printf("info.agents[1].stop_x %f\n",info.agents[1].stop_x );
 
-    klee_assume( agent1_stop_x == __soid__agent1_stop_x);
     agent1_stop_z = get_stop_pos_z(agent1_tile_x, agent1_tile_z, info.road_tile_size, agent1_direction, agent1_speed); // Calculated Variable
-    memmove( &info.agents[1].stop_z, &agent1_stop_z, sizeof(float)); // Memcopy symb -> struct
+    info.agents[1].stop_z = agent1_stop_z; // Memcopy symb -> struct
+    printf("info.agents[1].stop_z %f\n", info.agents[1].stop_z);
 
-    klee_assume( agent1_stop_z == __soid__agent1_stop_z);
     info.agents[1].exists = true; // exist 
 
     bool agent1_state_in_intersection, agent1_state_at_intersection_entry, agent1_state_intersection_empty, agent1_state_approaching_intersection, agent1_state_obj_in_range, agent1_state_has_right_of_way, agent1_state_safe_to_enter, agent1_state_cars_waiting_to_enter, agent1_state_car_entering_range, agent1_state_obj_behind_intersection, agent1_state_is_tailgating, agent1_state_next_to_go; 
-    bool __soid__agent1_state_in_intersection, __soid__agent1_state_at_intersection_entry, __soid__agent1_state_intersection_empty, __soid__agent1_state_approaching_intersection, __soid__agent1_state_obj_in_range, __soid__agent1_state_has_right_of_way, __soid__agent1_state_safe_to_enter, __soid__agent1_state_cars_waiting_to_enter, __soid__agent1_state_car_entering_range, __soid__agent1_state_obj_behind_intersection, __soid__agent1_state_is_tailgating, __soid__agent1_state_next_to_go; 
-    klee_make_symbolic( &__soid__agent1_state_in_intersection, sizeof(bool), "__soid__agent1_state_in_intersection");
-    klee_make_symbolic( &__soid__agent1_state_at_intersection_entry, sizeof(bool), "__soid__agent1_state_at_intersection_entry");
-    klee_make_symbolic( &__soid__agent1_state_intersection_empty, sizeof(bool), "__soid__agent1_state_intersection_empty");
-    klee_make_symbolic( &__soid__agent1_state_approaching_intersection, sizeof(bool), "__soid__agent1_state_approaching_intersection");
-    klee_make_symbolic( &__soid__agent1_state_obj_in_range, sizeof(bool), "__soid__agent1_state_obj_in_range");
-    klee_make_symbolic( &__soid__agent1_state_has_right_of_way, sizeof(bool), "__soid__agent1_state_has_right_of_way");
-    klee_make_symbolic( &__soid__agent1_state_safe_to_enter, sizeof(bool), "__soid__agent1_state_safe_to_enter");
-    klee_make_symbolic( &__soid__agent1_state_cars_waiting_to_enter, sizeof(bool), "__soid__agent1_state_cars_waiting_to_enter");
-    klee_make_symbolic( &__soid__agent1_state_car_entering_range, sizeof(bool), "__soid__agent1_state_car_entering_range");
-    klee_make_symbolic( &__soid__agent1_state_obj_behind_intersection, sizeof(bool), "__soid__agent1_state_obj_behind_intersection");
-    klee_make_symbolic( &__soid__agent1_state_is_tailgating, sizeof(bool), "__soid__agent1_state_is_tailgating");
-    klee_make_symbolic( &__soid__agent1_state_next_to_go, sizeof(bool), "__soid__agent1_state_next_to_go");
 
      //Setting agent states
     agent1_state_in_intersection = false; //initial states
@@ -252,126 +205,124 @@ int main(int argc, char **argv) {
     // Copy out to agent states
     // in_intersection
     agent0_state_in_intersection = in_intersection(&info, 0);
-    memmove( &info.agents[0].state.in_intersection, &agent0_state_in_intersection, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.in_intersection =  agent0_state_in_intersection; // Memcopy symb -> struct
+    printf("info.agents[0].state.in_intersection %d\n", info.agents[0].state.in_intersection);
 
-    klee_assume( agent0_state_in_intersection == __soid__agent0_state_in_intersection);
     // in_intersection
     agent1_state_in_intersection = in_intersection(&info, 1);
-    memmove( &info.agents[1].state.in_intersection, &agent1_state_in_intersection, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.in_intersection =  agent1_state_in_intersection; // Memcopy symb -> struct
+    printf("info.agents[1].state.in_intersection %d\n",  info.agents[1].state.in_intersection);
 
-    klee_assume( agent1_state_in_intersection == __soid__agent1_state_in_intersection);
     // at_intersection_entry
     agent0_state_at_intersection_entry = at_intersection_entry(&info, 0);
-    memmove( &info.agents[0].state.at_intersection_entry, &agent0_state_at_intersection_entry, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.at_intersection_entry =  agent0_state_at_intersection_entry; // Memcopy symb -> struct
+    printf("info.agents[0].state.at_intersection_entry%d\n",  info.agents[0].state.at_intersection_entry);
 
-    klee_assume( agent0_state_at_intersection_entry == __soid__agent0_state_at_intersection_entry);
     // at_intersection_entry
     agent1_state_at_intersection_entry = at_intersection_entry(&info, 1);
-    memmove( &info.agents[1].state.at_intersection_entry, &agent1_state_at_intersection_entry, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.at_intersection_entry =  agent1_state_at_intersection_entry; // Memcopy symb -> struct
+    printf("info.agents[1].state.at_intersection_entry %d\n", info.agents[1].state.at_intersection_entry);
 
-    klee_assume( agent1_state_at_intersection_entry == __soid__agent1_state_at_intersection_entry);
     // intersection_empty
     agent0_state_intersection_empty = intersection_empty(&info, 0);
-    memmove( &info.agents[0].state.intersection_empty, &agent0_state_intersection_empty, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.intersection_empty = agent0_state_intersection_empty; // Memcopy symb -> struct
+    printf("info.agents[0].state.intersection_empty %d\n", info.agents[0].state.intersection_empty);
 
-    klee_assume( agent0_state_intersection_empty == __soid__agent0_state_intersection_empty);
     // intersection_empty
     agent1_state_intersection_empty = intersection_empty(&info, 1);
-    memmove( &info.agents[1].state.intersection_empty, &agent1_state_intersection_empty, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.intersection_empty = agent1_state_intersection_empty; // Memcopy symb -> struct
+    printf("info.agents[1].state.intersection_empty %d\n", info.agents[1].state.intersection_empty);
 
-    klee_assume( agent1_state_intersection_empty == __soid__agent1_state_intersection_empty);
     // approaching_intersection
     agent0_state_approaching_intersection = approaching_intersection(&info, 0);
-    memmove( &info.agents[0].state.approaching_intersection, &agent0_state_approaching_intersection, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.approaching_intersection = agent0_state_approaching_intersection; // Memcopy symb -> struct
+    printf("info.agents[0].state.approaching_intersection %d\n",info.agents[0].state.approaching_intersection );
 
-    klee_assume( agent0_state_approaching_intersection == __soid__agent0_state_approaching_intersection);
     // approaching_intersection
     agent1_state_approaching_intersection = approaching_intersection(&info, 1);
-    memmove( &info.agents[1].state.approaching_intersection, &agent1_state_approaching_intersection, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.approaching_intersection = agent1_state_approaching_intersection; // Memcopy symb -> struct
+    printf("info.agents[1].state.approaching_intersection %d\n", info.agents[1].state.approaching_intersection);
 
-    klee_assume( agent1_state_approaching_intersection == __soid__agent1_state_approaching_intersection);
     // obj_in_range
     agent0_state_obj_in_range = object_in_range(&info, 0, 1);
-    memmove( &info.agents[0].state.obj_in_range, &agent0_state_obj_in_range, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.obj_in_range = agent0_state_obj_in_range; // Memcopy symb -> struct
+    printf("info.agents[0].state.obj_in_range %d\n", info.agents[0].state.obj_in_range);
 
-    klee_assume( agent0_state_obj_in_range == __soid__agent0_state_obj_in_range);
     // obj_in_range
     agent1_state_obj_in_range = object_in_range(&info, 1, 1);
-    memmove( &info.agents[1].state.obj_in_range, &agent1_state_obj_in_range, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.obj_in_range = agent1_state_obj_in_range; // Memcopy symb -> struct
+    printf("info.agents[1].state.obj_in_range %d\n", info.agents[1].state.obj_in_range);
 
-    klee_assume( agent1_state_obj_in_range == __soid__agent1_state_obj_in_range);
     // right_of_way
     agent0_state_has_right_of_way = has_right_of_way(&info, 0);
-    memmove( &info.agents[0].state.has_right_of_way, &agent0_state_has_right_of_way, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.has_right_of_way = agent0_state_has_right_of_way; // Memcopy symb -> struct
+    printf(" info.agents[0].state.has_right_of_way %d\n",  info.agents[0].state.has_right_of_way);
 
-    klee_assume( agent0_state_has_right_of_way == __soid__agent0_state_has_right_of_way);
     // right_of_way
     agent1_state_has_right_of_way = has_right_of_way(&info, 1);
-    memmove( &info.agents[1].state.has_right_of_way, &agent1_state_has_right_of_way, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.has_right_of_way = agent1_state_has_right_of_way; // Memcopy symb -> struct
+    printf("info.agents[1].state.has_right_of_way %d\n", info.agents[1].state.has_right_of_way);
 
-    klee_assume( agent1_state_has_right_of_way == __soid__agent1_state_has_right_of_way);
     // next_to_go
     agent0_state_next_to_go = next_to_go(&info, 0);
-    memmove( &info.agents[0].state.next_to_go, &agent0_state_next_to_go, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.next_to_go = agent0_state_next_to_go; // Memcopy symb -> struct
+    printf("info.agents[0].state.next_to_go %d\n", info.agents[0].state.next_to_go);
 
-    klee_assume( agent0_state_next_to_go == __soid__agent0_state_next_to_go);
     // next_to_go
     agent1_state_next_to_go = next_to_go(&info, 1);
-    memmove( &info.agents[1].state.next_to_go, &agent1_state_next_to_go, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.next_to_go = agent1_state_next_to_go; // Memcopy symb -> struct
+    printf("info.agents[1].state.next_to_go %d\n", info.agents[1].state.next_to_go);
 
-    klee_assume( agent1_state_next_to_go == __soid__agent1_state_next_to_go);
     // safe_to_enter
     agent0_state_safe_to_enter = safe_to_enter(&info, 0);
-    memmove( &info.agents[0].state.safe_to_enter, &agent0_state_safe_to_enter, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.safe_to_enter = agent0_state_safe_to_enter; // Memcopy symb -> struct
+    printf("info.agents[0].state.safe_to_enter %d\n", info.agents[0].state.safe_to_enter);
 
-    klee_assume( agent0_state_safe_to_enter == __soid__agent0_state_safe_to_enter);
     // safe_to_enter
     agent1_state_safe_to_enter = safe_to_enter(&info, 1);
-    memmove( &info.agents[1].state.safe_to_enter, &agent1_state_safe_to_enter, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.safe_to_enter = agent1_state_safe_to_enter; // Memcopy symb -> struct
+    printf("info.agents[1].state.safe_to_enter %d\n", info.agents[1].state.safe_to_enter);
 
-    klee_assume( agent1_state_safe_to_enter == __soid__agent1_state_safe_to_enter);
     // cars_waiting_to_enter
     agent0_state_cars_waiting_to_enter = cars_waiting_to_enter(&info, 0);
-    memmove( &info.agents[0].state.cars_waiting_to_enter, &agent0_state_cars_waiting_to_enter, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.cars_waiting_to_enter = agent0_state_cars_waiting_to_enter; // Memcopy symb -> struct
+    printf("info.agents[0].state.cars_waiting_to_enter %d\n", info.agents[0].state.cars_waiting_to_enter);
 
-    klee_assume( agent0_state_cars_waiting_to_enter == __soid__agent0_state_cars_waiting_to_enter);
     // cars_waiting_to_enter
     agent1_state_cars_waiting_to_enter = cars_waiting_to_enter(&info, 1);
-    memmove( &info.agents[1].state.cars_waiting_to_enter, &agent1_state_cars_waiting_to_enter, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.cars_waiting_to_enter = agent1_state_cars_waiting_to_enter; // Memcopy symb -> struct
+    printf("info.agents[1].state.cars_waiting_to_enter %d\n", info.agents[1].state.cars_waiting_to_enter);
 
-    klee_assume( agent1_state_cars_waiting_to_enter == __soid__agent1_state_cars_waiting_to_enter);
     // car_entering_range
     agent0_state_car_entering_range = car_entering_range(&info, 0, 1);
-    memmove( &info.agents[0].state.car_entering_range, &agent0_state_car_entering_range, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.car_entering_range = agent0_state_car_entering_range; // Memcopy symb -> struct
+    printf("info.agents[0].state.car_entering_range %d\n", info.agents[0].state.car_entering_range);
 
-    klee_assume( agent0_state_car_entering_range == __soid__agent0_state_car_entering_range);
     // car_entering_range
     agent1_state_car_entering_range = car_entering_range(&info, 1, 1);
-    memmove( &info.agents[1].state.car_entering_range, &agent1_state_car_entering_range, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.car_entering_range = agent1_state_car_entering_range; // Memcopy symb -> struct
+    printf("info.agents[1].state.car_entering_range %d\n", info.agents[1].state.car_entering_range);
 
-    klee_assume( agent1_state_car_entering_range == __soid__agent1_state_car_entering_range);
     // obj_behind_intersection
     agent0_state_obj_behind_intersection = object_in_range(&info, 0, 2);
-    memmove( &info.agents[0].state.obj_behind_intersection, &agent0_state_obj_behind_intersection, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.obj_behind_intersection = agent0_state_obj_behind_intersection; // Memcopy symb -> struct
+    printf("info.agents[0].state.obj_behind_intersection %d\n", info.agents[0].state.obj_behind_intersection);
 
-    klee_assume( agent0_state_obj_behind_intersection == __soid__agent0_state_obj_behind_intersection);
     // obj_behind_intersection
     agent1_state_obj_behind_intersection = object_in_range(&info, 1, 2);
-    memmove( &info.agents[1].state.obj_behind_intersection, &agent1_state_obj_behind_intersection, sizeof(bool)); // Memcopy symb -> struct
-
-    klee_assume( agent1_state_obj_behind_intersection == __soid__agent1_state_obj_behind_intersection);
+    info.agents[1].state.obj_behind_intersection = agent1_state_obj_behind_intersection; // Memcopy symb -> struct
+    printf("info.agents[1].state.obj_behind_intersection %d\n", info.agents[1].state.obj_behind_intersection);
+    
     // is_tailgating
     agent0_state_is_tailgating = is_tailgating(&info, 0);
-    memmove( &info.agents[0].state.is_tailgating, &agent0_state_is_tailgating, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[0].state.is_tailgating = agent0_state_is_tailgating; // Memcopy symb -> struct
+    printf("info.agents[0].state.is_tailgating %d\n", info.agents[0].state.is_tailgating);
 
-    klee_assume( agent0_state_is_tailgating == __soid__agent0_state_is_tailgating);
     // is_tailgating
     agent1_state_is_tailgating = is_tailgating(&info, 1);
-    memmove( &info.agents[1].state.is_tailgating, &agent1_state_is_tailgating, sizeof(bool)); // Memcopy symb -> struct
+    info.agents[1].state.is_tailgating = agent1_state_is_tailgating; // Memcopy symb -> struct
+    printf("info.agents[1].state.is_tailgating %d\n", info.agents[1].state.is_tailgating);
 
-    klee_assume( agent1_state_is_tailgating == __soid__agent1_state_is_tailgating);
-    // Klee Close Merge();
-    klee_close_merge();
     // Q table stuff
    info.agents[0].q_table[0][0] = -4.627217769622803;
    info.agents[0].q_table[0][1] = 6.931776523590088;
@@ -2423,14 +2374,13 @@ int main(int argc, char **argv) {
    info.agents[0].q_table[1023][1] = 0;
 
     // Learning Row
-    int mrow, __soid__mrow;
-    klee_make_symbolic( &__soid__mrow, sizeof(int), "__soid__mrow_");
+    int mrow;
     mrow = get_learning_state(&info, 0);
-    klee_assume( mrow == __soid__mrow);
+    printf("mrow %d\n", mrow);
 
     // Invoke proceed
-    bool will_proceed, __soid__will_proceed;
-    klee_make_symbolic( &__soid__will_proceed, sizeof(bool), "__soid__will_proceed");
+    bool will_proceed;
     will_proceed = proceed_good_agent(&info, 0);
-    klee_assume( will_proceed == __soid__will_proceed);
+
+    printf("will_proceed %d\n", will_proceed);
 }

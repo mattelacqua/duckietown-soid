@@ -1,0 +1,3 @@
+KLEE: WARNING: --use-merge enabled. Using NURS_CovNew as default searcher.
+KLEE: WARNING: undefined reference to function: printf
+KLEE: WARNING ONCE: calling external: printf(94451026994640, 1.7549998760223389E+0)

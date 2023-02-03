@@ -24,146 +24,6 @@ def get_dl_direction(direction):
         return 'WEST'
     return direction
 
-# get the query blob from the query info
-def get_query_blob(env, query_info):
-
-    def get_environment(query_info):
-        env_info = query_info['env_info']
-        environment = {
-            'intersection_x': env_info['intersection_x'],
-            'intersection_z': env_info['intersection_z'],
-            'robot_length': env_info['robot_length'],
-            'grid_w': env_info['grid_w'],
-            'grid_h': env_info['grid_h'],
-            'road_tile_size': env_info['road_tile_size'],
-            'max_steps': env_info['max_steps'],
-            'num_agents': env_info['num_agents'],
-        }
-        return environment
-
-    def get_agents(query_info):
-        def get_agent(agent_info):
-            
-            def has_symbolic(counterfactuals, kind):
-                for counterfactual in counterfactuals:
-                    if counterfactual[kind]:
-                        return True
-
-                return False
-
-            def sort_symbolics(counterfactuals):
-                symbolics = {}
-                symbolics['list_pos_x'] = {}
-                symbolics['list_pos_z'] = {}
-                symbolics['list_angle'] = {}
-                symbolics['list_forward_step'] = {}
-                symbolics['list_speed'] = {}
-                symbolics['list_signal_choice'] = {}
-                symbolics['list_turn_choice'] = {}
-                for counterfactual in counterfactuals:
-                    if counterfactual['is_pos_x']:
-                        symbolics['list_pos_x'].append(counterfactual)
-                    if counterfactual['is_pos_z']:
-                        symbolics['list_pos_z'].append(counterfactual)
-                    if counterfactual['is_angle']:
-                        symbolics['list_angle'].append(counterfactual)
-                    if counterfactual['is_forward_step']:
-                        symbolics['list_forward_step'].append(counterfactual)
-                    if counterfactual['is_speed']:
-                        symbolics['list_speed'].append(counterfactual)
-                    if counterfactual['is_signal_choice']:
-                        symbolics['list_signal_choice'].append(counterfactual)
-                    if counterfactual['is_turn_choice']:
-                        symbolics['list_turn_choice'].append(counterfactual)
-
-                return False
-
-            symbolic = []
-            for counterfactual in agent_info['counterfactuals']:
-                symbolic.append(counterfactual)
-
-            agent = {
-                'concrete' : {
-                    'id': agent_info['id'],
-                    'agent_id': agent_info['agent_id'],
-                    'pos_x': None if has_symbolic(agent_info['counterfactuals'], 'is_pos_x')
-                        else agent_info['pos_x'],
-                    'pos_z': None if has_symbolic(agent_info['counterfactuals'], 'is_pos_z')
-                        else agent_info['pos_z'],
-                    'angle': None if has_symbolic(agent_info['counterfactuals'], 'is_angle')
-                        else agent_info['angle'],
-                    'forward_step': None if has_symbolic(agent_info['counterfactuals'], 'is_forward_step')
-                        else agent_info['forward_step'],
-                    'speed': None if has_symbolic(agent_info['counterfactuals'], 'is_speed')
-                        else agent_info['speed'],
-                    'turn_choice': None if has_symbolic(agent_info['counterfactuals'], 'is_turnchoice')
-                        else agent_info['turn_choice'],
-                    'signal_choice': None if has_symbolic(agent_info['counterfactuals'], 'is_signalchoice')
-                        else agent_info['signal_choice'],
-                    'lookahead': agent_info['lookahead'],
-                },
-
-                'symbolic' : sort_symbolics(symbolics),
-
-                'state' : {
-                    'initial_direction': agent_info['initial_direction'],
-                    'intersection_arrival': agent_info['intersection_arrival'],
-                    'patience': agent_info['patience'],
-                    'step_count': agent_info['step_count'],
-                    'q_table': agent_info['q_table'],
-                },
-            }
-            return agent
-
-        agents_info = query_info['env_info']['agents']
-        agents = {}
-        for agent in agents_info:
-            agents[agent['agent_id']] = get_agent(agent)
-
-        
-        return agents
-
-    def get_log(query_info):
-        agents_info = query_info['log']['agents']
-        agents = {}
-        for agent_info in agents_info:
-            agents[agents_info['agent_id']] = {}
-            agents[agents_info['agent_id']]['pos_x'] = agents_info['pos_x']
-            agents[agents_info['agent_id']]['pos_z'] = agents_info['pos_z']
-            agents[agents_info['agent_id']]['angle'] = agents_info['angle']
-            agents[agents_info['agent_id']]['forward_step'] = agents_info['forward_step']
-            agents[agents_info['agent_id']]['signal_choice'] = agents_info['signal_choice']
-            agents[agents_info['agent_id']]['turn_choice'] = agents_info['turn_choice']
-            agents[agents_info['agent_id']]['lookahead'] = agents_info['lookahead']
-            agents[agents_info['agent_id']]['initial_direction'] = agents_info['initial_direction']
-            agents[agents_info['agent_id']]['intersection_arrival'] = agents_info['intersection_arrival']
-            agents[agents_info['agent_id']]['patience'] = agents_info['patience']
-            agents[agents_info['agent_id']]['step_count'] = agents_info['step_count']
-        return agents
-
-
-    def get_query(query_info):
-        query = {
-            'is_factual': query_info['query']['is_factual'] ,
-            'is_existential': query_info['query']['is_existential'] ,
-            'behavior': query_info['query']['behavior'] ,
-        }
-        return query
-
-    # Print the json we are working with
-    environment = get_environment(query_info)
-    agents = get_agents(query_info)
-    query = get_query(query_info)
-    log = get_log(query_info)
-    query_blob = {}
-    query_blob['environment'] = environment
-    query_blob['agents'] = dict(agents)
-    query_blob['query'] = dict(query)
-    query_blob['log'] = dict(log)
-    json.dump(query_blob, open('src/webserver/soid_files/query_blobs/query_blob', 'w'))
-
-    return query_blob
-
 # Generate the klee file
 def generate_klee_file(query_blob):
     """
@@ -172,33 +32,45 @@ def generate_klee_file(query_blob):
     """
     #query = json.loads(query_blob)
     query = query_blob
-    klee_prefix = "src/webserver/soid_files/klee/"
+    klee_prefix = "src/webserver/soid_files/c-debug"
     # open klee file
-    klee_file = open((klee_prefix + "klee_file.c"), 'w', encoding="utf-8")
+    klee_file = open((klee_prefix + "pure.c"), 'w', encoding="utf-8")
     # Imports
     klee_file.write("#include <string.h>\n")
+    klee_file.write("#include <stdio.h>\n")
     klee_file.write("#include \"../../../gym_duckietown/decision_logic/decision_logic.h\"\n\n")
-    klee_file.write("#include \"/tools/soid/soid/soid/soidlib/soidlib.h\"\n")
     klee_file.write("int main(int argc, char **argv) {\n")
     
     # init env_info
     klee_file.write("    EnvironmentInfo info;\n")
     
-    # Klee opent merge
-    klee_file.write("    klee_open_merge();\n")
-
     environment = query["environment"]
     
     # Handle env information
     klee_file.write("\n    // Environment Information:\n")
     klee_file.write(f'    info.intersection_x = { environment["intersection_x"] };\n')
+    klee_file.write(f'    printf("info.intersection_x %d\\n", info.intersection_x );\n')
     klee_file.write(f'    info.intersection_z = { environment["intersection_z"] };\n')
+    klee_file.write(f'    printf("info.intersection_z %d\\n", info.intersection_z );\n')
+
     klee_file.write(f'    info.robot_length = { environment["robot_length"] };\n')
+    klee_file.write(f'    printf("info.robot_length %f\\n", info.robot_length );\n')
+
     klee_file.write(f'    info.grid_w = { environment["grid_w"] };\n')
+    klee_file.write(f'    printf("info.grid_w %d\\n", info.grid_w );\n')
     klee_file.write(f'    info.grid_h = { environment["grid_h"] };\n')
+    klee_file.write(f'    printf("info.grid_h %d\\n", info.grid_h );\n')
+
     klee_file.write(f'    info.road_tile_size = { environment["road_tile_size"] };\n')
+    klee_file.write(f'    printf("info.road_tile_size %f\\n", info.road_tile_size );\n')
+    
+
     klee_file.write(f'    info.max_steps = { environment["max_steps"] };\n')
+    klee_file.write(f'    printf("info.max_steps %d\\n", info.max_steps );\n')
+    
     klee_file.write(f'    info.num_agents = { environment["num_agents"] };\n')
+    klee_file.write(f'    printf("info.num_agents %d\\n", info.num_agents );\n\n')
+
     
     # Init agent array
     klee_file.write("\n    // Agent Array:\n")
@@ -214,39 +86,6 @@ def generate_klee_file(query_blob):
         klee_file.write(f'    float agent{i}_pos_x, agent{i}_pos_z, agent{i}_angle, agent{i}_forward_step, agent{i}_speed, agent{i}_lookahead;\n')
         klee_file.write(f'    int agent{i}_signal_choice, agent{i}_turn_choice, agent{i}_initial_direction, agent{i}_intersection_arrival, agent{i}_step_count, agent{i}_patience;\n')
 
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_pos_x, sizeof(float), "agent{i}_pos_x");\n')
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_pos_z, sizeof(float), "agent{i}_pos_z");\n')
-        
-        #angle
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_angle, sizeof(float), "agent{i}_angle");\n')
-        
-        # Forward Step
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_forward_step, sizeof(float), "agent{i}_forward_step");\n')
-        
-        # Speed 
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_speed, sizeof(float), "agent{i}_speed");\n')
-        
-        # Lookahead
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_lookahead, sizeof(float), "agent{i}_lookahead");\n')
-        
-        # signal_turn
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_signal_choice, sizeof(TurnChoice), "agent{i}_signal_choice");\n')
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_turn_choice, sizeof(TurnChoice), "agent{i}_turn_choice");\n')
-        
-        # Initial direction
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_initial_direction, sizeof(Direction), "agent{i}_initial_direction");\n')
-        
-        # Intersection_arrival
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_intersection_arrival, sizeof(int), "agent{i}_intersection_arrival");\n')
-        
-        # patience
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_patience, sizeof(int), "agent{i}_patience");\n')
-        
-        # Step count
-        klee_file.write(f'    klee_make_symbolic( &agent{i}_step_count, sizeof(int), "agent{i}_step_count");\n')
-        
-        # If concrete is null, then we don't do this, as there will be a symbolic value.
-        # concrete_pos_x
         if agent["concrete"]["pos_x"]:
             klee_file.write(f'    klee_assume( agent{i}_pos_x == (float) { agent["concrete"]["pos_x"] } ); // Concrete Val \n')
 
@@ -292,131 +131,81 @@ def generate_klee_file(query_blob):
         # Stepcount
         klee_file.write(f'    klee_assume( agent{i}_step_count == { agent["state"]["step_count"] }); // Concrete State Val \n')
 
-        # Handle the symbolic values pos_x
-        for j in range(len(agent["symbolic"]["list_pos_x"])):
-            counterfactual = agent["symbolic"]["list_pos_x"][j]
+        # Handle the symbolic values
+        for j in range(len(agent["symbolic"])):
+            counterfactual = agent["symbolic"][j]
             # Symbolic_Pos x
-            klee_file.write(f'    klee_assume( ')
-            if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_pos_x  == (float) {counterfactual["value"]} ')
-            if counterfactual["is_range"]:
-                klee_file.write(f'(agent{i}_pos_x >= (float) {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.pos_x <= (float) {counterfactual["range"]["high_bound"]}) ')
-            # if less than the last one, do disjunction
-            if j < len(agent["symbolic"]["list_pos_x"]) - 1:
-                klee_file.write(f'|| ')
-            else:
-                klee_file.write(f'); // Symbolic Values \n')
+            if counterfactual["is_pos_x"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'    klee_assume( agent{i}_pos_x == (float) {counterfactual["value"]} ); // Symbolic Value\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'    klee_assume( agent{i}_pos_x >= (float) {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}.pos_x <= (float) {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')
 
-        # Handle the symbolic values pos_z
-        for j in range(len(agent["symbolic"]["list_pos_z"])):
-            counterfactual = agent["symbolic"]["list_pos_z"][j]
-            # Symbolic_Pos x
-            klee_file.write(f'    klee_assume( ')
-            if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_pos_z  == (float) {counterfactual["value"]} ')
-            if counterfactual["is_range"]:
-                klee_file.write(f'(agent{i}_pos_z >= (float) {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.pos_z <= (float) {counterfactual["range"]["high_bound"]}) ')
-            # if less than the last one, do disjunction
-            if j < len(agent["symbolic"]["list_pos_z"]) - 1:
-                klee_file.write(f'|| ')
-            else:
-                klee_file.write(f'); // Symbolic Values \n')
+            # Symbolic_Pos z
+            if counterfactual["is_pos_z"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'    klee_assume( agent{i}_pos_z == (float) {counterfactual["value"]} ); // Symbolic Value\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'    klee_assume( agent{i}_pos_z >= (float) {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}.pos_z <= (float) {counterfactual["range"]["high_bound"]}); // Symbolic Range\n') 
 
-        # Handle the symbolic values angle
-        for j in range(len(agent["symbolic"]["list_angle"])):
-            counterfactual = agent["symbolic"]["list_angle"][j]
-            # Symbolic_Pos x
-            klee_file.write(f'    klee_assume( ')
-            if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_angle  == (float) {counterfactual["value"]} ')
-            if counterfactual["is_range"]:
-                klee_file.write(f'(agent{i}_angle >= (float) {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.angle <= (float) {counterfactual["range"]["high_bound"]}) ')
-            # if less than the last one, do disjunction
-            if j < len(agent["symbolic"]["list_angle"]) - 1:
-                klee_file.write(f'|| ')
-            else:
-                klee_file.write(f'); // Symbolic Values \n')
+            # Symbolic_Angle
+            if counterfactual["is_angle"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'    klee_assume( agent{i}_angle == (float) {counterfactual["value"]} ); // Symbolic Value\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'    klee_assume( agent{i}_angle >= (float) {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}_angle <= (float) {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')   
 
-        # Handle the symbolic values forward_step
-        for j in range(len(agent["symbolic"]["list_forward_step"])):
-            counterfactual = agent["symbolic"]["list_forward_step"][j]
-            # Symbolic_Pos x
-            klee_file.write(f'    klee_assume( ')
-            if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_forward_step  == (float) {counterfactual["value"]} ')
-            if counterfactual["is_range"]:
-                klee_file.write(f'(agent{i}_forward_step >= (float) {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.forward_step <= (float) {counterfactual["range"]["high_bound"]}) ')
-            # if less than the last one, do disjunction
-            if j < len(agent["symbolic"]["list_forward_step"]) - 1:
-                klee_file.write(f'|| ')
-            else:
-                klee_file.write(f'); // Symbolic Values \n')
+            # Symbolic_forward_step
+            if counterfactual["is_forward_step"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'    klee_assume( agent{i}_is_forward_step == (float) {counterfactual["value"]} ); // Symbolic Value\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'    klee_assume( agent{i}_is_forward_step >= (float) {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}_is_forward_step <= (float) {counterfactual["range"]["high_bound"]}); // Symbolic Range\n')
 
-        # Handle the symbolic values speed
-        for j in range(len(agent["symbolic"]["list_speed"])):
-            counterfactual = agent["symbolic"]["list_speed"][j]
-            # Symbolic_Pos x
-            klee_file.write(f'    klee_assume( ')
-            if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_speed  == (float) {counterfactual["value"]} ')
-            if counterfactual["is_range"]:
-                klee_file.write(f'(agent{i}_speed >= (float) {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.speed <= (float) {counterfactual["range"]["high_bound"]}) ')
-            # if less than the last one, do disjunction
-            if j < len(agent["symbolic"]["list_speed"]) - 1:
-                klee_file.write(f'|| ')
-            else:
-                klee_file.write(f'); // Symbolic Values \n')
-            
-        # Handle the symbolic values signal_choice
-        for j in range(len(agent["symbolic"]["list_signal_choice"])):
-            counterfactual = agent["symbolic"]["list_signal_choice"][j]
-            # Symbolic_Pos x
-            klee_file.write(f'    klee_assume( ')
-            if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_signal_choice  == {counterfactual["value"]} ')
-            if counterfactual["is_range"]:
-                klee_file.write(f'(agent{i}_signal_choice == ')
+            # Symbolic_speed
+            if counterfactual["is_speed"]:
+                if counterfactual["is_value"]:
+                    klee_file.write(f'    klee_assume( agent{i}_speed == (float) {counterfactual["value"]} ); // Symbolic Value\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'    klee_assume( agent{i}_speed >= (float) {counterfactual["range"]["low_bound"]} && '
+                    f'agent{i}_speed <= (float) {counterfactual["range"]["high_bound"]});\n')
+
+            # Symbolic_signal_choice
+            if counterfactual["is_signalchoice"]:
+                if counterfactual["is_value"]:
+                    dl_value = get_dl_turn_choice(counterfactual['value'].upper())
+                    klee_file.write(f'    klee_assume( agent{i}_signal_choice == {dl_value} ); // Symbolic Value\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'    klee_assume( agent{i}_signal_choice ==')
                     for k in range(len(counterfactual["range"]["turn_choices"])):
                         if k == 0:
                             dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][0].upper())
                             klee_file.write(f' {dl_value}')
                         else:
                             dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
-                            klee_file.write(f' || agent{i}_signal_choice == {dl_value})')
-            # if less than the last one, do disjunction
-            if j < len(agent["symbolic"]["list_signal_choice"]) - 1:
-                klee_file.write(f'|| ')
-            else:
-                klee_file.write(f'); // Symbolic Values \n')
-            
-        # Handle the symbolic values turn_choice
-        for j in range(len(agent["symbolic"]["list_turn_choice"])):
-            counterfactual = agent["symbolic"]["list_turn_choice"][j]
-            # Symbolic_Pos x
-            klee_file.write(f'    klee_assume( ')
-            if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_turn_choice  == {counterfactual["value"]} ')
-            if counterfactual["is_range"]:
-                klee_file.write(f'(agent{i}_turn_choice == ')
+                            klee_file.write(f' || agent{i}_signal_choice == {dl_value}')
+                    klee_file.write("); // Symbolic Range\n")
+
+            # Symbolic_turn_choice
+            if counterfactual["is_turnchoice"]:
+                if counterfactual["is_value"]:
+                    dl_value = get_dl_turn_choice(counterfactual['value'].upper())
+                    klee_file.write(f'    klee_assume( agent{i}_turn_choice == {dl_value} ); // Symbolic Value\n')
+                elif counterfactual["is_range"]:
+                    klee_file.write(f'    klee_assume( agent{i}_turn_choice ==')
                     for k in range(len(counterfactual["range"]["turn_choices"])):
                         if k == 0:
                             dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][0].upper())
                             klee_file.write(f' {dl_value}')
                         else:
                             dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
-                            klee_file.write(f' || agent{i}_turn_choice == {dl_value})')
-            # if less than the last one, do disjunction
-            if j < len(agent["symbolic"]["list_turn_choice"]) - 1:
-                klee_file.write(f'|| ')
-            else:
-                klee_file.write(f'); // Symbolic Values \n')
+                            klee_file.write(f' || agent{i}_turn_choice == {dl_value}')
+                    klee_file.write("); // Symbolic Range\n")
 
-            
         # Memcpy struct stuff
         # floats
         klee_file.write(f'    memmove( &info.agents[{i}].pos_x, &agent{i}_pos_x, sizeof(float)); // Memcopy symb -> struct\n')
