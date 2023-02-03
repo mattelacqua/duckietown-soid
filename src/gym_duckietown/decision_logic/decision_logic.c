@@ -64,7 +64,6 @@ float get_stop_pos_x(int tile_x, int tile_z, float road_tile_size, Direction dir
         stop_z = (tile_z * road_tile_size) + (road_tile_size/2.0);
     }
 
-    printf("STOP X %f\n", stop_x);
     return stop_x;
 }
 
@@ -92,7 +91,6 @@ float get_stop_pos_z(int tile_x, int tile_z, float road_tile_size, Direction dir
         stop_z = (tile_z * road_tile_size) + (road_tile_size/2.0);
     }
 
-    printf("STOP Z %f\n", stop_z);
     return stop_z;
 }
 
@@ -712,27 +710,8 @@ Direction get_dl_direction(float curr_angle){
     }
 }
 
-// Get if we are in bounds or not
-bool in_bounds(EnvironmentInfo* env_info, int agent_index){
-    EnvironmentAgent agent = env_info->agents[agent_index];
-
-    // Check if we are out of the bounds 
-    if (agent.pos_x < 0 || agent.pos_z < 0 || agent.pos_x > env_info->grid_w * env_info->road_tile_size || agent.pos_z > env_info->grid_h * env_info->road_tile_size){
-        return false;
-    } else {
-        return true;
-    }
-}
-
-
-
 bool in_intersection(EnvironmentInfo* env_info, int agent_index){
-    printf("BEFORE CREATE AGENT\n");
-    printf("agentIndex %d\n", agent_index);
-    printf("pos_x %p\n", env_info->agents[agent_index]);
-    printf("pos_x %p\n", env_info->agents[0]);
     EnvironmentAgent agent = env_info->agents[agent_index];
-    printf("AFTER CREATE AGENT\n");
     if (agent.tile_x == env_info->intersection_x && agent.tile_z == env_info->intersection_z){
         //printf("agent %d in intersection", agent_index);
         return true;
@@ -744,70 +723,67 @@ bool in_intersection(EnvironmentInfo* env_info, int agent_index){
 
 // Check if we are at the intersection entry
 bool at_intersection_entry(EnvironmentInfo* env_info, int agent_index){
-    if (in_bounds(env_info, agent_index)){
-        EnvironmentAgent agent = env_info->agents[agent_index];
-        // If we are facing north
-        if (agent.direction == NORTH){
-            // If we are in the intersection or just below it, check more
-            if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x, agent.tile_z - 1)){
-                // Check relative to stop line.
-                float stop_line = (env_info->intersection_z + 1) * env_info->road_tile_size;
-                if (agent.pos_z > stop_line - env_info->robot_length * 0.20 &&
-                    agent.pos_z < stop_line + env_info->robot_length)
-                    return true;
-                else // if not at the stop line
-                    return false;
-            } else // Not close
+    EnvironmentAgent agent = env_info->agents[agent_index];
+    // If we are facing north
+    if (agent.direction == NORTH){
+        // If we are in the intersection or just below it, check more
+        if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x, agent.tile_z - 1)){
+            // Check relative to stop line.
+            float stop_line = (env_info->intersection_z + 1) * env_info->road_tile_size;
+            if (agent.pos_z > stop_line - env_info->robot_length * 0.20 &&
+                agent.pos_z < stop_line + env_info->robot_length)
+                return true;
+            else // if not at the stop line
                 return false;
-        }
-        else if (agent.direction == WEST){
-            // If we are in the intersection or just below it, check more
-            if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x-1, agent.tile_z)){
-                // Check relative to stop line.
-                float stop_line = (env_info->intersection_x + 1) * env_info->road_tile_size;
-                if (agent.pos_x > stop_line - env_info->robot_length * 0.20 &&
-                    agent.pos_x < stop_line + env_info->robot_length)
-                    return true;
-                else // if not at the stop line
-                    return false;
-            } else // Not close
-                return false;
-        }
-        else if (agent.direction == SOUTH){
-            // If we are in the intersection or just below it, check more
-            if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x, agent.tile_z + 1)){
-                // Check relative to stop line.
-                int modifier = 0;
-                if (env_info->intersection_z == 0)
-                    modifier = 1;
-                float stop_line = (env_info->intersection_z + modifier) * env_info->road_tile_size;
-                if (agent.pos_z > stop_line - env_info->robot_length &&
-                    agent.pos_z < stop_line + env_info->robot_length * 0.20)
-                    return true;
-                else // if not at the stop line
-                    return false;
-            } else // Not close
-                return false;
-        }    
-        else if (agent.direction == EAST){
-            // If we are in the intersection or just below it, check more
-            if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x+1, agent.tile_z )){
-                // Check relative to stop line.
-                int modifier = 0;
-                if (env_info->intersection_x == 0)
-                    modifier = 1;
-                float stop_line = (env_info->intersection_x + modifier) * env_info->road_tile_size;
-                if (agent.pos_x > stop_line - env_info->robot_length &&
-                    agent.pos_x < stop_line + env_info->robot_length * 0.20)
-                    return true;
-                else // if not at the stop line
-                    return false;
-            } else  // if not close
-                return false;
-        }    
-        else  // if no direction
+        } else // Not close
             return false;
-    } else  // if our of bounds
+    }
+    else if (agent.direction == WEST){
+        // If we are in the intersection or just below it, check more
+        if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x-1, agent.tile_z)){
+            // Check relative to stop line.
+            float stop_line = (env_info->intersection_x + 1) * env_info->road_tile_size;
+            if (agent.pos_x > stop_line - env_info->robot_length * 0.20 &&
+                agent.pos_x < stop_line + env_info->robot_length)
+                return true;
+            else // if not at the stop line
+                return false;
+        } else // Not close
+            return false;
+    }
+    else if (agent.direction == SOUTH){
+        // If we are in the intersection or just below it, check more
+        if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x, agent.tile_z + 1)){
+            // Check relative to stop line.
+            int modifier = 0;
+            if (env_info->intersection_z == 0)
+                modifier = 1;
+            float stop_line = (env_info->intersection_z + modifier) * env_info->road_tile_size;
+            if (agent.pos_z > stop_line - env_info->robot_length &&
+                agent.pos_z < stop_line + env_info->robot_length * 0.20)
+                return true;
+            else // if not at the stop line
+                return false;
+        } else // Not close
+            return false;
+    }    
+    else if (agent.direction == EAST){
+        // If we are in the intersection or just below it, check more
+        if (in_intersection(env_info, agent_index) || intersection_tile(env_info, agent.tile_x+1, agent.tile_z )){
+            // Check relative to stop line.
+            int modifier = 0;
+            if (env_info->intersection_x == 0)
+                modifier = 1;
+            float stop_line = (env_info->intersection_x + modifier) * env_info->road_tile_size;
+            if (agent.pos_x > stop_line - env_info->robot_length &&
+                agent.pos_x < stop_line + env_info->robot_length * 0.20)
+                return true;
+            else // if not at the stop line
+                return false;
+        } else  // if not close
+            return false;
+    }    
+    else  // if no direction
         return false;
 }
 
@@ -852,82 +828,75 @@ bool object_in_range(EnvironmentInfo* env_info, int agent_index, int location){
     EnvironmentAgent *agents = env_info->agents;
     EnvironmentAgent agent = env_info->agents[agent_index];
     float radius = agent.lookahead;
-    if (!in_bounds(env_info, agent_index))
-        return false;
-    else {
-        Direction direction = agent.direction;
-        float side_radius = radius / 10.0;
-        float front_radius = radius;
-        float robot_length = env_info->robot_length;
-        
-        // Initialiaze bounds
-        float object_ahead_range_z_lb = 0.0;
-        float object_ahead_range_z_ub = 0.0;
-        float object_ahead_range_x_lb = 0.0;
-        float object_ahead_range_x_ub = 0.0;
-        // location 1 = ahead 2 = behind
-        if (direction == NORTH){
-            if (location == 1){ // ahead
-                object_ahead_range_z_lb = agent.pos_z;
-                object_ahead_range_z_ub = agent.pos_z + front_radius;
-            } 
-            else if (location == 2){ // behind
-                object_ahead_range_z_lb = agent.pos_z - front_radius - robot_length;
-                object_ahead_range_z_ub = agent.pos_z - robot_length;
-            }
-            object_ahead_range_x_lb = agent.pos_x - side_radius;
-            object_ahead_range_x_ub = agent.pos_x + side_radius;
+    Direction direction = agent.direction;
+    float side_radius = radius / 10.0;
+    float front_radius = radius;
+    float robot_length = env_info->robot_length;
+    
+    // Initialiaze bounds
+    float object_ahead_range_z_lb = 0.0;
+    float object_ahead_range_z_ub = 0.0;
+    float object_ahead_range_x_lb = 0.0;
+    float object_ahead_range_x_ub = 0.0;
+    // location 1 = ahead 2 = behind
+    if (direction == NORTH){
+        if (location == 1){ // ahead
+            object_ahead_range_z_lb = agent.pos_z;
+            object_ahead_range_z_ub = agent.pos_z + front_radius;
+        } 
+        else if (location == 2){ // behind
+            object_ahead_range_z_lb = agent.pos_z - front_radius - robot_length;
+            object_ahead_range_z_ub = agent.pos_z - robot_length;
         }
-        else if (direction == SOUTH){
-            if (location == 1){ // ahead
-                object_ahead_range_z_lb = agent.pos_z - front_radius;
-                object_ahead_range_z_ub = agent.pos_z;
-            } 
-            else if (location == 2){ // behind
-                object_ahead_range_z_lb = agent.pos_z + robot_length;
-                object_ahead_range_z_ub = agent.pos_z + front_radius + robot_length;
-            }
-            object_ahead_range_x_lb = agent.pos_x - side_radius;
-            object_ahead_range_x_ub = agent.pos_x + side_radius;
+        object_ahead_range_x_lb = agent.pos_x - side_radius;
+        object_ahead_range_x_ub = agent.pos_x + side_radius;
+    }
+    else if (direction == SOUTH){
+        if (location == 1){ // ahead
+            object_ahead_range_z_lb = agent.pos_z - front_radius;
+            object_ahead_range_z_ub = agent.pos_z;
+        } 
+        else if (location == 2){ // behind
+            object_ahead_range_z_lb = agent.pos_z + robot_length;
+            object_ahead_range_z_ub = agent.pos_z + front_radius + robot_length;
         }
-        else if (direction == WEST){
-            if (location == 1){ // ahead
-                object_ahead_range_x_lb = agent.pos_x - front_radius;
-                object_ahead_range_x_ub = agent.pos_x;
-            } 
-            else if (location == 2){ // behind
-                object_ahead_range_x_lb = agent.pos_x + robot_length;
-                object_ahead_range_x_ub = agent.pos_x + front_radius + robot_length;
-            }
-            object_ahead_range_z_lb = agent.pos_z - side_radius;
-            object_ahead_range_z_ub = agent.pos_z + side_radius;
+        object_ahead_range_x_lb = agent.pos_x - side_radius;
+        object_ahead_range_x_ub = agent.pos_x + side_radius;
+    }
+    else if (direction == WEST){
+        if (location == 1){ // ahead
+            object_ahead_range_x_lb = agent.pos_x - front_radius;
+            object_ahead_range_x_ub = agent.pos_x;
+        } 
+        else if (location == 2){ // behind
+            object_ahead_range_x_lb = agent.pos_x + robot_length;
+            object_ahead_range_x_ub = agent.pos_x + front_radius + robot_length;
         }
-        else if (direction == EAST){
-            if (location == 1){ // ahead
-                object_ahead_range_x_lb = agent.pos_x;
-                object_ahead_range_x_ub = agent.pos_x + front_radius;
-            } 
-            else if (location == 2){ // behind
-                object_ahead_range_x_lb = agent.pos_x - front_radius - robot_length;
-                object_ahead_range_x_ub = agent.pos_x - robot_length;
-            }
-            object_ahead_range_z_lb = agent.pos_z - side_radius;
-            object_ahead_range_z_ub = agent.pos_z + side_radius;
+        object_ahead_range_z_lb = agent.pos_z - side_radius;
+        object_ahead_range_z_ub = agent.pos_z + side_radius;
+    }
+    else if (direction == EAST){
+        if (location == 1){ // ahead
+            object_ahead_range_x_lb = agent.pos_x;
+            object_ahead_range_x_ub = agent.pos_x + front_radius;
+        } 
+        else if (location == 2){ // behind
+            object_ahead_range_x_lb = agent.pos_x - front_radius - robot_length;
+            object_ahead_range_x_ub = agent.pos_x - robot_length;
         }
+        object_ahead_range_z_lb = agent.pos_z - side_radius;
+        object_ahead_range_z_ub = agent.pos_z + side_radius;
+    }
 
-        // Once bounds are initilized, check if any agent falls inside of them.
-        for (int i = 0; i < env_info->num_agents; i++){
-            // if not us and in the bounds
-            if (i != agent_index && 
-               (agents[i].pos_x >= object_ahead_range_x_lb) &&
-               (agents[i].pos_x <= object_ahead_range_x_ub) &&
-               (agents[i].pos_z >= object_ahead_range_x_lb) &&
-               (agents[i].pos_z <= object_ahead_range_x_ub))
-                return true;
-        }
-        
-        // If none are in the bounds there is no object in range.
-        return false;
+    // Once bounds are initilized, check if any agent falls inside of them.
+    for (int i = 0; i < env_info->num_agents; i++){
+        // if not us and in the bounds
+        if (i != agent_index && 
+            (agents[i].pos_x >= object_ahead_range_x_lb) &&
+            (agents[i].pos_x <= object_ahead_range_x_ub) &&
+            (agents[i].pos_z >= object_ahead_range_x_lb) &&
+            (agents[i].pos_z <= object_ahead_range_x_ub))
+            return true;
     }
 }
 
@@ -937,84 +906,76 @@ bool car_entering_range(EnvironmentInfo* env_info, int agent_index, int location
     EnvironmentAgent agent = env_info->agents[agent_index];
     float radius = agent.lookahead;
     float radius_multiplier = 1.5;
-    if (!in_bounds(env_info, agent_index))
-        return false;
-    else {
-        Direction direction = agent.direction;
-        float side_radius = radius / 10.0;
-        float front_radius = radius;
-        float robot_length = env_info->robot_length;
-        
-        // Initialiaze bounds
-        float object_ahead_range_z_lb = 0.0;
-        float object_ahead_range_z_ub = 0.0;
-        float object_ahead_range_x_lb = 0.0;
-        float object_ahead_range_x_ub = 0.0;
-        // location 1 = ahead 2 = behind
-        if (direction == NORTH){
-            if (location == 1){ // ahead
-                object_ahead_range_z_lb = agent.pos_z + front_radius;
-                object_ahead_range_z_ub = agent.pos_z + front_radius * radius_multiplier;
-            } 
-            else if (location == 2){ // behind
-                object_ahead_range_z_lb = agent.pos_z - (front_radius * radius_multiplier) - robot_length;
-                object_ahead_range_z_ub = agent.pos_z - front_radius - robot_length;
-            }
-            object_ahead_range_x_lb = agent.pos_x - side_radius;
-            object_ahead_range_x_ub = agent.pos_x + side_radius;
+    Direction direction = agent.direction;
+    float side_radius = radius / 10.0;
+    float front_radius = radius;
+    float robot_length = env_info->robot_length;
+    
+    // Initialiaze bounds
+    float object_ahead_range_z_lb = 0.0;
+    float object_ahead_range_z_ub = 0.0;
+    float object_ahead_range_x_lb = 0.0;
+    float object_ahead_range_x_ub = 0.0;
+    // location 1 = ahead 2 = behind
+    if (direction == NORTH){
+        if (location == 1){ // ahead
+            object_ahead_range_z_lb = agent.pos_z + front_radius;
+            object_ahead_range_z_ub = agent.pos_z + front_radius * radius_multiplier;
+        } 
+        else if (location == 2){ // behind
+            object_ahead_range_z_lb = agent.pos_z - (front_radius * radius_multiplier) - robot_length;
+            object_ahead_range_z_ub = agent.pos_z - front_radius - robot_length;
         }
-        else if (direction == SOUTH){
-            if (location == 1){ // ahead
-                object_ahead_range_z_lb = agent.pos_z - (front_radius * radius_multiplier);
-                object_ahead_range_z_ub = agent.pos_z - front_radius ;
-            } 
-            else if (location == 2){ // behind
-                object_ahead_range_z_lb = agent.pos_z + front_radius + robot_length;
-                object_ahead_range_z_ub = agent.pos_z + (front_radius * radius_multiplier) + robot_length;
-            }
-            object_ahead_range_x_lb = agent.pos_x - side_radius;
-            object_ahead_range_x_ub = agent.pos_x + side_radius;
-        }
-        else if (direction == WEST){
-            if (location == 1){ // ahead
-                object_ahead_range_x_lb = agent.pos_x - (front_radius * radius_multiplier);
-                object_ahead_range_x_ub = agent.pos_x - front_radius;
-            } 
-            else if (location == 2){ // behind
-                object_ahead_range_x_lb = agent.pos_x + front_radius + robot_length;
-                object_ahead_range_x_ub = agent.pos_x + (front_radius * radius_multiplier) + robot_length;
-            }
-            object_ahead_range_z_lb = agent.pos_z - side_radius;
-            object_ahead_range_z_ub = agent.pos_z + side_radius;
-        }
-        else if (direction == EAST){
-            if (location == 1){ // ahead
-                object_ahead_range_x_lb = agent.pos_x + front_radius;
-                object_ahead_range_x_ub = agent.pos_x + (front_radius * radius_multiplier);
-            } 
-            else if (location == 2){ // behind
-                object_ahead_range_x_lb = agent.pos_x - (front_radius * radius_multiplier) - robot_length;
-                object_ahead_range_x_ub = agent.pos_x - front_radius - robot_length;
-            }
-            object_ahead_range_z_lb = agent.pos_z - (front_radius * radius_multiplier);
-            object_ahead_range_z_ub = agent.pos_z + side_radius;
-        }
-
-        // Once bounds are initilized, check if any agent falls inside of them.
-        for (int i = 0; i < env_info->num_agents; i++){
-            // if not us and in the bounds and is getting closer to us
-            if (i != agent_index && 
-               (agents[i].pos_x >= object_ahead_range_x_lb) &&
-               (agents[i].pos_x <= object_ahead_range_x_ub) &&
-               (agents[i].pos_z >= object_ahead_range_x_lb) &&
-               (agents[i].pos_z <= object_ahead_range_x_ub) &&
-               (pos_distance((double) agents[i].pos_x, (double) agent.pos_x, (double) agents[i].pos_z, (double)agent.pos_z) < pos_distance((double) agents[i].prev_pos_x, (double) agent.prev_pos_x, (double)agents[i].prev_pos_z, (double) agent.prev_pos_z)))
-                return true;
-        }
-        
-        // If none are in the bounds there is no object in range.
-        return false;
+        object_ahead_range_x_lb = agent.pos_x - side_radius;
+        object_ahead_range_x_ub = agent.pos_x + side_radius;
     }
+    else if (direction == SOUTH){
+        if (location == 1){ // ahead
+            object_ahead_range_z_lb = agent.pos_z - (front_radius * radius_multiplier);
+            object_ahead_range_z_ub = agent.pos_z - front_radius ;
+        } 
+        else if (location == 2){ // behind
+            object_ahead_range_z_lb = agent.pos_z + front_radius + robot_length;
+            object_ahead_range_z_ub = agent.pos_z + (front_radius * radius_multiplier) + robot_length;
+        }
+        object_ahead_range_x_lb = agent.pos_x - side_radius;
+        object_ahead_range_x_ub = agent.pos_x + side_radius;
+    }
+    else if (direction == WEST){
+        if (location == 1){ // ahead
+            object_ahead_range_x_lb = agent.pos_x - (front_radius * radius_multiplier);
+            object_ahead_range_x_ub = agent.pos_x - front_radius;
+        } 
+        else if (location == 2){ // behind
+            object_ahead_range_x_lb = agent.pos_x + front_radius + robot_length;
+            object_ahead_range_x_ub = agent.pos_x + (front_radius * radius_multiplier) + robot_length;
+        }
+        object_ahead_range_z_lb = agent.pos_z - side_radius;
+        object_ahead_range_z_ub = agent.pos_z + side_radius;
+    }
+    else if (direction == EAST){
+        if (location == 1){ // ahead
+            object_ahead_range_x_lb = agent.pos_x + front_radius;
+            object_ahead_range_x_ub = agent.pos_x + (front_radius * radius_multiplier);
+        } 
+        else if (location == 2){ // behind
+            object_ahead_range_x_lb = agent.pos_x - (front_radius * radius_multiplier) - robot_length;
+            object_ahead_range_x_ub = agent.pos_x - front_radius - robot_length;
+        }
+    }
+
+    // Once bounds are initilized, check if any agent falls inside of them.
+    for (int i = 0; i < env_info->num_agents; i++){
+        // if not us and in the bounds and is getting closer to us
+        if (i != agent_index && 
+            (agents[i].pos_x >= object_ahead_range_x_lb) &&
+            (agents[i].pos_x <= object_ahead_range_x_ub) &&
+            (agents[i].pos_z >= object_ahead_range_x_lb) &&
+            (agents[i].pos_z <= object_ahead_range_x_ub) &&
+            (pos_distance((double) agents[i].pos_x, (double) agent.pos_x, (double) agents[i].pos_z, (double)agent.pos_z) < pos_distance((double) agents[i].prev_pos_x, (double) agent.prev_pos_x, (double)agents[i].prev_pos_z, (double) agent.prev_pos_z)))
+            return true;
+    }
+        
 }
 
 bool is_tailgating(EnvironmentInfo* env_info, int agent_index){

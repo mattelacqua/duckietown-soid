@@ -50,11 +50,6 @@ char get_direction(float curr_angle);
 
 Direction get_dl_direction(float curr_angle);
 
-// Get if we are in bounds or not
-bool in_bounds(EnvironmentInfo* env_info, int agent_index);
-
-
-
 bool in_intersection(EnvironmentInfo* env_info, int agent_index);
 
 // Check if we are at the intersection entry
