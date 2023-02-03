@@ -167,6 +167,8 @@ class AddCounterfactual extends React.Component {
       this.setState({
         value: value,
       });
+      console.log("STATE", this.state);
+      console.log("Value", value);
     }
     
     // Callback function for seting mutliple directions
@@ -208,6 +210,7 @@ class AddCounterfactual extends React.Component {
     }
 
   handleClick(){
+    console.log("THIS STATE", this.state);
     this.props.socket.emit(
       "add_counterfactual",
       {

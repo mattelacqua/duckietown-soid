@@ -89,11 +89,6 @@ typedef struct {
     bool exists ;
 } EnvironmentAgent ;
 
-typedef struct {
-    int num_agents;
-    EnvironmentAgent agents_array[8];
-} EnvironmentAgentArray ;
-
 // Environment Info
 typedef struct {
     int intersection_x ;
@@ -103,6 +98,7 @@ typedef struct {
     int grid_h ;
     float road_tile_size ;
     int max_steps ;
-    EnvironmentAgentArray *agents ;
+    int num_agents;
+    EnvironmentAgent agents[8];
 } EnvironmentInfo ;
 #endif

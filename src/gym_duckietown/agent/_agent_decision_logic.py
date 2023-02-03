@@ -140,6 +140,7 @@ def in_intersection(self, env):
     # C callout
     dl.in_intersection.argtypes = [POINTER(EnvironmentInfo), c_int]
     dl.in_intersection.restype = c_bool
+    print(env.c_info_struct.agents[0].pos_x)
     in_intersection = dl.in_intersection(env.c_info_struct, int(self.index))
     return in_intersection
 
@@ -279,10 +280,15 @@ def get_stop_pos(self, env):
     # Treat agents above .30 as the same. Its just how it goes.
     speed = self.speed
 
-    dl.get_stop_pos.argtypes = [c_int, c_int, c_float, c_int, c_float]
-    dl.get_stop_pos.restype = c_void_p
-    stop_pos = StopPos.from_address(dl.get_stop_pos(int(tile_x), int(tile_z), float(tile_size), get_dl_direction(direction), float(speed)))
-    stop_x = round(float(stop_pos.x), 3)
-    stop_z = round(float(stop_pos.z), 3)
+    dl.get_stop_pos_x.argtypes = [c_int, c_int, c_float, c_int, c_float]
+    dl.get_stop_pos_x.restype = c_float
+    stop_pos_x = dl.get_stop_pos_x(int(tile_x), int(tile_z), float(tile_size), get_dl_direction(direction), float(speed))
+    stop_x = round(float(stop_pos_x), 3)
+    
+
+    dl.get_stop_pos_z.argtypes = [c_int, c_int, c_float, c_int, c_float]
+    dl.get_stop_pos_z.restype = c_float
+    stop_pos_z = dl.get_stop_pos_z(int(tile_x), int(tile_z), float(tile_size), get_dl_direction(direction), float(speed))
+    stop_z = round(float(stop_pos_z), 3)
 
     return stop_x, stop_z

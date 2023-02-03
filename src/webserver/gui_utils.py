@@ -64,6 +64,7 @@ def handle_input(env, gui_input):
             for log_agent in gui_input['log']['agents']:
                 if agent.agent_id == log_agent['agent_id']:
                     agent.cur_pos = [log_agent['pos_x'], 0, log_agent['pos_z']]
+                    agent.prev_pos = [log_agent['prev_pos_x'], 0, log_agent['prev_pos_z']]
                     agent.cur_angle = log_agent['angle']
                     agent.color = from_html_color(log_agent['color'])
                     agent.turn_choice = log_agent['turn_choice']
@@ -90,7 +91,6 @@ def handle_input(env, gui_input):
                     agent.states['is_tailgating'] = log_agent['state']['is_tailgating']
                     agent.bbox_offset_w = log_agent['bbox_w']
                     agent.bbox_offset_l = log_agent['bbox_l']
-                    agent.state = log_agent['state']
                     agent.lights = log_agent['lights']
                     agent.step_count = log_agent['step_count']
 
@@ -185,11 +185,11 @@ def env_info_dict(env):
     env_info['grid_h'] = int(c_info_struct.grid_h)
     env_info['road_tile_size'] = float(round(c_info_struct.road_tile_size, 3))
     env_info['max_steps'] = int(c_info_struct.max_steps)
-    env_info['num_agents'] = int(c_info_struct.agents.num_agents)
+    env_info['num_agents'] = int(c_info_struct.num_agents)
 
     agents = []
-    for i in range(0, c_info_struct.agents.num_agents):
-        agent = c_info_struct.agents.agents_array[i]
+    for i in range(0, c_info_struct.num_agents):
+        agent = c_info_struct.agents[i]
         dict_agent = {}
         dict_agent['id'] = int(agent.id)
         dict_agent['pos_x'] = float(round(agent.pos_x, 3))

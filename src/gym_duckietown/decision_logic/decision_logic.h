@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
 #include <math.h>
@@ -15,9 +14,11 @@
  * HELPERS
 ************************************************/
 // Return a size 2 array of tile positions, index 0 is x, index 1 is z
-TilePos get_tile_pos(float pos_x, float pos_z, float road_tile_size);
+int get_tile_pos_x(float pos_x, float pos_z, float road_tile_size);
+int get_tile_pos_z(float pos_x, float pos_z, float road_tile_size);
 
-StopPos get_stop_pos(int tile_x, int tile_z, float road_tile_size, Direction direction, float speed);
+float get_stop_pos_x(int tile_x, int tile_z, float road_tile_size, Direction direction, float speed);
+float get_stop_pos_z(int tile_x, int tile_z, float road_tile_size, Direction direction, float speed);
 
 float pos_distance(double x1, double x2, double z1, double z2);
 

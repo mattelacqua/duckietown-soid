@@ -74,47 +74,64 @@ class EnvironmentAgent(Structure):
                 ('exists', c_bool)]
 
 
-class EnvironmentAgentArray(Structure):
-    _fields_ = [('num_agents', c_int),
-                ('agents_array', (EnvironmentAgent * 8))]
+class EnvironmentInfo(Structure):
+    _fields_ = [('intersection_x', c_int),
+                ('intersection_z', c_int),
+                ('robot_length', c_float),
+                ('grid_w', c_int),
+                ('grid_h', c_int),
+                ('road_tile_size', c_float),
+                ('max_steps', c_int),
+                ('num_agents', c_int),
+                ('agents', EnvironmentAgent * 8)]
 
-
-    def __init__(self, env, agents):
-        elems = (EnvironmentAgent * env.max_agents)() # Size
-        self.agents_array = elems
-        self.num_agents = c_int(len(env.agents))
+    def __init__(self, env):
+        self.intersection_x = -1
+        self.intersection_z = -1
+        for tile in env.grid:
+            if tile['kind'] == '4way':
+                self.intersection_x = tile['coords'][0]
+                self.intersection_z = tile['coords'][1]
+        self.robot_length = round(env.robot_length, 3)
+        self.grid_w = env.grid_width
+        self.grid_h = env.grid_height
+        self.road_tile_size = round(env.road_tile_size, 3)
+        self.max_steps = env.max_steps
+        self.num_agents = int(len(env.agents))
 
         for i in range(env.max_agents):
             if i < len(env.agents):
                 agent = env.agents[i]
-                self.agents_array[i].id = c_int(agent.index)
-                self.agents_array[i].pos_x = c_float(round(agent.cur_pos[0], 3))
-                self.agents_array[i].pos_z = c_float(round(agent.cur_pos[2], 3))
+                self.agents[i].id = c_int(agent.index)
+                self.agents[i].pos_x = c_float(round(agent.cur_pos[0], 3))
+                self.agents[i].pos_z = c_float(round(agent.cur_pos[2], 3))
 
-                self.agents_array[i].prev_pos_x = c_float(round(agent.prev_pos[0], 3))
-                self.agents_array[i].prev_pos_z = c_float(round(agent.prev_pos[2], 3))
+                self.agents[i].prev_pos_x = c_float(round(agent.prev_pos[0], 3))
+                self.agents[i].prev_pos_z = c_float(round(agent.prev_pos[2], 3))
 
                 stop_x, stop_z = agent.get_stop_pos(env)
-                self.agents_array[i].stop_x = c_float(round(stop_x, 3))
-                self.agents_array[i].stop_z = c_float(round(stop_z, 3))
+                print(f"Getting stop pos {stop_x, stop_z}")
+                self.agents[i].stop_x = c_float(round(stop_x, 3))
+                self.agents[i].stop_z = c_float(round(stop_z, 3))
 
                 tile_x, tile_z = list(env.get_grid_coords(agent.cur_pos))
-                self.agents_array[i].tile_x = c_int(tile_x)
-                self.agents_array[i].tile_z = c_int(tile_z)
+                self.agents[i].tile_x = c_int(tile_x)
+                self.agents[i].tile_z = c_int(tile_z)
 
-                self.agents_array[i].angle = c_float(round(agent.cur_angle, 3))
-                self.agents_array[i].speed = c_float(round(agent.speed, 3))
-                self.agents_array[i].forward_step = c_float(round(agent.forward_step, 3))
-                self.agents_array[i].direction = get_dl_direction(agent.direction)
-                self.agents_array[i].initial_direction = get_dl_direction(agent.initial_direction)
-                self.agents_array[i].signal_choice = get_turn_choice(agent.signal_choice)
-                self.agents_array[i].turn_choice = get_turn_choice(agent.turn_choice)
-                self.agents_array[i].intersection_arrival = c_int(agent.intersection_arrival) 
-                self.agents_array[i].patience = c_int(agent.patience)
-                self.agents_array[i].step_count = c_int(round(agent.step_count, 3))
-                self.agents_array[i].lookahead = c_float(round(agent.lookahead, 3))
+                self.agents[i].angle = c_float(round(agent.cur_angle, 3))
+                self.agents[i].speed = c_float(round(agent.speed, 3))
+                self.agents[i].forward_step = c_float(round(agent.forward_step, 3))
+                self.agents[i].direction = get_dl_direction(agent.direction)
+                self.agents[i].initial_direction = get_dl_direction(agent.initial_direction)
+                self.agents[i].signal_choice = get_turn_choice(agent.signal_choice)
+                self.agents[i].turn_choice = get_turn_choice(agent.turn_choice)
+                self.agents[i].intersection_arrival = c_int(agent.intersection_arrival) 
+                self.agents[i].patience = c_int(agent.patience)
+                self.agents[i].step_count = c_int(round(agent.step_count, 3))
+                self.agents[i].lookahead = c_float(round(agent.lookahead, 3))
 
-                self.agents_array[i].state = AgentState(agent.states['in_intersection'],
+                print("Getting states")
+                self.agents[i].state = AgentState(agent.states['in_intersection'],
                                                         agent.states['at_intersection_entry'],
                                                         agent.states['intersection_empty'],
                                                         agent.states['approaching_intersection'],
@@ -129,73 +146,49 @@ class EnvironmentAgentArray(Structure):
                 
                 # handle q table
                 table_spaces = ((c_float * 2) * 1024)() # Size
-                self.agents_array[i].q_table = table_spaces
+                self.agents[i].q_table = table_spaces
                 for m in range(1024):
                     for n in range(2):
-                        self.agents_array[i].q_table[m][n] = c_float(agent.q_table.qt[m][n])
+                        self.agents[i].q_table[m][n] = c_float(agent.q_table.qt[m][n])
 
-                self.agents_array[i].exists = c_bool(True)
+                self.agents[i].exists = c_bool(True)
             else:
-                self.agents_array[i].id = c_int(-1)
-                self.agents_array[i].pos_x = c_float(-1.0)
-                self.agents_array[i].pos_z = c_float(-1.0)
+                self.agents[i].id = c_int(-1)
+                self.agents[i].pos_x = c_float(-1.0)
+                self.agents[i].pos_z = c_float(-1.0)
 
-                self.agents_array[i].prev_pos_x = c_float(-1.0)
-                self.agents_array[i].prev_pos_z = c_float(-1.0)
+                self.agents[i].prev_pos_x = c_float(-1.0)
+                self.agents[i].prev_pos_z = c_float(-1.0)
 
-                self.agents_array[i].stop_x = c_float(-1.0)
-                self.agents_array[i].stop_z = c_float(-1.0)
+                self.agents[i].stop_x = c_float(-1.0)
+                self.agents[i].stop_z = c_float(-1.0)
 
-                self.agents_array[i].tile_x = c_int(-1)
-                self.agents_array[i].tile_z = c_int(-1)
+                self.agents[i].tile_x = c_int(-1)
+                self.agents[i].tile_z = c_int(-1)
 
-                self.agents_array[i].angle = c_float(0.0)
-                self.agents_array[i].speed = c_float(0.0)
-                self.agents_array[i].forward_step = c_float(0.0)
-                self.agents_array[i].direction = Direction.NORTH
-                self.agents_array[i].initial_direction = Direction.NORTH
-                self.agents_array[i].signal_choice = TurnChoice.STRAIGHT
-                self.agents_array[i].turn_choice = TurnChoice.STRAIGHT
-                self.agents_array[i].intersection_arrival = c_int(-1)
-                self.agents_array[i].patience = c_int(-1)
-                self.agents_array[i].step_count = c_int(-1)
-                self.agents_array[i].lookahead = c_float(-1.0)
+                self.agents[i].angle = c_float(0.0)
+                self.agents[i].speed = c_float(0.0)
+                self.agents[i].forward_step = c_float(0.0)
+                self.agents[i].direction = Direction.NORTH
+                self.agents[i].initial_direction = Direction.NORTH
+                self.agents[i].signal_choice = TurnChoice.STRAIGHT
+                self.agents[i].turn_choice = TurnChoice.STRAIGHT
+                self.agents[i].intersection_arrival = c_int(-1)
+                self.agents[i].patience = c_int(-1)
+                self.agents[i].step_count = c_int(-1)
+                self.agents[i].lookahead = c_float(-1.0)
 
-                self.agents_array[i].state = AgentState(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                self.agents[i].state = AgentState(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
                 
                 # handle q table
                 table_spaces = ((c_float * 2) * 1024)() # Size
-                self.agents_array[i].q_table = table_spaces
+                self.agents[i].q_table = table_spaces
                 for m in range(1024):
                     for n in range(2):
-                        self.agents_array[i].q_table[m][n] = 0.0
+                        self.agents[i].q_table[m][n] = 0.0
 
-                self.agents_array[i].exists = c_bool(False)
+                self.agents[i].exists = c_bool(False)
 
-class EnvironmentInfo(Structure):
-    _fields_ = [('intersection_x', c_int),
-                ('intersection_z', c_int),
-                ('robot_length', c_float),
-                ('grid_w', c_int),
-                ('grid_h', c_int),
-                ('road_tile_size', c_float),
-                ('max_steps', c_int),
-                ('agents', EnvironmentAgentArray)]
-
-    def __init__(self, env):
-        self.intersection_x = -1
-        self.intersection_z = -1
-        for tile in env.grid:
-            if tile['kind'] == '4way':
-                self.intersection_x = tile['coords'][0]
-                self.intersection_z = tile['coords'][1]
-        self.robot_length = round(env.robot_length, 3)
-        self.grid_w = env.grid_width
-        self.grid_h = env.grid_height
-        self.road_tile_size = round(env.road_tile_size, 3)
-        self.max_steps = env.max_steps
-
-        self.agents = EnvironmentAgentArray(env, env.agents)
 
 def get_turn_choice(turn):
     if turn == "Straight":
