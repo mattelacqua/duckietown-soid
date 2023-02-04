@@ -2327,8 +2327,6 @@ int main(int argc, char **argv) {
     agent1_state_is_tailgating = is_tailgating(&info, 1);
     memmove( &info.agents[1].state.is_tailgating, &agent1_state_is_tailgating, sizeof(bool)); // Memcopy symb -> struct
 
-    // Klee Close Merge();
-    klee_close_merge();
 
     // Learning Row
     int mrow;
@@ -2338,12 +2336,5 @@ int main(int argc, char **argv) {
     bool will_proceed, __soid__will_proceed;
     klee_make_symbolic( &__soid__will_proceed, sizeof(bool), "__soid__will_proceed");
     will_proceed = proceed_model(model, mrow);
-    //will_proceed = proceed_good_agent(&info, 0);
-    /*float stay = model[mrow][0];
-    float move = model[mrow][1];
-    if (move >= stay) 
-        will_proceed = true;
-    else 
-        will_proceed = false;*/
     klee_assume( will_proceed == __soid__will_proceed);
 }

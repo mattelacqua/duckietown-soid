@@ -1,6 +1,0 @@
-Error: external call with symbolic argument: proceed_model
-File: /home/mje48/duckietown-soid/src/webserver/soid_files/klee/./klee_file.c
-Line: 2341
-assembly.ll line: 5615
-Stack: 
-	#000005615 in main (argc=1, argv=94524353030304) at /home/mje48/duckietown-soid/src/webserver/soid_files/klee/./klee_file.c:2341

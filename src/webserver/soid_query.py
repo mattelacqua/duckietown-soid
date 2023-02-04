@@ -19,8 +19,10 @@ def generate_soid_query(query_info):
     klee_prefix = "src/webserver/soid_files/klee/"
     make = klee_prefix + 'makefile'
 
- #   query = soid.soidlib.Soid('GUI Query', soid.soidlib.verification) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
-    query = soid.soidlib.Soid('GUI Query', soid.soidlib.counterfactual.single) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
+    if query_blob['query']['is_factual']:
+        query = soid.soidlib.Soid('GUI Query', soid.soidlib.verification) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
+    if query_blob['query']['is_existential']:
+        query = soid.soidlib.Soid('GUI Query', soid.soidlib.counterfactual.single) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
 
 
     q_environment = query_blob['environment']
@@ -771,7 +773,7 @@ def generate_soid_query(query_info):
                     sub_formula,
                     formula)
             
-        print("formula:", formula)
+        #print("formula:", formula)
         return formula
 
     def environmental( E ):
@@ -783,7 +785,10 @@ def generate_soid_query(query_info):
     query.state(state)
 
     def behavior(E, S, P ):
-        return Equal(P.will_proceed, False) # This will tell us if we ever move
+        if query_info['query']['behavior'] == 'move':
+            return Equal(P.will_proceed, True) # This will tell us if we ever move
+        elif query_info['query']['behavior'] == 'stop':
+            return Equal(P.will_proceed, True) # This will tell us if we ever move
     query.behavior(behavior)
 
     # invoke soid
@@ -792,9 +797,11 @@ def generate_soid_query(query_info):
     print(f"Result: {res} Resources: {resources}")
     model_prefix = "src/webserver/soid_files/klee/models/"
     # open klee file
-    model_file = open((model_prefix + "model.out"), 'w', encoding="utf-8")
-    model_file.write(f"{models[0]}")
-    model_file.close()
+    if models:
+        print(f"Model in {model_prefix}")
+        model_file = open((model_prefix + "model.out"), 'w', encoding="utf-8")
+        model_file.write(f"{models[0]}")
+        model_file.close()
 
 
     # Ignore info
@@ -805,6 +812,6 @@ def generate_soid_query(query_info):
 
 
 if __name__ == '__main__':
-    query_blob = json.load(open('src/webserver/soid_files/query_blobs/query_blob'))
-    print(query_blob)
+    query_prefix = 'src/webserver/soid_files/query_blobs/'
+    query_blob = json.load(open(sys.argv[1]))
     result, models, resources = generate_soid_query(query_blob)
