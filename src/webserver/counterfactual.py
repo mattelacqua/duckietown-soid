@@ -76,7 +76,7 @@ def get_query_blob(env, query_info):
                     if counterfactual['is_turnchoice']:
                         symbolics['list_turn_choice'].append(counterfactual)
 
-                return False
+                return symbolics
 
             symbolics = []
             for counterfactual in agent_info['counterfactuals']:
