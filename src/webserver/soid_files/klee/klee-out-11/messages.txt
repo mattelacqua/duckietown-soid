@@ -1,0 +1,4 @@
+KLEE: Using Z3 solver backend
+KLEE: Replacing function "sqrt" with "klee_internal_sqrt"
+KLEE: ERROR: /home/mje48/duckietown-soid/src/webserver/soid_files/klee/./klee_file.c:2341: external call with symbolic argument: proceed_model
+KLEE: NOTE: now ignoring this error at this location

@@ -1,0 +1,132 @@
+array agent0_angle[4] : w32 -> w8 = symbolic
+array agent0_forward_step[4] : w32 -> w8 = symbolic
+array agent0_initial_direction[4] : w32 -> w8 = symbolic
+array agent0_intersection_arrival[4] : w32 -> w8 = symbolic
+array agent0_lookahead[4] : w32 -> w8 = symbolic
+array agent0_patience[4] : w32 -> w8 = symbolic
+array agent0_pos_x[4] : w32 -> w8 = symbolic
+array agent0_pos_z[4] : w32 -> w8 = symbolic
+array agent0_signal_choice[4] : w32 -> w8 = symbolic
+array agent0_speed[4] : w32 -> w8 = symbolic
+array agent0_step_count[4] : w32 -> w8 = symbolic
+array agent0_turn_choice[4] : w32 -> w8 = symbolic
+array agent1_angle[4] : w32 -> w8 = symbolic
+array agent1_forward_step[4] : w32 -> w8 = symbolic
+array agent1_initial_direction[4] : w32 -> w8 = symbolic
+array agent1_intersection_arrival[4] : w32 -> w8 = symbolic
+array agent1_lookahead[4] : w32 -> w8 = symbolic
+array agent1_patience[4] : w32 -> w8 = symbolic
+array agent1_pos_x[4] : w32 -> w8 = symbolic
+array agent1_pos_z[4] : w32 -> w8 = symbolic
+array agent1_signal_choice[4] : w32 -> w8 = symbolic
+array agent1_speed[4] : w32 -> w8 = symbolic
+array agent1_step_count[4] : w32 -> w8 = symbolic
+array agent1_turn_choice[4] : w32 -> w8 = symbolic
+(query [(Eq 0
+             (ReadLSB w32 0 agent0_patience))
+         (Eq false
+             (FOGt N0:(ReadLSB w32 0 agent1_pos_z)
+                   2.92499995E+0))
+         (Eq 2
+             (ReadLSB w32 0 agent0_turn_choice))
+         (Eq 60
+             (ReadLSB w32 0 agent1_intersection_arrival))
+         (Eq false (FOLt N0 0.0E+0))
+         (Eq false
+             (FOLe N1:(ReadLSB w32 0 agent0_pos_x)
+                   (FSub w32 N2:(ReadLSB w32 0 agent1_pos_x)
+                             1043878380)))
+         (Eq 109
+             (ReadLSB w32 0 agent1_step_count))
+         (Eq 0
+             (ReadLSB w32 0 agent1_patience))
+         (Eq false
+             (FOGe N2
+                   (FSub w32 N1
+                             (FPTrunc w32 (FDiv w64 (FPExt w64 N3:(ReadLSB w32 0 agent0_lookahead))
+                                                    1.0E+1)))))
+         (Eq false
+             (FOGe N1
+                   N4:(FAdd w32 N2
+                                N5:(ReadLSB w32 0 agent1_lookahead))))
+         (Eq 2
+             (ReadLSB w32 0 agent0_signal_choice))
+         (Eq 2
+             (FPToSI w32 (SIToFP w64 (FPToSI w32 (FDiv w64 (FPExt w64 N1) 5.8499997854232788E-1)))))
+         (Eq 3
+             (FPToSI w32 (SIToFP w64 (FPToSI w32 (FDiv w64 N6:(FPExt w64 N7:(ReadLSB w32 0 agent0_pos_z))
+                                                           5.8499997854232788E-1)))))
+         (Eq false (FOGt N7 2.92499995E+0))
+         (Eq 2
+             (ReadLSB w32 0 agent1_turn_choice))
+         (Eq false (FOLt N1 0.0E+0))
+         (Eq false
+             (And (FOGt N8:(FPTrunc w32 (FMul w64 (FDiv w64 (FPExt w64 N9:(ReadLSB w32 0 agent1_angle))
+                                                            3.1400000000000001E+0)
+                                                  1.8E+2))
+                        4.5E+1)
+                  (FOLe N8 1.35E+2)))
+         (Eq false (FOLe N7 N4))
+         (Eq false
+             (And (FOGt N8 1.35E+2) (FOLe N8 2.25E+2)))
+         (Eq false (FOLt N7 0.0E+0))
+         (Eq 2
+             (ReadLSB w32 0 agent1_initial_direction))
+         (Eq 2
+             (Select w32 (And (FOGt N8 2.25E+2) (FOLe N8 3.15E+2))
+                         1
+                         2))
+         (Eq false (FOLt N2 0.0E+0))
+         (Eq 1
+             (FPToSI w32 (SIToFP w64 (FPToSI w32 (FDiv w64 N10:(FPExt w64 N2) 5.8499997854232788E-1)))))
+         (Eq 77
+             (ReadLSB w32 0 agent0_intersection_arrival))
+         (Eq 2
+             (FPToSI w32 (SIToFP w64 (FPToSI w32 (FDiv w64 (FPExt w64 N0) 5.8499997854232788E-1)))))
+         (Eq 109
+             (ReadLSB w32 0 agent0_step_count))
+         (Eq false (FOGt N2 2.92499995E+0))
+         (Eq 0
+             (ReadLSB w32 0 agent0_initial_direction))
+         (Eq false (FOGt N1 2.92499995E+0))
+         (FOEq N9 1.70000009E-2)
+         (FOEq N2 1.153E+0)
+         (FOEq (ReadLSB w32 0 agent1_forward_step)
+               4.39999998E-1)
+         (FOEq (ReadLSB w32 0 agent0_forward_step)
+               4.39999998E-1)
+         (FOEq N3 5.84999979E-1)
+         (FOEq (ReadLSB w32 0 agent0_speed)
+               2.00000009E-3)
+         (FOEq N7 1.84099996E+0)
+         (FOEq (ReadLSB w32 0 agent1_speed)
+               1.72000006E-1)
+         (FOEq N11:(ReadLSB w32 0 agent0_angle)
+               1.58800006E+0)
+         (FOEq N0 1.58599997E+0)
+         (FOEq N5 5.84999979E-1)
+         (FOEq N1 1.58500004E+0)
+         (FOLt N7 1.93499994E+0)
+         (FOLt N10 1.2059999585151673E+0)
+         (FOLe N12:(FPTrunc w32 (FMul w64 (FDiv w64 (FPExt w64 N11) 3.1400000000000001E+0)
+                                          1.8E+2))
+               1.35E+2)
+         (FOLe N1 N4)
+         (FOGt N2 9.89999949E-1)
+         (FOGt N12 4.5E+1)
+         (FOGt N6 1.7189998745918273E+0)
+         (FOGe N1 N2)
+         (FOGe N1
+               (FSub w32 (FSub w32 N2 N5) 1043878380))
+         (FOGe N7 N2)
+         (Or (Or N13:(Eq 0
+                         N14:(ReadLSB w32 0 agent1_signal_choice))
+                 (And (And (And N15:(Extract 0 (Select w8 N16:(Eq 2 N14)
+                                                          1
+                                                          N17:(Select w8 N18:(Eq 1 N14) 1 (Select w8 N13 1 0))))
+                                N19:(Extract 0 (Select w8 N18 1 0)))
+                           N20:(Extract 0 N17))
+                      N21:(Or N16 N18)))
+             (And (And (And N15 N21) (Eq false N20))
+                  (Eq false N19)))]
+        false)

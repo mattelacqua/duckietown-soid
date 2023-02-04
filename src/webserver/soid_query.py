@@ -19,7 +19,8 @@ def generate_soid_query(query_info):
     klee_prefix = "src/webserver/soid_files/klee/"
     make = klee_prefix + 'makefile'
 
-    query = soid.soidlib.Soid('GUI Query', soid.soidlib.verification) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
+ #   query = soid.soidlib.Soid('GUI Query', soid.soidlib.verification) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
+    query = soid.soidlib.Soid('GUI Query', soid.soidlib.counterfactual.single) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
 
 
     q_environment = query_blob['environment']
@@ -558,31 +559,6 @@ def generate_soid_query(query_info):
         
         # declare behaviors
         D = {}
-        for i in range(int(q_environment['num_agents'])):
-            D[f'agent{i}_prev_pos_x'] = soid.soidlib.types.float(f'agent{i}_prev_pos_x', pp=None, raw=None)
-            D[f'agent{i}_prev_pos_z'] = soid.soidlib.types.float(f'agent{i}_prev_pos_z', pp=None, raw=None)
-            D[f'agent{i}_stop_x'] = soid.soidlib.types.float(f'agent{i}_stop_x', pp=None, raw=None)
-            D[f'agent{i}_stop_z'] = soid.soidlib.types.float(f'agent{i}_stop_z', pp=None, raw=None)
-
-            D[f'agent{i}_direction'] = soid.soidlib.types.int_bv(f'agent{i}_direction', pp=None, raw=None)
-            D[f'agent{i}_tile_x'] = soid.soidlib.types.int_bv(f'agent{i}_tile_x', pp=None, raw=None)
-            D[f'agent{i}_tile_z'] = soid.soidlib.types.int_bv(f'agent{i}_tile_z', pp=None, raw=None)
-
-            
-            D[f'agent{i}_state_in_intersection'] = soid.soidlib.types.bool_bv(f'agent{i}_state_in_intersection', pp=None, raw=None)
-            D[f'agent{i}_state_at_intersection_entry'] = soid.soidlib.types.bool_bv(f'agent{i}_state_at_intersection_entry', pp=None, raw=None)
-            D[f'agent{i}_state_intersection_empty'] = soid.soidlib.types.bool_bv(f'agent{i}_state_intersection_empty', pp=None, raw=None)
-            D[f'agent{i}_state_approaching_intersection'] = soid.soidlib.types.bool_bv(f'agent{i}_state_approaching_intersection', pp=None, raw=None)
-            D[f'agent{i}_state_in_obj_in_range'] = soid.soidlib.types.bool_bv(f'agent{i}_state_in_obj_in_range', pp=None, raw=None)
-            D[f'agent{i}_state_in_has_right_of_way'] = soid.soidlib.types.bool_bv(f'agent{i}_state_in_has_right_of_way', pp=None, raw=None)
-            D[f'agent{i}_state_safe_to_enter'] = soid.soidlib.types.bool_bv(f'agent{i}_state_safe_to_enter', pp=None, raw=None)
-            D[f'agent{i}_state_cars_waiting_to_enter'] = soid.soidlib.types.bool_bv(f'agent{i}_state_cars_waiting_to_enter', pp=None, raw=None)
-            D[f'agent{i}_state_car_entering_range'] = soid.soidlib.types.bool_bv(f'agent{i}_state_car_entering_range', pp=None, raw=None)
-            D[f'agent{i}_state_obj_behind_intersection'] = soid.soidlib.types.bool_bv(f'agent{i}_state_obj_behind_intersection', pp=None, raw=None)
-            D[f'agent{i}_state_is_tailgating'] = soid.soidlib.types.bool_bv(f'agent{i}_state_is_tailgating', pp=None, raw=None)
-            D[f'agent{i}_state_next_to_go'] = soid.soidlib.types.bool_bv(f'agent{i}_state_next_to_go', pp=None, raw=None)
-            
-        D[f'mrow'] = soid.soidlib.types.int_bv(f'mrow', pp=None, raw=None)
         D[f'will_proceed'] = soid.soidlib.types.bool_bv(f'will_proceed', pp=None, raw=None)
         
         return E,S, D
@@ -807,7 +783,7 @@ def generate_soid_query(query_info):
     query.state(state)
 
     def behavior(E, S, P ):
-        return Equal(P.will_proceed, True) # This will tell us if we ever move
+        return Equal(P.will_proceed, False) # This will tell us if we ever move
     query.behavior(behavior)
 
     # invoke soid
