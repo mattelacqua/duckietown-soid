@@ -207,7 +207,7 @@ def generate_klee_file(query_blob):
     klee_file.write("    EnvironmentInfo info;\n")
     
     # Klee opent merge
-    klee_file.write("    klee_open_merge();\n")
+    #klee_file.write("    klee_open_merge();\n")
 
     
     # Handle env information
@@ -589,8 +589,8 @@ def generate_klee_file(query_blob):
     
 
 
-    klee_file.write(f'    // Klee Close Merge();\n')
-    klee_file.write(f'    klee_close_merge();\n')
+    #klee_file.write(f'    // Klee Close Merge();\n')
+    #klee_file.write(f'    klee_close_merge();\n')
     
     # handle the q table nd proceed model ONLY FOR AGENT 0
     agent = agents['agent0']
