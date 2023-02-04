@@ -85,7 +85,6 @@ typedef struct {
     int step_count ;
     float lookahead ;
     AgentState state ;
-    float q_table[1024][2];
     bool exists ;
 } EnvironmentAgent ;
 
@@ -99,6 +98,6 @@ typedef struct {
     float road_tile_size ;
     int max_steps ;
     int num_agents;
-    EnvironmentAgent agents[3];
+    EnvironmentAgent agents[5];
 } EnvironmentInfo ;
 #endif

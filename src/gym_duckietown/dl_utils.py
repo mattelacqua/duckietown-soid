@@ -70,7 +70,6 @@ class EnvironmentAgent(Structure):
                 ('step_count', c_int),
                 ('lookahead', c_float),
                 ('state', AgentState),
-                ('q_table', ((c_float * 2) * 1024)),
                 ('exists', c_bool)]
 
 
@@ -143,11 +142,13 @@ class EnvironmentInfo(Structure):
                                                         agent.states['next_to_go'])
                 
                 # handle q table
+                """
                 table_spaces = ((c_float * 2) * 1024)() # Size
                 self.agents[i].q_table = table_spaces
                 for m in range(1024):
                     for n in range(2):
                         self.agents[i].q_table[m][n] = c_float(agent.q_table.qt[m][n])
+                """
 
                 self.agents[i].exists = c_bool(True)
             else:
@@ -179,11 +180,13 @@ class EnvironmentInfo(Structure):
                 self.agents[i].state = AgentState(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
                 
                 # handle q table
+                """
                 table_spaces = ((c_float * 2) * 1024)() # Size
                 self.agents[i].q_table = table_spaces
                 for m in range(1024):
                     for n in range(2):
                         self.agents[i].q_table[m][n] = 0.0
+                """
 
                 self.agents[i].exists = c_bool(False)
 

@@ -221,7 +221,6 @@ def env_info_dict(env):
         agent_state['is_tailgating'] = agent.state.is_tailgating
 
         dict_agent['state']=agent_state
-        dict_agent['q_table']=[[float(agent.q_table[m][0]), float(agent.q_table[m][1])] for m in range(1024)]
         dict_agent['exists']=agent.exists
         
         # Other things not included in c struct
@@ -237,6 +236,10 @@ def env_info_dict(env):
         dict_agent['counterfactuals'] = env.agents[i].counterfactuals
         dict_agent['initial_direction'] = dl_utils.get_dl_direction(env.agents[i].initial_direction)
         dict_agent['log'] = env.agents[i].log
+        if env.agents[i].q_table:
+            dict_agent['q_table']=[[float(env.agents[i].q_table.qt[m][0]), float(env.agents[i].q_table.qt[m][1])] for m in range(1024)]
+        else:
+            dict_agent['q_table']=[[0.0, 0.0] for m in range(1024)]
 
         agents.append(dict_agent)
 

@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+from ctypes import *
 #from gym_duckietown.dl_utils import *
 
 def get_dl_turn_choice(choice):
@@ -27,6 +28,18 @@ def get_dl_direction(direction):
 # get the query blob from the query info
 def get_query_blob(env, query_info):
 
+    def get_model(q_table):
+        c_q_table = []
+        if q_table:
+            for m in range(1024):
+                c_q_table.append([float(q_table.qt[m][0]), float(q_table.qt[m][1])])
+        else:
+            for m in range(1024):
+                for n in range(2):
+                    c_q_table.append([0.0, 0.0])
+        
+        return c_q_table
+
     def get_environment(query_info):
         env_info = query_info['env_info']
         environment = {
@@ -38,6 +51,7 @@ def get_query_blob(env, query_info):
             'road_tile_size': env_info['road_tile_size'],
             'max_steps': env_info['max_steps'],
             'num_agents': env_info['num_agents'],
+            'model': get_model(env.agents[0].q_table),
         }
         return environment
 
@@ -110,7 +124,6 @@ def get_query_blob(env, query_info):
                     'intersection_arrival': agent_info['intersection_arrival'],
                     'patience': agent_info['patience'],
                     'step_count': agent_info['step_count'],
-                    'q_table': agent_info['q_table'],
                 },
             }
             return agent
@@ -619,9 +632,11 @@ def generate_klee_file(query_blob):
     # handle the q table nd proceed model ONLY FOR AGENT 0
     klee_file.write("    // Q table stuff\n")
     agent = agents['agent0']
+    
+    klee_file.write(f"   float model[1024][2];\n")
     for m in range(1024):
         for n in range(2):
-            klee_file.write(f"   info.agents[{0}].q_table[{m}][{n}] = {agent['state']['q_table'][m][n]};\n")
+            klee_file.write(f"   model[{m}][{n}] = {environment['model'][m][n]};\n")
 
 
     # Get learning state row
