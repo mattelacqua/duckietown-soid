@@ -85,7 +85,7 @@ learn_agent.forward_step = 0.44
 learn_agent.turn_choice = 'Right' 
 learn_agent.signal_choice = 'Right' 
 learn_agent.curve = learn_agent.get_curve(env)
-learn_agent.reward_profile = 3 
+learn_agent.reward_profile = args.reward_profile
 
 env_agent.agent_id = "agent1"
 env_agent.index = 1

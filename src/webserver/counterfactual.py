@@ -173,7 +173,7 @@ def get_query_blob(env, query_info):
     query_blob['agents'] = dict(agents)
     query_blob['query'] = dict(query)
     query_blob['log'] = dict(log)
-    json.dump(query_blob, open('src/webserver/soid_files/query_blobs/query_blob', 'w'))
+    json.dump(query_blob, open('src/webserver/soid_files/query_blobs/query_blob', 'w'), indent=2)
 
     return query_blob
 
