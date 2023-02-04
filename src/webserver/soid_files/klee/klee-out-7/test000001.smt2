@@ -1,3397 +1,400 @@
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!0 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!0)
-                 ((_ to_fp 8 24) #x3fcae148)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!33 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!33)
-                 ((_ to_fp 8 24) #x3feba5e3)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_angle_ackermann!66 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_angle_ackermann!66)
-                 ((_ to_fp 8 24) #x3fcb4396)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_forward_step_ackermann!99 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_forward_step_ackermann!99)
-                 ((_ to_fp 8 24) #x3ee147ae)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_speed_ackermann!132 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!132)
-                 ((_ to_fp 8 24) #x3b03126f)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_signal_choice_ackermann!165 () (_ BitVec 32))
-(assert (not (not (= #x00000002 agent0_signal_choice_ackermann!165))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_turn_choice_ackermann!166 () (_ BitVec 32))
-(assert (not (not (= #x00000002 agent0_turn_choice_ackermann!166))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_lookahead_ackermann!167 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_lookahead_ackermann!167)
-                 ((_ to_fp 8 24) #x3f15c28f)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_intersection_arrival_ackermann!200 () (_ BitVec 32))
-(assert (not (not (= #x0000004d agent0_intersection_arrival_ackermann!200))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_initial_direction_ackermann!201 () (_ BitVec 32))
-(assert (not (not (= #x00000000 agent0_initial_direction_ackermann!201))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_patience_ackermann!202 () (_ BitVec 32))
-(assert (not (not (= #x00000000 agent0_patience_ackermann!202))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_step_count_ackermann!203 () (_ BitVec 32))
-(assert (not (not (= #x0000006d agent0_step_count_ackermann!203))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_x_ackermann!204 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!204)
-                 ((_ to_fp 8 24) #x3f939581)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_z_ackermann!237 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_pos_z_ackermann!237)
-                 ((_ to_fp 8 24) #x3fcb020c)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_angle_ackermann!270 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_angle_ackermann!270)
-                 ((_ to_fp 8 24) #x3c8b4396)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_forward_step_ackermann!303 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_forward_step_ackermann!303)
-                 ((_ to_fp 8 24) #x3ee147ae)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_speed_ackermann!336 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!336)
-                 ((_ to_fp 8 24) #x3e3020c5)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_turn_choice_ackermann!369 () (_ BitVec 32))
-(assert (not (not (= #x00000002 agent1_turn_choice_ackermann!369))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_lookahead_ackermann!370 () (_ BitVec 32))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_lookahead_ackermann!370)
-                 ((_ to_fp 8 24) #x3f15c28f)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_intersection_arrival_ackermann!403 () (_ BitVec 32))
-(assert (not (not (= #x0000003c agent1_intersection_arrival_ackermann!403))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_initial_direction_ackermann!404 () (_ BitVec 32))
-(assert (not (not (= #x00000002 agent1_initial_direction_ackermann!404))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_patience_ackermann!405 () (_ BitVec 32))
-(assert (not (not (= #x00000000 agent1_patience_ackermann!405))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_step_count_ackermann!406 () (_ BitVec 32))
-(assert (not (not (= #x0000006d agent1_step_count_ackermann!406))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(assert (not false))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!407 () (_ BitVec 32))
-(assert (not (and (not (= #x00000002 agent1_signal_choice_ackermann!407))
-          (not (= #x00000001 agent1_signal_choice_ackermann!407)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!440 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!441 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!440) ((_ to_fp 8 24) #x3fcae148)))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!440)
-                 ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!441)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_angle_ackermann!506 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_angle_ackermann!506) ((_ to_fp 8 24) #x3fcb4396)))
+(set-logic ALL)
+(declare-fun __soid__agent0_state_cars_waiting_to_enter_ackermann!38
+             ()
+             (_ BitVec 8))
+(declare-fun __soid__agent0_state_at_intersection_entry_ackermann!24
+             ()
+             (_ BitVec 8))
+(declare-fun __soid__agent1_state_safe_to_enter_ackermann!0 () (_ BitVec 8))
+(declare-fun __soid__agent1_state_intersection_empty_ackermann!32
+             ()
+             (_ BitVec 8))
+(declare-fun __soid__agent1_state_cars_waiting_to_enter_ackermann!47
+             ()
+             (_ BitVec 8))
+(declare-fun __soid__agent1_state_has_right_of_way_ackermann!20 () (_ BitVec 8))
+(declare-fun __soid__agent1_state_at_intersection_entry_ackermann!58
+             ()
+             (_ BitVec 8))
+(declare-fun __soid__agent0_state_intersection_empty_ackermann!22
+             ()
+             (_ BitVec 8))
+(declare-fun __soid__agent0_state_approaching_intersection_ackermann!61
+             ()
+             (_ BitVec 8))
+(declare-fun __soid__agent1_state_approaching_intersection_ackermann!54
+             ()
+             (_ BitVec 8))
+(declare-fun __soid__agent0_direction_ackermann!41 () (_ BitVec 32))
+(declare-fun __soid__agent0_tile_x_ackermann!44 () (_ BitVec 32))
+(declare-fun __soid__agent1_state_is_tailgating_ackermann!51 () (_ BitVec 8))
+(declare-fun __soid__agent1_state_car_entering_range_ackermann!42
+             ()
+             (_ BitVec 8))
+(declare-fun agent0_patience_ackermann!13 () (_ BitVec 32))
+(declare-fun __soid__agent1_state_obj_in_range_ackermann!55 () (_ BitVec 8))
+(declare-fun agent1_pos_z_ackermann!40 () (_ BitVec 32))
+(declare-fun __soid__agent1_state_in_intersection_ackermann!52 () (_ BitVec 8))
+(declare-fun __soid__agent1_tile_x_ackermann!21 () (_ BitVec 32))
+(declare-fun agent0_turn_choice_ackermann!10 () (_ BitVec 32))
+(declare-fun __soid__agent0_state_car_entering_range_ackermann!53
+             ()
+             (_ BitVec 8))
+(declare-fun agent1_intersection_arrival_ackermann!18 () (_ BitVec 32))
+(declare-fun __soid__agent1_direction_ackermann!35 () (_ BitVec 32))
+(declare-fun __soid__agent0_state_in_intersection_ackermann!56 () (_ BitVec 8))
+(declare-fun agent1_pos_x_ackermann!29 () (_ BitVec 32))
+(declare-fun agent0_pos_x_ackermann!3 () (_ BitVec 32))
+(declare-fun agent1_step_count_ackermann!43 () (_ BitVec 32))
+(declare-fun __soid__agent0_state_obj_in_range_ackermann!15 () (_ BitVec 8))
+(declare-fun agent1_patience_ackermann!36 () (_ BitVec 32))
+(declare-fun agent0_lookahead_ackermann!8 () (_ BitVec 32))
+(declare-fun agent1_lookahead_ackermann!19 () (_ BitVec 32))
+(declare-fun agent0_signal_choice_ackermann!9 () (_ BitVec 32))
+(declare-fun agent0_pos_z_ackermann!4 () (_ BitVec 32))
+(declare-fun __soid__agent0_state_obj_behind_intersection_ackermann!27
+             ()
+             (_ BitVec 8))
+(declare-fun agent1_turn_choice_ackermann!1 () (_ BitVec 32))
+(declare-fun agent1_angle_ackermann!30 () (_ BitVec 32))
+(declare-fun __soid__agent0_state_is_tailgating_ackermann!59 () (_ BitVec 8))
+(declare-fun __soid__agent0_tile_z_ackermann!34 () (_ BitVec 32))
+(declare-fun agent1_initial_direction_ackermann!23 () (_ BitVec 32))
+(declare-fun __soid__agent1_state_next_to_go_ackermann!17 () (_ BitVec 8))
+(declare-fun __soid__agent1_tile_z_ackermann!25 () (_ BitVec 32))
+(declare-fun agent0_intersection_arrival_ackermann!12 () (_ BitVec 32))
+(declare-fun __soid__agent0_state_has_right_of_way_ackermann!57 () (_ BitVec 8))
+(declare-fun __soid__agent1_state_obj_behind_intersection_ackermann!45
+             ()
+             (_ BitVec 8))
+(declare-fun agent0_step_count_ackermann!14 () (_ BitVec 32))
+(declare-fun agent0_initial_direction_ackermann!11 () (_ BitVec 32))
+(declare-fun __soid__agent0_state_next_to_go_ackermann!48 () (_ BitVec 8))
+(declare-fun agent1_forward_step_ackermann!39 () (_ BitVec 32))
+(declare-fun agent0_forward_step_ackermann!6 () (_ BitVec 32))
+(declare-fun __soid__agent1_stop_x_ackermann!49 () (_ BitVec 32))
+(declare-fun agent1_speed_ackermann!46 () (_ BitVec 32))
+(declare-fun agent0_speed_ackermann!7 () (_ BitVec 32))
+(declare-fun __soid__agent0_prev_pos_x_ackermann!26 () (_ BitVec 32))
+(declare-fun __soid__agent0_stop_x_ackermann!28 () (_ BitVec 32))
+(declare-fun __soid__agent0_stop_z_ackermann!16 () (_ BitVec 32))
+(declare-fun agent0_angle_ackermann!5 () (_ BitVec 32))
+(declare-fun __soid__agent1_stop_z_ackermann!31 () (_ BitVec 32))
+(declare-fun __soid__agent1_prev_pos_x_ackermann!33 () (_ BitVec 32))
+(declare-fun agent1_signal_choice_ackermann!2 () (_ BitVec 32))
+(declare-fun __soid__agent0_state_safe_to_enter_ackermann!37 () (_ BitVec 8))
+(declare-fun __soid__mrow__ackermann!50 () (_ BitVec 32))
+(declare-fun __soid__will_proceed_ackermann!60 () (_ BitVec 8))
+(declare-fun const_arr10 () (Array (_ BitVec 32) (_ BitVec 8)))
+(assert (= ((_ extract 0 0) __soid__agent0_state_cars_waiting_to_enter_ackermann!38)
+   #b1))
+(assert (= ((_ extract 0 0) __soid__agent0_state_at_intersection_entry_ackermann!24)
+   #b1))
+(assert (= ((_ extract 0 0) __soid__agent1_state_safe_to_enter_ackermann!0) #b1))
+(assert (= ((_ extract 0 0) __soid__agent1_state_intersection_empty_ackermann!32) #b1))
+(assert (= ((_ extract 0 0) __soid__agent1_state_cars_waiting_to_enter_ackermann!47)
+   #b1))
+(assert (= ((_ extract 0 0) __soid__agent1_state_has_right_of_way_ackermann!20) #b1))
+(assert (= ((_ extract 0 0) __soid__agent1_state_at_intersection_entry_ackermann!58)
+   #b1))
+(assert (= ((_ extract 0 0) __soid__agent0_state_intersection_empty_ackermann!22) #b1))
+(assert (= ((_ extract 0 0) __soid__agent0_state_approaching_intersection_ackermann!61)
+   #b1))
+(assert (= ((_ extract 0 0) __soid__agent1_state_approaching_intersection_ackermann!54)
+   #b1))
+(assert (= #x00000000 __soid__agent0_direction_ackermann!41))
+(assert (= #x00000002 __soid__agent0_tile_x_ackermann!44))
+(assert (not (= ((_ extract 0 0) __soid__agent1_state_is_tailgating_ackermann!51) #b1)))
+(assert (not (= ((_ extract 0 0) __soid__agent1_state_car_entering_range_ackermann!42)
+        #b1)))
+(assert (= #x00000000 agent0_patience_ackermann!13))
+(assert (not (= ((_ extract 0 0) __soid__agent1_state_obj_in_range_ackermann!55) #b1)))
+(assert (not (fp.gt ((_ to_fp 8 24) agent1_pos_z_ackermann!40)
+            ((_ to_fp 8 24) #x403b3333))))
+(assert (not (= ((_ extract 0 0) __soid__agent1_state_in_intersection_ackermann!52) #b1)))
+(assert (= #x00000001 __soid__agent1_tile_x_ackermann!21))
+(assert (= #x00000002 agent0_turn_choice_ackermann!10))
+(assert (not (= ((_ extract 0 0) __soid__agent0_state_car_entering_range_ackermann!53)
+        #b1)))
+(assert (= #x0000003c agent1_intersection_arrival_ackermann!18))
+(assert (= #x00000002 __soid__agent1_direction_ackermann!35))
+(assert (not (fp.lt ((_ to_fp 8 24) agent1_pos_z_ackermann!40)
+            ((_ to_fp 8 24) #x00000000))))
+(assert (not (= ((_ extract 0 0) __soid__agent0_state_in_intersection_ackermann!56) #b1)))
+(assert (not (fp.leq ((_ to_fp 8 24) agent0_pos_x_ackermann!3)
+             (fp.sub roundNearestTiesToEven
+                     ((_ to_fp 8 24) agent1_pos_x_ackermann!29)
+                     ((_ to_fp 8 24) #x3e3851ec)))))
+(assert (= #x0000006d agent1_step_count_ackermann!43))
+(assert (not (= ((_ extract 0 0) __soid__agent0_state_obj_in_range_ackermann!15) #b1)))
+(assert (= #x00000000 agent1_patience_ackermann!36))
+(assert (let ((a!1 ((_ to_fp 8 24)
+             roundNearestTiesToEven
+             (fp.div roundNearestTiesToEven
+                     ((_ to_fp 11 53)
+                       roundNearestTiesToEven
+                       ((_ to_fp 8 24) agent0_lookahead_ackermann!8))
+                     ((_ to_fp 11 53) #x4024000000000000)))))
+  (not (fp.geq ((_ to_fp 8 24) agent1_pos_x_ackermann!29)
+               (fp.sub roundNearestTiesToEven
+                       ((_ to_fp 8 24) agent0_pos_x_ackermann!3)
+                       a!1)))))
+(assert (not (fp.geq ((_ to_fp 8 24) agent0_pos_x_ackermann!3)
+             (fp.add roundNearestTiesToEven
+                     ((_ to_fp 8 24) agent1_pos_x_ackermann!29)
+                     ((_ to_fp 8 24) agent1_lookahead_ackermann!19)))))
+(assert (= #x00000002 agent0_signal_choice_ackermann!9))
+(assert (let ((a!1 ((_ fp.to_sbv 32)
+             roundTowardZero
+             (fp.div roundNearestTiesToEven
+                     ((_ to_fp 11 53)
+                       roundNearestTiesToEven
+                       ((_ to_fp 8 24) agent0_pos_x_ackermann!3))
+                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
+  (= #x00000002
+     ((_ fp.to_sbv 32)
+       roundTowardZero
+       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))))
+(assert (let ((a!1 ((_ fp.to_sbv 32)
+             roundTowardZero
+             (fp.div roundNearestTiesToEven
+                     ((_ to_fp 11 53)
+                       roundNearestTiesToEven
+                       ((_ to_fp 8 24) agent0_pos_z_ackermann!4))
+                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
+  (= #x00000003
+     ((_ fp.to_sbv 32)
+       roundTowardZero
+       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))))
+(assert (not (fp.gt ((_ to_fp 8 24) agent0_pos_z_ackermann!4)
+            ((_ to_fp 8 24) #x403b3333))))
+(assert (not (= ((_ extract 0 0)
+          __soid__agent0_state_obj_behind_intersection_ackermann!27)
+        #b1)))
+(assert (= #x00000002 agent1_turn_choice_ackermann!1))
+(assert (not (fp.lt ((_ to_fp 8 24) agent0_pos_x_ackermann!3)
+            ((_ to_fp 8 24) #x00000000))))
 (assert (let ((a!1 (fp.mul roundNearestTiesToEven
                    (fp.div roundNearestTiesToEven
                            ((_ to_fp 11 53)
                              roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent0_angle_ackermann!506))
+                             ((_ to_fp 8 24) agent1_angle_ackermann!30))
                            ((_ to_fp 11 53) #x40091eb851eb851f))
                    ((_ to_fp 11 53) #x4066800000000000))))
   (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
                    ((_ to_fp 8 24) #x42340000))
             (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
                     ((_ to_fp 8 24) #x43070000))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!539 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!541 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!540 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!539) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!539)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!541)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!539))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (not (= ((_ fp.to_sbv 32)
-                     roundTowardZero
-                     ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-                   __soid__agent0_tile_x_ackermann!540))))
-  (not a!2))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!638 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!639 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!638) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!638))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (not (= ((_ fp.to_sbv 32)
-                     roundTowardZero
-                     ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-                   __soid__agent0_tile_z_ackermann!639))))
-  (not a!2))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!704 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!707 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!705 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!706 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!704) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!704)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!707)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!704))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!705)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!704))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!3 (fp.eq ((_ to_fp 8 24)
-                    roundNearestTiesToEven
-                    (fp.sub roundNearestTiesToEven
-                            ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                            ((_ to_fp 11 53) #x3fd2b851e0000000)))
-                  ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!706))))
-  (not (not a!3))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!837 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!838 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!839 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!836 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!837) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!838) ((_ to_fp 8 24) #x3b03126f)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!837))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!839)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!837))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!838))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!838)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (not (not (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!836))))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_x_ackermann!968 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!969 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!968) ((_ to_fp 8 24) #x3f939581)))
-(assert (not (not (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!968)
-                 ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!969)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_angle_ackermann!1034 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_angle_ackermann!1034) ((_ to_fp 8 24) #x3c8b4396)))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!1034))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x42340000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x43070000))))))
-  (not a!2))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_angle_ackermann!1035 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_angle_ackermann!1035) ((_ to_fp 8 24) #x3c8b4396)))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!1035))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x43070000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x43610000))))))
-  (not a!2))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_angle_ackermann!1068 () (_ BitVec 32))
-(declare-fun __soid__agent1_direction_ackermann!1069 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_angle_ackermann!1068) ((_ to_fp 8 24) #x3c8b4396)))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!1068))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x43610000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x439d8000)))
-                #x00000001
-                #x00000002)))
-  (not (not (= a!2 __soid__agent1_direction_ackermann!1069))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_x_ackermann!1134 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!1135 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!1136 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!1134) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!1134)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!1135)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!1134))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (not (= ((_ fp.to_sbv 32)
-                     roundTowardZero
-                     ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-                   __soid__agent1_tile_x_ackermann!1136))))
-  (not a!2))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_z_ackermann!1234 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_z_ackermann!1233 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_z_ackermann!1234) ((_ to_fp 8 24) #x3fcb020c)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_z_ackermann!1234))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (not (= ((_ fp.to_sbv 32)
-                     roundTowardZero
-                     ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-                   __soid__agent1_tile_z_ackermann!1233))))
-  (not a!2))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_angle_ackermann!1299 () (_ BitVec 32))
-(declare-fun __soid__agent1_direction_ackermann!1300 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_angle_ackermann!1299) ((_ to_fp 8 24) #x3c8b4396)))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!1299))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x43610000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x439d8000)))
-                #x00000001
-                #x00000002)))
-  (= a!2 __soid__agent1_direction_ackermann!1300))))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!1299))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x43610000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x439d8000)))
-                #x00000001
-                #x00000002)))
-  (not (= #x00000002 a!2)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_x_ackermann!1302 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!1301 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!1303 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!1305 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!1304 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!1302) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!1301) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!1302)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!1303)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!1302))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!1305)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!1302))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!1301))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!1301)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (not (not (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!1304))))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_z_ackermann!1468 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_z_ackermann!1467 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_z_ackermann!1466 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_z_ackermann!1468) ((_ to_fp 8 24) #x3fcb020c)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_z_ackermann!1468))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_z_ackermann!1467)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_z_ackermann!1468))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!3 (fp.eq ((_ to_fp 8 24)
-                    roundNearestTiesToEven
-                    (fp.add roundNearestTiesToEven
-                            ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                            ((_ to_fp 11 53) #x3fd2b851e0000000)))
-                  ((_ to_fp 8 24) __soid__agent1_stop_z_ackermann!1466))))
-  (not (not a!3))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!1565 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!1568 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!1566 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!1567 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!1565) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!1565)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!1568)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!1565))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!1566)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!1565))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!1567)))))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!1565))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (not (= #x00000002
-          ((_ fp.to_sbv 32)
-            roundTowardZero
-            ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!1698 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!1700 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!1697 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!1699 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!1698) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!1698))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!1700)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!1698))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!1699))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!1699)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!1697))))))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!1699) ((_ to_fp 8 24) #x3b03126f)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!1698))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (not (= #x00000002
-                   ((_ fp.to_sbv 32)
-                     roundTowardZero
-                     ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-  (not a!2))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_x_ackermann!1830 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!1831 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!1833 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!1832 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!1829 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!1830) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!1830)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!1831)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!1830))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!1833)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!1830))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!1829))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!1829)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!1832))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!1829) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!1830))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (not (= #x00000002
-                   ((_ fp.to_sbv 32)
-                     roundTowardZero
-                     ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-  (not a!2))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!1994 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!1997 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!1995 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!1996 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!1994) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!1994)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!1997)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!1994))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!1995)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!1994))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!1996)))))
-(assert (not (not (fp.lt ((_ to_fp 8 24) agent0_pos_x_ackermann!1994)
-                 ((_ to_fp 8 24) #x00000000)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!1999 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!2001 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!1998 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!2000 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!1999) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!1999))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!2001)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!1999))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!2000))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!2000)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!1998))))))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!2000) ((_ to_fp 8 24) #x3b03126f)))
-(assert (not (not (fp.lt ((_ to_fp 8 24) agent0_pos_z_ackermann!1999)
-                 ((_ to_fp 8 24) #x00000000)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!2002 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!2005 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!2003 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!2004 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!2002) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!2002)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!2005)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!2002))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!2003)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!2002))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!2004)))))
-(assert (not (not (fp.gt ((_ to_fp 8 24) agent0_pos_x_ackermann!2002)
-                 ((_ to_fp 8 24) #x403b3333)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!2007 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!2009 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!2006 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!2008 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!2007) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!2007))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!2009)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!2007))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!2008))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!2008)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!2006))))))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!2008) ((_ to_fp 8 24) #x3b03126f)))
-(assert (not (not (fp.gt ((_ to_fp 8 24) agent0_pos_z_ackermann!2007)
-                 ((_ to_fp 8 24) #x403b3333)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!2011 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!2013 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!2010 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!2012 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!2011) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!2011))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!2013)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!2011))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!2012))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!2012)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!2010))))))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!2012) ((_ to_fp 8 24) #x3b03126f)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!2011))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (not (= #x00000003
-          ((_ fp.to_sbv 32)
-            roundTowardZero
-            ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!2015 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!2017 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!2014 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!2016 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!2015) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!2015))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!2017)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!2015))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!2016))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!2016)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!2014))))))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!2016) ((_ to_fp 8 24) #x3b03126f)))
-(assert (not (fp.gt ((_ to_fp 11 53)
-              roundNearestTiesToEven
-              ((_ to_fp 8 24) agent0_pos_z_ackermann!2015))
-            ((_ to_fp 11 53) #x3ffb810603333333))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!2147 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!2149 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!2146 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!2148 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!2147) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!2147))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!2149)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!2147))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!2148))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!2148)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!2146))))))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!2148) ((_ to_fp 8 24) #x3b03126f)))
-(assert (not (fp.lt ((_ to_fp 8 24) agent0_pos_z_ackermann!2147)
-            ((_ to_fp 8 24) #x3ff7ae14))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent0_state_at_intersection_entry_ackermann!2150
-             ()
-             (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0)
-               __soid__agent0_state_at_intersection_entry_ackermann!2150)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_x_ackermann!2154 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!2155 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!2157 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!2156 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!2153 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2154) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2154)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!2155)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2154))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!2157)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2154))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!2153))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!2153)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!2156))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!2153) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not (not (fp.lt ((_ to_fp 8 24) agent1_pos_x_ackermann!2154)
-                 ((_ to_fp 8 24) #x00000000)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_z_ackermann!2160 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_z_ackermann!2159 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_z_ackermann!2158 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_z_ackermann!2160) ((_ to_fp 8 24) #x3fcb020c)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_z_ackermann!2160))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_z_ackermann!2159)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_z_ackermann!2160))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.add roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent1_stop_z_ackermann!2158)))))
-(assert (not (not (fp.lt ((_ to_fp 8 24) agent1_pos_z_ackermann!2160)
-                 ((_ to_fp 8 24) #x00000000)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_x_ackermann!2162 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!2163 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!2165 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!2164 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!2161 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2162) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2162)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!2163)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2162))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!2165)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2162))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!2161))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!2161)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!2164))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!2161) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not (not (fp.gt ((_ to_fp 8 24) agent1_pos_x_ackermann!2162)
-                 ((_ to_fp 8 24) #x403b3333)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_z_ackermann!2168 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_z_ackermann!2167 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_z_ackermann!2166 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_z_ackermann!2168) ((_ to_fp 8 24) #x3fcb020c)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_z_ackermann!2168))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_z_ackermann!2167)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_z_ackermann!2168))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.add roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent1_stop_z_ackermann!2166)))))
-(assert (not (not (fp.gt ((_ to_fp 8 24) agent1_pos_z_ackermann!2168)
-                 ((_ to_fp 8 24) #x403b3333)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_angle_ackermann!2169 () (_ BitVec 32))
-(declare-fun __soid__agent1_direction_ackermann!2170 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_angle_ackermann!2169) ((_ to_fp 8 24) #x3c8b4396)))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!2169))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x43610000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x439d8000)))
-                #x00000001
-                #x00000002)))
-  (= a!2 __soid__agent1_direction_ackermann!2170))))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!2169))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x43610000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x439d8000)))
-                #x00000001
-                #x00000002)))
-  (not (not (= #x00000000 a!2))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_angle_ackermann!2235 () (_ BitVec 32))
-(declare-fun __soid__agent1_direction_ackermann!2236 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_angle_ackermann!2235) ((_ to_fp 8 24) #x3c8b4396)))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!2235))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x43610000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x439d8000)))
-                #x00000001
-                #x00000002)))
-  (= a!2 __soid__agent1_direction_ackermann!2236))))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!2235))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x43610000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x439d8000)))
-                #x00000001
-                #x00000002)))
-  (not (not (= #x00000003 a!2))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_angle_ackermann!2237 () (_ BitVec 32))
-(declare-fun __soid__agent1_direction_ackermann!2238 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_angle_ackermann!2237) ((_ to_fp 8 24) #x3c8b4396)))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!2237))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x43610000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x439d8000)))
-                #x00000001
-                #x00000002)))
-  (= a!2 __soid__agent1_direction_ackermann!2238))))
-(assert (let ((a!1 (fp.mul roundNearestTiesToEven
-                   (fp.div roundNearestTiesToEven
-                           ((_ to_fp 11 53)
-                             roundNearestTiesToEven
-                             ((_ to_fp 8 24) agent1_angle_ackermann!2237))
-                           ((_ to_fp 11 53) #x40091eb851eb851f))
-                   ((_ to_fp 11 53) #x4066800000000000))))
-(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                            ((_ to_fp 8 24) #x43610000))
-                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
-                             ((_ to_fp 8 24) #x439d8000)))
-                #x00000001
-                #x00000002)))
-  (not (not (= #x00000001 a!2))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_x_ackermann!2304 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!2305 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!2307 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!2306 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!2303 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2304) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2304)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!2305)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2304))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!2307)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2304))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!2303))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!2303)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!2306))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!2303) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2304))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (not (= #x00000001
-          ((_ fp.to_sbv 32)
-            roundTowardZero
-            ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_z_ackermann!2470 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_z_ackermann!2469 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_z_ackermann!2468 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_z_ackermann!2470) ((_ to_fp 8 24) #x3fcb020c)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_z_ackermann!2470))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_z_ackermann!2469)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_z_ackermann!2470))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.add roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent1_stop_z_ackermann!2468)))))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_z_ackermann!2470))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (not (= #x00000002
-          ((_ fp.to_sbv 32)
-            roundTowardZero
-            ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_x_ackermann!2472 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!2473 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!2475 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!2474 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!2471 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2472) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2472)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!2473)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2472))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!2475)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2472))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!2471))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!2471)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!2474))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!2471) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not (fp.gt ((_ to_fp 8 24) agent1_pos_x_ackermann!2472)
-            ((_ to_fp 8 24) #x3f7d70a3))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_pos_x_ackermann!2637 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!2638 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!2640 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!2639 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!2636 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2637) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2637)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!2638)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2637))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!2640)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2637))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!2636))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!2636)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!2639))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!2636) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not (fp.lt ((_ to_fp 11 53)
-              roundNearestTiesToEven
-              ((_ to_fp 8 24) agent1_pos_x_ackermann!2637))
-            ((_ to_fp 11 53) #x3ff34bc69ccccccd))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent1_state_at_intersection_entry_ackermann!2801
-             ()
-             (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0)
-               __soid__agent1_state_at_intersection_entry_ackermann!2801)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent0_state_intersection_empty_ackermann!2804
-             ()
-             (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0)
-               __soid__agent0_state_intersection_empty_ackermann!2804)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent1_state_intersection_empty_ackermann!2807
-             ()
-             (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0)
-               __soid__agent1_state_intersection_empty_ackermann!2807)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent0_state_approaching_intersection_ackermann!2810
-             ()
-             (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0)
-               __soid__agent0_state_approaching_intersection_ackermann!2810)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent1_state_approaching_intersection_ackermann!2813
-             ()
-             (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0)
-               __soid__agent1_state_approaching_intersection_ackermann!2813)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!2816 () (_ BitVec 32))
-(declare-fun agent0_lookahead_ackermann!2817 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!2820 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!2822 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!2819 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!2821 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!2823 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!2825 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!2824 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!2818 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!2816) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_lookahead_ackermann!2817)
-       ((_ to_fp 8 24) #x3f15c28f)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2820) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!2816)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!2822)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!2816))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!2819)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!2816))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!2821)))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!2820)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!2823)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2820))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!2825)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!2820))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!2818))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!2818)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!2824))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!2818) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not false))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!3146 () (_ BitVec 32))
-(declare-fun agent0_lookahead_ackermann!3147 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!3150 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!3152 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!3149 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!3151 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!3153 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!3155 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!3154 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!3148 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!3146) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_lookahead_ackermann!3147)
-       ((_ to_fp 8 24) #x3f15c28f)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!3150) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!3146)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!3152)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!3146))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!3149)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!3146))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!3151)))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!3150)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!3153)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!3150))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!3155)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!3150))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!3148))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!3148)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!3154))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!3148) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (let ((a!1 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_lookahead_ackermann!3147))
-                     ((_ to_fp 11 53) #x4024000000000000)))))
-(let ((a!2 (not (fp.geq ((_ to_fp 8 24) agent1_pos_x_ackermann!3150)
-                        (fp.sub roundNearestTiesToEven
-                                ((_ to_fp 8 24) agent0_pos_x_ackermann!3146)
-                                a!1)))))
-  (not a!2))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!3476 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!3479 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!3481 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!3478 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!3480 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!3482 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!3484 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!3483 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!3477 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!3476) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!3479) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!3476)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!3481)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!3476))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!3478)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!3476))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!3480)))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!3479)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!3482)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!3479))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!3484)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!3479))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!3477))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!3477)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!3483))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!3477) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not false))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!3773 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!3776 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!3778 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!3775 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!3777 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!3779 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!3781 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!3780 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!3774 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!3773) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!3776) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!3773)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!3778)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!3773))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!3775)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!3773))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!3777)))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!3776)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!3779)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!3776))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!3781)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!3776))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!3774))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!3774)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!3780))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!3774) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not (fp.geq ((_ to_fp 8 24) agent0_pos_x_ackermann!3773)
-             ((_ to_fp 8 24) agent1_pos_x_ackermann!3776))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!3782 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!3785 () (_ BitVec 32))
-(declare-fun agent1_lookahead_ackermann!3791 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!3787 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!3784 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!3786 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!3788 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!3790 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!3789 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!3783 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!3782) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!3785) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_lookahead_ackermann!3791)
-       ((_ to_fp 8 24) #x3f15c28f)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!3782)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!3787)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!3782))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!3784)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!3782))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!3786)))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!3785)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!3788)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!3785))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!3790)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!3785))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!3783))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!3783)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!3789))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!3783) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not false))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!4112 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!4115 () (_ BitVec 32))
-(declare-fun agent1_lookahead_ackermann!4121 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!4117 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!4114 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!4116 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!4118 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!4120 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!4119 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!4113 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!4112) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!4115) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_lookahead_ackermann!4121)
-       ((_ to_fp 8 24) #x3f15c28f)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!4112)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!4117)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!4112))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!4114)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!4112))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!4116)))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!4115)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!4118)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!4115))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!4120)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!4115))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!4113))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!4113)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!4119))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!4113) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not (fp.leq ((_ to_fp 8 24) agent0_pos_x_ackermann!4112)
+(assert (not (= ((_ extract 0 0) __soid__agent0_state_is_tailgating_ackermann!59) #b1)))
+(assert (not (fp.leq ((_ to_fp 8 24) agent0_pos_z_ackermann!4)
              (fp.add roundNearestTiesToEven
-                     ((_ to_fp 8 24) agent1_pos_x_ackermann!4115)
-                     ((_ to_fp 8 24) agent1_lookahead_ackermann!4121)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!4443 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!4446 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!4449 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!4442 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!4444 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!4447 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!4450 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!4448 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!4445 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!4443) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!4446) ((_ to_fp 8 24) #x3f939581)))
+                     ((_ to_fp 8 24) agent1_pos_x_ackermann!29)
+                     ((_ to_fp 8 24) agent1_lookahead_ackermann!19)))))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!30))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (not (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                   ((_ to_fp 8 24) #x43070000))
+            (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                    ((_ to_fp 8 24) #x43610000))))))
+(assert (= #x00000003 __soid__agent0_tile_z_ackermann!34))
+(assert (not (fp.lt ((_ to_fp 8 24) agent0_pos_z_ackermann!4)
+            ((_ to_fp 8 24) #x00000000))))
+(assert (= #x00000002 agent1_initial_direction_ackermann!23))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent1_angle_ackermann!30))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+(let ((a!2 (ite (and (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                            ((_ to_fp 8 24) #x43610000))
+                     (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+                             ((_ to_fp 8 24) #x439d8000)))
+                #x00000001
+                #x00000002)))
+  (= #x00000002 a!2))))
+(assert (not (fp.lt ((_ to_fp 8 24) agent1_pos_x_ackermann!29)
+            ((_ to_fp 8 24) #x00000000))))
+(assert (not (= ((_ extract 0 0) __soid__agent1_state_next_to_go_ackermann!17) #b1)))
+(assert (= #x00000002 __soid__agent1_tile_z_ackermann!25))
 (assert (let ((a!1 ((_ fp.to_sbv 32)
              roundTowardZero
              (fp.div roundNearestTiesToEven
                      ((_ to_fp 11 53)
                        roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!4443))
+                       ((_ to_fp 8 24) agent1_pos_x_ackermann!29))
                      ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
+  (= #x00000001
+     ((_ fp.to_sbv 32)
        roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!4449)))
+       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))))
+(assert (= #x0000004d agent0_intersection_arrival_ackermann!12))
+(assert (not (= ((_ extract 0 0) __soid__agent0_state_has_right_of_way_ackermann!57)
+        #b1)))
+(assert (not (= ((_ extract 0 0)
+          __soid__agent1_state_obj_behind_intersection_ackermann!45)
+        #b1)))
 (assert (let ((a!1 ((_ fp.to_sbv 32)
              roundTowardZero
              (fp.div roundNearestTiesToEven
                      ((_ to_fp 11 53)
                        roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!4443))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
+                       ((_ to_fp 8 24) agent1_pos_z_ackermann!40))
+                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
+  (= #x00000002
+     ((_ fp.to_sbv 32)
+       roundTowardZero
+       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))))
+(assert (= #x0000006d agent0_step_count_ackermann!14))
+(assert (not (fp.gt ((_ to_fp 8 24) agent1_pos_x_ackermann!29)
+            ((_ to_fp 8 24) #x403b3333))))
+(assert (= #x00000000 agent0_initial_direction_ackermann!11))
+(assert (not (= ((_ extract 0 0) __soid__agent0_state_next_to_go_ackermann!48) #b1)))
+(assert (not (fp.gt ((_ to_fp 8 24) agent0_pos_x_ackermann!3)
+            ((_ to_fp 8 24) #x403b3333))))
+(assert (fp.eq ((_ to_fp 8 24) agent1_angle_ackermann!30) ((_ to_fp 8 24) #x3c8b4396)))
+(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!29) ((_ to_fp 8 24) #x3f939581)))
+(assert (fp.eq ((_ to_fp 8 24) agent1_forward_step_ackermann!39)
+       ((_ to_fp 8 24) #x3ee147ae)))
+(assert (fp.eq ((_ to_fp 8 24) agent0_forward_step_ackermann!6)
+       ((_ to_fp 8 24) #x3ee147ae)))
+(assert (let ((a!1 (ite (fp.gt ((_ to_fp 11 53)
                          roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!4444))
+                         ((_ to_fp 8 24) agent1_speed_ackermann!46))
                        ((_ to_fp 11 53) #x3fd6666666666666))
                 (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!4444)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
+                agent1_speed_ackermann!46)))
+(let ((a!2 (fp.add roundNearestTiesToEven
+                   ((_ to_fp 8 24) #x3f15c28f)
                    (fp.sub roundNearestTiesToEven
                            ((_ to_fp 8 24) #x3f15c28f)
                            (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
+                                   ((_ to_fp 8 24) a!1)
                                    ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!4442))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!4446)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!4447)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!4446))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!4450)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!4446))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!4445))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!4445)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!4448))))))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!4444) ((_ to_fp 8 24) #x3b03126f)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!4445) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not false))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!4740 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!4743 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!4746 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!4739 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!4741 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!4744 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!4747 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!4745 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!4742 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!4740) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!4743) ((_ to_fp 8 24) #x3f939581)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!4740))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!4746)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!4740))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!4741))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!4741)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!4739))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!4743)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!4744)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!4743))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!4747)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!4743))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!4742))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!4742)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!4745))))))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!4741) ((_ to_fp 8 24) #x3b03126f)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!4742) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not (fp.geq ((_ to_fp 8 24) agent0_pos_z_ackermann!4740)
-             ((_ to_fp 8 24) agent1_pos_x_ackermann!4743))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!4749 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!4752 () (_ BitVec 32))
-(declare-fun agent1_lookahead_ackermann!4757 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!4755 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!4748 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!4750 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!4753 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!4756 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!4754 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!4751 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!4749) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!4752) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_lookahead_ackermann!4757)
+  (fp.eq a!2 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!49)))))
+(assert (fp.eq ((_ to_fp 8 24) agent0_lookahead_ackermann!8)
        ((_ to_fp 8 24) #x3f15c28f)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!4749))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!4755)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!4749))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
+(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!7) ((_ to_fp 8 24) #x3b03126f)))
+(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!3)
+       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!26)))
+(assert (fp.eq ((_ to_fp 8 24) #x3f60a3d6)
+       ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!28)))
+(assert (let ((a!1 (ite (fp.gt ((_ to_fp 11 53)
                          roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!4750))
+                         ((_ to_fp 8 24) agent0_speed_ackermann!7))
                        ((_ to_fp 11 53) #x3fd6666666666666))
                 (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!4750)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
+                agent0_speed_ackermann!7)))
+(let ((a!2 (fp.sub roundNearestTiesToEven
+                   ((_ to_fp 8 24) #x4015c28f)
                    (fp.sub roundNearestTiesToEven
                            ((_ to_fp 8 24) #x3f15c28f)
                            (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
+                                   ((_ to_fp 8 24) a!1)
                                    ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!4748))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!4752)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!4753)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!4752))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!4756)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!4752))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!4751))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!4751)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!4754))))))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!4750) ((_ to_fp 8 24) #x3b03126f)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!4751) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (not false))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_z_ackermann!5079 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!5082 () (_ BitVec 32))
-(declare-fun agent1_lookahead_ackermann!5087 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_z_ackermann!5085 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_z_ackermann!5078 () (_ BitVec 32))
-(declare-fun agent0_speed_ackermann!5080 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!5083 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!5086 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!5084 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!5081 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!5079) ((_ to_fp 8 24) #x3feba5e3)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!5082) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_lookahead_ackermann!5087)
+  (fp.eq a!2 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!16)))))
+(assert (fp.eq ((_ to_fp 8 24) agent0_pos_z_ackermann!4) ((_ to_fp 8 24) #x3feba5e3)))
+(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!46) ((_ to_fp 8 24) #x3e3020c5)))
+(assert (fp.eq ((_ to_fp 8 24) agent0_angle_ackermann!5) ((_ to_fp 8 24) #x3fcb4396)))
+(assert (fp.eq ((_ to_fp 8 24) #x3fbb3333)
+       ((_ to_fp 8 24) __soid__agent1_stop_z_ackermann!31)))
+(assert (fp.eq ((_ to_fp 8 24) agent1_pos_z_ackermann!40) ((_ to_fp 8 24) #x3fcb020c)))
+(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!29)
+       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!33)))
+(assert (fp.eq ((_ to_fp 8 24) agent1_lookahead_ackermann!19)
        ((_ to_fp 8 24) #x3f15c28f)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!5079))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_z_ackermann!5085)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_z_ackermann!5079))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent0_speed_ackermann!5080))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent0_speed_ackermann!5080)))
-(let ((a!2 ((_ to_fp 8 24)
-             roundNearestTiesToEven
-             (bvadd #x00000001
-                    ((_ fp.to_sbv 32)
-                      roundTowardZero
-                      ((_ to_fp 11 53) roundNearestTiesToEven a!1))))))
-(let ((a!4 (fp.sub roundNearestTiesToEven
-                   (fp.mul roundNearestTiesToEven
-                           a!2
-                           ((_ to_fp 8 24) #x3f15c28f))
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent0_stop_z_ackermann!5078))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!5082)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!5083)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!5082))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!5086)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!5082))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!5081))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!5081)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!5084))))))
-(assert (fp.eq ((_ to_fp 8 24) agent0_speed_ackermann!5080) ((_ to_fp 8 24) #x3b03126f)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!5081) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (let ((a!1 (not (fp.leq ((_ to_fp 8 24) agent0_pos_z_ackermann!5079)
-                        (fp.add roundNearestTiesToEven
-                                ((_ to_fp 8 24) agent1_pos_x_ackermann!5082)
-                                ((_ to_fp 8 24) agent1_lookahead_ackermann!5087))))))
-  (not a!1)))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent1_state_has_right_of_way_ackermann!5408
-             ()
-             (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0)
-               __soid__agent1_state_has_right_of_way_ackermann!5408)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent1_state_safe_to_enter_ackermann!5411 () (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0) __soid__agent1_state_safe_to_enter_ackermann!5411)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent0_state_cars_waiting_to_enter_ackermann!5414
-             ()
-             (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0)
-               __soid__agent0_state_cars_waiting_to_enter_ackermann!5414)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent1_state_cars_waiting_to_enter_ackermann!5417
-             ()
-             (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0)
-               __soid__agent1_state_cars_waiting_to_enter_ackermann!5417)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!5420 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!5423 () (_ BitVec 32))
-(declare-fun agent1_lookahead_ackermann!5429 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!5425 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!5422 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!5424 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!5426 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!5428 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!5427 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!5421 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!5420) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!5423) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_lookahead_ackermann!5429)
-       ((_ to_fp 8 24) #x3f15c28f)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!5420)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!5425)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!5420))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!5422)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!5420))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!5424)))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!5423)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!5426)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!5423))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!5428)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!5423))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!5421))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!5421)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!5427))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!5421) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (let ((a!1 (not (fp.geq ((_ to_fp 8 24) agent0_pos_x_ackermann!5420)
-                        (fp.add roundNearestTiesToEven
-                                ((_ to_fp 8 24) agent1_pos_x_ackermann!5423)
-                                ((_ to_fp 8 24) agent1_lookahead_ackermann!5429))))))
-  (not a!1)))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!5750 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!5753 () (_ BitVec 32))
-(declare-fun agent1_lookahead_ackermann!5759 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!5755 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!5752 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!5754 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!5756 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!5758 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!5757 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!5751 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!5750) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!5753) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_lookahead_ackermann!5759)
-       ((_ to_fp 8 24) #x3f15c28f)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!5750)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!5755)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!5750))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!5752)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!5750))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!5754)))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!5753)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!5756)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!5753))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!5758)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!5753))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!5751))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!5751)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!5757))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!5751) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (let ((a!1 (fp.geq ((_ to_fp 8 24) agent0_pos_x_ackermann!5750)
-                   (fp.sub roundNearestTiesToEven
-                           (fp.sub roundNearestTiesToEven
-                                   ((_ to_fp 8 24) agent1_pos_x_ackermann!5753)
-                                   ((_ to_fp 8 24)
-                                     agent1_lookahead_ackermann!5759))
-                           ((_ to_fp 8 24) #x3e3851ec)))))
-  (not a!1)))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent0_pos_x_ackermann!6080 () (_ BitVec 32))
-(declare-fun agent1_pos_x_ackermann!6083 () (_ BitVec 32))
-(declare-fun __soid__agent0_prev_pos_x_ackermann!6085 () (_ BitVec 32))
-(declare-fun __soid__agent0_tile_x_ackermann!6082 () (_ BitVec 32))
-(declare-fun __soid__agent0_stop_x_ackermann!6084 () (_ BitVec 32))
-(declare-fun __soid__agent1_prev_pos_x_ackermann!6086 () (_ BitVec 32))
-(declare-fun __soid__agent1_tile_x_ackermann!6088 () (_ BitVec 32))
-(declare-fun __soid__agent1_stop_x_ackermann!6087 () (_ BitVec 32))
-(declare-fun agent1_speed_ackermann!6081 () (_ BitVec 32))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!6080) ((_ to_fp 8 24) #x3fcae148)))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!6083) ((_ to_fp 8 24) #x3f939581)))
-(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!6080)
-       ((_ to_fp 8 24) __soid__agent0_prev_pos_x_ackermann!6085)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!6080))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent0_tile_x_ackermann!6082)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent0_pos_x_ackermann!6080))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-  (fp.eq ((_ to_fp 8 24)
-           roundNearestTiesToEven
-           (fp.sub roundNearestTiesToEven
-                   ((_ to_fp 11 53) roundNearestTiesToEven a!2)
-                   ((_ to_fp 11 53) #x3fd2b851e0000000)))
-         ((_ to_fp 8 24) __soid__agent0_stop_x_ackermann!6084)))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_pos_x_ackermann!6083)
-       ((_ to_fp 8 24) __soid__agent1_prev_pos_x_ackermann!6086)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!6083))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000)))))
-  (= ((_ fp.to_sbv 32)
-       roundTowardZero
-       ((_ to_fp 11 53) roundNearestTiesToEven a!1))
-     __soid__agent1_tile_x_ackermann!6088)))
-(assert (let ((a!1 ((_ fp.to_sbv 32)
-             roundTowardZero
-             (fp.div roundNearestTiesToEven
-                     ((_ to_fp 11 53)
-                       roundNearestTiesToEven
-                       ((_ to_fp 8 24) agent1_pos_x_ackermann!6083))
-                     ((_ to_fp 11 53) #x3fe2b851e0000000))))
-      (a!3 (ite (fp.gt ((_ to_fp 11 53)
-                         roundNearestTiesToEven
-                         ((_ to_fp 8 24) agent1_speed_ackermann!6081))
-                       ((_ to_fp 11 53) #x3fd6666666666666))
-                (fp.to_ieee_bv ((_ to_fp 8 24) #x3e99999a))
-                agent1_speed_ackermann!6081)))
-(let ((a!2 (fp.mul roundNearestTiesToEven
-                   ((_ to_fp 8 24)
-                     roundNearestTiesToEven
-                     ((_ fp.to_sbv 32)
-                       roundTowardZero
-                       ((_ to_fp 11 53) roundNearestTiesToEven a!1)))
-                   ((_ to_fp 8 24) #x3f15c28f))))
-(let ((a!4 (fp.add roundNearestTiesToEven
-                   a!2
-                   (fp.sub roundNearestTiesToEven
-                           ((_ to_fp 8 24) #x3f15c28f)
-                           (fp.mul roundNearestTiesToEven
-                                   ((_ to_fp 8 24) a!3)
-                                   ((_ to_fp 8 24) #x3f15c28f))))))
-  (fp.eq a!4 ((_ to_fp 8 24) __soid__agent1_stop_x_ackermann!6087))))))
-(assert (fp.eq ((_ to_fp 8 24) agent1_speed_ackermann!6081) ((_ to_fp 8 24) #x3e3020c5)))
-(assert (let ((a!1 (not (fp.leq ((_ to_fp 8 24) agent0_pos_x_ackermann!6080)
-                        (fp.sub roundNearestTiesToEven
-                                ((_ to_fp 8 24) agent1_pos_x_ackermann!6083)
-                                ((_ to_fp 8 24) #x3e3851ec))))))
-  (not a!1)))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!6377 () (_ BitVec 32))
-(assert (or (= #x00000002 agent1_signal_choice_ackermann!6377)
-    (= #x00000001 agent1_signal_choice_ackermann!6377)))
-(assert (not false))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!6410 () (_ BitVec 32))
-(assert (or (= #x00000002 agent1_signal_choice_ackermann!6410)
-    (= #x00000001 agent1_signal_choice_ackermann!6410)))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6410)
-                     #x01
-                     #x00))
-              #b1)))
-  (not (not a!1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!6411 () (_ BitVec 32))
-(assert (or (= #x00000002 agent1_signal_choice_ackermann!6411)
-    (= #x00000001 agent1_signal_choice_ackermann!6411)))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6411)
-                     #x01
-                     #x00))
-              #b1)))
-  (not a!1)))
-(assert (let ((a!1 (ite (= #x00000002 agent1_signal_choice_ackermann!6411)
+(assert (fp.eq ((_ to_fp 8 24) agent0_pos_x_ackermann!3) ((_ to_fp 8 24) #x3fcae148)))
+(assert (fp.lt ((_ to_fp 8 24) agent0_pos_z_ackermann!4) ((_ to_fp 8 24) #x3ff7ae14)))
+(assert (fp.lt ((_ to_fp 11 53)
+         roundNearestTiesToEven
+         ((_ to_fp 8 24) agent1_pos_x_ackermann!29))
+       ((_ to_fp 11 53) #x3ff34bc69ccccccd)))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent0_angle_ackermann!5))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (fp.leq ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+          ((_ to_fp 8 24) #x43070000))))
+(assert (fp.leq ((_ to_fp 8 24) agent0_pos_x_ackermann!3)
+        (fp.add roundNearestTiesToEven
+                ((_ to_fp 8 24) agent1_pos_x_ackermann!29)
+                ((_ to_fp 8 24) agent1_lookahead_ackermann!19))))
+(assert (fp.gt ((_ to_fp 8 24) agent1_pos_x_ackermann!29) ((_ to_fp 8 24) #x3f7d70a3)))
+(assert (let ((a!1 (fp.mul roundNearestTiesToEven
+                   (fp.div roundNearestTiesToEven
+                           ((_ to_fp 11 53)
+                             roundNearestTiesToEven
+                             ((_ to_fp 8 24) agent0_angle_ackermann!5))
+                           ((_ to_fp 11 53) #x40091eb851eb851f))
+                   ((_ to_fp 11 53) #x4066800000000000))))
+  (fp.gt ((_ to_fp 8 24) roundNearestTiesToEven a!1)
+         ((_ to_fp 8 24) #x42340000))))
+(assert (fp.gt ((_ to_fp 11 53)
+         roundNearestTiesToEven
+         ((_ to_fp 8 24) agent0_pos_z_ackermann!4))
+       ((_ to_fp 11 53) #x3ffb810603333333)))
+(assert (fp.geq ((_ to_fp 8 24) agent0_pos_x_ackermann!3)
+        ((_ to_fp 8 24) agent1_pos_x_ackermann!29)))
+(assert (fp.geq ((_ to_fp 8 24) agent0_pos_x_ackermann!3)
+        (fp.sub roundNearestTiesToEven
+                (fp.sub roundNearestTiesToEven
+                        ((_ to_fp 8 24) agent1_pos_x_ackermann!29)
+                        ((_ to_fp 8 24) agent1_lookahead_ackermann!19))
+                ((_ to_fp 8 24) #x3e3851ec))))
+(assert (fp.geq ((_ to_fp 8 24) agent0_pos_z_ackermann!4)
+        ((_ to_fp 8 24) agent1_pos_x_ackermann!29)))
+(assert (let ((a!1 (ite (= #x00000001 agent1_signal_choice_ackermann!2)
                 #x01
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6411)
-                     #x01
-                     (ite (= #x00000000 agent1_signal_choice_ackermann!6411)
-                          #x01
-                          #x00)))))
-  (not (= ((_ extract 0 0) a!1) #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!6412 () (_ BitVec 32))
-(assert (or (= #x00000002 agent1_signal_choice_ackermann!6412)
-    (= #x00000001 agent1_signal_choice_ackermann!6412)))
-(assert (= ((_ extract 0 0)
-     (ite (= #x00000001 agent1_signal_choice_ackermann!6412) #x01 #x00))
-   #b1))
-(assert (let ((a!1 (ite (= #x00000002 agent1_signal_choice_ackermann!6412)
-                #x01
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6412)
-                     #x01
-                     (ite (= #x00000000 agent1_signal_choice_ackermann!6412)
-                          #x01
-                          #x00)))))
-  (not (= ((_ extract 0 0) a!1) #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!6413 () (_ BitVec 32))
-(assert (or (= #x00000002 agent1_signal_choice_ackermann!6413)
-    (= #x00000001 agent1_signal_choice_ackermann!6413)))
-(assert (= ((_ extract 0 0)
-     (ite (= #x00000001 agent1_signal_choice_ackermann!6413) #x01 #x00))
-   #b1))
-(assert (let ((a!1 ((_ extract 0 0)
-             (ite (= #x00000001 agent1_signal_choice_ackermann!6413)
-                  #x01
-                  (ite (= #x00000000 agent1_signal_choice_ackermann!6413)
-                       #x01
-                       #x00)))))
-  (not (= a!1 #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!6414 () (_ BitVec 32))
-(assert (or (= #x00000002 agent1_signal_choice_ackermann!6414)
-    (= #x00000001 agent1_signal_choice_ackermann!6414)))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6414)
-                     #x01
-                     #x00))
+                (ite (= #x00000000 agent1_signal_choice_ackermann!2) #x01 #x00)))
+      (a!3 (= ((_ extract 0 0)
+                (ite (= #x00000001 agent1_signal_choice_ackermann!2) #x01 #x00))
               #b1)))
-  (not a!1)))
-(assert (let ((a!1 ((_ extract 0 0)
-             (ite (= #x00000001 agent1_signal_choice_ackermann!6414)
-                  #x01
-                  (ite (= #x00000000 agent1_signal_choice_ackermann!6414)
-                       #x01
-                       #x00)))))
-  (not (not (= a!1 #b1)))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun __soid__agent0_state_safe_to_enter_ackermann!6415 () (_ BitVec 8))
-(assert (not (not (= ((_ extract 0 0) __soid__agent0_state_safe_to_enter_ackermann!6415)
-             #b1))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!6418 () (_ BitVec 32))
-(declare-fun __soid__agent0_state_safe_to_enter_ackermann!6419 () (_ BitVec 8))
-(declare-fun __soid__mrow__ackermann!6420 () (_ BitVec 32))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6418)
-                     #x01
-                     #x00))
+(let ((a!2 (= ((_ extract 0 0)
+                (ite (= #x00000002 agent1_signal_choice_ackermann!2) #x01 a!1))
               #b1)))
-(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!6418)
-               (and a!1
-                    (or (= #x00000002 agent1_signal_choice_ackermann!6418)
-                        (= #x00000001 agent1_signal_choice_ackermann!6418))))))
-(let ((a!3 (and a!2
+(let ((a!4 (or (= #x00000000 agent1_signal_choice_ackermann!2)
+               (and a!2
+                    a!3
+                    (= ((_ extract 0 0) a!1) #b1)
+                    (or (= #x00000002 agent1_signal_choice_ackermann!2)
+                        (= #x00000001 agent1_signal_choice_ackermann!2)))))
+      (a!6 (and a!2
+                (= ((_ extract 0 0)
+                     __soid__agent0_state_safe_to_enter_ackermann!37)
+                   #b1)
+                (or (= #x00000002 agent1_signal_choice_ackermann!2)
+                    (= #x00000001 agent1_signal_choice_ackermann!2))
+                (not (= ((_ extract 0 0) a!1) #b1))
+                (not a!3))))
+(let ((a!5 (and a!4
                 (not (= ((_ extract 0 0)
-                          __soid__agent0_state_safe_to_enter_ackermann!6419)
+                          __soid__agent0_state_safe_to_enter_ackermann!37)
                         #b1)))))
-  (or a!3
-      (and (= ((_ extract 0 0)
-                __soid__agent0_state_safe_to_enter_ackermann!6419)
-              #b1)
-           (or (= #x00000002 agent1_signal_choice_ackermann!6418)
-               (= #x00000001 agent1_signal_choice_ackermann!6418))
-           (not a!1)))))))
+  (or a!5 a!6))))))
 (assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6418)
-                     #x01
-                     #x00))
+                (ite (= #x00000001 agent1_signal_choice_ackermann!2) #x01 #x00))
               #b1)))
-(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!6418)
+(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!2)
                (and a!1
-                    (or (= #x00000002 agent1_signal_choice_ackermann!6418)
-                        (= #x00000001 agent1_signal_choice_ackermann!6418))))))
+                    (or (= #x00000002 agent1_signal_choice_ackermann!2)
+                        (= #x00000001 agent1_signal_choice_ackermann!2))))))
 (let ((a!3 (and a!2
                 (not (= ((_ extract 0 0)
-                          __soid__agent0_state_safe_to_enter_ackermann!6419)
+                          __soid__agent0_state_safe_to_enter_ackermann!37)
                         #b1)))))
 (let ((a!4 (ite (= ((_ extract 0 0) (ite a!3 #x00 #x01)) #b1)
                 #x000001ca
                 #x000001c8)))
-  (not (not (= a!4 __soid__mrow__ackermann!6420))))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!6455 () (_ BitVec 32))
-(declare-fun __soid__agent0_state_safe_to_enter_ackermann!6456 () (_ BitVec 8))
-(declare-fun __soid__mrow__ackermann!6457 () (_ BitVec 32))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6455)
-                     #x01
-                     #x00))
-              #b1)))
-(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!6455)
-               (and a!1
-                    (or (= #x00000002 agent1_signal_choice_ackermann!6455)
-                        (= #x00000001 agent1_signal_choice_ackermann!6455))))))
-(let ((a!3 (and a!2
-                (not (= ((_ extract 0 0)
-                          __soid__agent0_state_safe_to_enter_ackermann!6456)
-                        #b1)))))
-  (or a!3
-      (and (= ((_ extract 0 0)
-                __soid__agent0_state_safe_to_enter_ackermann!6456)
-              #b1)
-           (or (= #x00000002 agent1_signal_choice_ackermann!6455)
-               (= #x00000001 agent1_signal_choice_ackermann!6455))
-           (not a!1)))))))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6455)
-                     #x01
-                     #x00))
-              #b1)))
-(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!6455)
-               (and a!1
-                    (or (= #x00000002 agent1_signal_choice_ackermann!6455)
-                        (= #x00000001 agent1_signal_choice_ackermann!6455))))))
-(let ((a!3 (and a!2
-                (not (= ((_ extract 0 0)
-                          __soid__agent0_state_safe_to_enter_ackermann!6456)
-                        #b1)))))
-(let ((a!4 (ite (= ((_ extract 0 0) (ite a!3 #x00 #x01)) #b1)
-                #x000001ca
-                #x000001c8)))
-  (= a!4 __soid__mrow__ackermann!6457))))))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6455)
-                     #x01
-                     #x00))
-              #b1)))
-(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!6455)
-               (and a!1
-                    (or (= #x00000002 agent1_signal_choice_ackermann!6455)
-                        (= #x00000001 agent1_signal_choice_ackermann!6455))))))
-(let ((a!3 (and a!2
-                (not (= ((_ extract 0 0)
-                          __soid__agent0_state_safe_to_enter_ackermann!6456)
-                        #b1)))))
-(let ((a!4 (ite (= ((_ extract 0 0) (ite a!3 #x00 #x01)) #b1)
-                #x000001ca
-                #x000001c8)))
-  (not (bvult (bvmul #x0000000000000008 ((_ sign_extend 32) a!4))
-              #x0000000000001ffd)))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!6460 () (_ BitVec 32))
-(declare-fun __soid__agent0_state_safe_to_enter_ackermann!6461 () (_ BitVec 8))
-(declare-fun __soid__mrow__ackermann!6462 () (_ BitVec 32))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6460)
-                     #x01
-                     #x00))
-              #b1)))
-(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!6460)
-               (and a!1
-                    (or (= #x00000002 agent1_signal_choice_ackermann!6460)
-                        (= #x00000001 agent1_signal_choice_ackermann!6460))))))
-(let ((a!3 (and a!2
-                (not (= ((_ extract 0 0)
-                          __soid__agent0_state_safe_to_enter_ackermann!6461)
-                        #b1)))))
-  (or a!3
-      (and (= ((_ extract 0 0)
-                __soid__agent0_state_safe_to_enter_ackermann!6461)
-              #b1)
-           (or (= #x00000002 agent1_signal_choice_ackermann!6460)
-               (= #x00000001 agent1_signal_choice_ackermann!6460))
-           (not a!1)))))))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6460)
-                     #x01
-                     #x00))
-              #b1)))
-(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!6460)
-               (and a!1
-                    (or (= #x00000002 agent1_signal_choice_ackermann!6460)
-                        (= #x00000001 agent1_signal_choice_ackermann!6460))))))
-(let ((a!3 (and a!2
-                (not (= ((_ extract 0 0)
-                          __soid__agent0_state_safe_to_enter_ackermann!6461)
-                        #b1)))))
-(let ((a!4 (ite (= ((_ extract 0 0) (ite a!3 #x00 #x01)) #b1)
-                #x000001ca
-                #x000001c8)))
-  (= a!4 __soid__mrow__ackermann!6462))))))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6460)
-                     #x01
-                     #x00))
-              #b1)))
-(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!6460)
-               (and a!1
-                    (or (= #x00000002 agent1_signal_choice_ackermann!6460)
-                        (= #x00000001 agent1_signal_choice_ackermann!6460))))))
-(let ((a!3 (and a!2
-                (not (= ((_ extract 0 0)
-                          __soid__agent0_state_safe_to_enter_ackermann!6461)
-                        #b1)))))
-(let ((a!4 (ite (= ((_ extract 0 0) (ite a!3 #x00 #x01)) #b1)
-                #x000001ca
-                #x000001c8)))
-(let ((a!5 (bvult (bvadd #x0000000000000004
-                         (bvmul #x0000000000000008 ((_ sign_extend 32) a!4)))
-                  #x0000000000001ffd)))
-  (not a!5)))))))
-(check-sat)
-(reset)
-; end Z3 query
-
-; start Z3 query
-(declare-fun agent1_signal_choice_ackermann!6465 () (_ BitVec 32))
-(declare-fun __soid__agent0_state_safe_to_enter_ackermann!6466 () (_ BitVec 8))
-(declare-fun __soid__mrow__ackermann!6468 () (_ BitVec 32))
-(declare-fun __soid__will_proceed_ackermann!6467 () (_ BitVec 8))
-(declare-fun const_arr10 () (Array (_ BitVec 32) (_ BitVec 8)))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6465)
-                     #x01
-                     #x00))
-              #b1)))
-(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!6465)
-               (and a!1
-                    (or (= #x00000002 agent1_signal_choice_ackermann!6465)
-                        (= #x00000001 agent1_signal_choice_ackermann!6465))))))
-(let ((a!3 (and a!2
-                (not (= ((_ extract 0 0)
-                          __soid__agent0_state_safe_to_enter_ackermann!6466)
-                        #b1)))))
-  (or a!3
-      (and (= ((_ extract 0 0)
-                __soid__agent0_state_safe_to_enter_ackermann!6466)
-              #b1)
-           (or (= #x00000002 agent1_signal_choice_ackermann!6465)
-               (= #x00000001 agent1_signal_choice_ackermann!6465))
-           (not a!1)))))))
-(assert (let ((a!1 (= ((_ extract 0 0)
-                (ite (= #x00000001 agent1_signal_choice_ackermann!6465)
-                     #x01
-                     #x00))
-              #b1)))
-(let ((a!2 (or (= #x00000000 agent1_signal_choice_ackermann!6465)
-               (and a!1
-                    (or (= #x00000002 agent1_signal_choice_ackermann!6465)
-                        (= #x00000001 agent1_signal_choice_ackermann!6465))))))
-(let ((a!3 (and a!2
-                (not (= ((_ extract 0 0)
-                          __soid__agent0_state_safe_to_enter_ackermann!6466)
-                        #b1)))))
-(let ((a!4 (ite (= ((_ extract 0 0) (ite a!3 #x00 #x01)) #b1)
-                #x000001ca
-                #x000001c8)))
-  (= a!4 __soid__mrow__ackermann!6468))))))
+  (= a!4 __soid__mrow__ackermann!50))))))
 (assert (let ((a!1 (store (store (store (store const_arr10 #x00000000 #x2a)
                                 #x00000001
                                 #x8a)
@@ -3400,7 +403,7 @@
                   #x00000003
                   #xc0))
       (a!2049 (= ((_ extract 0 0)
-                   (ite (= #x00000001 agent1_signal_choice_ackermann!6465)
+                   (ite (= #x00000001 agent1_signal_choice_ackermann!2)
                         #x01
                         #x00))
                  #b1)))
@@ -3409,10 +412,10 @@
                          #x1f)
                   #x00000007
                   #x41))
-      (a!2050 (or (= #x00000000 agent1_signal_choice_ackermann!6465)
+      (a!2050 (or (= #x00000000 agent1_signal_choice_ackermann!2)
                   (and a!2049
-                       (or (= #x00000002 agent1_signal_choice_ackermann!6465)
-                           (= #x00000001 agent1_signal_choice_ackermann!6465))))))
+                       (or (= #x00000002 agent1_signal_choice_ackermann!2)
+                           (= #x00000001 agent1_signal_choice_ackermann!2))))))
 (let ((a!3 (store (store (store (store a!2 #x00000008 #x00) #x00000009 #x00)
                          #x0000000a
                          #x00)
@@ -3420,7 +423,7 @@
                   #x00))
       (a!2051 (and a!2050
                    (not (= ((_ extract 0 0)
-                             __soid__agent0_state_safe_to_enter_ackermann!6466)
+                             __soid__agent0_state_safe_to_enter_ackermann!37)
                            #b1)))))
 (let ((a!4 (store (store (store (store a!3 #x0000000c #x00) #x0000000d #x00)
                          #x0000000e
@@ -15773,13 +12776,9 @@
                               (concat (select a!2048 a!2058) a!2059)))))
 (let ((a!2061 ((_ extract 0 0)
                 (ite (fp.geq a!2055 ((_ to_fp 8 24) a!2060)) #x01 #x00))))
-(let ((a!2062 (= (ite (= a!2061 #b1) #x00000001 #x00000000)
-                 (ite (= ((_ extract 0 0) __soid__will_proceed_ackermann!6467)
-                         #b1)
-                      #x00000001
-                      #x00000000))))
-  (not (not a!2062)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+  (= (ite (= a!2061 #b1) #x00000001 #x00000000)
+     (ite (= ((_ extract 0 0) __soid__will_proceed_ackermann!60) #b1)
+          #x00000001
+          #x00000000))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 (check-sat)
-(reset)
-; end Z3 query
-
+(exit)

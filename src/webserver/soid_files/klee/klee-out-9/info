@@ -1,3 +1,18 @@
-/tools/soid/soid/klee-float/build/bin/klee -silent-klee-assume -write-smt2s -use-merge ./inter.bc
-PID: 206359
-Started: 2023-02-04 00:36:30
+/tools/soid/soid/klee-float/build/bin/klee -silent-klee-assume -write-smt2s -use-merge --emit-all-errors -z3-query-dump=./z3.log ./inter.bc
+PID: 214313
+Started: 2023-02-04 17:24:18
+BEGIN searcher description
+WeightedRandomSearcher::CoveringNew
+END searcher description
+Finished: 2023-02-04 17:24:38
+Elapsed: 00:00:20
+KLEE: done: explored paths = 3
+KLEE: done: avg. constructs per query = 22
+KLEE: done: total queries = 93
+KLEE: done: valid queries = 37
+KLEE: done: invalid queries = 56
+KLEE: done: query cex = 93
+
+KLEE: done: total instructions = 19437
+KLEE: done: completed paths = 3
+KLEE: done: generated tests = 1

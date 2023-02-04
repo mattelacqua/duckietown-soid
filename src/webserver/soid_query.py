@@ -36,7 +36,7 @@ def generate_soid_query(query_info):
         # If we are on the first agent, who is the agent who's perspective matters
         agent = agents[f'agent{i}']
         if i == 0:
-            # Go through all of the counterfactuals
+            # Goes in environment
             if agent["concrete"]["pos_x"]:
                 t_environment.append({
                     'id': agent['concrete']['id'],
@@ -70,17 +70,6 @@ def generate_soid_query(query_info):
                     'val': agent["concrete"]["angle"],
                 })
 
-            if agent["concrete"]["forward_step"]:
-                t_environment.append({
-                    'id': agent['concrete']['id'],
-                    'is_cf': False,
-                    'cf': None,
-                    'cf_type': '',
-                    'is_val': True,
-                    'val_type': 'forward_step',
-                    'val': agent["concrete"]["forward_step"],
-                })
-
             if agent["concrete"]["speed"]:
                 t_environment.append({
                     'id': agent['concrete']['id'],
@@ -91,7 +80,95 @@ def generate_soid_query(query_info):
                     'val_type': 'speed',
                     'val': agent["concrete"]["speed"],
                 })
-            
+
+            # Concrete state
+            if agent["concrete"]["forward_step"]:
+                t_state.append({
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'cf_type': '',
+                    'is_val': True,
+                    'val_type': 'forward_step',
+                    'val': agent["concrete"]["forward_step"],
+                })
+
+            if agent["concrete"]["signal_choice"]:
+                t_state.append({
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'cf_type': '',
+                    'is_val': True,
+                    'val_type': 'signal_choice',
+                    'val': agent["concrete"]["signal_choice"],
+                })           
+
+            if agent["concrete"]["turn_choice"]:
+                t_state.append({
+                    'id': agent['concrete']['id'],
+                    'is_cf': False,
+                    'cf': None,
+                    'cf_type': '',
+                    'is_val': True,
+                    'val_type': 'turn_choice',
+                    'val': agent["concrete"]["turn_choice"],
+                })           
+
+            # Add given state information to agent 0 state 
+
+            # lookahead
+            t_state.append({
+                'id': agent['concrete']['id'],
+                'is_cf': False,
+                'cf': None,
+                'cf_type': '',
+                'is_val': True,
+                'val_type': 'lookahead',
+                'val': agent['concrete']['lookahead'],
+            })
+            # inital_direction
+            t_state.append({
+                'id': agent['concrete']['id'],
+                'is_cf': False,
+                'cf': None,
+                'cf_type': '',
+                'is_val': True,
+                'val_type': 'initial_direction',
+                'val': agent['state']['initial_direction'],
+            })
+            # intersection_arrival
+            t_state.append({
+                'id': agent['concrete']['id'],
+                'is_cf': False,
+                'cf': None,
+                'cf_type': '',
+                'is_val': True,
+                'val_type': 'intersection_arrival',
+                'val': agent['state']['intersection_arrival'],
+            })            
+            # patience
+            t_state.append({
+                'id': agent['concrete']['id'],
+                'is_cf': False,
+                'cf': None,
+                'cf_type': '',
+                'is_val': True,
+                'val_type': 'patience',
+                'val': agent['state']['patience'],
+            })            
+            # step_count
+            t_state.append({
+                'id': agent['concrete']['id'],
+                'is_cf': False,
+                'cf': None,
+                'cf_type': '',
+                'is_val': True,
+                'val_type': 'step_count',
+                'val': agent['state']['step_count'],
+            })         
+
+
             # Environmental counterfactuals
             for counterfactual in agent['symbolic']['list_pos_x']:
                 t_environment.append({
@@ -172,61 +249,9 @@ def generate_soid_query(query_info):
                 })          
 
 
-            
-            # Add agent0's lookahead, initial_direction, intersection_Arrival, patience, step count to STATE
-            # lookahead
-            t_state.append({
-                'id': agent['concrete']['id'],
-                'is_cf': False,
-                'cf': None,
-                'cf_type': '',
-                'is_val': True,
-                'val_type': 'lookahead',
-                'val': agent['concrete']['lookahead'],
-            })
-            # inital_direction
-            t_state.append({
-                'id': agent['concrete']['id'],
-                'is_cf': False,
-                'cf': None,
-                'cf_type': '',
-                'is_val': True,
-                'val_type': 'initial_direction',
-                'val': agent['state']['initial_direction'],
-            })
-            # intersection_arrival
-            t_state.append({
-                'id': agent['concrete']['id'],
-                'is_cf': False,
-                'cf': None,
-                'cf_type': '',
-                'is_val': True,
-                'val_type': 'intersection_arrival',
-                'val': agent['state']['intersection_arrival'],
-            })            
-            # patience
-            t_state.append({
-                'id': agent['concrete']['id'],
-                'is_cf': False,
-                'cf': None,
-                'cf_type': '',
-                'is_val': True,
-                'val_type': 'patience',
-                'val': agent['state']['patience'],
-            })            
-            # step_count
-            t_state.append({
-                'id': agent['concrete']['id'],
-                'is_cf': False,
-                'cf': None,
-                'cf_type': '',
-                'is_val': True,
-                'val_type': 'step_count',
-                'val': agent['state']['step_count'],
-            })            
 
         if i > 0:
-            # Go through all of the counterfactuals
+            # Everything will go into environmental for concrete and counterfactual
             if agent["concrete"]["pos_x"]:
                 t_environment.append({
                     'id': agent['concrete']['id'],
@@ -304,6 +329,57 @@ def generate_soid_query(query_info):
                     'val': agent["concrete"]["turn_choice"],
                 })
 
+            # Add non=agent0's lookahead, initial_direction, intersection_Arrival, patience, step count to ENVIORNMENT
+            # lookahead
+            t_environment.append({
+                'id': agent['concrete']['id'],
+                'is_cf': False,
+                'cf': None,
+                'cf_type': '',
+                'is_val': True,
+                'val_type': 'lookahead',
+                'val': agent['concrete']['lookahead'],
+            })
+            # inital_direction
+            t_environment.append({
+                'id': agent['concrete']['id'],
+                'is_cf': False,
+                'cf': None,
+                'cf_type': '',
+                'is_val': True,
+                'val_type': 'initial_direction',
+                'val': agent['state']['initial_direction'],
+            })
+            # intersection_arrival
+            t_environment.append({
+                'id': agent['concrete']['id'],
+                'is_cf': False,
+                'cf': None,
+                'cf_type': '',
+                'is_val': True,
+                'val_type': 'intersection_arrival',
+                'val': agent['state']['intersection_arrival'],
+            })            
+            # patience
+            t_environment.append({
+                'id': agent['concrete']['id'],
+                'is_cf': False,
+                'cf': None,
+                'cf_type': '',
+                'is_val': True,
+                'val_type': 'patience',
+                'val': agent['state']['patience'],
+            })            
+            # step_count
+            t_environment.append({
+                'id': agent['concrete']['id'],
+                'is_cf': False,
+                'cf': None,
+                'cf_type': '',
+                'is_val': True,
+                'val_type': 'step_count',
+                'val': agent['state']['step_count'],
+            })
 
             # Environmental counterfactuals
             for counterfactual in agent['symbolic']['list_pos_x']:
@@ -383,57 +459,7 @@ def generate_soid_query(query_info):
                     'val': None,
                 })          
 
-            # Add non=agent0's lookahead, initial_direction, intersection_Arrival, patience, step count to ENVIORNMENT
-            # lookahead
-            t_environment.append({
-                'id': agent['concrete']['id'],
-                'is_cf': False,
-                'cf': None,
-                'cf_type': '',
-                'is_val': True,
-                'val_type': 'lookahead',
-                'val': agent['concrete']['lookahead'],
-            })
-            # inital_direction
-            t_environment.append({
-                'id': agent['concrete']['id'],
-                'is_cf': False,
-                'cf': None,
-                'cf_type': '',
-                'is_val': True,
-                'val_type': 'initial_direction',
-                'val': agent['state']['initial_direction'],
-            })
-            # intersection_arrival
-            t_environment.append({
-                'id': agent['concrete']['id'],
-                'is_cf': False,
-                'cf': None,
-                'cf_type': '',
-                'is_val': True,
-                'val_type': 'intersection_arrival',
-                'val': agent['state']['intersection_arrival'],
-            })            
-            # patience
-            t_environment.append({
-                'id': agent['concrete']['id'],
-                'is_cf': False,
-                'cf': None,
-                'cf_type': '',
-                'is_val': True,
-                'val_type': 'patience',
-                'val': agent['state']['patience'],
-            })            
-            # step_count
-            t_environment.append({
-                'id': agent['concrete']['id'],
-                'is_cf': False,
-                'cf': None,
-                'cf_type': '',
-                'is_val': True,
-                'val_type': 'step_count',
-                'val': agent['state']['step_count'],
-            })
+
 
     def declare():
         # declare Environment
@@ -762,7 +788,6 @@ def generate_soid_query(query_info):
                     formula = sub_formula
                 continue
 
-            print("formula:", formula)
             if sub_formula == None:
                 continue
             else:
@@ -770,6 +795,7 @@ def generate_soid_query(query_info):
                     sub_formula,
                     formula)
             
+        print("formula:", formula)
         return formula
 
     def environmental( E ):

@@ -193,14 +193,22 @@ def generate_klee_file(query_blob):
     klee_file.write("#include \"../../../gym_duckietown/decision_logic/decision_logic.h\"\n\n")
     klee_file.write("#include \"/tools/soid/soid/soid/soidlib/soidlib.h\"\n")
     klee_file.write("int main(int argc, char **argv) {\n")
-    
+
+    environment = query["environment"]
+
+    klee_file.write("    // Q table stuff\n")
+    klee_file.write(f"   static float model[1024][2];\n")
+    for m in range(1024):
+        for n in range(2):
+            klee_file.write(f"   model[{m}][{n}] = {environment['model'][m][n]};\n")
+
+
     # init env_info
     klee_file.write("    EnvironmentInfo info;\n")
     
     # Klee opent merge
     klee_file.write("    klee_open_merge();\n")
 
-    environment = query["environment"]
     
     # Handle env information
     klee_file.write("\n    // Environment Information:\n")
@@ -630,15 +638,9 @@ def generate_klee_file(query_blob):
     klee_file.write(f'    klee_close_merge();\n')
     
     # handle the q table nd proceed model ONLY FOR AGENT 0
-    klee_file.write("    // Q table stuff\n")
     agent = agents['agent0']
     
-    klee_file.write(f"   float model[1024][2];\n")
-    for m in range(1024):
-        for n in range(2):
-            klee_file.write(f"   model[{m}][{n}] = {environment['model'][m][n]};\n")
-
-
+    
     # Get learning state row
     klee_file.write("\n    // Learning Row\n")
     klee_file.write("    int mrow, __soid__mrow;\n")
@@ -650,7 +652,7 @@ def generate_klee_file(query_blob):
     
     klee_file.write(f'    bool will_proceed, __soid__will_proceed;\n')
     klee_file.write(f'    klee_make_symbolic( &__soid__will_proceed, sizeof(bool), "__soid__will_proceed");\n')
-    klee_file.write("    will_proceed = proceed_model(info.agents[0].q_table, mrow);\n")
+    klee_file.write("    will_proceed = proceed_model(model, mrow);\n")
     #klee_file.write("    will_proceed = proceed_good_agent(&info, mrow);\n")
     klee_file.write(f'    klee_assume( will_proceed == __soid__will_proceed);\n')
     

@@ -21,7 +21,7 @@ symbolic:
 	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 /home/mje48/duckietown-soid/src/gym_duckietown/decision_logic/decision_logic.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC2)
 	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC3)
 	$(link) $(BC1) $(BC2) $(BC3) -o $(BC) 
-	$(KEXEC) -silent-klee-assume -write-smt2s -use-merge $(BC)
+	$(KEXEC) -silent-klee-assume -write-smt2s -use-merge --emit-all-errors -z3-query-dump="./z3.log" $(BC)
 
 clean:
 	rm -f ./inter1.bc

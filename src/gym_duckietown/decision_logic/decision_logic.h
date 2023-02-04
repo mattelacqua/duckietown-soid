@@ -81,7 +81,7 @@ bool proceed_good_agent(EnvironmentInfo* env_info, int agent_index);
 int handle_patience(EnvironmentInfo* env_info, int agent_index);
 
 // Read the model to see if we proceed
-bool proceed_model(float model[STATES][ACTIONS], int state) ;
+static inline bool proceed_model(float model[STATES][ACTIONS], int state) ;
 
 
 // Get the learning state we are in.
