@@ -99,6 +99,6 @@ typedef struct {
     float road_tile_size ;
     int max_steps ;
     int num_agents;
-    EnvironmentAgent agents[8];
+    EnvironmentAgent agents[3];
 } EnvironmentInfo ;
 #endif

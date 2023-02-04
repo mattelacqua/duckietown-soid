@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
     klee_assume( agent1_initial_direction == 2); // Concrete State Val 
     klee_assume( agent1_patience == 0); // Concrete State Val 
     klee_assume( agent1_step_count == 106); // Concrete State Val 
-    klee_assume( (agent1_signal_choice ==  RIGHT || agent1_signal_choice == LEFT) || agent1_signal_choice == STRAIGHT)); // Symbolic Values 
+    klee_assume( (agent1_signal_choice ==  RIGHT || agent1_signal_choice == STRAIGHT)); // Symbolic Values 
     memmove( &info.agents[1].pos_x, &agent1_pos_x, sizeof(float)); // Memcopy symb -> struct
     memmove( &info.agents[1].pos_z, &agent1_pos_z, sizeof(float)); // Memcopy symb -> struct
     memmove( &info.agents[1].angle, &agent1_angle, sizeof(float)); // Memcopy symb -> struct

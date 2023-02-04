@@ -179,6 +179,7 @@ def generate_soid_query(query_info):
                 'id': agent['concrete']['id'],
                 'is_cf': False,
                 'cf': None,
+                'cf_type': '',
                 'is_val': True,
                 'val_type': 'lookahead',
                 'val': agent['concrete']['lookahead'],
@@ -188,6 +189,7 @@ def generate_soid_query(query_info):
                 'id': agent['concrete']['id'],
                 'is_cf': False,
                 'cf': None,
+                'cf_type': '',
                 'is_val': True,
                 'val_type': 'initial_direction',
                 'val': agent['state']['initial_direction'],
@@ -197,6 +199,7 @@ def generate_soid_query(query_info):
                 'id': agent['concrete']['id'],
                 'is_cf': False,
                 'cf': None,
+                'cf_type': '',
                 'is_val': True,
                 'val_type': 'intersection_arrival',
                 'val': agent['state']['intersection_arrival'],
@@ -206,6 +209,7 @@ def generate_soid_query(query_info):
                 'id': agent['concrete']['id'],
                 'is_cf': False,
                 'cf': None,
+                'cf_type': '',
                 'is_val': True,
                 'val_type': 'patience',
                 'val': agent['state']['patience'],
@@ -215,6 +219,7 @@ def generate_soid_query(query_info):
                 'id': agent['concrete']['id'],
                 'is_cf': False,
                 'cf': None,
+                'cf_type': '',
                 'is_val': True,
                 'val_type': 'step_count',
                 'val': agent['state']['step_count'],
@@ -384,6 +389,7 @@ def generate_soid_query(query_info):
                 'id': agent['concrete']['id'],
                 'is_cf': False,
                 'cf': None,
+                'cf_type': '',
                 'is_val': True,
                 'val_type': 'lookahead',
                 'val': agent['concrete']['lookahead'],
@@ -393,6 +399,7 @@ def generate_soid_query(query_info):
                 'id': agent['concrete']['id'],
                 'is_cf': False,
                 'cf': None,
+                'cf_type': '',
                 'is_val': True,
                 'val_type': 'initial_direction',
                 'val': agent['state']['initial_direction'],
@@ -402,6 +409,7 @@ def generate_soid_query(query_info):
                 'id': agent['concrete']['id'],
                 'is_cf': False,
                 'cf': None,
+                'cf_type': '',
                 'is_val': True,
                 'val_type': 'intersection_arrival',
                 'val': agent['state']['intersection_arrival'],
@@ -411,6 +419,7 @@ def generate_soid_query(query_info):
                 'id': agent['concrete']['id'],
                 'is_cf': False,
                 'cf': None,
+                'cf_type': '',
                 'is_val': True,
                 'val_type': 'patience',
                 'val': agent['state']['patience'],
@@ -420,6 +429,7 @@ def generate_soid_query(query_info):
                 'id': agent['concrete']['id'],
                 'is_cf': False,
                 'cf': None,
+                'cf_type': '',
                 'is_val': True,
                 'val_type': 'step_count',
                 'val': agent['state']['step_count'],
@@ -675,9 +685,10 @@ def generate_soid_query(query_info):
     def get_sub_formula(declare_type, tagged_cf_list):
         sub_formula = None
         for tagged_cf in tagged_cf_list:
-            sub_formula = get_constraint(declare_type, tagged_cf)
+            if sub_formula == None:
+                sub_formula = get_constraint(declare_type, tagged_cf)
                 continue
-            formula = Or (
+            sub_formula = Or (
                 get_constraint(declare_type, tagged_cf),
                 formula)
         return sub_formula
@@ -725,7 +736,8 @@ def generate_soid_query(query_info):
                 elif i == cf['id'] and (cf['val_type'] == 'step_count' or cf['cf_type'] == 'step_count'):
                     list_step_count.append(cf)
                 else:
-                    print("SHOULD NEVER SEE THIS. IN SOID_QUERY ENCODE")
+                    if i== cf['id']:
+                        print("SHOULD NEVER SEE THIS. IN SOID_QUERY ENCODE")
             cf_lists.append(list_pos_x)
             cf_lists.append(list_pos_z)
             cf_lists.append(list_angle)
@@ -742,13 +754,21 @@ def generate_soid_query(query_info):
         # sort the list by types
         formula = None
         for cf_list in cf_lists:
+            sub_formula = get_sub_formula(declare_type, cf_list)
             if formula == None:
-                formula = get_sub_formula(declare_type, cf_list)
+                if sub_formula == None:
+                    continue
+                else:
+                    formula = sub_formula
                 continue
 
-            formula = And (
-                get_sub_formula(declare_type, cf_list),
-                formula)
+            print("formula:", formula)
+            if sub_formula == None:
+                continue
+            else:
+                formula = And (
+                    sub_formula,
+                    formula)
             
         return formula
 

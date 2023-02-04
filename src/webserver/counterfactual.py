@@ -298,7 +298,7 @@ def generate_klee_file(query_blob):
             # Symbolic_Pos x
             klee_file.write(f'    klee_assume( ')
             if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_pos_x  == (float) {counterfactual["value"]} ')
+                klee_file.write(f'(agent{i}_pos_x  == (float) {counterfactual["value"]}) ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_pos_x >= (float) {counterfactual["range"]["low_bound"]} && '
                     f'agent{i}.pos_x <= (float) {counterfactual["range"]["high_bound"]}) ')
@@ -314,7 +314,7 @@ def generate_klee_file(query_blob):
             # Symbolic_Pos x
             klee_file.write(f'    klee_assume( ')
             if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_pos_z  == (float) {counterfactual["value"]} ')
+                klee_file.write(f'(agent{i}_pos_z  == (float) {counterfactual["value"]}) ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_pos_z >= (float) {counterfactual["range"]["low_bound"]} && '
                     f'agent{i}.pos_z <= (float) {counterfactual["range"]["high_bound"]}) ')
@@ -330,7 +330,7 @@ def generate_klee_file(query_blob):
             # Symbolic_Pos x
             klee_file.write(f'    klee_assume( ')
             if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_angle  == (float) {counterfactual["value"]} ')
+                klee_file.write(f'(agent{i}_angle  == (float) {counterfactual["value"]}) ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_angle >= (float) {counterfactual["range"]["low_bound"]} && '
                     f'agent{i}.angle <= (float) {counterfactual["range"]["high_bound"]}) ')
@@ -346,7 +346,7 @@ def generate_klee_file(query_blob):
             # Symbolic_Pos x
             klee_file.write(f'    klee_assume( ')
             if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_forward_step  == (float) {counterfactual["value"]} ')
+                klee_file.write(f'(agent{i}_forward_step  == (float) {counterfactual["value"]}) ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_forward_step >= (float) {counterfactual["range"]["low_bound"]} && '
                     f'agent{i}.forward_step <= (float) {counterfactual["range"]["high_bound"]}) ')
@@ -362,7 +362,7 @@ def generate_klee_file(query_blob):
             # Symbolic_Pos x
             klee_file.write(f'    klee_assume( ')
             if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_speed  == (float) {counterfactual["value"]} ')
+                klee_file.write(f'(agent{i}_speed  == (float) {counterfactual["value"]} )')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_speed >= (float) {counterfactual["range"]["low_bound"]} && '
                     f'agent{i}.speed <= (float) {counterfactual["range"]["high_bound"]}) ')
@@ -378,7 +378,7 @@ def generate_klee_file(query_blob):
             # Symbolic_Pos x
             klee_file.write(f'    klee_assume( ')
             if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_signal_choice  == {counterfactual["value"]} ')
+                klee_file.write(f'(agent{i}_signal_choice  == {counterfactual["value"]}) ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_signal_choice == ')
                 for k in range(len(counterfactual["range"]["turn_choices"])):
@@ -387,7 +387,9 @@ def generate_klee_file(query_blob):
                         klee_file.write(f' {dl_value}')
                     else:
                         dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
-                        klee_file.write(f' || agent{i}_signal_choice == {dl_value})')
+                        klee_file.write(f' || agent{i}_signal_choice == {dl_value}')
+                klee_file.write(f')')
+                    
             # if less than the last one, do disjunction
             if j < len(agent["symbolic"]["list_signal_choice"]) - 1:
                 klee_file.write(f'|| ')
@@ -400,7 +402,7 @@ def generate_klee_file(query_blob):
             # Symbolic_Pos x
             klee_file.write(f'    klee_assume( ')
             if counterfactual["is_value"]:
-                klee_file.write(f'agent{i}_turn_choice  == {counterfactual["value"]} ')
+                klee_file.write(f'(agent{i}_turn_choice  == {counterfactual["value"]}) ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_turn_choice == ')
                 for k in range(len(counterfactual["range"]["turn_choices"])):
@@ -409,7 +411,7 @@ def generate_klee_file(query_blob):
                         klee_file.write(f' {dl_value}')
                     else:
                         dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
-                        klee_file.write(f' || agent{i}_turn_choice == {dl_value})')
+                        klee_file.write(f' || agent{i}_turn_choice == {dl_value}')
             # if less than the last one, do disjunction
             if j < len(agent["symbolic"]["list_turn_choice"]) - 1:
                 klee_file.write(f'|| ')
