@@ -6,6 +6,8 @@ import React from "react";
 // Import Agent Info Screen
 import AgentInfo from './AgentInfo.js'
 
+
+
 // Import Agent Query
 import AgentCounterfactual from './AgentCounterfactual'
 
@@ -22,7 +24,7 @@ class Agent extends React.Component {
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)
   render() {
     return (
-      <div>
+      <div class = 'agent-wrap'>
         <AgentInfo  agent={this.props.agent} />
 
         <AgentCounterfactual agent={this.props.agent}

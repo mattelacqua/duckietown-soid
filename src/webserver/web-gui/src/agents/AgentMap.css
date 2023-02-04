@@ -2,11 +2,13 @@
     background-color: alabster;
     background-image: url("http://localhost:5001/mapImage");
     float: left;
-    width: 100%;
     padding: 2em;
     overflow: hidden;
 }
 
 .text {
     float: left;
+    padding-left: 1em;
+    margin-top: 20px;
+
 }

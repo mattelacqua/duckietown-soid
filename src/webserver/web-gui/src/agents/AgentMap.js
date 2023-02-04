@@ -157,7 +157,7 @@ class AgentMap extends React.Component {
     }; // End options  
 
     return (
-      <div classname = "AgentMap" >
+      <div classname = "AgentMap"  >
         <Line ref={this.chartReference} 
               classname="AgentMap" 
               options={options} 
@@ -166,21 +166,11 @@ class AgentMap extends React.Component {
               style={{
                 width: "450px",
               }}/>
-
-      <span> Drag and Drop Position / Angle Adjustments </span>
-
-
-      <div class = "angle-dialwrap">
-        {this.props.agents.map((agent) => ( 
-          <AngleDial  agent={agent}
-                      socket={this.props.socket}
-                      />
-        ))}
-    </div>
     </div>
   );
   }// End render
 } // end component
+
 
 export default AgentMap;
 

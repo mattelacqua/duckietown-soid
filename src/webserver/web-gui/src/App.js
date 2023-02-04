@@ -13,6 +13,9 @@ import Environment from './environment/Environment.js'
 // Import Agentmpa
 import AgentMap from './agents/AgentMap.js'
 
+//Import AngleDials
+import AngleDialAgents from './agents/AngleDialAgents.js'
+
 // Import RenderedScene
 import RenderedScene from './environment/RenderedScene.js'
 
@@ -127,7 +130,15 @@ class App extends React.Component{
                     tile_size={this.state.env_info.road_tile_size}
                     socket={this.state.socket}
                     />}
+
         </div>
+        <div class = 'Dial-Wrap'> 
+        <AngleDialAgents agents={this.state.env_info.agents}
+                          update_from_sim={this.update_from_sim}
+                          socket={this.state.socket}
+                          /> 
+                          </div>
+
 
         <div className="Agents-wrap">
           {/* Render the agents only when we are paused */}
@@ -143,3 +154,5 @@ class App extends React.Component{
 
 // Allow it to be called in other functions
 export default App;
+
+

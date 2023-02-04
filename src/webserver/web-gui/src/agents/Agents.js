@@ -23,9 +23,12 @@ class Agents extends React.Component {
     return (
       this.props.agents.map((agent) => ( 
       /* Render an Agent component, with props: agent_id, cur_angle, cur_pos, color */
+      <div class = 'Modify-Wrap'> 
       <Agent  agent={agent} 
               socket={this.props.socket} 
               update_from_sim={this.props.update_from_sim}/>
+
+        </div>
       ))
     );
   }

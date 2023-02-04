@@ -14,26 +14,27 @@
     padding: 1em;
     overflow:hidden;
 }
+
+.Dial-Wrap {
+    display: inline-block;
+    flex-direction:r ow;
+    overflow: hidden;
+    justify-content: space-evenly;
+    margin:0; 
+    padding:0;
+}
+
 .Agents-wrap {
     display:flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
     padding-top: 2em;
     padding-left: 2em;
     padding-right: 2em;
     padding-bottom: 10em;
-    overflow:hidden;
+    overflow:auto;
 }
-.dial-wrap {
-    display:flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding-top: 2em;
-    padding-left: 2em;
-    padding-right: 2em;
-    padding-bottom: 10em;
-    overflow:hidden;
-}
+
 .App-header {
     background-color: #282c34;
     min-height: 100vh;
