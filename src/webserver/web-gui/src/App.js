@@ -10,12 +10,11 @@ import Agents from './agents/Agents.js'
 // Import Environment since it will be rendered in app
 import Environment from './environment/Environment.js'
 
-// Import Agentmpa
-import AgentMap from './agents/AgentMap.js'
-
 // Import RenderedScene
 import RenderedScene from './environment/RenderedScene.js'
 
+// Import Counterfactuals
+import CounterfactualMenu from './counterfactual/CounterfactualMenu.js'
 
 // Import LODASH
 import _ from 'lodash';
@@ -104,39 +103,51 @@ class App extends React.Component{
 
     // Div to clump app up into one component to render
     <div className = "App"> 
-        <div className="Modify-wrap">
-          <RenderedScene sim_state={this.state.sim_state}
-                         sim_step={this.state.env_info.sim_step}
-                         socket={this.state.socket}/>
-          <Environment  max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
-                        max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
-                        tile_size={this.state.env_info.road_tile_size}
-                        sim_state={this.state.sim_state}
-                        socket={this.state.socket}
-                        sim_step={this.state.env_info.sim_step}/>
-
-
-          {/* Render the agent map only when we are paused */}
+          {/* If paused we want to render this: */}
           {this.state.sim_state === 'pause' && 
-          <AgentMap agents={this.state.env_info.agents} 
+          <div className="Modify-wrap">
+            <div>
+              <RenderedScene sim_state={this.state.sim_state}
+                              sim_step={this.state.env_info.sim_step}
+                              socket={this.state.socket}/>
+              <CounterfactualMenu agents={this.state.env_info.agents} 
+                                  socket={this.state.socket}
+                                  sim_state={this.state.sim_state}
+                                  update_from_sim={this.update_from_sim}
+              />
+            </div>
+            <Environment  max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
+                          max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
+                          tile_size={this.state.env_info.road_tile_size}
+                          sim_state={this.state.sim_state}
+                          socket={this.state.socket}
+                          sim_step={this.state.env_info.sim_step}
+              />
+            <Agents agents={this.state.env_info.agents}
+                    socket={this.state.socket}
                     max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
                     max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size} 
                     tile_size={this.state.env_info.road_tile_size}
-                    socket={this.state.socket}
-                    />}
-
-        </div>
-
-
-
-        <div className="Agents-wrap">
-          {/* Render the agents only when we are paused */}
-          {this.state.sim_state === 'pause' && 
-          <Agents agents={this.state.env_info.agents}
-                  socket={this.state.socket}
-                  update_from_sim={this.update_from_sim}/>}
-        </div>
-    </div>
+                    update_from_sim={this.update_from_sim}
+              />
+           </div>
+          } {/*End of paused */}
+          
+          {/* If running we want to render this: */}
+          {this.state.sim_state === 'run' && 
+            <div className="Modify-wrap">
+              <RenderedScene sim_state={this.state.sim_state}
+                            sim_step={this.state.env_info.sim_step}
+                            socket={this.state.socket}/>
+              <Environment  max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
+                            max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
+                            tile_size={this.state.env_info.road_tile_size}
+                            sim_state={this.state.sim_state}
+                            socket={this.state.socket}
+                            sim_step={this.state.env_info.sim_step}/>
+            </div>
+          } {/*End of running */}
+      </div>
     ); // End of return
   }
 }

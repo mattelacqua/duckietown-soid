@@ -9,30 +9,21 @@ class Queries extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        sim_state: this.props.sim_state,
-        socket: this.props.socket
     };
     this.handleClick = this.handleClick.bind(this);
   }
   
   // Handle the click
-  async handleClick(state) {
-    if (state !== "add_agent" && state !== "move_factual" && state !== 'move_existential' && state !== "stop_factual" && state !== 'stop_existential') {
-
-      this.setState({
-        sim_state: state,
-      });
-
+  async handleClick(query) {
       const delay = ms => new Promise(res => setTimeout(res, ms));
       this.props.update_from_sim();
       await delay(2000)
       this.props.update_from_sim();
       
       // Add the counterfactuals to the queryy
-      console.log('ENV INFO FOR QUERY:', this.props.env_info);
-      if (state === "move_factual"){
+      if (query === "move_factual"){
 
-        this.state.socket.emit('query', 
+        this.props.socket.emit('query', 
           {
             'query': {
               'is_factual': true ,
@@ -43,9 +34,9 @@ class Queries extends React.Component {
           }
           );
       }
-      else if (state === "move_existential"){
+      else if (query === "move_existential"){
 
-        this.state.socket.emit('query', 
+        this.props.socket.emit('query', 
           {
             'query': {
               'is_factual': false ,
@@ -56,9 +47,9 @@ class Queries extends React.Component {
           }
           );
       }
-      else if (state === "stop_factual"){
+      else if (query === "stop_factual"){
 
-        this.state.socket.emit('query', 
+        this.props.socket.emit('query', 
           {
             'query': {
               'is_factual': true ,
@@ -69,9 +60,8 @@ class Queries extends React.Component {
           }
           );
       }
-      if (state === "stop_existential"){
-
-        this.state.socket.emit('query', 
+      if (query === "stop_existential"){
+        this.props.socket.emit('query', 
           {
             'query': {
               'is_factual': false ,
@@ -82,7 +72,6 @@ class Queries extends React.Component {
           }
           );
       }
-    }
   }
   
   // Render the information to screen
@@ -94,21 +83,14 @@ class Queries extends React.Component {
         paddingTop: '2em',
       }}> Ask a Question based on given Counterfactuals:</p>
         <div class='Queries'>
-            {this.props.sim_state === 'pause' &&
-              <button className='move_factual' onClick={()=>this.handleClick("move_factual")}>Agent Always Moves?</button>
-          }
-            {this.props.sim_state === 'pause' &&
-              <button className='move_existential' onClick={()=>this.handleClick("move_existential")}>Agent Could Move?</button>
-          }
+              <button className='move_factual' onClick={()=>this.handleClick("move_factual")}>Will Agent 0 always move?</button>
+              <button className='move_existential' onClick={()=>this.handleClick("move_existential")}>Is there a scenario where Agent 0 moves?</button>
         </div>
         <div class='Queries'>
-            {this.props.sim_state === 'pause' &&
-              <button className='stop_factual' onClick={()=>this.handleClick("stop_factual")}>Agent Always Stops?</button>
-          }
-            {this.props.sim_state === 'pause' &&
-              <button className='stop_existential' onClick={()=>this.handleClick("stop_existential")}>Agent Could Stop?</button>
-          }
+              <button className='stop_factual' onClick={()=>this.handleClick("stop_factual")}>Will Agent 0 always stop?</button>
+              <button className='stop_existential' onClick={()=>this.handleClick("stop_existential")}>Is there a scenario where Agent 0 stops?</button>
         </div>
+        <p> SOID OUTPUT HERE !</p>
       </div>
       );
     }

@@ -1,9 +1,7 @@
 {"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
 {"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
 {"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "add_agent"}
-{"kind": "change", "change": "angle", "agent_id": "2", "cur_angle": 270}
-{"kind": "change", "change": "delete", "agent_id": "2"}
 {"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "counterfactual", "change": "add", "agent_id": 0, "counterfactual": {"is_pos_x": false, "is_pos_z": false, "is_angle": false, "is_forward_step": false, "is_speed": true, "is_signalchoice": false, "is_turnchoice": false, "is_value": true, "is_range": false, "value": "100", "range": {"turn_choices": [], "low_bound": 0, "high_bound": 0}}}
+{"kind": "change", "change": "pos", "agent_id": "0", "pos_x": 1.61, "pos_z": 1.975}
+{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 38}
+{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 129}

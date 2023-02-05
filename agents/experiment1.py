@@ -91,10 +91,11 @@ env_agent.agent_id = "agent1"
 env_agent.index = 1
 env_agent.forward_step = 0.44
 env_agent.turn_choice = 'Right' 
-env_agent.signal_choice = 'Right' 
+env_agent.signal_choice = 'Straight' 
 env_agent.curve = env_agent.get_curve(env)
 
 env.agents[0].q_table = QTable(read_model(args.test_model_path))
+model = [[float(env.agents[0].q_table.qt[m][0]), float(env.agents[0].q_table.qt[m][1])] for m in range(1024)]
 
 # Start up env
 env.reset(webserver_reset=True)
@@ -235,7 +236,10 @@ def update(dt):
 
         # Render agent's next move
         if agent.actions:
-            agent.proceed(env,good_agent=True)
+            if agent.agent_id == "agent0":
+                agent.proceed(env, use_model=True, model=agent.q_table, state=agent.get_learning_state(env))
+            else:
+                agent.proceed(env,good_agent=True)
 
     env.step(learning=True)
 
