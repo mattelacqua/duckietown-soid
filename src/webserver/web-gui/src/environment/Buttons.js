@@ -102,37 +102,24 @@ class Buttons extends React.Component {
   // Render the information to screen
   render() {
     return (
-      <div class='Buttons'>
 
-          {this.props.sim_state === 'run' &&
-            <button className='pause' onClick={()=>this.handleClick("pause")}>Pause</button>
+          <div class='Buttons'>
+            {this.props.sim_state === 'run' &&
+              <button className='pause' onClick={()=>this.handleClick("pause")}>Pause</button>
+            }
+            {this.props.sim_state === 'run' &&
+              <button className='quit' onClick={()=>this.handleClick("quit")}>Quit</button>
+            }
+          {this.props.sim_state === 'pause' &&
+              <button className='add_agent' onClick={()=>this.handleClick("add_agent")}>Add New Agent</button>
           }
-          {this.props.sim_state === 'run' &&
-            <button className='quit' onClick={()=>this.handleClick("quit")}>Quit</button>
+          {this.props.sim_state === 'pause' &&
+              <button className = "resume" onClick={()=>this.handleClick("run")}>Resume</button>
           }
-         {this.props.sim_state === 'pause' &&
-            <button className='add_agent' onClick={()=>this.handleClick("add_agent")}>Add New Agent</button>
-         }
-         {this.props.sim_state === 'pause' &&
-            <button className = "resume" onClick={()=>this.handleClick("run")}>Resume</button>
-         }
-         {this.props.sim_state === 'pause' &&
-            <button className='quit' onClick={()=>this.handleClick("quit")}>Quit</button>
-         }
-          <p> Ask a Question based on given Counterfactuals:</p>
           {this.props.sim_state === 'pause' &&
-            <button className='move_factual' onClick={()=>this.handleClick("move_factual")}>Agent Always Moves?</button>
-         }
-          {this.props.sim_state === 'pause' &&
-            <button className='move_existential' onClick={()=>this.handleClick("move_existential")}>Agent Could Move?</button>
-         }
-          {this.props.sim_state === 'pause' &&
-            <button className='stop_factual' onClick={()=>this.handleClick("stop_factual")}>Agent Always Stops?</button>
-         }
-          {this.props.sim_state === 'pause' &&
-            <button className='stop_existential' onClick={()=>this.handleClick("stop_existential")}>Agent Could Stop?</button>
-         }
-      </div>
+              <button className='quit' onClick={()=>this.handleClick("quit")}>Quit</button>
+          }
+    </div>
       );
     }
 }

@@ -59,9 +59,12 @@ class RenderedScene extends React.Component {
                 }} /> 
           <span> Rendered Scene </span>
           {this.props.sim_state === 'pause' &&
-            <LogStep  step={this.props.sim_step}
-                      max_step={this.props.sim_step}
-                      socket={this.props.socket}/>
+            <div>
+              <LogStep  step={this.props.sim_step}
+                        max_step={this.props.sim_step}
+                        socket={this.props.socket}/>
+
+            </div>
           }
       </div>
       

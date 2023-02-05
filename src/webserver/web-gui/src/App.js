@@ -16,8 +16,6 @@ import AgentMap from './agents/AgentMap.js'
 // Import RenderedScene
 import RenderedScene from './environment/RenderedScene.js'
 
-// Import RenderedScene
-import Buttons from './environment/Buttons.js'
 
 // Import LODASH
 import _ from 'lodash';
@@ -116,10 +114,7 @@ class App extends React.Component{
                         sim_state={this.state.sim_state}
                         socket={this.state.socket}
                         sim_step={this.state.env_info.sim_step}/>
-          <Buttons  sim_state={this.state.sim_state} 
-                    update_from_sim={this.update_from_sim}
-                    env_info={this.state.env_info}
-                    socket={this.state.socket}/>
+
 
           {/* Render the agent map only when we are paused */}
           {this.state.sim_state === 'pause' && 
@@ -131,6 +126,8 @@ class App extends React.Component{
                     />}
 
         </div>
+
+
 
         <div className="Agents-wrap">
           {/* Render the agents only when we are paused */}

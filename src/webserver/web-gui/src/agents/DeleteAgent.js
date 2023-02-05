@@ -1,5 +1,5 @@
 import React from "react";
-import './Buttons.css';
+import '../environment/Buttons.css';
 
 // Component to spit out agent information
 class DeleteAgent extends React.Component {
@@ -9,20 +9,18 @@ class DeleteAgent extends React.Component {
   constructor(props) {
     super(props);
     this.State = {
-      socket: props.socket,
     };
   }
 
   handleClick = () => {
-    console.log('deleting agent ' + this.props.agent_id);
-    this.props.socket.emit('delete_agent', {'id':this.props.agent_id});
+    this.props.socket.emit('delete_agent', {'id':this.props.agent.id});
   }
 
   // Render the information to screen
   render() {
     return (
-      <div class='DeleteAgent'>
-          <button onClick={this.handleClick}> Delete Agent {this.props.agent_id} </button>
+      <div class='Buttons'>
+          <button className='delete_agent' onClick={this.handleClick}> Delete Agent {this.props.agent.id} </button>
       </div>
       );
     }

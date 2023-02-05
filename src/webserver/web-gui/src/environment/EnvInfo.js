@@ -25,11 +25,14 @@ class EnvInfo extends React.Component {
   render() {
     return (
       <div style={{
-        paddingLeft: '10px',
+        display:'flex',
+        flexDirection:'row',
         }}>
           {/* HTML FOR ALL THE INFORMATION */}
-          <p> Sim State: {this.state.sim_state} </p>
-          <p> Sim Step: {this.state.sim_step} </p>
+          <p> Sim State: {this.state.sim_state} -</p>
+          <p> --- Sim Step: {this.state.sim_step} </p>
+
+
       </div>
       );
     }

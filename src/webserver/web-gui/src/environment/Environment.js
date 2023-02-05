@@ -4,6 +4,11 @@ import React from "react";
 // Import envInfo
 import EnvInfo from "./EnvInfo.js"
 
+// Import Buttons
+import Buttons from './Buttons.js'
+
+// Import Query Buttons
+import Queries from '../counterfactual/Queries.js'
 // Agent Component (gets rendered in app)
 class Environment extends React.Component {
 
@@ -29,12 +34,21 @@ class Environment extends React.Component {
     return (
               <div>
                 {/* Render Environment Information */}
+                <Buttons  sim_state={this.state.sim_state} 
+                    update_from_sim={this.update_from_sim}
+                    env_info={this.state.env_info}
+                    socket={this.state.socket}/>
+
                 <EnvInfo    max_NS={this.state.max_NS}
                             max_EW={this.state.max_EW}
                             sim_state={this.state.sim_state}
                             tile_size={this.state.tile_size}
                             sim_step={this.state.sim_step}/>
 
+                <Queries  sim_state={this.props.sim_state} 
+                  update_from_sim={this.props.update_from_sim}
+                  env_info={this.props.env_info}
+                  socket={this.props.socket}/>     
               </div>
           );
     }
