@@ -20,7 +20,7 @@ class AddAgent extends React.Component {
   render() {
     return (
       <div class='Buttons'>
-          <button className='add_agent' onClick={this.handleClick}> Add Agent {this.props.agent.id} </button>
+          <button className='add_agent' onClick={this.handleClick}> Add Agent </button>
       </div>
       );
     }

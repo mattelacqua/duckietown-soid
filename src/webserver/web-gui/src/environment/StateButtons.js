@@ -9,8 +9,6 @@ class StateButtons extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        sim_state: this.props.sim_state,
-        socket: this.props.socket
     };
     this.handleClick = this.handleClick.bind(this);
   }

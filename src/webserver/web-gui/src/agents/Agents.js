@@ -7,7 +7,7 @@ import React from 'react'
 // Import Agents since it will be rendered in appb
 import Agent from './Agent.js'
 import AgentMap from './AgentMap.js'
-
+import AddAgent from './AddAgent.js'
 
 // Agent Component (gets rendered in app)
 class Agents extends React.Component {
@@ -30,6 +30,8 @@ class Agents extends React.Component {
                 socket={this.props.socket}
                 />     
 
+        <AddAgent agents={this.props.agents}
+                  socket={this.props.socket}/>
         <div className="Agents">
           {this.props.agents.map((agent) => ( 
             /* Render an Agent component, with props: agent_id, cur_angle, cur_pos, color */

@@ -80,7 +80,7 @@ env_agent.agent_id = "agent1"
 env_agent.index = 1
 env_agent.forward_step = 0.44
 env_agent.turn_choice = 'Right' 
-env_agent.signal_choice = 'Straight' 
+env_agent.signal_choice = 'Right' 
 env_agent.curve = env_agent.get_curve(env)
 
 # Start up env

@@ -110,7 +110,7 @@ class AgentMap extends React.Component {
 
       // Plugins
       responsive: true,
-      maintainAspectRatio: false,
+      maintainAspectRatio: true,
       plugins: {
         dragData: {
           dragX: true,

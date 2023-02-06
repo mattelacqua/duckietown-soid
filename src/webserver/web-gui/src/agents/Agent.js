@@ -18,6 +18,8 @@ import InitialDirection from './InitialDirection.js'
 // Import Agent DeleteAgent
 import DeleteAgent from './DeleteAgent.js'
 
+// Import Agent DeleteAgent
+
 // Agent Component (gets rendered in app)
 class Agent extends React.Component {
 
