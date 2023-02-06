@@ -1,3 +1,4 @@
+import sys
 import soid 
 from soid.soidlib import *
 import json
@@ -812,6 +813,6 @@ def generate_soid_query(query_info):
 
 
 if __name__ == '__main__':
-    query_prefix = 'src/webserver/soid_files/query_blobs/'
-    query_blob = json.load(open(sys.argv[1]))
+    query_prefix = 'src/webserver/soid_files/query_blobs/experiments/'
+    query_blob = json.load(open(query_prefix + sys.argv[1]))
     result, models, resources = generate_soid_query(query_blob)

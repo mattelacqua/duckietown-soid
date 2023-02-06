@@ -322,7 +322,7 @@ def generate_klee_file(query_blob):
                 klee_file.write(f'(agent{i}_pos_x  == (float) {counterfactual["value"]}) ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_pos_x >= (float) {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.pos_x <= (float) {counterfactual["range"]["high_bound"]}) ')
+                    f'agent{i}_pos_x <= (float) {counterfactual["range"]["high_bound"]}) ')
             # if less than the last one, do disjunction
             if j < len(agent["symbolic"]["list_pos_x"]) - 1:
                 klee_file.write(f'|| ')
@@ -338,7 +338,7 @@ def generate_klee_file(query_blob):
                 klee_file.write(f'(agent{i}_pos_z  == (float) {counterfactual["value"]}) ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_pos_z >= (float) {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.pos_z <= (float) {counterfactual["range"]["high_bound"]}) ')
+                    f'agent{i}_pos_z <= (float) {counterfactual["range"]["high_bound"]}) ')
             # if less than the last one, do disjunction
             if j < len(agent["symbolic"]["list_pos_z"]) - 1:
                 klee_file.write(f'|| ')
@@ -354,7 +354,7 @@ def generate_klee_file(query_blob):
                 klee_file.write(f'(agent{i}_angle  == (float) {counterfactual["value"]}) ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_angle >= (float) {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.angle <= (float) {counterfactual["range"]["high_bound"]}) ')
+                    f'agent{i}_angle <= (float) {counterfactual["range"]["high_bound"]}) ')
             # if less than the last one, do disjunction
             if j < len(agent["symbolic"]["list_angle"]) - 1:
                 klee_file.write(f'|| ')
@@ -370,7 +370,7 @@ def generate_klee_file(query_blob):
                 klee_file.write(f'(agent{i}_forward_step  == (float) {counterfactual["value"]}) ')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_forward_step >= (float) {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.forward_step <= (float) {counterfactual["range"]["high_bound"]}) ')
+                    f'agent{i}_forward_step <= (float) {counterfactual["range"]["high_bound"]}) ')
             # if less than the last one, do disjunction
             if j < len(agent["symbolic"]["list_forward_step"]) - 1:
                 klee_file.write(f'|| ')
@@ -386,7 +386,7 @@ def generate_klee_file(query_blob):
                 klee_file.write(f'(agent{i}_speed  == (float) {counterfactual["value"]} )')
             if counterfactual["is_range"]:
                 klee_file.write(f'(agent{i}_speed >= (float) {counterfactual["range"]["low_bound"]} && '
-                    f'agent{i}.speed <= (float) {counterfactual["range"]["high_bound"]}) ')
+                    f'agent{i}_speed <= (float) {counterfactual["range"]["high_bound"]}) ')
             # if less than the last one, do disjunction
             if j < len(agent["symbolic"]["list_speed"]) - 1:
                 klee_file.write(f'|| ')
@@ -669,5 +669,6 @@ def generate_klee_file(query_blob):
 
 
 if __name__ == '__main__':
-    query_blob = json.load(open('src/webserver/soid_files/query_blobs/query_blob'))
+    query_prefix = 'src/webserver/soid_files/query_blobs/experiments/'
+    query_blob = json.load(open(query_prefix + sys.argv[1]))
     generate_klee_file(query_blob)
