@@ -1,4 +1,9 @@
-.Buttons button {
+.StateButtons {
+  display:flex;
+  flex-direction:row;
+
+}
+.StateButtons button {
 
   appearance: none;
   background-color: #2ea44f;
@@ -24,28 +29,28 @@
   margin-right: 1%;
 }
 
-.Buttons button:focus:not(:focus-visible):not(.focus-visible) {
+.StateButtons button:focus:not(:focus-visible):not(.focus-visible) {
   box-shadow: none;
   outline: none;
 }
 
-.Buttons button:hover {
+.StateButtons button:hover {
   background-color: #2c974b;
 }
 
-.Buttons button:focus {
+.StateButtons button:focus {
   box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
   outline: none;
 }
 
-.Buttons button:disabled {
+.StateButtons button:disabled {
   background-color: #94d3a2;
   border-color: rgba(27, 31, 35, .1);
   color: rgba(255, 255, 255, .8);
   cursor: default;
 }
 
-.Buttons button:active {
+.StateButtons button:active {
   background-color: #298e46;
   box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
@@ -56,7 +61,11 @@
     margin-bottom: 10px;
     margin-top: 20px;
 }
-
+.delete_agent {
+  background-color: rgb(174, 0, 0)!important;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
 .resume {
     background-color: green!important;
     margin-bottom: 10px;

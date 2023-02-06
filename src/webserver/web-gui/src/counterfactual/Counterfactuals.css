@@ -1,7 +1,7 @@
-.Agents {
+.Counterfactuals {
     display:flex;
     flex-direction:row;
-    justify-content: space-evenly;
+    justify-content: space-between;
     padding-top: 2em;
     padding-left: 2em;
     padding-right: 2em;

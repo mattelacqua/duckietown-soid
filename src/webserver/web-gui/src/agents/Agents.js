@@ -6,6 +6,7 @@ import React from 'react'
 
 // Import Agents since it will be rendered in appb
 import Agent from './Agent.js'
+import AgentMap from './AgentMap.js'
 
 
 // Agent Component (gets rendered in app)
@@ -21,12 +22,25 @@ class Agents extends React.Component {
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)
   render() {
     return (
-      this.props.agents.map((agent) => ( 
-      /* Render an Agent component, with props: agent_id, cur_angle, cur_pos, color */
-      <Agent  agent={agent} 
-              socket={this.props.socket} 
-              update_from_sim={this.props.update_from_sim}/>
-      ))
+      <div>
+        <div classname = "AgentMap" >
+          <AgentMap agents={this.props.agents} 
+                  max_NS={this.props.max_NS} 
+                  max_EW={this.props.max_EW} 
+                  tile_size={this.props.tile_size}
+                  socket={this.props.socket}
+                  />     
+        </div>
+
+        <div className="Agents">
+          {this.props.agents.map((agent) => ( 
+            /* Render an Agent component, with props: agent_id, cur_angle, cur_pos, color */
+            <Agent  agent={agent} 
+                    socket={this.props.socket} 
+                    update_from_sim={this.props.update_from_sim}/>
+          ))}
+        </div>
+    </div>
     );
   }
 }

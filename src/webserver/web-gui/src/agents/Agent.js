@@ -6,14 +6,17 @@ import React from "react";
 // Import Agent Info Screen
 import AgentInfo from './AgentInfo.js'
 
-// Import Agent Counterfactual
-import AgentCounterfactual from './AgentCounterfactual.js'
+// Import Angle Dial
+import AngleDial from './AngleDial.js'
 
 // Import Agent IntersectionArrival
 import IntersectionArrival from './IntersectionArrival.js'
 
 // Import Agent InitialDirection
 import InitialDirection from './InitialDirection.js'
+
+// Import Agent DeleteAgent
+import DeleteAgent from './DeleteAgent.js'
 
 // Agent Component (gets rendered in app)
 class Agent extends React.Component {
@@ -43,7 +46,10 @@ class Agent extends React.Component {
 
     return (
       <div>
-        <AgentInfo  agent={this.props.agent} />
+        {/* Manipulators */}
+        <AngleDial  agent={this.props.agent} 
+                    socket={this.props.socket}
+          />
 
         <IntersectionArrival agent={this.props.agent}
                             socket={this.props.socket} />
@@ -51,8 +57,15 @@ class Agent extends React.Component {
         <InitialDirection agent={this.props.agent}
                           direction_label={direction_label}
                           socket={this.props.socket} />
-        <AgentCounterfactual agent={this.props.agent}
-                    socket={this.props.socket} />
+        
+
+        {/* Information */}
+        <AgentInfo  agent={this.props.agent} 
+          />
+
+        <DeleteAgent agent={this.props.agent}
+                     socket={this.props.socket} 
+          />
     </div>
     );
   }
