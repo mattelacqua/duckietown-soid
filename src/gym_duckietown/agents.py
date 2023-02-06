@@ -74,6 +74,7 @@ class Agent():
     q_state: int
     q_table: QTable
     lookahead: float
+    good_agent: bool
 
     def __init__(self,
         env,
@@ -153,6 +154,7 @@ class Agent():
         self.misc = None
         self.q_state = -1
         self.q_table = QTable([[0.0 for i in range(2)] for j in range(1024)])
+        self.good_agent = True 
 
         # Gui Counterfactuals
         range_dict = {

@@ -1,4 +1,5 @@
 from gym_duckietown import agents, simulator, objects, logger, dl_utils
+from gym_duckietown.utils import read_model
 from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Union
 import numpy as np
 import math
@@ -8,6 +9,7 @@ import subprocess
 import os
 import signal
 import time
+from learn_types import QTable
 from webserver import counterfactual as cf
 #from webserver import soid_query as sq 
 
@@ -43,6 +45,22 @@ def handle_input(env, gui_input):
                 
         elif change == "intersection_arrival":
             agent.intersection_arrival = gui_input['intersection_arrival']
+        elif change == "model_choice":
+            print(f"Got the new model choice {gui_input['choice']}")
+            if gui_input['choice'] == 'good_agent':
+                agent.good_agent = True
+            elif gui_input['choice'] == 'defensive':
+                agent.good_agent = False
+                agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/defensive/10k_train'))
+            elif gui_input['choice'] == 'standard':
+                agent.good_agent = False
+                agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/standard/10k_train'))
+            elif gui_input['choice'] == 'reckless':
+                agent.good_agent = False
+                agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/impatient/10k_train'))
+            elif gui_input['choice'] == 'pathological':
+                agent.good_agent = False
+                agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/pathological/10k_train'))
                 
     if gui_input['kind'] == 'add_agent':
         new_agent = agents.Agent(env, agent_id=("agent"+str(len(env.agents))), random_spawn=True)

@@ -147,3 +147,18 @@ def get_graphics_information() -> Dict:
         results[o] = res
     return results
 
+
+# Read in the model
+def read_model(path):
+        
+    model = path
+
+    # Read new model into a q table
+    inp = open(model, 'r', os.O_NONBLOCK)
+    table = []
+    for line in inp.readlines():
+        line.strip()
+        table.append(list(float(i) for i in line.split(",")))
+    inp.close()
+    return table
+

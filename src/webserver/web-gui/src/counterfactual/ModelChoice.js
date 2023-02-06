@@ -20,6 +20,13 @@ class ModelChoice extends React.Component {
     this.setState({
       model: choice,
     });
+
+    this.props.socket.emit(
+      "model_choice",
+      {
+        'choice': choice,
+      }
+    );
     
   }
   
@@ -38,6 +45,7 @@ class ModelChoice extends React.Component {
         <p> <br />Agent 0's Decision Model: </p>
         <Select
           options={options} // Options to display in the dropdown
+          defaultValue={{value: 'good_agent', label: 'Good Agent (Hard-Coded Behavior)'}} // Options to display in the dropdown
           onChange= {new_option => {this.handleChoice(new_option.value)}}
           />
       </div>);

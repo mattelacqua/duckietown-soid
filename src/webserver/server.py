@@ -169,6 +169,18 @@ def delete_agent(data):
                     }
     serialize(agent_change, out)
 
+@socketio.on("model_choice")
+def model_choice(data):
+    choice = data['choice']
+    counterfactual_wrap = {
+        'kind': 'change',
+        'change': 'model_choice',
+        'choice': choice,
+        'agent_id': 0,
+    }
+    serialize(counterfactual_wrap, out)
+
+
 # Reinstate from log
 @socketio.on("log_step")
 def log_step(data):
@@ -230,6 +242,7 @@ def delete_counterfactual(data):
         'agent_index': data['agent_index'],
     }
     serialize(counterfactual_wrap, out)
+
 
 if __name__ == '__main__':
     socketio.run(app, port=5001)

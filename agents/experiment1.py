@@ -19,6 +19,7 @@ import os
 # Logging
 from gym_duckietown import logger 
 from gym_duckietown.agents import Agent
+from gym_duckietown.utils import read_model
 import webserver.gui_utils as gu 
 from threading import Thread
 
@@ -57,19 +58,7 @@ else:
 # Verbose
 verbose = args.verbose
 
-# Read in the model
-def read_model(path):
-        
-    model = path
 
-    # Read new model into a q table
-    inp = open(model, 'r', os.O_NONBLOCK)
-    table = []
-    for line in inp.readlines():
-        line.strip()
-        table.append(list(float(i) for i in line.split(",")))
-    inp.close()
-    return table
 
 
 # Initialize the agents for the scripted scenario
@@ -93,9 +82,6 @@ env_agent.forward_step = 0.44
 env_agent.turn_choice = 'Right' 
 env_agent.signal_choice = 'Straight' 
 env_agent.curve = env_agent.get_curve(env)
-
-env.agents[0].q_table = QTable(read_model(args.test_model_path))
-model = [[float(env.agents[0].q_table.qt[m][0]), float(env.agents[0].q_table.qt[m][1])] for m in range(1024)]
 
 # Start up env
 env.reset(webserver_reset=True)
@@ -136,16 +122,6 @@ log = open(fifo_log, 'w', os.O_NONBLOCK)
 webserver = gu.start_webserver()
 node = gu.start_node()
 
-# Set up initial agent speeds, turns and contols
-#env.agents[0].forward_step = 0.44
-#env.agents[1].forward_step = 0.22
-#env.agents[2].forward_step = 0.00
-
-#env.agents[0].turn_choice = "Left" 
-#env.agents[0].curve = env.agents[0].get_curve(env)
-#env.agents[1].turn_choice = "Straight" 
-#env.agents[1].curve = env.agents[1].get_curve(env)
-# Random is None which will be the 3rd agent
 
 # Feed agent information to webserver
 gu.init_server(0, out, env, None, get_map=True)
@@ -236,7 +212,7 @@ def update(dt):
 
         # Render agent's next move
         if agent.actions:
-            if agent.agent_id == "agent0":
+            if not agent.good_agent:
                 agent.proceed(env, use_model=True, model=agent.q_table, state=agent.get_learning_state(env))
             else:
                 agent.proceed(env,good_agent=True)

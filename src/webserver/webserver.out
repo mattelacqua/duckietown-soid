@@ -1,7 +1,8 @@
 {"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 90}
-{"kind": "change", "change": "pos", "agent_id": "0", "pos_x": 1.61, "pos_z": 1.975}
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 38}
-{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 129}
+{"kind": "state", "state": "run"}
+{"kind": "state", "state": "pause"}
+{"kind": "change", "change": "angle", "agent_id": "0", "cur_angle": 91}
+{"kind": "change", "change": "angle", "agent_id": "1", "cur_angle": 1}
+{"kind": "change", "change": "model_choice", "choice": "standard", "agent_id": 0}
+{"kind": "state", "state": "run"}
+{"kind": "state", "state": "pause"}

@@ -23,14 +23,12 @@ class Agents extends React.Component {
   render() {
     return (
       <div>
-        <div classname = "AgentMap" >
-          <AgentMap agents={this.props.agents} 
-                  max_NS={this.props.max_NS} 
-                  max_EW={this.props.max_EW} 
-                  tile_size={this.props.tile_size}
-                  socket={this.props.socket}
-                  />     
-        </div>
+        <AgentMap agents={this.props.agents} 
+                max_NS={this.props.max_NS} 
+                max_EW={this.props.max_EW} 
+                tile_size={this.props.tile_size}
+                socket={this.props.socket}
+                />     
 
         <div className="Agents">
           {this.props.agents.map((agent) => ( 

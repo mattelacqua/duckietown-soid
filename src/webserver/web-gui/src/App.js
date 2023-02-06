@@ -121,6 +121,7 @@ class App extends React.Component{
                           tile_size={this.state.env_info.road_tile_size}
                           sim_state={this.state.sim_state}
                           socket={this.state.socket}
+                          update_from_sim={this.update_from_sim}
                           sim_step={this.state.env_info.sim_step}
               />
             <Agents agents={this.state.env_info.agents}
@@ -144,6 +145,7 @@ class App extends React.Component{
                             tile_size={this.state.env_info.road_tile_size}
                             sim_state={this.state.sim_state}
                             socket={this.state.socket}
+                            update_from_sim={this.update_from_sim}
                             sim_step={this.state.env_info.sim_step}/>
             </div>
           } {/*End of running */}
