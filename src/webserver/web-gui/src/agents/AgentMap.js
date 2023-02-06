@@ -103,14 +103,14 @@ class AgentMap extends React.Component {
       // Elements
       elements : {
         point : {
-            radius : this.state.car_radius, 
+            radius : this.state.car_radius * 0.9, 
             pointStyle: 'rect',
         },
       },
 
       // Plugins
       responsive: true,
-      maintainAspectRatio: true,
+      maintainAspectRatio: false,
       plugins: {
         dragData: {
           dragX: true,
@@ -125,6 +125,9 @@ class AgentMap extends React.Component {
           },
           onDragEnd: this.update_agent_pos,
         }, // End drag Data
+        legend: {
+          position: 'bottom',
+        },
       }, // End plugin
       
       // Parsing
@@ -168,12 +171,17 @@ class AgentMap extends React.Component {
     }; // End options  
 
     return (
+
+        <div classname='AgentMap'>
         <Line ref={this.chartReference} 
               classname="AgentMap" 
               options={options} 
               data={data} 
+              width={550}
+              height={550}
               plugins={[map_background]} 
               />
+        </div>
     );
   }// End render
 } // end component

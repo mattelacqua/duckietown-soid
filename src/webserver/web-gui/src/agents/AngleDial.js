@@ -46,26 +46,24 @@ class AngleDial extends React.Component {
   render() {
     const color = this.props.agent.color
     return (
-      <div class= 'angle-dialwrap'>
-        <CircularSlider
-          label={this.props.agent.agent_id}
-          labelColor={color}
-          labelBottom={true}
-          knobColor={color}
-          progressColorFrom="#eeeeee"
-          progressColorTo="#eeeeee"
-          progressSize={10}
-          trackColor="#eeeeee"
-          trackSize={10}
-          min={0}
-          max={360}
-          width={150}
-          knobPosition="right"
-          direction={-1}
-          dataIndex={this.props.agent.angle_deg}
-          onChange={value => {this.handleChange(value)}}
-        />
-      </div>
+      <CircularSlider
+        label={this.props.agent.agent_id}
+        labelColor={color}
+        labelBottom={true}
+        knobColor={color}
+        progressColorFrom="#eeeeee"
+        progressColorTo="#eeeeee"
+        progressSize={10}
+        trackColor="#eeeeee"
+        trackSize={10}
+        min={0}
+        max={360}
+        width={150}
+        knobPosition="right"
+        direction={-1}
+        dataIndex={this.props.agent.angle_deg}
+        onChange={value => {this.handleChange(value)}}
+      />
     )
   } // End Render
 } // End Class

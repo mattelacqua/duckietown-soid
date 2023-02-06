@@ -29,7 +29,7 @@ class Environment extends React.Component {
               <div classname='Environment'>
                 {/* Render Environment Information */}
                 <StateButtons sim_state={this.props.sim_state} 
-                              update_from_sim={this.update_from_sim}
+                              update_from_sim={this.props.update_from_sim}
                               socket={this.props.socket}/>
 
                 <EnvInfo  sim_state={this.props.sim_state}
