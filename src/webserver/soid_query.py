@@ -789,7 +789,7 @@ def generate_soid_query(query_info):
         if query_info['query']['behavior'] == 'move':
             return Equal(P.will_proceed, True) # This will tell us if we ever move
         elif query_info['query']['behavior'] == 'stop':
-            return Equal(P.will_proceed, True) # This will tell us if we ever move
+            return Equal(P.will_proceed, False) # This will tell us if we ever move
     query.behavior(behavior)
 
     # invoke soid
