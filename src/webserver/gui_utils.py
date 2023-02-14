@@ -11,7 +11,7 @@ import signal
 import time
 from learn_types import QTable
 from webserver import counterfactual as cf
-#from webserver import soid_query as sq 
+#from webserver import soid_query as sq
 
 def handle_input(env, gui_input):
     # If its a state update
@@ -42,7 +42,7 @@ def handle_input(env, gui_input):
                 agent.initial_direction = 'E'
             elif gui_input['initial_direction'] == '3':
                 agent.initial_direction = 'W'
-                
+
         elif change == "intersection_arrival":
             agent.intersection_arrival = gui_input['intersection_arrival']
         elif change == "model_choice":
@@ -61,14 +61,13 @@ def handle_input(env, gui_input):
             elif gui_input['choice'] == 'pathological':
                 agent.good_agent = False
                 agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/pathological/10k_train'))
-                
     if gui_input['kind'] == 'add_agent':
         new_agent = agents.Agent(env, agent_id=("agent"+str(len(env.agents))), random_spawn=True)
         directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
         colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
         env.agents.append(new_agent)
         env.spawn_random_agent(new_agent, directions, colors)
-         
+
     if gui_input['kind'] == 'counterfactual':
         if gui_input['change'] == 'add':
             env.agents[int(gui_input['agent_id'])].counterfactuals.append(gui_input['counterfactual'])
@@ -116,7 +115,7 @@ def handle_input(env, gui_input):
 
                     agent.initial_direction = log_agent['initial_direction']
             agent.log = gui_input['log']
-    
+
     if gui_input['kind'] == 'query':
         query_blob = cf.get_query_blob(env, gui_input['query_info'])
 
@@ -125,13 +124,13 @@ def handle_input(env, gui_input):
 
         klee_file = cf.generate_klee_file(query_blob)
         #soid_result = sq.invoke_soid(query_blob, klee_file)
-        
-        
+
+
         #env.state = 'query_result'
         env.state = 'pause'
         soid_result = None
         return env.state, soid_result
-        
+
 
 
     env.c_info_struct = agents.EnvironmentInfo(env)
@@ -170,8 +169,8 @@ def unserialize(fifo, log=False):
                     yield input
             except json.decoder.JSONDecodeError:
                 break"""
-    
-    
+
+
 
 
 # Init agents in server
@@ -181,7 +180,7 @@ def init_server(dt, fifo, env, socket, get_map=False):
     if get_map:
         env.map_jpg(background=True)
         env.map_jpg(background=False)
-    
+
     env_info = env_info_dict(env)
     #print("Data Function Dict Traversal = {0}".format(toc - tic))
     # Serialize the input
@@ -240,7 +239,7 @@ def env_info_dict(env):
 
         dict_agent['state']=agent_state
         dict_agent['exists']=agent.exists
-        
+
         # Other things not included in c struct
         dict_agent['agent_id'] = env.agents[i].agent_id
         dict_agent['color'] = html_color(env.agents[i].color)
@@ -266,14 +265,14 @@ def env_info_dict(env):
     env_info['sim_step'] = env.agents[0].step_count
 
     return env_info
-    
-    
+
+
 # Read initial positions and env info
 def read_init(fifo, log=False):
-    agent_list =[] 
+    agent_list =[]
     env_info = {}
     log_list = []
-    
+
     input_list = list(unserialize(fifo, log))
 
     if log:
@@ -300,7 +299,10 @@ def start_webserver():
 
     if len(my_pid.splitlines()) >0:
        print("Old webserver running. Killing old and starting up new")
-       os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
+       try:
+           os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
+       except:
+           print("Unable to kill old webserver, so Starting up new")
     else:
       print("Old webserver not Running, Starting up new")
 
@@ -312,14 +314,16 @@ def start_node():
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
     stderr=subprocess.PIPE)
     my_pid, err = process.communicate()
-    print(my_pid)
 
     if len(my_pid.splitlines()) >0:
        print("Old NJS SCRIPT Running Killing.")
-       os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
+       try:
+           os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
+       except:
+           print("Unable to kill old NJS SCRIPT, so Starting up new")
     else:
-      print("Old NJS SCRIPT not Running, Starting up new")    
-      
+      print("Old NJS SCRIPT not Running, Starting up new")
+
     cmd = ['pgrep -f .*npm.*start']
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
     stderr=subprocess.PIPE)
@@ -327,12 +331,13 @@ def start_node():
 
     if len(my_pid.splitlines()) >0:
        print("Old NJS Running Killing.")
-       os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
+       try:
+           os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
+       except:
+           print("Unable to kill old NJS, so Starting up new")
+
     else:
       print("Old NJS not Running, Starting up new")
-
-
-
 
     node = subprocess.Popen(["npm","start", "--prefix", "src/webserver/web-gui"])
     return node
@@ -366,4 +371,3 @@ def from_html_color(color: str):
     }
     color = colors[color]
     return color
-    

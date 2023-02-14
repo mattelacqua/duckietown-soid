@@ -38,10 +38,10 @@ def proceed(self, env, good_agent=False, use_model=False, model=None, state=None
 
     # Call out to c with the model and the state and see what we should do, then handle it.
     elif use_model:
-        dl.proceed_model.argtypes = [QTable, c_int]
+        dl.proceed_model.argtypes = [((c_float * 2) * 1024), c_int]
         dl.proceed_model.restype = c_bool
 
-        should_proceed = dl.proceed_model(model, state)
+        should_proceed = dl.proceed_model(model.qt, state)
         self.handle_proceed(env, should_proceed)
 
 # Handle whether or not we should proceed, filter out bad actions

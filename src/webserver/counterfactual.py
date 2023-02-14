@@ -9,9 +9,9 @@ def get_dl_turn_choice(choice):
     if choice == "Straight":
         return "STRAIGHT"
     if choice == "Left":
-        return "LEFT" 
+        return "LEFT"
     if choice == "Right":
-        return "RIGHT" 
+        return "RIGHT"
     return choice
 
 def get_dl_direction(direction):
@@ -37,7 +37,7 @@ def get_query_blob(env, query_info):
             for m in range(1024):
                 for n in range(2):
                     c_q_table.append([0.0, 0.0])
-        
+
         return c_q_table
 
     def get_environment(query_info):
@@ -57,7 +57,7 @@ def get_query_blob(env, query_info):
 
     def get_agents(query_info):
         def get_agent(agent_info):
-            
+
             def has_symbolic(counterfactuals, kind):
                 for counterfactual in counterfactuals:
                     if counterfactual[kind]:
@@ -133,7 +133,7 @@ def get_query_blob(env, query_info):
         for agent in agents_info:
             agents[agent['agent_id']] = get_agent(agent)
 
-        
+
         return agents
 
     def get_log(query_info):
@@ -179,8 +179,12 @@ def get_query_blob(env, query_info):
 
 # Generate the klee file
 def generate_klee_file(query_blob):
+    soidp = os.getenv('SOID_PATH')
+    if not soidp:
+        raise Exception('Unable to find soid to generate KLEE file')
+
     """
-    This function will generate the klee file used by soid. 
+    This function will generate the klee file used by soid.
 
     """
     #query = json.loads(query_blob)
@@ -191,7 +195,7 @@ def generate_klee_file(query_blob):
     # Imports
     klee_file.write("#include <string.h>\n")
     klee_file.write("#include \"../../../gym_duckietown/decision_logic/decision_logic.h\"\n\n")
-    klee_file.write("#include \"/tools/soid/soid/soid/soidlib/soidlib.h\"\n")
+    klee_file.write(f'#include \"{soidp}/soid/soidlib/soidlib.h\"\n')
     klee_file.write("int main(int argc, char **argv) {\n")
 
     environment = query["environment"]
@@ -205,11 +209,11 @@ def generate_klee_file(query_blob):
 
     # init env_info
     klee_file.write("    EnvironmentInfo info;\n")
-    
+
     # Klee opent merge
     #klee_file.write("    klee_open_merge();\n")
 
-    
+
     # Handle env information
     klee_file.write("\n    // Environment Information:\n")
     klee_file.write(f'    info.intersection_x = { environment["intersection_x"] };\n')
@@ -220,11 +224,11 @@ def generate_klee_file(query_blob):
     klee_file.write(f'    info.road_tile_size = { environment["road_tile_size"] };\n')
     klee_file.write(f'    info.max_steps = { environment["max_steps"] };\n')
     klee_file.write(f'    info.num_agents = { environment["num_agents"] };\n')
-    
+
     # Init agent array
     klee_file.write("\n    // Agent Array:\n")
 
-    
+
     agents = query["agents"]
     # Initialize each agent
     for i in range(environment["num_agents"]):
@@ -237,35 +241,35 @@ def generate_klee_file(query_blob):
 
         klee_file.write(f'    klee_make_symbolic( &agent{i}_pos_x, sizeof(float), "agent{i}_pos_x");\n')
         klee_file.write(f'    klee_make_symbolic( &agent{i}_pos_z, sizeof(float), "agent{i}_pos_z");\n')
-        
+
         #angle
         klee_file.write(f'    klee_make_symbolic( &agent{i}_angle, sizeof(float), "agent{i}_angle");\n')
-        
+
         # Forward Step
         klee_file.write(f'    klee_make_symbolic( &agent{i}_forward_step, sizeof(float), "agent{i}_forward_step");\n')
-        
-        # Speed 
+
+        # Speed
         klee_file.write(f'    klee_make_symbolic( &agent{i}_speed, sizeof(float), "agent{i}_speed");\n')
-        
+
         # Lookahead
         klee_file.write(f'    klee_make_symbolic( &agent{i}_lookahead, sizeof(float), "agent{i}_lookahead");\n')
-        
+
         # signal_turn
         klee_file.write(f'    klee_make_symbolic( &agent{i}_signal_choice, sizeof(TurnChoice), "agent{i}_signal_choice");\n')
         klee_file.write(f'    klee_make_symbolic( &agent{i}_turn_choice, sizeof(TurnChoice), "agent{i}_turn_choice");\n')
-        
+
         # Initial direction
         klee_file.write(f'    klee_make_symbolic( &agent{i}_initial_direction, sizeof(Direction), "agent{i}_initial_direction");\n')
-        
+
         # Intersection_arrival
         klee_file.write(f'    klee_make_symbolic( &agent{i}_intersection_arrival, sizeof(int), "agent{i}_intersection_arrival");\n')
-        
+
         # patience
         klee_file.write(f'    klee_make_symbolic( &agent{i}_patience, sizeof(int), "agent{i}_patience");\n')
-        
+
         # Step count
         klee_file.write(f'    klee_make_symbolic( &agent{i}_step_count, sizeof(int), "agent{i}_step_count");\n')
-        
+
         # If concrete is null, then we don't do this, as there will be a symbolic value.
         # concrete_pos_x
         if agent["concrete"]["pos_x"]:
@@ -273,7 +277,7 @@ def generate_klee_file(query_blob):
 
         # concrete_pos_z
         if agent["concrete"]["pos_z"]:
-            klee_file.write(f'    klee_assume( agent{i}_pos_z == (float) { agent["concrete"]["pos_z"] } ); // Concrete Val \n') 
+            klee_file.write(f'    klee_assume( agent{i}_pos_z == (float) { agent["concrete"]["pos_z"] } ); // Concrete Val \n')
 
         # concrete_angle
         if agent["concrete"]["angle"]:
@@ -300,7 +304,7 @@ def generate_klee_file(query_blob):
         # Get stateful things
         # Lookhead
         klee_file.write(f'    klee_assume( agent{i}_lookahead == (float) { agent["concrete"]["lookahead"] }); // Concrete State Val \n')
-        
+
         # intersection_arrival
         klee_file.write(f'    klee_assume( agent{i}_intersection_arrival == { agent["state"]["intersection_arrival"] }); // Concrete State Val \n')
 
@@ -309,7 +313,7 @@ def generate_klee_file(query_blob):
 
         # patience
         klee_file.write(f'    klee_assume( agent{i}_patience == { agent["state"]["patience"] }); // Concrete State Val \n')
-        
+
         # Stepcount
         klee_file.write(f'    klee_assume( agent{i}_step_count == { agent["state"]["step_count"] }); // Concrete State Val \n')
 
@@ -392,7 +396,7 @@ def generate_klee_file(query_blob):
                 klee_file.write(f'|| ')
             else:
                 klee_file.write(f'); // Symbolic Values \n')
-            
+
         # Handle the symbolic values signal_choice
         for j in range(len(agent["symbolic"]["list_signal_choice"])):
             counterfactual = agent["symbolic"]["list_signal_choice"][j]
@@ -410,13 +414,13 @@ def generate_klee_file(query_blob):
                         dl_value = get_dl_turn_choice(counterfactual['range']['turn_choices'][k].upper())
                         klee_file.write(f' || agent{i}_signal_choice == {dl_value}')
                 klee_file.write(f')')
-                    
+
             # if less than the last one, do disjunction
             if j < len(agent["symbolic"]["list_signal_choice"]) - 1:
                 klee_file.write(f'|| ')
             else:
                 klee_file.write(f'); // Symbolic Values \n')
-            
+
         # Handle the symbolic values turn_choice
         for j in range(len(agent["symbolic"]["list_turn_choice"])):
             counterfactual = agent["symbolic"]["list_turn_choice"][j]
@@ -439,7 +443,7 @@ def generate_klee_file(query_blob):
             else:
                 klee_file.write(f'); // Symbolic Values \n')
 
-            
+
         # Memcpy struct stuff
         # floats
         klee_file.write(f'    memmove( &info.agents[{i}].pos_x, &agent{i}_pos_x, sizeof(float)); // Memcopy symb -> struct\n')
@@ -457,7 +461,7 @@ def generate_klee_file(query_blob):
         klee_file.write(f'    memmove( &info.agents[{i}].step_count, &agent{i}_step_count, sizeof(int)); // Memcopy symb -> struct\n')
 
 
-        
+
         # Set the state for inferred variables
         # prev pos
     for i in range(environment["num_agents"]):
@@ -469,28 +473,28 @@ def generate_klee_file(query_blob):
         # Prev pos
         klee_file.write(f'    agent{i}_prev_pos_x = agent{i}_pos_x; // Calculated Variable\n')
         klee_file.write(f'    memmove( &info.agents[{i}].prev_pos_x, &agent{i}_prev_pos_x, sizeof(float)); // Memcopy symb -> struct\n\n')
-        
+
         klee_file.write(f'    agent{i}_prev_pos_z = agent{i}_pos_z; // Calculated Variable\n')
         klee_file.write(f'    memmove( &info.agents[{i}].prev_pos_x, &agent{i}_prev_pos_x, sizeof(float)); // Memcopy symb -> struct\n\n')
 
         # direction
         klee_file.write(f'    agent{i}_direction = get_dl_direction(info.agents[{i}].angle/3.14*180); // Calculated Variable\n')
         klee_file.write(f'    memmove( &info.agents[{i}].direction, &agent{i}_direction, sizeof(int)); // Memcopy symb -> struct\n\n')
-        
-        # tile 
+
+        # tile
         klee_file.write(f'    agent{i}_tile_x = get_tile_pos_x(agent{i}_pos_x, agent{i}_pos_z, info.road_tile_size); // Calculated Variable\n')
         klee_file.write(f'    memmove( &info.agents[{i}].tile_x, &agent{i}_tile_x, sizeof(int)); // Memcopy symb -> struct\n\n')
 
         klee_file.write(f'    agent{i}_tile_z = get_tile_pos_z(agent{i}_pos_x, agent{i}_pos_z, info.road_tile_size); // Calculated Variable\n')
         klee_file.write(f'    memmove( &info.agents[{i}].tile_z, &agent{i}_tile_z, sizeof(int)); // Memcopy symb -> struct\n\n')
-        
+
         # stop pos
-        klee_file.write(f'    agent{i}_stop_x = get_stop_pos_x(agent{i}_tile_x, agent{i}_tile_z, info.road_tile_size, agent{i}_direction, agent{i}_speed); // Calculated Variable\n'); 
+        klee_file.write(f'    agent{i}_stop_x = get_stop_pos_x(agent{i}_tile_x, agent{i}_tile_z, info.road_tile_size, agent{i}_direction, agent{i}_speed); // Calculated Variable\n');
         klee_file.write(f'    memmove( &info.agents[{i}].stop_x, &agent{i}_stop_x, sizeof(float)); // Memcopy symb -> struct\n\n')
 
-        klee_file.write(f'    agent{i}_stop_z = get_stop_pos_z(agent{i}_tile_x, agent{i}_tile_z, info.road_tile_size, agent{i}_direction, agent{i}_speed); // Calculated Variable\n'); 
+        klee_file.write(f'    agent{i}_stop_z = get_stop_pos_z(agent{i}_tile_x, agent{i}_tile_z, info.road_tile_size, agent{i}_direction, agent{i}_speed); // Calculated Variable\n');
         klee_file.write(f'    memmove( &info.agents[{i}].stop_z, &agent{i}_stop_z, sizeof(float)); // Memcopy symb -> struct\n\n')
-        
+
         # exists
         klee_file.write(f'    info.agents[{i}].exists = true; // exist \n\n')
 
@@ -586,64 +590,64 @@ def generate_klee_file(query_blob):
         klee_file.write(f"    agent{i}_state_is_tailgating = is_tailgating(&info, {i});\n")
         klee_file.write(f'    memmove( &info.agents[{i}].state.is_tailgating, &agent{i}_state_is_tailgating, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
-    
+
 
 
     #klee_file.write(f'    // Klee Close Merge();\n')
     #klee_file.write(f'    klee_close_merge();\n')
-    
+
     # handle the q table nd proceed model ONLY FOR AGENT 0
     agent = agents['agent0']
-    
-    
+
+
     # Get learning state row
     klee_file.write("\n    // Learning Row\n")
     klee_file.write("    int mrow;\n")
     klee_file.write("    mrow = get_learning_state(&info, 0);\n")
 
     klee_file.write("\n    // Invoke proceed\n")
-    
+
     klee_file.write(f'    bool will_proceed, __soid__will_proceed;\n')
     klee_file.write(f'    klee_make_symbolic( &__soid__will_proceed, sizeof(bool), "__soid__will_proceed");\n')
     klee_file.write("    will_proceed = proceed_model(model, mrow);\n")
     #klee_file.write("    will_proceed = proceed_good_agent(&info, mrow);\n")
     klee_file.write(f'    klee_assume( will_proceed == __soid__will_proceed);\n')
-    
+
     klee_file.write("}\n")
-    
+
     klee_file.close()
-    
+
     #makefile
     makefile = open((klee_prefix + "makefile"),'w', encoding="utf-8")
-    
-    makefile.write("cc=/tools/soid/soid/llvm-project/release/bin/clang -std=c99\n")
-    makefile.write("opt=/tools/soid/soid/llvm-project/release/bin/opt\n")
-    makefile.write("link=/tools/soid/soid/llvm-project/release/bin/llvm-link\n")
+
+    makefile.write(f'cc={soidp}/llvm-project/release/bin/clang -std=c99\n')
+    makefile.write(f'opt={soidp}/llvm-project/release/bin/opt\n')
+    makefile.write(f'link={soidp}/llvm-project/release/bin/llvm-link\n')
 
     # Inbetween files
     makefile.write("BC1=./inter1.bc\n\n")
     makefile.write("BC2=./inter2.bc\n\n")
     makefile.write("BC3=./inter3.bc\n\n")
     makefile.write("BC=./inter.bc\n\n")
-    
+
     # Paths
-    makefile.write("KLEE=/tools/soid/soid/klee-float/include/klee\n")
-    makefile.write("KEXEC=/tools/soid/soid/klee-float/build/bin/klee\n")
-    makefile.write("PRE-LIB-KLEE=-L /tools/soid/soid/klee-float/build/lib/\n")
+    makefile.write(f'KLEE={soidp}/klee-float/include/klee\n')
+    makefile.write(f'KEXEC={soidp}/klee-float/build/bin/klee\n')
+    makefile.write(f'PRE-LIB-KLEE=-L {soidp}/klee-float/build/lib/\n')
     makefile.write("POST-LIB-KLEE=-lkleeRuntest\n\n")
-    makefile.write("SOIDLIB=/tools/soid/soid/soid/soidlib\n\n")
+    makefile.write(f'SOIDLIB={soidp}/soid/soidlib\n\n')
     makefile.write("symbolic:\n")
-    
+
     # Compile types.c
-    makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 /home/mje48/duckietown-soid/src/gym_duckietown/decision_logic/types.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC1)\n")
+    makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ../../../gym_duckietown/decision_logic/types.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC1)\n")
 
     # Compile decision_logic.c
-    makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 /home/mje48/duckietown-soid/src/gym_duckietown/decision_logic/decision_logic.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC2)\n")
+    makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ../../../gym_duckietown/decision_logic/decision_logic.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC2)\n")
 
     # Compile klee_file.c
     makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o - | $(opt) -mem2reg -simplifycfg -S -o $(BC3)\n")
     #makefile.write("	$(cc) -Dsymbolic -I $(SOIDLIB) -I $(KLEE) -emit-llvm -c -g -O0 ./klee_file.c -o $(BC)\n")
-    
+
     # link
     makefile.write("	$(link) $(BC1) $(BC2) $(BC3) -o $(BC) \n")
     #makefile.write("	$(link) $(BC2) $(BC3) -o $(BC) \n")
@@ -651,7 +655,7 @@ def generate_klee_file(query_blob):
     # exec klee
     makefile.write("	$(KEXEC) -silent-klee-assume -write-smt2s -use-merge $(BC)\n")
 
-    
+
     makefile.write("\nclean:\n")
     makefile.write("	rm -f ./inter1.bc\n")
     makefile.write("	rm -f ./inter2.bc\n")
@@ -659,10 +663,10 @@ def generate_klee_file(query_blob):
     makefile.write("	rm -f ./inter.bc\n")
     makefile.write("	rm -rf ./klee-out-*\n")
     makefile.write("	rm -rf ./klee-last\n")
-    
+
     makefile.close()
-    
-    
+
+
     # print(agents)
     # return file_descriptor, file_path
     return None
