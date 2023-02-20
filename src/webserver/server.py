@@ -91,7 +91,7 @@ def agent_angle(data):
                     }
 
     serialize(agent_change, out)
- 
+
 # On socket update change agent angle
 @socketio.on("initial_direction")
 def initial_direction(data):
@@ -133,7 +133,7 @@ def agent_pos(data):
                     'agent_id': a_id,
                     'pos_x': x,
                     'pos_z': z,
-                    }   
+                    }
     serialize(agent_change, out)
 
 # On socket update resume simulation from button press
@@ -216,7 +216,7 @@ def query(query_info):
 @socketio.on("add_counterfactual")
 def add_counterfactual(data):
     counterfactual = data['counterfactual']
-    
+
     # filter for turn choices
     turnchoices = []
     for choice in counterfactual['range']['turn_choices']:
@@ -245,5 +245,4 @@ def delete_counterfactual(data):
 
 
 if __name__ == '__main__':
-    socketio.run(app, port=5001)
-
+    socketio.run(app, host='0.0.0.0', port=5001)
