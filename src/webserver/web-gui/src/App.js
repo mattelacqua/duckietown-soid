@@ -55,7 +55,7 @@ class App extends React.Component{
     socket.emit("update_sim_info");
 
     // Fetch for env info
-    await fetch("/envInfo.json",{ headers : headers}) // Shorthand for http://0.0.0.0:5001/envInfo.json
+    await fetch("/envInfo.json",{ headers : headers}) // Shorthand for http://localhost:5001/envInfo.json
       .then(res => res.json()) // Result becomes a json
       .then(result => 
       { let new_ref = result;
@@ -72,7 +72,7 @@ class App extends React.Component{
 
     // Get the rendered image
     const image = new Image();
-    image.src = 'http://0.0.0.0:5001/renderedScene';
+    image.src = 'http://localhost:5001/renderedScene';
 
     this.setState({
       rendered_img: image,

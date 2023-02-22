@@ -8,7 +8,7 @@ class RenderedScene extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      src: "http://0.0.0.0:5001/renderedScene",
+      src: "http://localhost:5001/renderedScene",
       key: Date.now(),
     };
 
@@ -18,14 +18,14 @@ class RenderedScene extends React.Component {
 
   tick() {
     this.setState({
-      src: "http://0.0.0.0:5001/renderedScene",
+      src: "http://localhost:5001/renderedScene",
       key: Date.now(),
     }) 
   }
 
   error_tick() {
     this.setState({
-      src: "http://0.0.0.0:5001/renderedScene",
+      src: "http://localhost:5001/renderedScene",
       key: Date.now(),
     });
   }
@@ -43,7 +43,7 @@ class RenderedScene extends React.Component {
               float: 'left',
               height: '450px',
               width: '600px',
-              backgroundImage: "url('http://0.0.0.0:5001/mapImageBackground')",
+              backgroundImage: "url('http://localhost:5001/mapImageBackground')",
               backgroundSize: "cover",
               background: "gray15",
             }}>

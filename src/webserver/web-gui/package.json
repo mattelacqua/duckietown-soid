@@ -2,7 +2,7 @@
   "name": "web-gui",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://0.0.0.0:5001/",
+  "proxy": "http://localhost:5001/",
   "dependencies": {
     "@fseehawer/react-circular-slider": "^2.5.9",
     "@testing-library/jest-dom": "^5.16.4",
