@@ -809,7 +809,7 @@ def generate_soid_query(query_info):
     # Res is the result
     # Models is empty or models[0] is the model
     # resources is the timing of the query
-    return res, models, resources
+    return res, models, resources, paths
 
 
 if __name__ == '__main__':

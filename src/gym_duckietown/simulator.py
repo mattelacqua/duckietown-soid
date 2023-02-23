@@ -255,7 +255,7 @@ class Simulator(gym.Env):
         num_agents: int = DEFAULT_NUM_AGENTS,
         num_random_agents: int = 0,
         max_agents: int = 0,
-        verbose: bool = False 
+        verbose: bool = False,
     ):
         """
 
@@ -297,7 +297,10 @@ class Simulator(gym.Env):
             nvidia_around=os.path.exists("/proc/driver/nvidia/version"),
         )
 
-        # first initialize the RNG
+        # Placeholder for soid result
+        self.soid_result = {}
+
+        # first initialize the RN
         self.seed_value = seed
         self.seed(seed=self.seed_value)
         self.num_tris_distractors = num_tris_distractors

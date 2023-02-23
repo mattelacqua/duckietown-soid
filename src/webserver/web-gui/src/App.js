@@ -113,6 +113,7 @@ class App extends React.Component{
               <CounterfactualMenu agents={this.state.env_info.agents} 
                                   socket={this.state.socket}
                                   sim_state={this.state.sim_state}
+                                  env_info={this.state.env_info}
                                   update_from_sim={this.update_from_sim}
               />
             </div>

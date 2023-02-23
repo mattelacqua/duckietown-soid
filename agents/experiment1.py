@@ -151,9 +151,9 @@ def pause(dt):
         # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
         if gui_input:
             gui_input = gui_input[-1]
-            env.state, input_return = gu.handle_input(env, gui_input)
+            state = gu.handle_input(env, gui_input)
             gu.init_server(0, out, env, socket)
-            if env.state == "quit":
+            if state == "quit":
                 print("Killing Webserver")
                 gu.init_server(0, out, env, socket, get_map=False) # Init to send the dead signal to 
                 time.sleep(2)
@@ -161,10 +161,12 @@ def pause(dt):
                 print("Killing Simulator")
                 socket.disconnect()
                 exit()
-            elif env.state == "run":
+            elif state == "run":
                 print("Resuming Simulation")
-            elif env.state == "query_result":
-                print(input_return)
+            elif state == "soid":
+                print("GOT SOID RESULT AS")
+                print(env.soid_result)
+                gu.init_server(0, out, env, socket)
                 env.state = 'pause'
 
         # Render any changes from last thing serialized
@@ -189,7 +191,7 @@ def update(dt):
 
     if gui_input:
         gui_input = gui_input[-1]
-        state, query_ret  = gu.handle_input(env, gui_input)
+        state  = gu.handle_input(env, gui_input)
         if state == "quit":
             print("Killing Webserver")
             webserver.kill()

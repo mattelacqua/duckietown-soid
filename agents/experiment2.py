@@ -79,7 +79,7 @@ learn_agent.reward_profile = args.reward_profile
 env_agent.agent_id = "agent1"
 env_agent.index = 1
 env_agent.forward_step = 0.44
-env_agent.turn_choice = 'Right' 
+env_agent.turn_choice = 'Straight' 
 env_agent.signal_choice = 'Straight' 
 env_agent.curve = env_agent.get_curve(env)
 
@@ -151,9 +151,9 @@ def pause(dt):
         # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
         if gui_input:
             gui_input = gui_input[-1]
-            env.state, input_return = gu.handle_input(env, gui_input)
+            state = gu.handle_input(env, gui_input)
             gu.init_server(0, out, env, socket)
-            if env.state == "quit":
+            if state == "quit":
                 print("Killing Webserver")
                 gu.init_server(0, out, env, socket, get_map=False) # Init to send the dead signal to 
                 time.sleep(2)
@@ -163,9 +163,10 @@ def pause(dt):
                 exit()
             elif env.state == "run":
                 print("Resuming Simulation")
-            elif env.state == "query_result":
-                print(input_return)
-                env.state = 'pause'
+            elif state == "soid":
+                gu.init_server(0, out, env, socket)
+                print("INIT SERVER w/ ")
+                print(env.soid_result)
 
         # Render any changes from last thing serialized
         env.render(mode=args.cam_mode)
@@ -189,7 +190,7 @@ def update(dt):
 
     if gui_input:
         gui_input = gui_input[-1]
-        state, query_ret  = gu.handle_input(env, gui_input)
+        state  = gu.handle_input(env, gui_input)
         if state == "quit":
             print("Killing Webserver")
             webserver.kill()
@@ -217,7 +218,10 @@ def update(dt):
             else:
                 agent.proceed(env,good_agent=True)
 
-    env.step(learning=True)
+    if env.agents[0].done:
+        env.reset()
+    else:
+        env.step(learning=True)
 
     # Log the info
     #print(f"Logging Step {env.agents[0].step_count}")

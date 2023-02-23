@@ -90,7 +90,8 @@ class Queries extends React.Component {
               <button className='stop_factual' onClick={()=>this.handleClick("stop_factual")}>Will Agent 0 always stop?</button>
               <button className='stop_existential' onClick={()=>this.handleClick("stop_existential")}>Is there a scenario where Agent 0 stops?</button>
         </div>
-        <p> SOID OUTPUT HERE !</p>
+        <p> SOID RESULT:</p>
+        <p> {JSON.stringify(this.props.env_info.soid_result, null, 2)} </p>
       </div>
       );
     }

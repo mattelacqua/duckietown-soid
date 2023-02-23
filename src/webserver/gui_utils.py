@@ -18,7 +18,7 @@ def handle_input(env, gui_input):
     if gui_input['kind'] == 'state':
         state = gui_input['state']
         env.state = state
-        return state, None
+        return state
 
 
     if gui_input['kind'] == 'change':
@@ -123,18 +123,23 @@ def handle_input(env, gui_input):
         print(json.dumps(query_blob, indent=2))
 
         klee_file = cf.generate_klee_file(query_blob)
+
         #soid_result = sq.invoke_soid(query_blob, klee_file)
+        soid_result = {
+            'res': True,
+            'model': "NONSENSE",
+            'resources': 123123,
+            'paths': 999}
 
-
-        #env.state = 'query_result'
+        env.soid_result = soid_result
+        
+        # Actually set to pause but return soid
         env.state = 'pause'
-        soid_result = None
-        return env.state, soid_result
-
+        return 'soid'
 
 
     env.c_info_struct = agents.EnvironmentInfo(env)
-    return env.state, None
+    return env.state
 
 
 
@@ -192,6 +197,9 @@ def init_server(dt, fifo, env, socket, get_map=False):
 def env_info_dict(env):
     c_info_struct = env.c_info_struct
     env_info = {}
+    # For soid result
+    env_info['soid_result'] = env.soid_result
+
     env_info['intersection_x'] = int(c_info_struct.intersection_x)
     env_info['intersection_z'] = int(c_info_struct.intersection_z)
     env_info['robot_length'] = float(round(c_info_struct.robot_length, 3))

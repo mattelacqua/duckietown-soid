@@ -32,6 +32,8 @@ class CounterfactualMenu extends React.Component {
 
         { /* Buttons for the output */}
         <Queries  socket={this.props.socket} 
+                  update_from_sim={this.props.update_from_sim}
+                  env_info={this.props.env_info}
           />
 
         { /* Map the adding counterfactuals for each agent and the list of their stuff */}
