@@ -11,7 +11,7 @@ import signal
 import time
 from learn_types import QTable
 from webserver import counterfactual as cf
-#from webserver import soid_query as sq
+from webserver import soid_query as sq
 
 def handle_input(env, gui_input):
     # If its a state update
@@ -124,12 +124,7 @@ def handle_input(env, gui_input):
 
         klee_file = cf.generate_klee_file(query_blob)
 
-        #soid_result = sq.invoke_soid(query_blob, klee_file)
-        soid_result = {
-            'res': True,
-            'model': "NONSENSE",
-            'resources': 123123,
-            'paths': 999}
+        soid_result = sq.invoke_soid(query_blob)
 
         env.soid_result = soid_result
         

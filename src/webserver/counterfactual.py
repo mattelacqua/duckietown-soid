@@ -181,9 +181,9 @@ def get_query_blob(env, query_info):
 
 # Generate the klee file
 def generate_klee_file(query_blob):
-    #soidp = os.getenv('SOID_PATH')
-    #if not soidp:
-    #    raise Exception('Unable to find soid to generate KLEE file')
+    soidp = os.getenv('SOID_PATH')
+    if not soidp:
+        raise Exception('Unable to find soid to generate KLEE file')
 
     """
     This function will generate the klee file used by soid.
@@ -197,7 +197,7 @@ def generate_klee_file(query_blob):
     # Imports
     klee_file.write("#include <string.h>\n")
     klee_file.write("#include \"../../../gym_duckietown/decision_logic/decision_logic.h\"\n\n")
-    #klee_file.write(f'#include \"{soidp}/soid/soidlib/soidlib.h\"\n')
+    klee_file.write(f'#include \"{soidp}/soid/soidlib/soidlib.h\"\n')
     klee_file.write("int main(int argc, char **argv) {\n")
 
     environment = query["environment"]
@@ -622,9 +622,9 @@ def generate_klee_file(query_blob):
     #makefile
     makefile = open((klee_prefix + "makefile"),'w', encoding="utf-8")
 
-    #makefile.write(f'cc={soidp}/llvm-project/release/bin/clang -std=c99\n')
-    #makefile.write(f'opt={soidp}/llvm-project/release/bin/opt\n')
-    #makefile.write(f'link={soidp}/llvm-project/release/bin/llvm-link\n')
+    makefile.write(f'cc={soidp}/deps/llvm-project/release/bin/clang -std=c99\n')
+    makefile.write(f'opt={soidp}/deps/llvm-project/release/bin/opt\n')
+    makefile.write(f'link={soidp}/deps/llvm-project/release/bin/llvm-link\n')
 
     # Inbetween files
     makefile.write("BC1=./inter1.bc\n\n")
@@ -633,11 +633,11 @@ def generate_klee_file(query_blob):
     makefile.write("BC=./inter.bc\n\n")
 
     # Paths
-    #makefile.write(f'KLEE={soidp}/klee-float/include/klee\n')
-    #makefile.write(f'KEXEC={soidp}/klee-float/build/bin/klee\n')
-    #makefile.write(f'PRE-LIB-KLEE=-L {soidp}/klee-float/build/lib/\n')
-    #makefile.write("POST-LIB-KLEE=-lkleeRuntest\n\n")
-    #makefile.write(f'SOIDLIB={soidp}/soid/soidlib\n\n')
+    makefile.write(f'KLEE={soidp}/deps/klee-float/include/klee\n')
+    makefile.write(f'KEXEC={soidp}/deps/klee-float/build/bin/klee\n')
+    makefile.write(f'PRE-LIB-KLEE=-L {soidp}/deps/klee-float/build/lib/\n')
+    makefile.write("POST-LIB-KLEE=-lkleeRuntest\n\n")
+    makefile.write(f'SOIDLIB={soidp}/soid/soidlib\n\n')
     makefile.write("symbolic:\n")
 
     # Compile types.c

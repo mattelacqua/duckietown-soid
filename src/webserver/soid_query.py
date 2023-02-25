@@ -1,5 +1,5 @@
 import sys
-import soid 
+import soid
 from soid.soidlib import *
 import json
 # Generate the soid query
@@ -10,7 +10,7 @@ def get_dl_direction(direction):
         return 1
     if direction == 'Right':
         return 2
-def generate_soid_query(query_info):
+def generate_soid_query(query_blob):
     """
     generate the soid query
 
@@ -35,8 +35,8 @@ def generate_soid_query(query_info):
 
     # For each of the agents, lets preprocess for easier lambda stuff later
     for i in range(int(q_environment['num_agents'])):
-        
-        
+
+
         # If we are on the first agent, who is the agent who's perspective matters
         agent = agents[f'agent{i}']
         if i == 0:
@@ -106,7 +106,7 @@ def generate_soid_query(query_info):
                     'is_val': True,
                     'val_type': 'signal_choice',
                     'val': agent["concrete"]["signal_choice"],
-                })           
+                })
 
             if agent["concrete"]["turn_choice"]:
                 t_state.append({
@@ -117,9 +117,9 @@ def generate_soid_query(query_info):
                     'is_val': True,
                     'val_type': 'turn_choice',
                     'val': agent["concrete"]["turn_choice"],
-                })           
+                })
 
-            # Add given state information to agent 0 state 
+            # Add given state information to agent 0 state
 
             # lookahead
             t_state.append({
@@ -150,7 +150,7 @@ def generate_soid_query(query_info):
                 'is_val': True,
                 'val_type': 'intersection_arrival',
                 'val': agent['state']['intersection_arrival'],
-            })            
+            })
             # patience
             t_state.append({
                 'id': agent['concrete']['id'],
@@ -160,7 +160,7 @@ def generate_soid_query(query_info):
                 'is_val': True,
                 'val_type': 'patience',
                 'val': agent['state']['patience'],
-            })            
+            })
             # step_count
             t_state.append({
                 'id': agent['concrete']['id'],
@@ -170,7 +170,7 @@ def generate_soid_query(query_info):
                 'is_val': True,
                 'val_type': 'step_count',
                 'val': agent['state']['step_count'],
-            })         
+            })
 
 
             # Environmental counterfactuals
@@ -216,7 +216,7 @@ def generate_soid_query(query_info):
                     'is_val': False,
                     'val_type': '',
                     'val': None,
-                })          
+                })
 
             # State counterfactuals
             for counterfactual in agent['symbolic']['list_forward_step']:
@@ -228,7 +228,7 @@ def generate_soid_query(query_info):
                     'is_val': False,
                     'val_type': '',
                     'val': None,
-                })          
+                })
 
             for counterfactual in agent['symbolic']['list_turn_choice']:
                 t_state.append({
@@ -239,7 +239,7 @@ def generate_soid_query(query_info):
                     'is_val': False,
                     'val_type': '',
                     'val': None,
-                })          
+                })
 
             for counterfactual in agent['symbolic']['list_signal_choice']:
                 t_state.append({
@@ -250,7 +250,7 @@ def generate_soid_query(query_info):
                     'is_val': False,
                     'val_type': '',
                     'val': None,
-                })          
+                })
 
 
 
@@ -363,7 +363,7 @@ def generate_soid_query(query_info):
                 'is_val': True,
                 'val_type': 'intersection_arrival',
                 'val': agent['state']['intersection_arrival'],
-            })            
+            })
             # patience
             t_environment.append({
                 'id': agent['concrete']['id'],
@@ -373,7 +373,7 @@ def generate_soid_query(query_info):
                 'is_val': True,
                 'val_type': 'patience',
                 'val': agent['state']['patience'],
-            })            
+            })
             # step_count
             t_environment.append({
                 'id': agent['concrete']['id'],
@@ -428,7 +428,7 @@ def generate_soid_query(query_info):
                     'is_val': False,
                     'val_type': '',
                     'val': None,
-                })          
+                })
 
             for counterfactual in agent['symbolic']['list_forward_step']:
                 t_environment.append({
@@ -439,7 +439,7 @@ def generate_soid_query(query_info):
                     'is_val': False,
                     'val_type': '',
                     'val': None,
-                })          
+                })
 
             for counterfactual in agent['symbolic']['list_turn_choice']:
                 t_environment.append({
@@ -450,7 +450,7 @@ def generate_soid_query(query_info):
                     'is_val': False,
                     'val_type': '',
                     'val': None,
-                })          
+                })
 
             for counterfactual in agent['symbolic']['list_signal_choice']:
                 t_environment.append({
@@ -461,7 +461,7 @@ def generate_soid_query(query_info):
                     'is_val': False,
                     'val_type': '',
                     'val': None,
-                })          
+                })
 
 
 
@@ -512,7 +512,7 @@ def generate_soid_query(query_info):
                     E[f'agent{a_id}_patience'] = soid.soidlib.types.int_bv(f'agent{a_id}_patience', pp=None, raw=None)
                 if val_type == 'step_count':
                     E[f'agent{a_id}_step_count'] = soid.soidlib.types.int_bv(f'agent{a_id}_step_count', pp=None, raw=None)
-        
+
         # declare state
         S = {}
         for tagged_cf in t_state:
@@ -559,11 +559,11 @@ def generate_soid_query(query_info):
                     S[f'agent{a_id}_patience'] = soid.soidlib.types.int_bv(f'agent{a_id}_patience', pp=None, raw=None)
                 if val_type == 'step_count':
                     S[f'agent{a_id}_step_count'] = soid.soidlib.types.int_bv(f'agent{a_id}_step_count', pp=None, raw=None)
-        
+
         # declare behaviors
         D = {}
         D[f'will_proceed'] = soid.soidlib.types.bool_bv(f'will_proceed', pp=None, raw=None)
-        
+
         return E,S, D
 
     # Register declare
@@ -606,23 +606,23 @@ def generate_soid_query(query_info):
                 high_bound = counterfactual['range']['high_bound']
                 turn_choices = counterfactual['range']['turn_choices']
                 if counterfactual['is_pos_x']:
-                    return  And( 
+                    return  And(
                             FP_GTE(declare_type[f"agent{tagged_cf['id']}_pos_x"], float(low_bound)),
                             FP_LTE(declare_type[f"agent{tagged_cf['id']}_pos_x"], float(high_bound)))
                 if counterfactual['is_pos_z']:
-                    return  And( 
+                    return  And(
                             FP_GTE(declare_type[f"agent{tagged_cf['id']}_pos_z"], float(low_bound)),
                             FP_LTE(declare_type[f"agent{tagged_cf['id']}_pos_z"], float(high_bound)))
                 if counterfactual['is_angle']:
-                    return  And( 
+                    return  And(
                             FP_GTE(declare_type[f"agent{tagged_cf['id']}_angle"], float(low_bound)),
                             FP_LTE(declare_type[f"agent{tagged_cf['id']}_angle"], float(high_bound)))
                 if counterfactual['is_speed']:
-                    return  And( 
+                    return  And(
                             FP_GTE(declare_type[f"agent{tagged_cf['id']}_speed"], float(low_bound)),
                             FP_LTE(declare_type[f"agent{tagged_cf['id']}_speed"], float(high_bound)))
                 if counterfactual['is_forward_step']:
-                    return  And( 
+                    return  And(
                             FP_GTE(declare_type[f"agent{tagged_cf['id']}_forward_step"], float(low_bound)),
                             FP_LTE(declare_type[f"agent{tagged_cf['id']}_forward_step"], float(high_bound)))
                 if counterfactual['is_turnchoice']:
@@ -773,7 +773,7 @@ def generate_soid_query(query_info):
                 formula = And (
                     sub_formula,
                     formula)
-            
+
         #print("formula:", formula)
         return formula
 
@@ -786,15 +786,15 @@ def generate_soid_query(query_info):
     query.state(state)
 
     def behavior(E, S, P ):
-        if query_info['query']['behavior'] == 'move':
+        if query_blob['query']['behavior'] == 'move':
             return Equal(P.will_proceed, True) # This will tell us if we ever move
-        elif query_info['query']['behavior'] == 'stop':
+        elif query_blob['query']['behavior'] == 'stop':
             return Equal(P.will_proceed, False) # This will tell us if we ever move
     query.behavior(behavior)
 
     # invoke soid
     print(f"Soid Results:")
-    (info, res, models, resources ) = soid.invoke(oracle, make, query)
+    (info, res, models, resources) = soid.invoke(oracle, make, query)
     print(f"Result: {res} Resources: {resources}")
     model_prefix = "src/webserver/soid_files/klee/models/"
     # open klee file
@@ -809,10 +809,14 @@ def generate_soid_query(query_info):
     # Res is the result
     # Models is empty or models[0] is the model
     # resources is the timing of the query
-    return res, models, resources, paths
+    return res, models, resources
+
+
+def invoke_soid(query_blob):
+    return generate_soid_query(query_blob)
 
 
 if __name__ == '__main__':
     query_prefix = 'src/webserver/soid_files/query_blobs/experiments/'
     query_blob = json.load(open(query_prefix + sys.argv[1]))
-    result, models, resources = generate_soid_query(query_blob)
+    invoke_soid(query_blob)
