@@ -3,7 +3,7 @@
 
 - [Gym-Duckietown (Edited for ROSE Soid Project)](#gym-duckietown-edited-for-rose-soid-project)
 - [Table of contents](#table-of-contents)
-  - [Introduction ](#introduction-)
+  - [Base Environment Information ](#base-environment-information-)
   - [Soid Project for ROSE Lab ](#soid-project-for-rose-lab-)
   - [Installation ](#installation-)
     - [Installation Using Conda \& Pip ](#installation-using-conda--pip-)
@@ -22,6 +22,7 @@
       - [Flask ](#flask-)
       - [Pipes ](#pipes-)
   - [Troubleshooting ](#troubleshooting-)
+  - [General Pipeline of information Flow](#general-pipeline-of-information-flow)
 
 <details>
   <summary> **Original Project Citation Information** </summary>
@@ -51,7 +52,7 @@ Welcome to <b>Duckietown</b>!
 </h2>
 </details>
 
-## Introduction <a name="introduction"></a>
+## Base Environment Information <a name="introduction"></a>
 
 Gym-Duckietown is a simulator for the [Duckietown](https://duckietown.org) Universe, written in pure Python/OpenGL (Pyglet). It places your agent, a Duckiebot, inside of an instance of a Duckietown: a loop of roads with turns, intersections, obstacles, Duckie pedestrians, and other Duckiebots. It can be a pretty hectic place!
 
@@ -106,15 +107,17 @@ Duckiebot-v0
 The `Duckietown` project has been modified extensively to be used as a demonstration of the Soid tool's efficacy. Changes from the original repository include:
 
 - Agent Structure Change
-- Map Format Changes (multi-agent support)
+- Map Format Changes (legacy multi-agent support / simplifications)
 - Simulator Changes (multi-agent support)
-- Movement Path Following for Agents
-- GUI (currently in development)
+- Movement Path Following for Environmental Agents
+- GUI 
 - Callouts to C binarys for decision logic
 
-Because of this, some of the information in this README may be out of date, or slightly incorrect. Submit issues to repository or ping me (Matt) on Slack / email (matt.elacqua@yale.edu) with any questions.
+Because of this, some of the information in this README may be out of date, or slightly incorrect. Submit issues to repository or ping me (Matt) on Slack / email (matt.elacqua@yale.edu / elacqua.matt@gmail.com) with any questions.
 
 ## Installation <a name="installation"></a>
+
+***NOTE***: This is for a local installation of the enviornment / GUI framework. To use the entire SOID tool along with the GUI tool, see Samuel Judson's [soid repository](https://gitlab.com/rose-yale/soid). There includes the docker setup for both soid and soid-gui.
 
 Requirements:
 - Python 3.9
@@ -204,7 +207,14 @@ An example to test and make sure everything is running correctly can be done wit
 python agents/example.py configs/example.ini
 ```
 
-This will run the example, which demonstrates agents moving in the environment and how they do that. I suggest following the functions to get an idea of how everything comes together. To change the number of agents, in the [config file](configs/example.ini), change the NUM_RANDOM_AGENTS setting.
+This will run the example, which demonstrates agents moving in the environment. To get an idea of how the agent file invokes the simulator and agents, you can follow the function calls to the agent API. 
+
+In the [config file](configs/example.ini) there are many settings that you can adjust such as:
+  
+  + Number of agents
+  + Reinforcement Learning parameters
+  + File destinations
+  + Randomization / Input datapaths
 
 ### Agents <a name="agents_basic"></a>
 
@@ -238,7 +248,7 @@ This can be done using several different methods in the Agent class, and several
 
 Each agent is then stepped using env.step(), updating the physics of the environment, and then env.render() must be called to render the changes in the pyglet display.
 
-If using any sort of intersection, object, or other agent detection, we must do checks before stepping, so that we can adjust each agent's action stack accordingly. 
+If using any sort of intersection, object, or other agent detection, we do various safety checks before stepping, so that we can adjust each agent's action stack accordingly. 
 
 The code for the Agent class can be found at (/src/gymduckietown/agents.py), and the functions for movement, decision logic, etc. can all be found at (/src/gymduckietown/agent)
 
@@ -275,6 +285,8 @@ Then, to visualize the results of training, you can edit the [config file](confi
 ## Design <a name="design"></a>
 
 ### Map File Format <a name="map_format"></a>
+
+***NOTE*** For our purposes, the [reinforcement_learning](maps/reinforcement_learning.yaml) suffices and as of March 9, 2023, all other maps have been removed from the repo. Please look to a commit prior to this date to see the old format of maps, or to the base duckietown repository.
 
 The simulator supports a YAML-based file format which is designed to be easy to hand edit. See the [maps subdirectory](/maps) for examples. Each map file has two main sections: a two-dimensional array of tiles, and a listing of objects to be placed around the map. The tiles are based on basic road structures and each have curve points associated with ideal positioning of agents on them. 
 
@@ -318,19 +330,21 @@ agents:
     
 Also, keep in mind that multiagent support is available.
 
-For our purposes, the [reinforcement_learning](maps/reinforcement_learning.yaml) suffices. 
+
 
 ## Web-Gui (Using Flask and Pipes) <a name="webgui"></a>
-
+<img src="media/gui.png">
 ### Overview <a name="webgui_overview"></a>
-The GUI we are using is based off of HTML, Javascript, and is webserver based. We are using the python Flask library to start a basic localhost webserver at [127.0.0.1:5000](http://127.0.0.1:5000/). 
+The GUI Stack we are using consists of Flask/Python backend with a React.js frontend.
+
+ We are using the python Flask library to start a basic localhost webserver at [127.0.0.1:5000](http://127.0.0.1:5000/). 
 The pipeline is as follows:
 
 1. Startup [Flask Server](webserver/server.py) 
 ```
 python3 webserver/server.py
 ```
-(You can spin off a subproccess with it using subprocess.Popen, example in [gui_test.py](agents/gui_test))
+(You can spin off a subproccess with it using subprocess.Popen, example in [experiment1.py](agents/experiment1.py), or you can invoke the `start_webserver()` function in [gui_utils.py](src/webserver/gui_utils.py))
 
 2. Startup [Node Server](webserver/web-gui/) in another terminal
 
@@ -345,19 +359,18 @@ Start the Node js server
 ```
 npm start
 ```
+(Or you can invoke the `start_node()` function in [gui_utils.py](src/webserver/gui_utils.py))
 
 3. Run your agent program.
 ```
 python3 agents/gui_test.py configs/config.ini
 ```
 
-What happens here is the webserver will begin and read the initial layout of the 
-simulated scene. The user will load the information in, and once it begins to render, the web-gui will updated. 
+The webserver will begin and read the initial layout of the simulated scene. The user will load the information in, and once it begins to render, the web-gui will updated. 
 
 The user has several options. Pause, Restart, and Quit. 
 
 While the scene is paused, the user can interact with the gui which uses JS/sockets to communicate to webserver.py, which will write information to a [pipe in the webserver directory](webserver/webserver.out). The agent program will then read from this file during the pause cycle for [this example](agents/gui_test). Finally, the user will click the resume simulation button to resume the agent's decision code at that point.
-
 
 ### Front End <a name="front_end"></a>
 The front end development is done using React. I highly recommend the [react tutorial](https://reactjs.org/tutorial/tutorial.html) if you are not familiar with it.
@@ -378,9 +391,11 @@ We are using FIFO pipe text files for communication between the webserver and si
 
 The [webserver.out](webserver.out) pipe is used for any information recieved on the webserver that we would like to write and give to the simulator. The [webserver.in](webserver.in) is used for interprocess communication in the other direction, Simulator -> Webserver.
 
-We are using the Pickle library to serialize and unserialize several different sorts of gui input (each of these object classes can be found in [gui_utils.py](src/gym_duckietown/gui_utils.py).
+We are using the Pickle/JSON libraries to serialize and unserialize several different sorts of gui input (each of these object classes can be found in [gui_utils.py](src/gym_duckietown/gui_utils.py).
 
 ## Troubleshooting <a name="troubleshooting"></a>
+***NOTE** In Samuel Judson's [soid repository](https://gitlab.com/rose-yale/soid) there are patches for these issues should you run into them.
+
 
 If you run into problems of any kind, don't hesitate to [open an issue](https://github.com/mattelacqua/duckietown-soid/issues) on this repository. It's quite possible that you've run into some bug we aren't aware of. Please make sure to give some details about your system configuration (ie: PC or Max, operating system), and to paste the command you used to run the simulator, as well as the complete error message that was produced, if any.
 
@@ -462,3 +477,6 @@ If you run into problems of any kind, don't hesitate to [open an issue](https://
     return combine_pieces(M, linear, linear * 0, 0)
   ```
 </details>
+
+## General Pipeline of information Flow
+<img src="media/gui-pipeline.png">

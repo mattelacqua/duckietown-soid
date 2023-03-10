@@ -2,8 +2,8 @@ import sys
 import os
 import json
 from ctypes import *
-#from gym_duckietown.dl_utils import *
 
+# Get the turn choice in decision logic values
 def get_dl_turn_choice(choice):
     print(f"Printing choice {choice}")
     if choice == "Straight":
@@ -14,6 +14,7 @@ def get_dl_turn_choice(choice):
         return "RIGHT"
     return choice
 
+# Get the direction in decision logic values
 def get_dl_direction(direction):
     if direction == 'N':
         return 'NORTH'
@@ -28,6 +29,7 @@ def get_dl_direction(direction):
 # get the query blob from the query info
 def get_query_blob(env, query_info):
 
+    # Parse the model for each agent
     def get_model(q_table):
         c_q_table = []
         if q_table:
@@ -40,6 +42,7 @@ def get_query_blob(env, query_info):
 
         return c_q_table
 
+    # Parse the environment
     def get_environment(query_info):
         print(query_info)
         env_info = query_info['env_info']
@@ -56,9 +59,12 @@ def get_query_blob(env, query_info):
         }
         return environment
 
+    # Parse the information for each agent
     def get_agents(query_info):
+        # For each agent
         def get_agent(agent_info):
 
+            # See if the value has a symbolic counterpart
             def has_symbolic(counterfactuals, kind):
                 for counterfactual in counterfactuals:
                     if counterfactual[kind]:
@@ -66,6 +72,7 @@ def get_query_blob(env, query_info):
 
                 return False
 
+            # Sorth the symbolic counterfactuals given
             def sort_symbolics(counterfactuals):
                 symbolics = {}
                 symbolics['list_pos_x'] = []
@@ -97,6 +104,7 @@ def get_query_blob(env, query_info):
             for counterfactual in agent_info['counterfactuals']:
                 symbolics.append(counterfactual)
 
+            # Set the concrete, symbolic, and state values for the agent
             agent = {
                 'concrete' : {
                     'id': agent_info['id'],
@@ -137,8 +145,8 @@ def get_query_blob(env, query_info):
 
         return agents
 
+    # Get the log from the webserver in the right format
     def get_log(query_info):
-        print(query_info['env_info']['agents'])
         agents_info = query_info['env_info']['agents'][0]['log']['agents']
         agents = {}
         for index, agent_info in list(enumerate(agents_info)):
@@ -156,7 +164,7 @@ def get_query_blob(env, query_info):
             agents[f'agent{agents_info[index]}']['step_count'] = agent_info['step_count']
         return agents
 
-
+    # Get a query
     def get_query(query_info):
         query = {
             'is_factual': query_info['query']['is_factual'] ,
@@ -165,7 +173,7 @@ def get_query_blob(env, query_info):
         }
         return query
 
-    # Print the json we are working with
+    # Print the json we are working with out to the general query blob file
     environment = get_environment(query_info)
     agents = get_agents(query_info)
     query = get_query(query_info)
@@ -211,10 +219,6 @@ def generate_klee_file(query_blob):
 
     # init env_info
     klee_file.write("    EnvironmentInfo info;\n")
-
-    # Klee opent merge
-    #klee_file.write("    klee_open_merge();\n")
-
 
     # Handle env information
     klee_file.write("\n    // Environment Information:\n")
@@ -592,13 +596,7 @@ def generate_klee_file(query_blob):
         klee_file.write(f"    agent{i}_state_is_tailgating = is_tailgating(&info, {i});\n")
         klee_file.write(f'    memmove( &info.agents[{i}].state.is_tailgating, &agent{i}_state_is_tailgating, sizeof(bool)); // Memcopy symb -> struct\n\n')
 
-
-
-
-    #klee_file.write(f'    // Klee Close Merge();\n')
-    #klee_file.write(f'    klee_close_merge();\n')
-
-    # handle the q table nd proceed model ONLY FOR AGENT 0
+    # handle the q table and proceed model ONLY FOR AGENT 0
     agent = agents['agent0']
 
 

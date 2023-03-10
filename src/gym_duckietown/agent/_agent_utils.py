@@ -38,6 +38,7 @@ def get_info(self, env) -> dict:
 
 
 
+# Get the curve points on the bezier path to follow for a given decision
 def get_curve(self, env, straight=False, follow_pos=None):
     """ South:
     Left [0]
