@@ -1,3 +1,8 @@
+# Systems
+import os
+import random
+import sys
+
 # Types
 import itertools
 from collections import namedtuple
@@ -10,10 +15,6 @@ else:
 
 from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Union
 
-# Systems
-import os
-import random
-import sys
 
 
 # Math

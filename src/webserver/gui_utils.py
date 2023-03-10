@@ -9,7 +9,7 @@ import signal
 import time
 from learn_types import QTable
 from webserver import counterfactual as cf
-from webserver import soid_query as sq
+#from webserver import soid_query as sq
 
 # Handle the GUI input for each respective state. These come from server.py -> pipe -> agent_file.py -> here
 def handle_input(env, gui_input):
@@ -128,12 +128,12 @@ def handle_input(env, gui_input):
         print(json.dumps(query_blob, indent=2))
 
         # Generate the klee file
-        klee_file = cf.generate_klee_file(query_blob)
+        #klee_file = cf.generate_klee_file(query_blob)
 
         # Invoke soid to generate the soid query over the blob
-        soid_result = sq.invoke_soid(query_blob)
+        #soid_result = sq.invoke_soid(query_blob)
 
-        env.soid_result = soid_result
+        #env.soid_result = soid_result
         
         # Actually set to pause but return soid
         env.state = 'pause'
