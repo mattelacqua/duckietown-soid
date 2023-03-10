@@ -2,7 +2,6 @@ from ..dl_utils import *
 from learn_types import *
 import numpy as np
 from ..agents import dl
-import time
 
 #--------------------------
 # Decision Logic
@@ -12,12 +11,6 @@ import time
 # Have an agent proceed, using a model, unless it is a naturally good agent
 def proceed(self, env, good_agent=False, use_model=False, model=None, state=None):
 
-    # TEST FOR THE C DECISION LOGIC THAT EVERYTHING IS NICE!    
-    #dl.print_all.argtypes = [POINTER(EnvironmentInfo)]
-    #dl.print_all.restype = c_void_p
-
-    # Preprocess relevant information
-    #dl.print_all(env.c_info_struct)
     # If we are good we want to avoid tailgating
     if good_agent:
         dl.proceed_good_agent.argtypes = [POINTER(EnvironmentInfo), c_int]
@@ -53,9 +46,11 @@ def handle_proceed(self, env, should_proceed):
         if not self.actions or (self.actions[0][1] != Action.INTERSECTION_STOP and self.actions[0][1] != Action.STOP):
             action = np.array([0.0, 0.0])
             self.actions = [(action, Action.STOP)] + no_intersection_stop_actions
-            # Turn on break lights
+
+        # Turn on break lights
         self.turn_on_light('back_right')
         self.turn_on_light('back_left')
+        
         if self.actions:
             if self.actions[0][1] == Action.INTERSECTION_FORWARD or \
                self.states['in_intersection'] or self.states['at_intersection_entry']:
@@ -93,19 +88,6 @@ def handle_proceed(self, env, should_proceed):
                 self.turn_off_all_lights()
                 if self.states['in_intersection'] or self.states['at_intersection_entry']:
                     self.signal_for_turn(self.signal_choice)
-
-            #if self.states['in_intersection']:
-            #    self.intersection_arrival = -1
-
-            """
-            prev_tile_x, prev_tile_z = env.get_grid_coords(self.prev_pos)
-            tile_x, tile_z = env.get_grid_coords(self.prev_pos)
-            prev_tile = env._get_tile(prev_tile_x, prev_tile_z)
-            cur_tile = env._get_tile(tile_x, tile_z)
-            if prev_tile and cur_tile:
-                if prev_tile['kind'] == '4way' and cur_tile['kind'] != '4way':
-                    self.intersection_arrival = -1
-            """
 
         if not self.actions:
             self.actions = [()]

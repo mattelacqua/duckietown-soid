@@ -1,7 +1,5 @@
-from gym_duckietown import agents, simulator, objects, logger, dl_utils
+from gym_duckietown import agents,  dl_utils
 from gym_duckietown.utils import read_model
-from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Union
-import numpy as np
 import math
 import pickle
 import json
@@ -13,6 +11,7 @@ from learn_types import QTable
 from webserver import counterfactual as cf
 from webserver import soid_query as sq
 
+# Handle the GUI input for each respective state. These come from server.py -> pipe -> agent_file.py -> here
 def handle_input(env, gui_input):
     # If its a state update
     if gui_input['kind'] == 'state':
@@ -20,7 +19,7 @@ def handle_input(env, gui_input):
         env.state = state
         return state
 
-
+    # If there is a change from the RHS of GUI
     if gui_input['kind'] == 'change':
         change = gui_input['change']
         agent = env.agents[int(gui_input['agent_id'])]
@@ -42,7 +41,6 @@ def handle_input(env, gui_input):
                 agent.initial_direction = 'E'
             elif gui_input['initial_direction'] == '3':
                 agent.initial_direction = 'W'
-
         elif change == "intersection_arrival":
             agent.intersection_arrival = gui_input['intersection_arrival']
         elif change == "model_choice":
@@ -61,6 +59,8 @@ def handle_input(env, gui_input):
             elif gui_input['choice'] == 'pathological':
                 agent.good_agent = False
                 agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/pathological/10k_train'))
+    
+    # If adding an agent
     if gui_input['kind'] == 'add_agent':
         new_agent = agents.Agent(env, agent_id=("agent"+str(len(env.agents))), random_spawn=True)
         directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
@@ -68,6 +68,7 @@ def handle_input(env, gui_input):
         env.agents.append(new_agent)
         env.spawn_random_agent(new_agent, directions, colors)
 
+    # Handling counterfactuals
     if gui_input['kind'] == 'counterfactual':
         if gui_input['change'] == 'add':
             env.agents[int(gui_input['agent_id'])].counterfactuals.append(gui_input['counterfactual'])
@@ -75,6 +76,7 @@ def handle_input(env, gui_input):
         if gui_input['change'] == 'delete':
             env.agents[int(gui_input['agent_index'])].counterfactuals.pop(int(gui_input['index']))
 
+    # Handling log
     if gui_input['kind'] == 'log':
         for agent in env.agents:
             for log_agent in gui_input['log']['agents']:
@@ -116,14 +118,19 @@ def handle_input(env, gui_input):
                     agent.initial_direction = log_agent['initial_direction']
             agent.log = gui_input['log']
 
+    # If user specifies a soid query
     if gui_input['kind'] == 'query':
+        # Convert all the info to query blob
         query_blob = cf.get_query_blob(env, gui_input['query_info'])
 
+        # Print it out for debugging
         print("\n\n Final Query Blob")
         print(json.dumps(query_blob, indent=2))
 
+        # Generate the klee file
         klee_file = cf.generate_klee_file(query_blob)
 
+        # Invoke soid to generate the soid query over the blob
         soid_result = sq.invoke_soid(query_blob)
 
         env.soid_result = soid_result
@@ -132,24 +139,20 @@ def handle_input(env, gui_input):
         env.state = 'pause'
         return 'soid'
 
-
     env.c_info_struct = agents.EnvironmentInfo(env)
+
     return env.state
 
 
 
 # Serialize by pickling to fifo
 def serialize(obj, fifo):
-    tic = time.perf_counter()
     json.dump(obj, fifo)
     fifo.write('\n')
     fifo.flush()
-    toc = time.perf_counter()
-    #print("Serialize Time = {0}".format(toc - tic))
 
 # Unserialize from fifo
 def unserialize(fifo, log=False):
-    tic = time.perf_counter()
     if log:
         lines = fifo.readlines()
         for line in lines:
@@ -162,36 +165,26 @@ def unserialize(fifo, log=False):
             lines[-1].strip()
             json_line = json.loads(lines[-1])
             yield json_line
-        """while True:
-            try:
-                input = json.load(fifo)
-                if input:
-                    yield input
-            except json.decoder.JSONDecodeError:
-                break"""
-
-
-
 
 # Init agents in server
 def init_server(dt, fifo, env, socket, get_map=False):
-
-    tic = time.perf_counter()
     if get_map:
         env.map_jpg(background=True)
         env.map_jpg(background=False)
 
     env_info = env_info_dict(env)
-    #print("Data Function Dict Traversal = {0}".format(toc - tic))
+
     # Serialize the input
     serialize(env_info, fifo)
 
     if socket:
         socket.emit("update_sim_info")
 
+# Convert the environment info into a dictionary
 def env_info_dict(env):
     c_info_struct = env.c_info_struct
     env_info = {}
+
     # For soid result
     env_info['soid_result'] = env.soid_result
 
@@ -272,9 +265,7 @@ def env_info_dict(env):
 
 # Read initial positions and env info
 def read_init(fifo, log=False):
-    agent_list =[]
     env_info = {}
-    log_list = []
 
     input_list = list(unserialize(fifo, log))
 
@@ -293,7 +284,7 @@ def read_init(fifo, log=False):
     else:
         return None
 
-# Kill old webserver if it exists, otherwise start new subprocess.
+# Kill old webserver if it exists, otherwise start new subprocess for backend
 def start_webserver():
     cmd = ['pgrep -f .*python.*webserver/server.py']
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
@@ -312,6 +303,7 @@ def start_webserver():
     webserver = subprocess.Popen(["python","src/webserver/server.py"])
     return webserver
 
+# Start the react frontend
 def start_node():
     cmd = ['pgrep -f .*.*start.js']
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,

@@ -13,7 +13,7 @@
 /************************************************
  * HELPERS
 ************************************************/
-// Return a size 2 array of tile positions, index 0 is x, index 1 is z
+// Get our tile posizion x
 int get_tile_pos_x(float pos_x, float pos_z, float road_tile_size){
     double x = (double) pos_x;
     double z = (double) pos_z;
@@ -27,6 +27,7 @@ int get_tile_pos_x(float pos_x, float pos_z, float road_tile_size){
 
 }
 
+// Get our tile posizion z
 int get_tile_pos_z(float pos_x, float pos_z, float road_tile_size){
     double x = (double) pos_x;
     double z = (double) pos_z;
@@ -40,6 +41,7 @@ int get_tile_pos_z(float pos_x, float pos_z, float road_tile_size){
 
 }
 
+// Get our stop x position
 float get_stop_pos_x(int tile_x, int tile_z, float road_tile_size, Direction direction, float speed){
     if (speed > 0.35)
         speed = 0.30;
@@ -67,6 +69,7 @@ float get_stop_pos_x(int tile_x, int tile_z, float road_tile_size, Direction dir
     return stop_x;
 }
 
+// Get our stop z position
 float get_stop_pos_z(int tile_x, int tile_z, float road_tile_size, Direction direction, float speed){
     if (speed > 0.35)
         speed = 0.30;
@@ -94,11 +97,13 @@ float get_stop_pos_z(int tile_x, int tile_z, float road_tile_size, Direction dir
     return stop_z;
 }
 
+// Positional distance in C
 float pos_distance(double x1, double x2, double z1, double z2){
     double gdistance = (((x2-x1)*(x2-x1)) + ((z2-z1)*(z2-z1)));
     return (float) sqrt(gdistance);
 }
 
+// Retrun true if agents are facing that direction in intersection
 bool intersection_dir_agents(EnvironmentInfo* env_info, int agent_index, Direction direction){
     EnvironmentAgent *agents = env_info->agents;
     EnvironmentAgent agent = env_info->agents[agent_index];
@@ -117,6 +122,7 @@ bool intersection_dir_agents(EnvironmentInfo* env_info, int agent_index, Directi
     return dir_waiting_agents;
 }
 
+// Retrun true if agents are next to go in the intersection that are not us
 bool next_to_go_agents(EnvironmentInfo* env_info, int agent_index){
     EnvironmentAgent *agents = env_info->agents;
     bool next_to_go_agents = false;
@@ -130,6 +136,7 @@ bool next_to_go_agents(EnvironmentInfo* env_info, int agent_index){
     return next_to_go_agents;
 }
 
+// Check if there is an intersection tile
 bool intersection_tile(EnvironmentInfo* env_info, int tile_x, int tile_z){
     if (tile_x == env_info->intersection_x && tile_z == env_info->intersection_z)
         return true;
@@ -137,6 +144,7 @@ bool intersection_tile(EnvironmentInfo* env_info, int tile_x, int tile_z){
         return false;
 }
 
+// Check if we are behind another agent
 bool is_behind(EnvironmentInfo* env_info, int agent_index, int other_index){
     EnvironmentAgent agent = env_info->agents[agent_index];
     EnvironmentAgent other = env_info->agents[other_index];

@@ -21,7 +21,7 @@ def test(args):
             map_name=args.map_name,
             cam_mode=args.cam_mode,
             safety_factor=args.safety_factor,
-            draw_curve=args.draw_curve,
+            draw_curve=False,
             draw_bbox=args.draw_bbox,
             domain_rand=args.domain_rand,
             frame_skip=args.frame_skip,

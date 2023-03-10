@@ -1,13 +1,8 @@
+# Types
 import itertools
-import os
-import random
 from collections import namedtuple
 from ctypes import POINTER
 from dataclasses import dataclass
-
-import sys
-import subprocess
-
 if sys.version_info >= (3, 8):
     from typing import TypedDict
 else:
@@ -15,27 +10,34 @@ else:
 
 from typing import Any, cast, Dict, List, NewType, Optional, Sequence, Tuple, Union
 
+# Systems
+import os
+import random
+import sys
+
+
+# Math
 import geometry
 import geometry as g
-import gym
+from geometry import SE2value
 import math
 import numpy as np
+from numpy.random.mtrand import RandomState
+
+# Simulator
+import gym
 import pyglet
 import yaml
-from geometry import SE2value
 from gym import spaces
 from gym.utils import seeding
-from numpy.random.mtrand import RandomState
 from pyglet import gl, image, window
 from pyglet.gl import gluSphere, gluNewQuadric
-
 from .map_format import(
     MapFormat1,
     MapFormat1Constants,
     MapFormat1Constants as MF1C,
     MapFormat1Object,
 )
-
 from duckietown_world import (
     get_DB18_nominal,
     get_DB18_uncalibrated,
@@ -72,18 +74,15 @@ from .objects import CheckerboardObj, DuckiebotObj, DuckieObj, TrafficLightObj, 
 from .objmesh import get_mesh, MatInfo, ObjMesh
 from .randomization import Randomizer
 from .utils import get_subdir_path
-
 from .agents import *
-
 from PIL import Image
 
-
-
+# Globals
 DIM = 0.5
 
 TileKind = NewType("TileKind", str)
 
-
+# Tile Classes
 class TileDict(TypedDict):
     # {"coords": (i, j), "kind": kind, "angle": angle, "drivable": drivable})
     coords: Tuple[int, int]
@@ -124,7 +123,6 @@ BLUE_SKY = np.array([0.45, 0.82, 1])
 # Color meant to approximate interior walls
 WALL_COLOR = np.array([0.64, 0.71, 0.28])
 
-# np.array([0.15, 0.15, 0.15])
 GREEN = (0.0, 1.0, 0.0)
 # Ground/floor color
 
@@ -133,8 +131,6 @@ GREEN = (0.0, 1.0, 0.0)
 CAMERA_ANGLE = 19.15
 
 # Camera field of view
-# Note: robot uses Raspberri Pi camera module V1.3
-# https://www.raspberrypi.org/documentation/hardware/camera/README.md
 CAMERA_FOV_Y = 75
 
 # Distance from camera to floor (10.8cm)
@@ -168,9 +164,6 @@ AGENT_SAFETY_RAD = (max(ROBOT_LENGTH, ROBOT_WIDTH) / 2) * SAFETY_RAD_MULT
 # Minimum distance spawn position needs to be from all objects
 MIN_SPAWN_OBJ_DIST = 0.25
 
-# Road tile dimensions (2ft x 2ft, 61cm wide)
-# self.road_tile_size = 0.61
-
 # Maximum forward robot speed in meters/second
 DEFAULT_ROBOT_SPEED = 1.20
 # approx 2 tiles/second
@@ -195,16 +188,14 @@ DEFAULT_NUM_AGENTS=2
 
 MAX_AGENTS=8
 
-
+# Lane position class info
 LanePosition0 = namedtuple("LanePosition", "dist dot_dir angle_deg angle_rad")
-
 
 class LanePosition(LanePosition0):
     def as_json_dict(self):
         """Serialization-friendly format."""
         return dict(dist=self.dist, dot_dir=self.dot_dir, angle_deg=self.angle_deg, angle_rad=self.angle_rad)
 
-   
 class Simulator(gym.Env):
     """
     Simple road simulator to test RL training.
@@ -438,7 +429,6 @@ class Simulator(gym.Env):
         self.max_agents = max_agents
         MAX_AGENTS = max_agents
         self.c_info_struct = None
-
 
         # Initialize the state
         self.reset()
@@ -770,10 +760,6 @@ class Simulator(gym.Env):
                     # Choose a random direction
                     propose_angle = self.np_random.uniform(0, 2 * math.pi)
 
-                    # logger.debug('Sampled %s %s angle %s' % (propose_pos[0],
-                    #                                          propose_pos[1],
-                    #                                          np.rad2deg(propose_angle)))
-
                     # If this is too close to an object or not a valid pose, retry
                     inconvenient = self._inconvenient_spawn(propose_pos)
 
@@ -797,8 +783,11 @@ class Simulator(gym.Env):
                     ok = -M < lp.angle_deg < +M
                     if not ok:
                         continue
+
                     # Found a valid initial pose
                     break
+                
+                # No valid pose
                 else:
                     msg = f"Could not find a valid starting pose after {MAX_SPAWN_ATTEMPTS} attempts"
                     logger.warn(msg)
@@ -807,7 +796,7 @@ class Simulator(gym.Env):
 
                     # raise Exception(msg)
 
-            ### ABOVE ONLY GETS PROPOSE POS AND ANGLE. NEED TO DO THE REST HERE
+            ### Above only sets pos and angle. Set dynamics and state here.
             if (not agent.random_spawn) or webserver_reset:
                 agent.cur_pos = propose_pos
                 agent.prev_pos = propose_pos
@@ -836,13 +825,10 @@ class Simulator(gym.Env):
         
 
         # Generate the first camera image
-        #obs = self.render_obs(segment=segment)
         self.c_info_struct = EnvironmentInfo(self)
         self.get_agents_states()
 
-
-        # Return first observation
-        return #obs
+        return 
 
     def _load_map(self, map_name: str):
         """
@@ -853,7 +839,6 @@ class Simulator(gym.Env):
         # Store the map name
         if os.path.exists(map_name) and os.path.isfile(map_name):
             # if env is loaded using gym's register function, we need to extract the map name from the complete url
-            #map_name = os.path.basename(map_name)
             assert map_name.endswith(".yaml")
             map_name = ".".join(map_name.split(".")[:-1])
         self.map_name = map_name
@@ -1685,6 +1670,7 @@ class Simulator(gym.Env):
                 return True
         return False
 
+    # Update the physics for tha gent
     def update_physics(self, action, agent, delta_time: float = None):
         action_name = action[1]
         action = action[0]
@@ -1806,8 +1792,6 @@ class Simulator(gym.Env):
 
             # Put the state into a dictionary
             agent.direction = agent.get_direction(self)
-            #agent.get_state(self)
-            #agent.get_learning_state(self)
 
             # Generate the state 
             if learning and agent.in_bounds(self):
@@ -1844,6 +1828,7 @@ class Simulator(gym.Env):
 
         return 
 
+    # Compute the agents reqward if it is learning
     def _compute_done_reward(self, agent, learning=False) -> DoneRewardInfo:
         reward = 0
         # If the agent is not in a valid pose (on drivable tiles)
@@ -2205,7 +2190,6 @@ class Simulator(gym.Env):
                 gl.glRotatef(agent.cur_angle * 180 / np.pi, 0, 1, 0)
                 agent.mesh.render()
 
-
                 # Handle lights
                 if self.enable_leds:
                     s_main = 0.01  # 1 cm sphere
@@ -2224,15 +2208,14 @@ class Simulator(gym.Env):
                             color = np.clip(colors[light_name], 0, +1)
                             color_intensity = float(np.mean(color))
                             gl.glPushMatrix()
-
                             gl.glTranslatef(px, pz, py)
-
                             gl.glEnable(gl.GL_BLEND)
                             gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
 
                             sphere = gluNewQuadric()
 
                             gl.glColor4f(color[0], color[1], color[2], 1.0)
+
                             gluSphere(sphere, s_main, 10, 10)
 
                             gl.glColor4f(color[0], color[1], color[2], 0.2)
@@ -2451,8 +2434,6 @@ class Simulator(gym.Env):
                 starting_x += 1
             self.text_window.dispatch_events()
 
-        
-
         # Force execution of queued commands
         gl.glFlush()
 
@@ -2464,7 +2445,6 @@ class Simulator(gym.Env):
 
         returns pos, angle
         """
-
         action = DynamicsInfo(motor_left=action[0], motor_right=action[1])
         agent.state = agent.state.integrate(self.delta_time, action)
         q = agent.state.TSE2_from_state()[0]
@@ -2472,7 +2452,7 @@ class Simulator(gym.Env):
         pos = np.asarray(pos)
         return pos, angle
 
-    # Spawn a random agent
+    # Spawn a random agent in the map
     def spawn_random_agent(self, agent, directions, colors):
         for _ in range(MAX_SPAWN_ATTEMPTS):
             direction = random.choice(directions)

@@ -1,5 +1,5 @@
 # Flask imports
-from flask import Flask, render_template, send_file
+from flask import Flask, send_file
 from flask_socketio import SocketIO
 import os
 from webserver.gui_utils import read_init, serialize, unserialize
@@ -21,7 +21,10 @@ CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
+# start a socket
 socketio = SocketIO(app,cors_allowed_origins="*")
+
+# Open the pipes for backend -> frontend coms
 fifo_out = 'src/webserver/webserver.out'
 fifo_in = 'src/webserver/webserver.in'
 fifo_log = 'src/webserver/webserver.log'
@@ -75,7 +78,6 @@ def update_sim_info():
     new_env_info = read_init(inp)
     if new_env_info:
         env_info = new_env_info
-
 
 # On socket update change agent angle
 @socketio.on("agent_angle")
@@ -204,7 +206,7 @@ def log_step(data):
     print(f"Sending out a log change")
     serialize(log_change, out)
 
-# do a query
+# Do a soid query
 @socketio.on("query")
 def query(query_info):
     query_blob = {
@@ -213,6 +215,7 @@ def query(query_info):
                 }
     serialize(query_blob, out)
 
+# Add a counterfactual to agent list
 @socketio.on("add_counterfactual")
 def add_counterfactual(data):
     counterfactual = data['counterfactual']
@@ -230,9 +233,9 @@ def add_counterfactual(data):
         'agent_id': data['index'],
         'counterfactual': counterfactual,
     }
-    #print(counterfactual_wrap)
     serialize(counterfactual_wrap, out)
 
+# Delete a counterfactual from agent list
 @socketio.on("delete_counterfactual")
 def delete_counterfactual(data):
     counterfactual_wrap = {

@@ -1,34 +1,30 @@
 #!/usr/bin/env python
-# manual
-
-"""
-This script uses the ite_move library to make a right turn through an intersection
-"""
+# Sys Imports
 import time
 import sys
+import os
 
+# Gym / Pyglet
 import gym
 import pyglet
 from pyglet.window import key, mouse
-
 from gym_duckietown.envs import DuckietownEnv
+from learn_types import *
 
-# Web gui stuff
-import os
 
 # Logging
 from gym_duckietown import logger 
 from gym_duckietown.agents import Agent
 from gym_duckietown.utils import read_model
+
+# Webserver
 import webserver.gui_utils as gu 
-from threading import Thread
+import socketio
 
 # Utils / Event Wrappers
 import gym_duckietown.utils as utils
 import gym_duckietown.event_wrappers as event
 
-import socketio
-from learn_types import *
 
 # Parse args
 args = utils.get_args_from_config(sys.argv[1])
@@ -58,9 +54,6 @@ else:
 # Verbose
 verbose = args.verbose
 
-
-
-
 # Initialize the agents for the scripted scenario
 env.agents[0] = Agent(env, cur_pos=[1.6, 0, 2.6], cur_angle=1.57080, agent_id="agent0", color="blue")
 env.agents.append(Agent(env, cur_pos=[0.5, 0, 1.6], cur_angle=0, agent_id="agent1", color="red"))
@@ -80,7 +73,7 @@ env_agent.agent_id = "agent1"
 env_agent.index = 1
 env_agent.forward_step = 0.44
 env_agent.turn_choice = 'Straight' 
-env_agent.signal_choice = 'Straight' 
+env_agent.signal_choice = 'Right' 
 env_agent.curve = env_agent.get_curve(env)
 
 # Start up env
@@ -89,31 +82,17 @@ env.reset(webserver_reset=True)
 # Render
 env.render(args.cam_mode)
 
-# Handle Key Presses 
-@env.unwrapped.window.event
-def on_key_press(symbol, modifiers):
-    event.on_key_press(symbol, modifiers, env)
-
-@env.unwrapped.window.event
-def on_mouse_press(x, y, button, modifiers):
-    event.on_mouse_press(x, y, button, modifiers, update, pause)
-    
-# Register a keyboard handler
-key_handler = key.KeyStateHandler()
-mouse_handler = mouse.MouseStateHandler()
-env.unwrapped.window.push_handlers(key_handler)
-
 # Webserver handler
 fifo_in = 'src/webserver/webserver.out'
 fifo_out = 'src/webserver/webserver.in'
 fifo_log = 'src/webserver/webserver.log'
 
-# CLEAR OLD STUFF
+# Clear old file pipes
 clear = open(fifo_in, 'w').close()
 clear = open(fifo_out, 'w').close()
 clear = open(fifo_log, 'w').close()
 
-# Write new stuff
+# Open new pipes
 out = open(fifo_out, 'w', os.O_NONBLOCK)
 inp = open(fifo_in, 'r', os.O_NONBLOCK)
 log = open(fifo_log, 'w', os.O_NONBLOCK)
@@ -121,7 +100,6 @@ log = open(fifo_log, 'w', os.O_NONBLOCK)
 # Start up the webserver before reading so that it clears write file
 webserver = gu.start_webserver()
 node = gu.start_node()
-
 
 # Feed agent information to webserver
 gu.init_server(0, out, env, None, get_map=True)
@@ -134,7 +112,7 @@ while True:
     except Exception as e: pass
     else:   break
 
-# Pause on space, keep trying to get info from webserver, render and update accordingly
+# When the simulator is paused
 def pause(dt):
     global inp
     env.state = "pause"
@@ -144,15 +122,17 @@ def pause(dt):
 
     # While still getting input
     while env.state == "pause":
+        # Keep checking for new info
         try:
             gui_input = list(gu.unserialize(inp))
         except:
             pass
-        # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
+        # Handle input via gui_utils.py
         if gui_input:
             gui_input = gui_input[-1]
             state = gu.handle_input(env, gui_input)
             gu.init_server(0, out, env, socket)
+            # If we quit
             if state == "quit":
                 print("Killing Webserver")
                 gu.init_server(0, out, env, socket, get_map=False) # Init to send the dead signal to 
@@ -160,13 +140,17 @@ def pause(dt):
                 webserver.kill()
                 print("Killing Simulator")
                 socket.disconnect()
+                env.close()
                 exit()
-            elif env.state == "run":
+            # If we run
+            elif state == "run":
                 print("Resuming Simulation")
+            # If we get a query
             elif state == "soid":
-                gu.init_server(0, out, env, socket)
-                print("INIT SERVER w/ ")
+                print("SOID RESULT IS")
                 print(env.soid_result)
+                gu.init_server(0, out, env, socket)
+                env.state = 'pause'
 
         # Render any changes from last thing serialized
         env.render(mode=args.cam_mode)
@@ -179,23 +163,24 @@ def pause(dt):
     pyglet.clock.unschedule(pause)
     pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
 
+# When the simulation is running
 def update(dt):
-    """
-    This function is called at every frame to handle
-    movement/stepping and redrawing
-    """
-
-    # Handle input, Modify env, see functions in gui_utills. Returns true on button for resume
+    # Handle input via gui_utils
     gui_input = list(gu.unserialize(inp))
 
+    # Get the new information
     if gui_input:
         gui_input = gui_input[-1]
         state  = gu.handle_input(env, gui_input)
+        # If we quit
         if state == "quit":
             print("Killing Webserver")
             webserver.kill()
             print("Killing Simulator")
+            socket.disconnect()
+            env.close()
             exit()
+        # If we pause
         elif state == "pause":
             # Unschedule pause and resume rendering
             print("Pausing the Simulator")
@@ -218,20 +203,20 @@ def update(dt):
             else:
                 agent.proceed(env,good_agent=True)
 
+    # If the agent finished set it to pause
     if env.agents[0].done:
-        env.reset()
+        pyglet.clock.unschedule(update)
+        pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
     else:
         env.step(learning=True)
 
     # Log the info
-    #print(f"Logging Step {env.agents[0].step_count}")
     gu.init_server(1, log, env, socket)
 
     # render the cam
     env.render(mode=args.cam_mode)
 
-
-
+# Main loop
 if __name__ == '__main__':
 
     # Enter main event loop

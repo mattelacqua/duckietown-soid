@@ -2,6 +2,7 @@ import sys
 import soid
 from soid.soidlib import *
 import json
+
 # Generate the soid query
 def get_dl_direction(direction):
     if direction == 'Straight':
@@ -10,6 +11,7 @@ def get_dl_direction(direction):
         return 1
     if direction == 'Right':
         return 2
+
 def generate_soid_query(query_blob):
     """
     generate the soid query

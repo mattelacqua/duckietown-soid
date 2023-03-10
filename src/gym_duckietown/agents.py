@@ -8,12 +8,9 @@ from .agent._agent_utils import get_duckiebot_mesh
 import sys
 import subprocess
 
-"""
-Contains functions for moving agent in ite world scenarios.
-"""
-# Stuffing the make command in here
+# Including the make command in here for the decision logic where it gets loaded
 # Make the decision logic files
-print("(c-decision-logic) Making Clean:")
+print("c-decision-logic: Making Clean:")
 make_clean_ret = subprocess.Popen(["make clean"], shell=True, stdout=subprocess.PIPE, cwd="./src/gym_duckietown/decision_logic")
 while True:
     line = make_clean_ret.stdout.readline()
@@ -22,7 +19,7 @@ while True:
     print(line) #output to console in time
     sys.stdout.flush()
 make_ret = subprocess.Popen(["make"], shell=True, stdout=subprocess.PIPE, cwd="./src/gym_duckietown/decision_logic")
-print("(c-decision-logic) Making All:")
+print("c-decision-logic: Making All:")
 while True:
     line = make_ret.stdout.readline()
     if not line:
@@ -31,6 +28,7 @@ while True:
     sys.stdout.flush()
 
 
+# Shared library file
 so_file = str(os.getcwd()) + "/src/gym_duckietown/decision_logic/libdecision_logic.so"
 dl = CDLL(so_file)
 
@@ -157,26 +155,6 @@ class Agent():
         self.good_agent = True 
 
         # Gui Counterfactuals
-        range_dict = {
-            'turn_choices': [],
-            'low_bound': 0.0,
-            'high_bound': 0.0,
-        }
-
-        counterfactual = {
-            'is_pos_x:' : False, 
-            'is_pos_z:' : False, 
-            'is_angle:' : False, 
-            'is_forward_step:' : False, 
-            'is_speed:' : False, 
-            'is_signalchoice:' : False, 
-            'is_turnchoice:' : False, 
-            'is_value:' : False, 
-            'is_range:' : False, 
-            'value:' : 0.0,
-            'range:' : range_dict,
-        }
-
         self.counterfactuals = []
 
     # Import things for learning

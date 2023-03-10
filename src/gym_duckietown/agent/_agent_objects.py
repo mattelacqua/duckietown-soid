@@ -24,15 +24,6 @@ def get_nearby_obstacles(self, env):
 
 # Return a list of objects and a list of agents present on the tile
 def get_obstacles(self, env): #, tile_x, tile_z):
-    # Get our direction
-    self_direction = self.get_direction(env)
-
-    for obj in env.objects:
-        info = obj.get_object_info()
-        obj_x, obj_z = env.get_grid_coords(info['cur_pos'])
-        prev_distance = env.pos_distance(self.prev_pos, obj.get_curr_pos())
-        curr_distance = env.pos_distance(self.cur_pos, obj.get_curr_pos())
-
     # Reset the agents that are near the intersection so we recalculate at every step
     self.intersection_agents = []
 
@@ -59,5 +50,4 @@ def handle_objects(self, env):
 def handle_agents(self, env):
     self_direction = self.get_direction(env)
     for agent in self.nearby_agents:
-        info = agent.get_info(env)
         print("{0}: Handling Agent".format(self.agent_id))
