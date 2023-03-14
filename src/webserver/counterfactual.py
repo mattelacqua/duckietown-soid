@@ -673,7 +673,9 @@ def generate_klee_file(query_blob):
 
 
 if __name__ == '__main__':
-    #query_prefix = 'src/webserver/soid_files/query_blobs/experiments/'
-    #query_blob = json.load(open(query_prefix + sys.argv[1]))
-    #generate_klee_file(query_blob)
-    print("HERE")
+    if os.path.isabs(sys.argv[1]):
+        query_blob = json.load(open(sys.argv[1]))
+    else:
+        query_prefix = 'src/webserver/soid_files/query_blobs/experiments/'
+        query_blob = json.load(open(query_prefix + sys.argv[1]))
+    generate_klee_file(query_blob)

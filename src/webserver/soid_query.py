@@ -2,6 +2,7 @@ import sys
 import soid
 from soid.soidlib import *
 import json
+import os
 
 # Generate the soid query
 def get_dl_direction(direction):
@@ -801,9 +802,11 @@ def generate_soid_query(query_blob):
     model_prefix = "src/webserver/soid_files/klee/models/"
     # open klee file
     if models:
+        if not os.path.exists(model_prefix):
+            os.makedirs(model_prefix)
         print(f"Model in {model_prefix}")
         model_file = open((model_prefix + "model.out"), 'w', encoding="utf-8")
-        model_file.write(f"{models[0]}")
+        model_file.write(f"{models['raw']}")
         model_file.close()
 
 
@@ -819,6 +822,9 @@ def invoke_soid(query_blob):
 
 
 if __name__ == '__main__':
-    query_prefix = 'src/webserver/soid_files/query_blobs/experiments/'
-    query_blob = json.load(open(query_prefix + sys.argv[1]))
+    if os.path.isabs(sys.argv[1]):
+        query_blob = json.load(open(sys.argv[1]))
+    else:
+        query_prefix = 'src/webserver/soid_files/query_blobs/experiments/'
+        query_blob = json.load(open(query_prefix + sys.argv[1]))
     invoke_soid(query_blob)
