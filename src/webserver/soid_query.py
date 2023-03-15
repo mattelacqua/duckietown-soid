@@ -698,7 +698,7 @@ def generate_soid_query(query_blob):
                 continue
             sub_formula = Or (
                 get_constraint(declare_type, tagged_cf),
-                formula)
+                sub_formula)
         return sub_formula
 
     def encode(declare_type, tagged_cf_list):
