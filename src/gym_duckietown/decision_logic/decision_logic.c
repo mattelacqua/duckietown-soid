@@ -858,7 +858,7 @@ bool object_in_range(EnvironmentInfo* env_info, int agent_index, int location){
         return false;
     else {
         Direction direction = agent.direction;
-        float side_radius = radius / 10.0;
+        float side_radius = radius / 2.0;
         float front_radius = radius;
         float robot_length = env_info->robot_length;
         

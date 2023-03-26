@@ -46,6 +46,7 @@ def handle_input(env, gui_input):
         elif change == "model_choice":
             print(f"Got the new model choice {gui_input['choice']}")
             if gui_input['choice'] == 'good_agent':
+                print("BROKEN BAD INPUT GUI_UTILS 49")
                 agent.good_agent = True
             elif gui_input['choice'] == 'defensive':
                 agent.good_agent = False
@@ -59,6 +60,7 @@ def handle_input(env, gui_input):
             elif gui_input['choice'] == 'pathological':
                 agent.good_agent = False
                 agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/pathological/10k_train'))
+                print("New Q Table set for pathological.")
     
     # If adding an agent
     if gui_input['kind'] == 'add_agent':

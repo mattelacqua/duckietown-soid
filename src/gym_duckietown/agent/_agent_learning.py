@@ -39,41 +39,47 @@ def get_reward(self, env, done_code):
                     reward -= 10
 
                 # Reward waiting to hit someone
-                if self.states['at_intersection_entry'] and not self.states['in_intersection']:
+                if self.states['at_intersection_entry']:
                     if self.states['intersection_empty']:
                         if self.states['cars_waiting_to_enter']:
                             # Reward stopping and waiting if cars are waiting to enter
-                            reward += 30
+                            reward += 10
                         # if theres no cars, penalize stopping
                         elif not self.states['cars_waiting_to_enter']:
                             reward -= 10
                     # If the intersection is not empty
                     elif not self.states['intersection_empty']:
-                        # Reward stopping and waiting if we could get through fine
                         if self.states['safe_to_enter']:
-                            reward += 30
+                            if self.states['obj_in_range']:
+                                reward -= 100
+                            else:
+                                reward += 10
                         # Penalize stopping and waiting if we can cause a crash
                         if not self.states['safe_to_enter']:
-                            reward -= 10
+                            # // If they are in front of us and we can move penalize the stop
+                            if self.states['obj_in_range']:
+                                reward -= 100
+                            # If they aren't in front of us and we can move gently penalize
+                            else:
+                                reward -= 10
                 # Outside of intersection entry, penalize stopping
                 else:
                     reward -= 10
 
             else: # If we chose to move
-                # Punish stopping if tailgating
+                # Reward moving if tailgating
                 if (self.states['is_tailgating']):
                     #print("Tailgating")
-                    reward -= 10
+                    reward += 10
 
                 # Reward moving to hit someone
-                if self.states['at_intersection_entry'] and not self.states['in_intersection']:
-                    
+                if self.states['at_intersection_entry']:
                     # If intersection empty
                     if self.states['intersection_empty']:
                         # If there are other cars waiting
                         if self.states['cars_waiting_to_enter']:
                             # penalize moving at all since the intersection is empty
-                            reward -= 30
+                            reward -= 10
                         # if theres no cars, reward moving
                         elif not self.states['cars_waiting_to_enter']:
                             reward += 10
@@ -82,7 +88,10 @@ def get_reward(self, env, done_code):
                     elif not self.states['intersection_empty']:
                         # penalize moving if we could get through fine
                         if self.states['safe_to_enter']:
-                            reward -= 30
+                            if self.states['obj_in_range']:
+                                reward += 100
+                            else:
+                                reward -= 10
                         # reward moving if its dangerous
                         if not self.states['safe_to_enter']:
                             # if theres actually someone close, huge reward for moving
@@ -95,9 +104,9 @@ def get_reward(self, env, done_code):
                 # Outside of intersection entry, reward moving
                 else:
                     if self.states['in_intersection']:
-                        reward += 30
+                        reward += 50
                     else:
-                        reward += 10
+                        reward += 20
 
         # Done codes
         if done_code == "offroad": # If it went offroad
@@ -111,12 +120,12 @@ def get_reward(self, env, done_code):
             
         if done_code == "collision": # Large reward for crashing
             #print("Collision")
-            reward += 2000  
+            reward += 5000  
 
         if done_code == "finished": # If it reached end of map big enough reward 
             #print("Safe finish")
             #reward += (env.max_steps - self.step_count)  # Reward based on how fast we finish
-            reward += 500
+            reward += 50
         # Do nothing for rward if crash.
 
     # Impatient

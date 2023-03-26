@@ -732,6 +732,7 @@ class Simulator(gym.Env):
             if webserver_reset:
                 propose_pos = agent.cur_pos 
                 propose_angle = agent.cur_angle
+                agent.done = False
 
             # If specified from map, use that information
             elif agent.start_pose and not agent.random_spawn:
