@@ -148,4 +148,5 @@ if __name__ == "__main__":
     start = time.time()
     test(args)
     elapsed = time.time() - start
-    print(f"Elapsed Training Time: {str(timedelta(seconds=elapsed))}")
+    print(f"Elapsed Testing Time: {str(timedelta(seconds=elapsed))}")
+    print(f"Model: {args.reward_profile}")
