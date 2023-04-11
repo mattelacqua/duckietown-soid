@@ -64,6 +64,7 @@ class AgentMap extends React.Component {
   }
 
   render() {
+    let self = this;
     // Get Data
     let datasets = [];
     this.props.agents.forEach(function (agent) {
@@ -117,7 +118,7 @@ class AgentMap extends React.Component {
           round: 3,
           showTooltip: true,
           onDragStart:function (e, datasetIndex, index, value) {
-            this.setState({is_dragging: true,});
+            self.setState({is_dragging: true,}); // hack around change in dependency???
           },
           onDrag: function (e, datasetIndex, index, value) {
             e.target.style.cursor = 'grabbing';
