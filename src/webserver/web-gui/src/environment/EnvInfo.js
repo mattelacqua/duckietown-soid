@@ -13,6 +13,7 @@ class EnvInfo extends React.Component {
       tile_size: props.tile_size,
       sim_state: props.sim_state,
       sim_step: props.sim_step,
+      run: (this.props.sim_state === 'run')
     };
   }
 
@@ -23,16 +24,26 @@ class EnvInfo extends React.Component {
 
   // Render the information to screen
   render() {
+    if (this.state.run) {
+      return (
+        <div style={{
+               display:'flex',
+               flexDirection:'row',
+             }}>
+          {/* HTML FOR ALL THE INFORMATION */}
+          <p> Sim State: {this.state.sim_state.charAt(0).toUpperCase() + this.state.sim_state.slice(1)} </p>
+        </div>
+      );
+    }
+
     return (
       <div style={{
         display:'flex',
         flexDirection:'row',
         }}>
           {/* HTML FOR ALL THE INFORMATION */}
-          <p> Sim State: {this.state.sim_state} -</p>
+          <p> Sim State: {this.state.sim_state.charAt(0).toUpperCase() + this.state.sim_state.slice(1)} -</p>
           <p> --- Sim Step: {this.state.sim_step} </p>
-
-
       </div>
       );
     }
