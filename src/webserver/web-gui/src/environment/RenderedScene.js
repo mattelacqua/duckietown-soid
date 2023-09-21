@@ -49,7 +49,7 @@ class RenderedScene extends React.Component {
             }}>
 
           {/* HTML FOR IMAGE */}
-          <img src={this.state.src + "?v=" + this.state.key} onError={this.error_tick} 
+          <img src={this.state.src + "?v=" + this.state.key} onError={(ct) => { ct.onerror = null; ct.src = this.state.src + "?v=" + this.state.key - 1; this.error_tick() }}
                 style={{
                         display: 'float',
                         float: 'left',
