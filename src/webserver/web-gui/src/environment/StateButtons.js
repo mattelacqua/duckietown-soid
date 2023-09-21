@@ -20,8 +20,11 @@ class StateButtons extends React.Component {
     });
 
     if (state === 'pause') {
-        this.props.socket.emit('update_sim_info');
-        setTimeout(this.props.update_from_sim(), 1000);
+      this.props.socket.emit('update_sim_info');
+
+      // for some reason wrapping this update_from_sim() call prevents a 'missing bracket' error -- I have no idea why...
+      let base = this
+      setTimeout(() => { base.props.update_from_sim() }, 1000);
     }
     this.props.socket.emit('sim_state', {'state':state});
 }
