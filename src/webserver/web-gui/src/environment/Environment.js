@@ -37,7 +37,8 @@ class Environment extends React.Component {
 
                 <LogStep  step={this.props.sim_step}
                           max_step={this.props.sim_step}
-                          socket={this.props.socket}/>
+                          socket={this.props.socket}
+                          sim_state={this.props.sim_state}/>
               </div>
           );
     }

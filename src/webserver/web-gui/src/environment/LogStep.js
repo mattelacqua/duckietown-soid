@@ -15,6 +15,7 @@ class LogStep extends React.Component {
       step: this.props.step,
       max_step: this.props.max_step,
       socket: props.socket,     // Socket
+      run: (this.props.sim_state === 'run'),
     };
   }
 
@@ -30,6 +31,9 @@ class LogStep extends React.Component {
 
   // Render the Dial component from the react-dial-knob package
   render() {
+    // if we're running dial isn't useful and is confusing
+    if (this.state.run) return;
+
     return (
       <div>
         <form classname="form">
