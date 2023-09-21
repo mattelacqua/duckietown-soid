@@ -12,7 +12,7 @@ class StateButtons extends React.Component {
     };
     this.handleClick = this.handleClick.bind(this);
   }
-  
+
   // Handle the click
   async handleClick(state) {
     this.setState({
@@ -25,7 +25,7 @@ class StateButtons extends React.Component {
     }
     this.props.socket.emit('sim_state', {'state':state});
 }
-  
+
   // Render the information to screen
   render() {
     return (
@@ -35,18 +35,12 @@ class StateButtons extends React.Component {
         {this.props.sim_state === 'run' &&
           <button className='pause' onClick={()=>this.handleClick("pause")}>Pause</button>
         }
-        {this.props.sim_state === 'run' &&
-          <button className='quit' onClick={()=>this.handleClick("quit")}>Quit</button>
-        }
-
+        
         {/* Paused */}
         {this.props.sim_state === 'pause' &&
             <button className = "resume" onClick={()=>this.handleClick("run")}>Resume</button>
         }
-        {this.props.sim_state === 'pause' &&
-            <button className='quit' onClick={()=>this.handleClick("quit")}>Quit</button>
-        }
-    </div>
+     </div>
       );
     }
 }
