@@ -2329,6 +2329,10 @@ class Simulator(gym.Env):
             self.window = window.Window(
                 width=WINDOW_WIDTH, height=WINDOW_HEIGHT, resizable=True, config=config
             )
+
+        self.window.set_visible(False)
+        self.text_window.set_visible(False)
+
         self.text_window.clear()
         self.text_window.switch_to()
         self.text_window.dispatch_events()
