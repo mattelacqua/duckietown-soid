@@ -10,6 +10,7 @@ class RenderedScene extends React.Component {
     this.state = {
       src: "http://localhost:5001/renderedScene",
       key: Date.now(),
+      lst: Date.now(),
     };
 
     this.tick = this.tick.bind(this);
@@ -20,14 +21,24 @@ class RenderedScene extends React.Component {
     this.setState({
       src: "http://localhost:5001/renderedScene",
       key: Date.now(),
-    }) 
+      lst: this.state.lst,
+    })
   }
 
   error_tick() {
     this.setState({
       src: "http://localhost:5001/renderedScene",
       key: Date.now(),
+      lst: this.state.lst,
     });
+  }
+
+  load_tick() {
+    this.setState({
+      src: this.state.src,
+      key: this.state.key,
+      lst: this.state.key,
+    })
   }
 
   componentDidMount() {
@@ -49,7 +60,9 @@ class RenderedScene extends React.Component {
             }}>
 
           {/* HTML FOR IMAGE */}
-          <img src={this.state.src + "?v=" + this.state.key} onError={(ct) => { ct.onerror = null; ct.src = this.state.src + "?v=" + this.state.key - 1; this.error_tick() }}
+          <img src={this.state.src + "?v=" + this.state.key}
+               onLoad={() => { this.load_tick() }}
+               onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = this.state.src + "?v=" + this.state.lst; this.error_tick() }}
                 style={{
                         display: 'float',
                         float: 'left',
