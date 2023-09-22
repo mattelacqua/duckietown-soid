@@ -42,8 +42,7 @@ class EnvInfo extends React.Component {
         flexDirection:'row',
         }}>
           {/* HTML FOR ALL THE INFORMATION */}
-          <p> Sim State: {this.state.sim_state.charAt(0).toUpperCase() + this.state.sim_state.slice(1)} -</p>
-          <p> --- Sim Step: {this.state.sim_step} </p>
+          <p> Sim State: {this.state.sim_state.charAt(0).toUpperCase() + this.state.sim_state.slice(1)} &nbsp;|&nbsp; Sim Step: {Math.min(0, this.state.sim_step - 1)} </p>
       </div>
       );
     }
