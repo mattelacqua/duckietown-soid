@@ -129,6 +129,15 @@ class AgentMap extends React.Component {
         legend: {
           position: 'bottom',
         },
+        tooltip: {
+          enabled: true,
+          titleAlign: 'right',
+          displayColors: false,
+          callbacks: {
+            title: (tooltipItems, _) => { return tooltipItems[0].dataset.label; },
+            label: (tooltipItems, _) => { return 'x. ' + tooltipItems.dataset.data[0].x + ', y. ' + tooltipItems.dataset.data[0].y }
+          }
+        },
       }, // End plugin
       
       // Parsing
@@ -172,7 +181,6 @@ class AgentMap extends React.Component {
     }; // End options  
 
     return (
-
         <div classname='AgentMap'>
         <Line ref={this.chartReference} 
               classname="AgentMap" 

@@ -41,50 +41,46 @@ class AgentInfo extends React.Component {
                     whiteSpace: 'pre-line',
             }}> 
       
-            {"\n"} {agent.agent_id} Info: {"\n"}
-            index: {agent.index} {"\n"}
-            color: {agent.color} {"\n"}
-            exists: {agent.exists} {"\n"}
-            step_count: {agent.step_count} {"\n"}
+            {"\n"} {agent.agent_id} General Info: {"\n"}
+              &nbsp;&nbsp; color: <span style={{float:'right', 'margin-right': '20px'}}> {agent.color} </span> {"\n"}
+              &nbsp;&nbsp; step_count: <span style={{float:'right', 'margin-right': '20px'}}> {agent.step_count} </span> {"\n"}
 
-            {"\n"} Agent Pose: {"\n"}
-            pos_x: {agent.pos_x} {"\n"}
-            pos_z: {agent.pos_z} {"\n"}
-            prev_pos_x: {agent.prev_pos_x} {"\n"}
-            prev_pos_z: {agent.prev_pos_z} {"\n"}
-            stop_x: {agent.stop_x} {"\n"}
-            stop_z: {agent.stop_z} {"\n"}
-            tile_x: {agent.tile_x} {"\n"}
-            tile_z: {agent.tile_z} {"\n"}
-            angle: {agent.angle} {"\n"}
-            angle_deg: {agent.angle_deg} {"\n"}
-            current_direction: {agent.direction} {"\n"}
-            initial_direction: {agent.initial_direction} {"\n"}
+            {"\n"} {agent.agent_id} Pose: {"\n"}
+              &nbsp;&nbsp; pos_x. <span style={{float:'right', 'margin-right': '20px'}}> {agent.pos_x} </span> {"\n"}
+              &nbsp;&nbsp; pos_y. <span style={{float:'right', 'margin-right': '20px'}}> {agent.pos_z} </span> {"\n"}
+              &nbsp;&nbsp; prev_pos_x. <span style={{float:'right', 'margin-right': '20px'}}> {agent.prev_pos_x} </span> {"\n"}
+              &nbsp;&nbsp; prev_pos_y. <span style={{float:'right', 'margin-right': '20px'}}> {agent.prev_pos_z} </span> {"\n"}
+              &nbsp;&nbsp; stop_x. <span style={{float:'right', 'margin-right': '20px'}}> {agent.stop_x} </span> {"\n"}
+              &nbsp;&nbsp; stop_y. <span style={{float:'right', 'margin-right': '20px'}}> {agent.stop_z} </span> {"\n"}
+              &nbsp;&nbsp; tile_x. <span style={{float:'right', 'margin-right': '20px'}}> {agent.tile_x} </span> {"\n"}
+              &nbsp;&nbsp; tile_y. <span style={{float:'right', 'margin-right': '20px'}}> {agent.tile_y} </span> {"\n"}
+              &nbsp;&nbsp; angle. <span style={{float:'right', 'margin-right': '20px'}}> {agent.angle} </span> {"\n"}
+              &nbsp;&nbsp; angle_deg. <span style={{float:'right', 'margin-right': '20px'}}> {agent.angle_deg} </span> {"\n"}
+              &nbsp;&nbsp; current_direction. <span style={{float:'right', 'margin-right': '20px'}}> {agent.direction} </span> {"\n"}
+              &nbsp;&nbsp; initial_direction. <span style={{float:'right', 'margin-right': '20px'}}> {agent.initial_direction} </span> {"\n"}
 
-            {"\n"} Agent State: {"\n"}
-            speed: {agent.speed} {"\n"}
-            forward_step: {agent.forward_step} {"\n"}
-            patience: {agent.patience} {"\n"}
-            intersection_arrival: {agent.intersection_arrival} {"\n"}
-            turn_choice: {agent.turn_choice} {"\n"}
-            signal_choice: {agent.signal_choice} {"\n"}
-            lookahead: {agent.lookahead} {"\n"}
-            bbox_w: {agent.bbox_w} {"\n"}
-            bbox_l: {agent.bbox_l} {"\n"}
-
-            {"\n"} Agent State: {"\n"}
-            in_intersection: {agent.state.in_intersection.toString()} {"\n"}
-            at_intersection_entry: {agent.state.at_intersection_entry.toString()} {"\n"}
-            intersection_empty: {agent.state.intersection_empty.toString()} {"\n"}
-            approaching_intersection: {agent.state.approaching_intersection.toString()} {"\n"}
-            obj_in_range: {agent.state.obj_in_range.toString()} {"\n"}
-            has_right_of_way: {agent.state.has_right_of_way.toString()} {"\n"}
-            next_to_go: {agent.state.next_to_go.toString()} {"\n"}
-            safe_to_enter: {agent.state.safe_to_enter.toString()} {"\n"}
-            cars_waiting_to_enter: {agent.state.cars_waiting_to_enter.toString()} {"\n"}
-            car_entering_range: {agent.state.car_entering_range.toString()} {"\n"}
-            obj_behind_intersection: {agent.state.obj_behind_intersection.toString()} {"\n"}
-            is_tailgating: {agent.state.is_tailgating.toString()} {"\n"}
+            {"\n"} {agent.agent_id} State: {"\n"}
+              &nbsp;&nbsp; speed. <span style={{float:'right', 'margin-right': '20px'}}> {agent.speed} </span> {"\n"}
+              &nbsp;&nbsp; forward_step. <span style={{float:'right', 'margin-right': '20px'}}> {agent.forward_step} </span> {"\n"}
+              &nbsp;&nbsp; patience. <span style={{float:'right', 'margin-right': '20px'}}> {agent.patience} </span> {"\n"}
+              &nbsp;&nbsp; intersection_arrival. <span style={{float:'right', 'margin-right': '20px'}}> {agent.intersection_arrival} </span> {"\n"}
+              &nbsp;&nbsp; turn_choice. <span style={{float:'right', 'margin-right': '20px'}}> {agent.turn_choice} </span> {"\n"}
+              &nbsp;&nbsp; signal_choice. <span style={{float:'right', 'margin-right': '20px'}}> {agent.signal_choice} </span> {"\n"}
+              &nbsp;&nbsp; lookahead. <span style={{float:'right', 'margin-right': '20px'}}> {agent.lookahead} </span> {"\n"}
+              &nbsp;&nbsp; bbox_w. <span style={{float:'right', 'margin-right': '20px'}}> {agent.bbox_w} </span> {"\n"}
+              &nbsp;&nbsp; bbox_l. <span style={{float:'right', 'margin-right': '20px'}}> {agent.bbox_l} </span> {"\n"}
+              &nbsp;&nbsp; in_intersection. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.in_intersection.toString()} </span> {"\n"}
+              &nbsp;&nbsp; at_intersection_entry. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.at_intersection_entry.toString()} </span> {"\n"}
+              &nbsp;&nbsp; intersection_empty. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.intersection_empty.toString()} </span> {"\n"}
+              &nbsp;&nbsp; approaching_intersection. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.approaching_intersection.toString()} </span> {"\n"}
+              &nbsp;&nbsp; obj_in_range. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.obj_in_range.toString()} </span> {"\n"}
+              &nbsp;&nbsp; has_right_of_way. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.has_right_of_way.toString()} </span> {"\n"}
+              &nbsp;&nbsp; next_to_go. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.next_to_go.toString()} </span> {"\n"}
+              &nbsp;&nbsp; safe_to_enter. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.safe_to_enter.toString()} </span> {"\n"}
+              &nbsp;&nbsp; cars_waiting_to_enter. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.cars_waiting_to_enter.toString()} </span> {"\n"}
+              &nbsp;&nbsp; car_entering_range. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.car_entering_range.toString()} </span> {"\n"}
+              &nbsp;&nbsp; obj_behind_intersection. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.obj_behind_intersection.toString()} </span> {"\n"}
+              &nbsp;&nbsp; is_tailgating. <span style={{float:'right', 'margin-right': '20px'}}> {agent.state.is_tailgating.toString()} </span> {"\n"}
             </p>
         </ReactTextCollapse>
       </div>
