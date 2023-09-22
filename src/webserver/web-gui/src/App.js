@@ -80,76 +80,64 @@ class App extends React.Component{
     });
 
     this.forceUpdate();
-  } 
+  }
 
   // When we renderour App, fetch the agent information
   componentDidMount() {
     this.update_from_sim();
     this.interval = setInterval(() => this.update_from_sim(), 2000);
   }
-  
+
   // Render Our App Component ( calls to Agent subchildren)
   render() {
-    // If our data didn't load, lets write HTML that we are waiting 
+    // If our data didn't load, lets write HTML that we are waiting
     if ((!this.state.EnvLoaded) ||
         (!this.state.rendered_imgLoaded))
-        return <div> 
-                <h1> Loading Simulation Information ... </h1> 
-                <h1> Please ensure that the simulator and webserver are running ... </h1> 
+        return <div>
+                <h1> Loading Simulation Information ... </h1>
+                <h1> Please ensure that the simulator and webserver are running ... </h1>
               </div> ;
+
+
+    let run = (this.state.sim_state == 'run');
 
     // When our data is loaded
     return (
-
-    // Div to clump app up into one component to render
-    <div className = "App"> 
-          {/* If paused we want to render this: */}
-          {this.state.sim_state === 'pause' && 
-          <div className="Modify-wrap">
-            <div>
-              <RenderedScene sim_state={this.state.sim_state}
-                              sim_step={this.state.env_info.sim_step}
-                              socket={this.state.socket}/>
-              <CounterfactualMenu agents={this.state.env_info.agents} 
+      // Div to clump app up into one component to render
+      <div className = "App">
+        <div className="Modify-wrap">
+          <div>
+            <RenderedScene sim_state={this.state.sim_state}
+                           sim_step={this.state.env_info.sim_step}
+                           socket={this.state.socket}/>
+            <div style={{visibility: (!run) ? 'visible' : 'hidden'}}>
+              <CounterfactualMenu agents={this.state.env_info.agents}
                                   socket={this.state.socket}
                                   sim_state={this.state.sim_state}
                                   env_info={this.state.env_info}
                                   update_from_sim={this.update_from_sim}
               />
             </div>
-            <Environment  max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
-                          max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
-                          tile_size={this.state.env_info.road_tile_size}
-                          sim_state={this.state.sim_state}
-                          socket={this.state.socket}
-                          update_from_sim={this.update_from_sim}
-                          sim_step={this.state.env_info.sim_step}
-              />
+          </div>
+          <Environment  max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size}
+                        max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
+                        tile_size={this.state.env_info.road_tile_size}
+                        sim_state={this.state.sim_state}
+                        socket={this.state.socket}
+                        update_from_sim={this.update_from_sim}
+                        sim_step={this.state.env_info.sim_step}
+          />
+          <div style={{visibility: (!run) ? 'visible' : 'hidden'}}>
             <Agents agents={this.state.env_info.agents}
                     socket={this.state.socket}
-                    max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
-                    max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size} 
+                    max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size}
+                    max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
                     tile_size={this.state.env_info.road_tile_size}
                     update_from_sim={this.update_from_sim}
-              />
-           </div>
-          } {/*End of paused */}
-          
-          {/* If running we want to render this: */}
-          {this.state.sim_state === 'run' && 
-            <div className="Modify-wrap">
-              <RenderedScene sim_state={this.state.sim_state}
-                            sim_step={this.state.env_info.sim_step}
-                            socket={this.state.socket}/>
-              <Environment  max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size} 
-                            max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
-                            tile_size={this.state.env_info.road_tile_size}
-                            sim_state={this.state.sim_state}
-                            socket={this.state.socket}
-                            update_from_sim={this.update_from_sim}
-                            sim_step={this.state.env_info.sim_step}/>
-            </div>
-          } {/*End of running */}
+            />
+          </div>
+        </div>
+        } {/*End of running */}
       </div>
     ); // End of return
   }
