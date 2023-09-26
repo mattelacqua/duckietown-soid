@@ -4,8 +4,12 @@ import './App.css';
 // Import React for components
 import React from 'react'
 
+import Header from './Header.js'
+import Footer from './Footer.js'
+
 // Import Agents since it will be rendered in appb
 import Agents from './agents/Agents.js'
+import AgentMap from './agents/AgentMap.js'
 
 // Import Environment since it will be rendered in app
 import Environment from './environment/Environment.js'
@@ -47,7 +51,7 @@ class App extends React.Component{
         sim_state: '',
         socket: socket,
       };
-      this.update_from_sim = this.update_from_sim.bind(this); // Bind this to update_from sim 
+      this.update_from_sim = this.update_from_sim.bind(this); // Bind this to update_from sim
   }
 
   // Update from the simulator
@@ -99,25 +103,20 @@ class App extends React.Component{
               </div> ;
 
 
-    let run = (this.state.sim_state == 'run');
+    let run = (this.state.sim_state === 'run');
 
     // When our data is loaded
     return (
       // Div to clump app up into one component to render
+      <>
+      <Header />
       <div className = "App">
         <div className="Modify-wrap">
           <div>
             <RenderedScene sim_state={this.state.sim_state}
                            sim_step={this.state.env_info.sim_step}
-                           socket={this.state.socket}/>
-            <div style={{visibility: (!run) ? 'visible' : 'hidden'}}>
-              <CounterfactualMenu agents={this.state.env_info.agents}
-                                  socket={this.state.socket}
-                                  sim_state={this.state.sim_state}
-                                  env_info={this.state.env_info}
-                                  update_from_sim={this.update_from_sim}
-              />
-            </div>
+                           socket={this.state.socket}
+            />
           </div>
           <Environment  max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size}
                         max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
@@ -127,18 +126,25 @@ class App extends React.Component{
                         update_from_sim={this.update_from_sim}
                         sim_step={this.state.env_info.sim_step}
           />
-          <div style={{visibility: (!run) ? 'visible' : 'hidden'}}>
-            <Agents agents={this.state.env_info.agents}
-                    socket={this.state.socket}
+          <AgentMap agents={this.state.env_info.agents}
                     max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size}
                     max_EW={this.state.env_info.grid_w * this.state.env_info.road_tile_size}
                     tile_size={this.state.env_info.road_tile_size}
-                    update_from_sim={this.update_from_sim}
-            />
-          </div>
+                    socket={this.state.socket}
+          />
+        </div>
+        <div style={{visibility: (!run) ? 'visible' : 'hidden'}}>
+          <Agents agents={this.state.env_info.agents}
+                  socket={this.state.socket}
+                  sim_state={this.state.sim_state}
+                  env_info={this.state.env_info}
+                  update_from_sim={this.update_from_sim}
+          />
         </div>
         } {/*End of running */}
       </div>
+    <Footer />
+    </>
     ); // End of return
   }
 }

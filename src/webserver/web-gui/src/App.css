@@ -2,10 +2,7 @@
     text-align: left;
     font-weight: 600;
     color: Black;
-    text-shadow:
-    -1px -1px 0 #EEE,
-    1px 1px 0 #EEE;
-    background-color: #F8F8F8;
+    background-color: white;
 }
 .Modify-wrap {
     display:flex;

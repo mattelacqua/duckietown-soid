@@ -19,29 +19,28 @@ class Environment extends React.Component {
   // Construct it with state so we can keep track of relevant information
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
   }
 
   // Render the Env component EnvInfo.js)
   render() {
     return (
-              <div classname='Environment'>
-                {/* Render Environment Information */}
-                <StateButtons sim_state={this.props.sim_state} 
-                              update_from_sim={this.props.update_from_sim}
-                              socket={this.props.socket}/>
+      <div classname='Environment'>
+        {/* Render Environment Information */}
+        <StateButtons sim_state={this.props.sim_state}
+                      update_from_sim={this.props.update_from_sim}
+                      socket={this.props.socket}/>
 
-                <EnvInfo  sim_state={this.props.sim_state}
-                          sim_step={this.props.sim_step}/>
+        <EnvInfo  sim_state={this.props.sim_state}
+                  sim_step={this.props.sim_step}/>
 
-                <LogStep  step={this.props.sim_step}
-                          max_step={this.props.sim_step}
-                          socket={this.props.socket}
-                          sim_state={this.props.sim_state}/>
-              </div>
-          );
-    }
+        <LogStep  step={this.props.sim_step}
+                  max_step={this.props.sim_step}
+                  socket={this.props.socket}
+                  sim_state={this.props.sim_state}/>
+      </div>
+    );
+  }
 }
 
 // Allow it to be called in other functions

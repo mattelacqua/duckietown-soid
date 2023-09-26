@@ -7,7 +7,6 @@ import React from 'react'
 // Import Agents since it will be rendered in appb
 import Agent from './Agent.js'
 import Agent0 from './Agent0.js'
-import AgentMap from './AgentMap.js'
 import AddAgent from './AddAgent.js'
 
 // Agent Component (gets rendered in app)
@@ -16,8 +15,7 @@ class Agents extends React.Component {
   // Construct it with state so we can keep track of relevant information
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
   }
 
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)
@@ -27,13 +25,6 @@ class Agents extends React.Component {
     let agents = this.props.agents.slice(1);
 
     return ( <div>
-               <AgentMap agents={this.props.agents}
-                         max_NS={this.props.max_NS}
-                         max_EW={this.props.max_EW}
-                         tile_size={this.props.tile_size}
-                         socket={this.props.socket}
-               />
-
                <div className="AgentHeader">
                  <h2>Agents</h2>
                  <AddAgent agents={this.props.agents}
