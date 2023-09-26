@@ -53,7 +53,7 @@ class AgentInfo extends React.Component {
               &nbsp;&nbsp; stop_x. <span style={{float:'right', 'margin-right': '20px'}}> {agent.stop_x} </span> {"\n"}
               &nbsp;&nbsp; stop_y. <span style={{float:'right', 'margin-right': '20px'}}> {agent.stop_z} </span> {"\n"}
               &nbsp;&nbsp; tile_x. <span style={{float:'right', 'margin-right': '20px'}}> {agent.tile_x} </span> {"\n"}
-              &nbsp;&nbsp; tile_y. <span style={{float:'right', 'margin-right': '20px'}}> {agent.tile_y} </span> {"\n"}
+              &nbsp;&nbsp; tile_y. <span style={{float:'right', 'margin-right': '20px'}}> {agent.tile_z} </span> {"\n"}
               &nbsp;&nbsp; angle. <span style={{float:'right', 'margin-right': '20px'}}> {agent.angle} </span> {"\n"}
               &nbsp;&nbsp; angle_deg. <span style={{float:'right', 'margin-right': '20px'}}> {agent.angle_deg} </span> {"\n"}
               &nbsp;&nbsp; current_direction. <span style={{float:'right', 'margin-right': '20px'}}> {agent.direction} </span> {"\n"}
