@@ -1,0 +1,14 @@
+.footer {
+    background-color: white;
+    margin-top: 2em;
+    border-top: 2px solid #DDDDDD;
+    width: 100%;
+    bottom: 0;
+    color: white;
+    font-size: 25px;
+}
+
+.footer img {
+    float: right;
+    margin-right: 1em; 
+}

@@ -1,0 +1,21 @@
+.head {
+    background-color: #00356b;
+    width: 100%;
+    bottom: 0;
+    color: #DDDDDD;
+    font-size: 16px;
+    padding: 2em;
+}
+
+.headText {
+    margin-left: 2em;
+    margin-right: 6em;
+}
+
+.headText h1 {
+    font-size: 30px;
+}
+
+.headText a {
+    color: #DDDDDD;
+}
