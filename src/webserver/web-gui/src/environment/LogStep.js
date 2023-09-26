@@ -31,6 +31,8 @@ class LogStep extends React.Component {
 
   // Render the Dial component from the react-dial-knob package
   render() {
+    if (!this.state.started) return;
+    
     // if we're running dial isn't useful and is confusing
     return (
       <div style={{visibility: (!this.state.run) ? 'visible' : 'hidden'}}>

@@ -44,10 +44,8 @@ class AngleDial extends React.Component {
 
   // Render the Dial component from the react-dial-knob package
   render() {
-    const color = this.props.agent.color
     return (
       <CircularSlider
-        knobColor={color}
         progressColorFrom="#eeeeee"
         progressColorTo="#eeeeee"
         progressSize={10}

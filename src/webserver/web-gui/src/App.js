@@ -50,6 +50,7 @@ class App extends React.Component{
         rendered_img: new Image(),
         sim_state: '',
         socket: socket,
+        started: false,
       };
       this.update_from_sim = this.update_from_sim.bind(this); // Bind this to update_from sim
   }
@@ -61,17 +62,17 @@ class App extends React.Component{
     // Fetch for env info
     await fetch("/envInfo.json",{ headers : headers}) // Shorthand for http://localhost:5001/envInfo.json
       .then(res => res.json()) // Result becomes a json
-      .then(result => 
-      { let new_ref = result;
-        if (!_.isEqual(new_ref, this.state.env_info)) {
-          this.setState({
+      .then(result =>
+        { let new_ref = result;
+          if (!_.isEqual(new_ref, this.state.env_info)) {
+            this.setState({
               env_info: new_ref,
               EnvLoaded: true,
-              sim_state: new_ref.state
-          });
-          console.log("Set new env_info from simulator", new_ref);
+              sim_state: new_ref.state,
+              started: this.state.started
+            });
           } // Endif
-      }) 
+      })
       .catch(error => console.log('error catching env_info', error));  // take the json and set the state vars with it
 
     // Get the rendered image
@@ -125,6 +126,7 @@ class App extends React.Component{
                         socket={this.state.socket}
                         update_from_sim={this.update_from_sim}
                         sim_step={this.state.env_info.sim_step}
+                        started={this.state.started}
           />
           <AgentMap agents={this.state.env_info.agents}
                     max_NS={this.state.env_info.grid_h * this.state.env_info.road_tile_size}
@@ -141,7 +143,7 @@ class App extends React.Component{
                   update_from_sim={this.update_from_sim}
           />
         </div>
-        } {/*End of running */}
+        {/*End of running */}
       </div>
     <Footer />
     </>

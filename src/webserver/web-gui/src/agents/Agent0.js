@@ -15,11 +15,6 @@ import IntersectionArrival from './IntersectionArrival.js'
 // Import Agent InitialDirection
 import InitialDirection from './InitialDirection.js'
 
-// Import Agent DeleteAgent
-import DeleteAgent from './DeleteAgent.js'
-
-// Import Agent DeleteAgent
-
 // Agent Component (gets rendered in app)
 class Agent0 extends React.Component {
 
@@ -50,8 +45,6 @@ class Agent0 extends React.Component {
       <div classname='Agent'>
         <div className='AgentHeader'>
           <h3> {this.props.agent.agent_id} </h3>
-          <DeleteAgent agent={this.props.agent}
-                       socket={this.props.socket} />
         </div>
         {/* Manipulators */}
         <div classname='AgentManip'>
