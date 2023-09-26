@@ -24,6 +24,8 @@ class EnvInfo extends React.Component {
 
   // Render the information to screen
   render() {
+    if (!this.state.started) return;
+
     if (this.state.run) {
       return (
         <div style={{

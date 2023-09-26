@@ -17,23 +17,34 @@ class StateButtons extends React.Component {
   async handleClick(state) {
     this.setState({
       sim_state: state,
+      started: true,
     });
 
     if (state === 'pause') {
       this.props.socket.emit('update_sim_info');
 
       // for some reason wrapping this update_from_sim() call prevents a 'missing bracket' error -- I have no idea why...
-      let base = this
-      setTimeout(() => { base.props.update_from_sim() }, 1000);
+      let self = this
+      setTimeout(() => { self.props.update_from_sim() }, 1000);
     }
-    this.props.socket.emit('sim_state', {'state':state});
+    this.props.socket.emit('sim_state', {'state' : state});
 }
 
   // Render the information to screen
   render() {
+    if (!this.state.started) {
+      return (
+        <div class='StateButtons'>
+          {/* Paused */}
+          {this.props.sim_state === 'pause' &&
+           <button className = "start" onClick={()=>this.handleClick("run")}>Run</button>
+          }
+        </div>
+      );
+    };
+    
     return (
       <div class='StateButtons'>
-
         {/* Running */}
         {this.props.sim_state === 'run' &&
           <button className='pause' onClick={()=>this.handleClick("pause")}>Pause</button>
@@ -44,8 +55,8 @@ class StateButtons extends React.Component {
             <button className = "resume" onClick={()=>this.handleClick("run")}>Resume</button>
         }
      </div>
-      );
-    }
+    );
+  }
 }
 
 export default StateButtons;

@@ -9,24 +9,22 @@ class AgentInfo extends React.Component {
   // Construct so it takes properties and they are information
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
   }
 
   // Render the information to screen
   render() {
-    const color = this.props.agent.color;
     const collapse_options = {
         collapse: true,
-        collapseText: '<----------- show more ----------->',
-        expandText: '----------> show less <-----------',
+        collapseText: 'more',
+        expandText: 'less',
         minHeight: 100,
         maxHeight: 400,
         display: 'float',
         textStyle: {
-          color: color,
           padding: '10px',
           fontWeight: 'normal',
+          'text-decoration': 'underline',
         },
       };
 
@@ -36,16 +34,16 @@ class AgentInfo extends React.Component {
         <ReactTextCollapse
           options={collapse_options}>
             <p style={{
-                    color: color,
-                    textAlign: 'left',
-                    whiteSpace: 'pre-line',
+                 textAlign: 'left',
+                 fontWeight: 'normal',
+                 whiteSpace: 'pre-line',
             }}> 
       
-            {"\n"} {agent.agent_id} General Info: {"\n"}
+            {"\n"} General Information: {"\n"}
               &nbsp;&nbsp; color: <span style={{float:'right', 'margin-right': '20px'}}> {agent.color} </span> {"\n"}
               &nbsp;&nbsp; step_count: <span style={{float:'right', 'margin-right': '20px'}}> {agent.step_count} </span> {"\n"}
 
-            {"\n"} {agent.agent_id} Pose: {"\n"}
+            {"\n"} Pose: {"\n"}
               &nbsp;&nbsp; pos_x. <span style={{float:'right', 'margin-right': '20px'}}> {agent.pos_x} </span> {"\n"}
               &nbsp;&nbsp; pos_y. <span style={{float:'right', 'margin-right': '20px'}}> {agent.pos_z} </span> {"\n"}
               &nbsp;&nbsp; prev_pos_x. <span style={{float:'right', 'margin-right': '20px'}}> {agent.prev_pos_x} </span> {"\n"}
@@ -59,7 +57,7 @@ class AgentInfo extends React.Component {
               &nbsp;&nbsp; current_direction. <span style={{float:'right', 'margin-right': '20px'}}> {agent.direction} </span> {"\n"}
               &nbsp;&nbsp; initial_direction. <span style={{float:'right', 'margin-right': '20px'}}> {agent.initial_direction} </span> {"\n"}
 
-            {"\n"} {agent.agent_id} State: {"\n"}
+            {"\n"} State: {"\n"}
               &nbsp;&nbsp; speed. <span style={{float:'right', 'margin-right': '20px'}}> {agent.speed} </span> {"\n"}
               &nbsp;&nbsp; forward_step. <span style={{float:'right', 'margin-right': '20px'}}> {agent.forward_step} </span> {"\n"}
               &nbsp;&nbsp; patience. <span style={{float:'right', 'margin-right': '20px'}}> {agent.patience} </span> {"\n"}

@@ -26,8 +26,7 @@ class Agent extends React.Component {
   // Construct it with state so we can keep track of relevant information
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
   }
 
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)
