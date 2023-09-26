@@ -19,8 +19,8 @@ class DeleteAgent extends React.Component {
   // Render the information to screen
   render() {
     return (
-      <div class='Buttons'>
-          <button className='delete_agent' onClick={this.handleClick}> Delete Agent {this.props.agent.id} </button>
+      <div class='StateButtons'>
+          <button className='delete_agent' onClick={this.handleClick}> Delete </button>
       </div>
       );
     }

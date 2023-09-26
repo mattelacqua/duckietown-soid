@@ -1,7 +1,7 @@
 // Import React
 import React from "react";
 
-// Import Range 
+// Import Range
 import InputRange from 'react-input-range';
 import "react-input-range/lib/css/index.css";
 
@@ -14,30 +14,28 @@ class LogStep extends React.Component {
     this.state = {
       step: this.props.step,
       max_step: this.props.max_step,
-      socket: props.socket,     // Socket
+      socket: this.props.socket,     // Socket
       run: (this.props.sim_state === 'run'),
     };
   }
 
-  // Update the dial state on new changes 
+  // Update the dial state on new changes
   handleChange = (newValue) => {
     console.log("SENDING OUT LOG STEP")
     this.state.socket.emit('log_step',
                     {
-                        'step':this.state.step,         // Pass the agent_id stored in state
+                      'step': this.state.step,         // Pass the agent_id stored in state
                     }); // End emit
-     this.setState({step: newValue}); 
+    this.setState({step: newValue});
   };
 
   // Render the Dial component from the react-dial-knob package
   render() {
     // if we're running dial isn't useful and is confusing
-    if (this.state.run) return;
-
     return (
-      <div>
+      <div style={{visibility: (!this.state.run) ? 'visible' : 'hidden'}}>
         <form classname="form">
-        <p> Log Step </p> 
+        <p>Log Step</p>
           <InputRange
               maxValue = {this.state.max_step}
               minValue = {0}

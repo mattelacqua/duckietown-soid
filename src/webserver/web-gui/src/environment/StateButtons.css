@@ -1,10 +1,8 @@
 .StateButtons {
   display:flex;
   flex-direction:row;
-
 }
 .StateButtons button {
-
   appearance: none;
   background-color: #2ea44f;
   border: 1px solid rgba(27, 31, 35, .15);
@@ -14,7 +12,7 @@
   color: #fff;
   cursor: pointer;
   display: block;
-  font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  font-family: "Roboto",-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
@@ -54,44 +52,40 @@
   background-color: #298e46;
   box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
-
-
 .add_agent {
-    background-color: blue!important;
+    transform: scale(0.7);
+    background-color: #88CCEE!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }
 .delete_agent {
-  background-color: rgb(174, 0, 0)!important;
-  margin-bottom: 10px;
-  margin-top: 20px;
-}
-.resume {
-    background-color: green!important;
+    transform: scale(0.7);
+    background-color: #882255!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }
-
+.resume {
+    background-color: #117733!important;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
 .pause {
     background-color: rgb(211, 133, 17)!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }
-
 .query {
   background-color: violet!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }
-
 .move_factual {
-  background-color: darkgreen!important;
+  background-color: #999933!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }
-
 .move_existential {
-  background-color: teal!important;
+  background-color: #44AA99!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }

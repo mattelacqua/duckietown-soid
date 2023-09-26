@@ -1,11 +1,56 @@
 .Agent {
     display:flex;
     justify-content: space-between;
-    flex-direction:column;
+    flex-direction: column;
     padding-top: 2em;
     padding-left: 2em;
     padding-right: 2em;
     padding-bottom: 10em;
     overflow:hidden;
 }
+
+.AgentManip {
+    display:flex;
+    justify-content: space-between;
+    flex-direction: row;
+    padding-top: 2em;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-bottom: 10em;
+    overflow:hidden;
+}
+
+.AgentEdit {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    padding-top: 2em;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-bottom: 10em;
+    overflow:hidden;
+}
+
+.InitialDirection {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    padding-top: 2em;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-bottom: 10em;
+    overflow:hidden;
+}
+
+.IntersectionArrival {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    padding-top: 2em;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-bottom: 10em;
+    overflow:hidden;
+}
+
 

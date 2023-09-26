@@ -352,7 +352,7 @@ class AddCounterfactual extends React.Component {
                 />
                 {input_component}
 
-                <div class='Buttons'>
+                <div class='StateButtons'>
                   <button className='addcounterfac'onClick= {this.handleClick}> Add Counterfactual  </button>
                 </div>
              </div>

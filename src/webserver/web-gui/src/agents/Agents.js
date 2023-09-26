@@ -6,6 +6,7 @@ import React from 'react'
 
 // Import Agents since it will be rendered in appb
 import Agent from './Agent.js'
+import Agent0 from './Agent0.js'
 import AgentMap from './AgentMap.js'
 import AddAgent from './AddAgent.js'
 
@@ -21,29 +22,40 @@ class Agents extends React.Component {
 
   // Render the agent component ( Consists currently of a dial (AgentDial.js and agent information AgentInfo.js)
   render() {
-    return (
-      <div>
-        <AgentMap agents={this.props.agents} 
-                max_NS={this.props.max_NS} 
-                max_EW={this.props.max_EW} 
-                tile_size={this.props.tile_size}
-                socket={this.props.socket}
-                />     
 
-        <AddAgent agents={this.props.agents}
-                  socket={this.props.socket}/>
-        <div className="Agents">
-          {this.props.agents.map((agent) => ( 
-            /* Render an Agent component, with props: agent_id, cur_angle, cur_pos, color */
-            <Agent  agent={agent} 
-                    socket={this.props.socket} 
-                    update_from_sim={this.props.update_from_sim}/>
-          ))}
-        </div>
-    </div>
-    );
-  }
+    let agent0 = this.props.agents[0];
+    let agents = this.props.agents.slice(1);
+
+    return ( <div>
+               <AgentMap agents={this.props.agents}
+                         max_NS={this.props.max_NS}
+                         max_EW={this.props.max_EW}
+                         tile_size={this.props.tile_size}
+                         socket={this.props.socket}
+               />
+
+               <div className="AgentHeader">
+                 <h2>Agents</h2>
+                 <AddAgent agents={this.props.agents}
+                           socket={this.props.socket}/>
+               </div>
+               <div className="Agents">
+                 <Agent0  agents={this.props.agents}
+                          agent={agent0}
+                          socket={this.props.socket}
+                          update_from_sim={this.props.update_from_sim}/>
+                 {agents.map((agent) => (
+                   <div class="card">
+                     <Agent  agents={this.props.agents}
+                             agent={agent}
+                             socket={this.props.socket}
+                             update_from_sim={this.props.update_from_sim}/>
+                   </div>
+                 ))}
+               </div>
+             </div>
+           );
+    }
 }
 // Allow it to be called in other functions
 export default Agents;
-

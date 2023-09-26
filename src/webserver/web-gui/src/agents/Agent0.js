@@ -21,7 +21,7 @@ import DeleteAgent from './DeleteAgent.js'
 // Import Agent DeleteAgent
 
 // Agent Component (gets rendered in app)
-class Agent extends React.Component {
+class Agent0 extends React.Component {
 
   // Construct it with state so we can keep track of relevant information
   constructor(props) {
@@ -75,4 +75,4 @@ class Agent extends React.Component {
 }
 
 // Allow it to be called in other functions
-export default Agent;
+export default Agent0;

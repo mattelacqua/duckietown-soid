@@ -82,13 +82,17 @@ class Queries extends React.Component {
         display: 'flex',
         paddingTop: '2em',
       }}> Ask a Question based on given Counterfactuals:</p>
-        <div class='Queries'>
-              <button className='move_factual' onClick={()=>this.handleClick("move_factual")}>Will Agent 0 always move?</button>
-              <button className='move_existential' onClick={()=>this.handleClick("move_existential")}>Is there a scenario where Agent 0 moves?</button>
+        <div className='Queries'>
+          <div className='StateButtons'>
+            <button className='move_factual' onClick={()=>this.handleClick("move_factual")}>Will Agent 0 always move?</button>
+            <button className='move_existential' onClick={()=>this.handleClick("move_existential")}>Is there a scenario where Agent 0 moves?</button>
+          </div>
         </div>
-        <div class='Queries'>
-              <button className='stop_factual' onClick={()=>this.handleClick("stop_factual")}>Will Agent 0 always stop?</button>
-              <button className='stop_existential' onClick={()=>this.handleClick("stop_existential")}>Is there a scenario where Agent 0 stops?</button>
+        <div className='Queries'>
+          <div className='StateButtons'>
+            <button className='stop_factual' onClick={()=>this.handleClick("stop_factual")}>Will Agent 0 always stop?</button>
+            <button className='stop_existential' onClick={()=>this.handleClick("stop_existential")}>Is there a scenario where Agent 0 stops?</button>
+            </div>
         </div>
         <p> SOID RESULT:</p>
         <p> {JSON.stringify(this.props.env_info.soid_result, null, 2)} </p>
