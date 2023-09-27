@@ -57,7 +57,7 @@ class Agent0 extends React.Component {
           <AngleDial  agent={this.props.agent}
                       socket={this.props.socket} />
         </div>
-        <div classname='AgentInfo'>
+        <div className='AgentInfo'>
           <AgentInfo  agent={this.props.agent} />
         </div>
     </div>

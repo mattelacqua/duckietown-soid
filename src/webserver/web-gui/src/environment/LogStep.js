@@ -36,7 +36,7 @@ class LogStep extends React.Component {
     // if we're running dial isn't useful and is confusing
     return (
       <div style={{visibility: (!this.state.run) ? 'visible' : 'hidden'}}>
-        <form classname="form">
+        <form className="form">
         <p>Log Step</p>
           <InputRange
               maxValue = {this.state.max_step}

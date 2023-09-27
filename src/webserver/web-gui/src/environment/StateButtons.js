@@ -1,15 +1,13 @@
 import React from "react";
 import './StateButtons.css';
 
-
 // Component to spit out agent information
 class StateButtons extends React.Component {
 
   // Construct so it takes properties and they are information
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
     this.handleClick = this.handleClick.bind(this);
   }
 
@@ -37,7 +35,7 @@ class StateButtons extends React.Component {
         <div class='StateButtons'>
           {/* Paused */}
           {this.props.sim_state === 'pause' &&
-           <button className = "start" onClick={()=>this.handleClick("run")}>Run</button>
+           <button className = "start" onClick={()=>this.handleClick("run")}>&nbsp;&nbsp;&nbsp;&nbsp;Run&nbsp;&nbsp;&nbsp;&nbsp;</button>
           }
         </div>
       );
@@ -47,7 +45,7 @@ class StateButtons extends React.Component {
       <div class='StateButtons'>
         {/* Running */}
         {this.props.sim_state === 'run' &&
-          <button className='pause' onClick={()=>this.handleClick("pause")}>Pause</button>
+          <button className='pause' onClick={()=>this.handleClick("pause")}>&nbsp;&nbsp;Pause&nbsp;&nbsp;</button>
         }
         
         {/* Paused */}
