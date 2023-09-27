@@ -3,6 +3,9 @@ import './Agent.css';
 // Import React
 import React from "react";
 
+// Import Model Choice
+import ModelChoice from './ModelChoice.js'
+
 // Import Agent Info Screen
 import AgentInfo from './AgentInfo.js'
 
@@ -14,6 +17,10 @@ import IntersectionArrival from './IntersectionArrival.js'
 
 // Import Agent InitialDirection
 import InitialDirection from './InitialDirection.js'
+
+// Import Counterfactuals
+import AddCounterfactual from './counterfactual/AddCounterfactual.js';
+import CounterfactualList from './counterfactual/CounterfactualList.js'
 
 // Agent Component (gets rendered in app)
 class Agent0 extends React.Component {
@@ -41,27 +48,39 @@ class Agent0 extends React.Component {
       direction_label = 'W'
     }
 
+    let agent = this.props.agent;
+
     return (
-      <div className='Agent0'>
-        <div className='AgentHeader'>
-          <h3> {this.props.agent.agent_id} </h3>
+      <div className='Agent'>
+        <div className='AgentMain' style={{width: '60%'}}>
+          <div className='AgentHeader'>
+            <h2> Agent {agent.agent_id.slice(-1)}. </h2>
+            <ModelChoice agent={this.props.agents[0]} 
+                         socket={this.props.socket} />
+          </div>
+          {/* Manipulators */}
+          <div className='AgentEdit'>
+            <IntersectionArrival agents={this.props.agents}
+                                 agent={agent}
+                                 step={this.props.sim_state}
+                                 socket={this.props.socket} />
+            <InitialDirection agent={agent}
+                              direction_label={direction_label}
+                              socket={this.props.socket} />
+            <AngleDial  agent={agent}
+                        socket={this.props.socket} />
+          </div>
+          <div className='AgentInfo'>
+            <AgentInfo  agent={agent} />
+          </div>
         </div>
-        {/* Manipulators */}
-        <div className='AgentEdit'>
-          <IntersectionArrival agents={this.props.agents}
-                               agent={this.props.agent}
-                               step={this.props.sim_state}
-                               socket={this.props.socket} />
-          <InitialDirection agent={this.props.agent}
-                            direction_label={direction_label}
-                            socket={this.props.socket} />
-          <AngleDial  agent={this.props.agent}
-                      socket={this.props.socket} />
+        <div className="AgentCounterfactuals" class="card" style={{width: '30%'}}>
+          <AddCounterfactual  agent={agent} 
+                              socket={this.props.socket} />
+          <CounterfactualList agent={agent}  
+                              socket={this.props.socket} />
         </div>
-        <div className='AgentInfo'>
-          <AgentInfo  agent={this.props.agent} />
-        </div>
-    </div>
+      </div>
     );
   }
 }

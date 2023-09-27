@@ -1,5 +1,5 @@
 import React from "react";
-import '../environment/StateButtons.css';
+import '../../environment/StateButtons.css';
 
 // Component to spit out agent information
 class DeleteCounterfactual extends React.Component {

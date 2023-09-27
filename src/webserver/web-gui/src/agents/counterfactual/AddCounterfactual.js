@@ -8,7 +8,7 @@ import CounterfactualRange from "./CounterfactualRange.js";
 import CounterfactualValue from "./CounterfactualValue.js";
 
 import ValueType from "./ValueType.js";
-import '../environment/StateButtons.css'
+import '../../environment/StateButtons.css'
 
 // Agent Component (gets rendered in app)
 class AddCounterfactual extends React.Component {
