@@ -81,34 +81,35 @@
     margin-top: 20px;
 }
 .query {
-  background-color: violet!important;
+    background-color: violet!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }
 .move_factual {
-  background-color: #999933!important;
+    background-color: #999933!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }
 .move_existential {
-  background-color: #44AA99!important;
+    background-color: #44AA99!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }
 .stop_factual {
-  background-color: darkred!important;
+    background-color: darkred!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }
 .stop_existential {
-  background-color: orchid!important;
+    background-color: orchid!important;
     margin-bottom: 10px;
     margin-top: 20px;
 }
 .addcounterfac {
-  background-color: mediumslateblue!important;
-  margin-top: 10px;
-  justify-content: center;
-  align-items: center;
+    transform: scale(0.7);
+    background-color: mediumslateblue!important;
+    margin-top: 10px;
+    justify-content: center;
+    align-items: center;
 }
 
