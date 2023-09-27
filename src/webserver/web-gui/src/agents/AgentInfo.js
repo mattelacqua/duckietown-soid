@@ -15,18 +15,18 @@ class AgentInfo extends React.Component {
   // Render the information to screen
   render() {
     const collapse_options = {
-        collapse: true,
-        collapseText: 'more',
-        expandText: 'less',
-        minHeight: 100,
-        maxHeight: 400,
-        display: 'float',
-        textStyle: {
-          padding: '10px',
-          fontWeight: 'normal',
-          'text-decoration': 'underline',
-        },
-      };
+      collapse: true,
+      collapseText: 'more',
+      expandText: 'less',
+      minHeight: 100,
+      maxHeight: 400,
+      display: 'float',
+      textStyle: {
+        padding: '0px 2px 2px 2px',
+        fontWeight: 'normal',
+        'text-decoration': 'underline',
+      },
+    };
 
     let agent = this.props.agent;
     return (
@@ -37,8 +37,8 @@ class AgentInfo extends React.Component {
                  textAlign: 'left',
                  fontWeight: 'normal',
                  whiteSpace: 'pre-line',
-            }}> 
-      
+            }}>
+
             {"\n"} General Information: {"\n"}
               &nbsp;&nbsp; color: <span style={{float:'right', 'margin-right': '20px'}}> {agent.color} </span> {"\n"}
               &nbsp;&nbsp; step_count: <span style={{float:'right', 'margin-right': '20px'}}> {agent.step_count} </span> {"\n"}

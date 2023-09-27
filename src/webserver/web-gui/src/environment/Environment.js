@@ -25,7 +25,7 @@ class Environment extends React.Component {
   // Render the Env component EnvInfo.js)
   render() {
     return (
-      <div classname='Environment'>
+      <div className='Environment'>
         {/* Render Environment Information */}
         <StateButtons sim_state={this.props.sim_state}
                       update_from_sim={this.props.update_from_sim}

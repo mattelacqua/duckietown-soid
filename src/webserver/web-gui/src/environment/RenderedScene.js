@@ -58,7 +58,7 @@ class RenderedScene extends React.Component {
               backgroundSize: "cover",
               background: "gray15",
             }}>
-
+          
           {/* HTML FOR IMAGE */}
           <img src={this.state.src + "?v=" + this.state.key}
                onLoad={() => { this.load_tick() }}
@@ -71,7 +71,6 @@ class RenderedScene extends React.Component {
                 }} /> 
 
       </div>
-      
       );
     }
 }
