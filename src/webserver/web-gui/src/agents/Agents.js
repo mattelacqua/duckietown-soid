@@ -187,7 +187,7 @@ class Agents extends React.Component {
                  <h2>Primary Agent</h2>
                  <Agent0  agents={this.props.agents}
                           agent={agent0}
-                          step={this.props.sim_step}
+                          sim_step={this.props.sim_step}
                           socket={this.props.socket}
                           update_from_sim={this.props.update_from_sim}/>
                  <div className="AgentHeader">
@@ -199,7 +199,7 @@ class Agents extends React.Component {
                    <div class="card" style={{'background-color': 'rgba(' + h2rgb(agent.color).r + ', ' + h2rgb(agent.color).g + ', ' + h2rgb(agent.color).b + ', 0.5)'}}>
                      <Agent  agents={this.props.agents}
                              agent={agent}
-                             step={this.props.sim_step}
+                             sim_step={this.props.sim_step}
                              socket={this.props.socket}
                              update_from_sim={this.props.update_from_sim}/>
                    </div>
