@@ -173,10 +173,8 @@ class Agents extends React.Component {
     }
 
     function h2rgb(color) {
-      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(COLORS[color.toLowerCase()]);
-      return result ? { r: parseInt(result[1], 16),
-                        g: parseInt(result[2], 16),
-                        b: parseInt(result[3], 16) } : null;
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec((color[0] === '#') ? color : COLORS[color.toLowerCase()]);
+      return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : { r: 255, g: 255, b: 255 };
     }
 
     let agent0 = this.props.agents[0];
