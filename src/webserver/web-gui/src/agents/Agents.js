@@ -184,6 +184,7 @@ class Agents extends React.Component {
 
     return ( <div>
                <div className="Agents">
+                 <h2>Primary Agent</h2>
                  <Agent0  agents={this.props.agents}
                           agent={agent0}
                           socket={this.props.socket}
@@ -191,7 +192,7 @@ class Agents extends React.Component {
                  <div className="AgentHeader">
                    <h2>Other Agents</h2>
                    <AddAgent agents={this.props.agents}
-                           socket={this.props.socket}/>
+                             socket={this.props.socket}/>
                  </div>
                  {agents.map((agent) => (
                    <div class="card" style={{'background-color': 'rgba(' + h2rgb(agent.color).r + ', ' + h2rgb(agent.color).g + ', ' + h2rgb(agent.color).b + ', 0.5)'}}>

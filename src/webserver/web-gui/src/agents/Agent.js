@@ -46,26 +46,24 @@ class Agent extends React.Component {
     }
 
     return (
-      <div classname='Agent'>
+      <div className='Agent'>
         <div className='AgentHeader'>
           <h3> {this.props.agent.agent_id} </h3>
           <DeleteAgent agent={this.props.agent}
                        socket={this.props.socket} />
         </div>
         {/* Manipulators */}
-        <div classname='AgentManip'>
+        <div className='AgentEdit'>
+          <IntersectionArrival agents={this.props.agents}
+                               agent={this.props.agent}
+                               socket={this.props.socket} />
+          <InitialDirection agent={this.props.agent}
+                            direction_label={direction_label}
+                            socket={this.props.socket} />
           <AngleDial  agent={this.props.agent} 
-                      socket={this.props.socket} />
-          <div classname='AgentEdit'>
-            <IntersectionArrival agents={this.props.agents}
-                                 agent={this.props.agent}
-                                 socket={this.props.socket} />
-            <InitialDirection agent={this.props.agent}
-                              direction_label={direction_label}
-                              socket={this.props.socket} />
-            </div>
+                      socket={this.props.socket} />  
         </div>
-        <div classname='AgentInfo'>
+        <div className='AgentInfo'>
           <AgentInfo  agent={this.props.agent} />
         </div>
     </div>
