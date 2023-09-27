@@ -21,8 +21,14 @@ def handle_input(env, gui_input):
 
     # If there is a change from the RHS of GUI
     if gui_input['kind'] == 'change':
+        if not hasattr(env, 'idx_map'):
+            env.idx_map = [i for i in range(len(env.agents))]
+
+        idx  = int(gui_input['agent_id'])
+        midx = list(filter(lambda x: type(x) is int, env.idx_map)).index(idx)
+
         change = gui_input['change']
-        agent = env.agents[int(gui_input['agent_id'])]
+        agent = env.agents[midx]
         if change == "angle":
             agent.cur_angle = math.radians(gui_input['cur_angle'])
             agent.deg_angle = agent.get_curr_angle(env)
@@ -31,6 +37,7 @@ def handle_input(env, gui_input):
             agent.cur_pos = [gui_input['pos_x'], 0, gui_input['pos_z']]
             agent.actions = []
         elif change == "delete":
+            env.idx_map[int(gui_input['agent_id'])] = None
             env.agents.remove(agent)
         elif change == "initial_direction":
             if gui_input['initial_direction'] == '0':
@@ -61,13 +68,17 @@ def handle_input(env, gui_input):
                 agent.good_agent = False
                 agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/pathological/10k_train'))
                 print("New Q Table set for pathological.")
-    
+
     # If adding an agent
     if gui_input['kind'] == 'add_agent':
-        new_agent = agents.Agent(env, agent_id=("agent"+str(len(env.agents))), random_spawn=True)
+        if not hasattr(env, 'idx_map'):
+            env.idx_map = [i for i in range(len(env.agents))]
+
+        new_agent = agents.Agent(env, agent_id=("agent"+str(len(env.idx_map))), random_spawn=True)
         directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
         colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
         env.agents.append(new_agent)
+        env.idx_map.append(len(env.idx_map))
         env.spawn_random_agent(new_agent, directions, colors)
 
     # Handling counterfactuals
@@ -136,7 +147,7 @@ def handle_input(env, gui_input):
         #soid_result = sq.invoke_soid(query_blob)
 
         #env.soid_result = soid_result
-        
+
         # Actually set to pause but return soid
         env.state = 'pause'
         return 'soid'

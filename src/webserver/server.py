@@ -158,9 +158,9 @@ def add_agent():
                     'kind': 'add_agent',
                    }
     serialize(agent_change, out)
-@socketio.on("delete_agent")
 
 # delete an agent
+@socketio.on("delete_agent")
 def delete_agent(data):
     global out
     a_id = str(data['id'])
