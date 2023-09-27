@@ -56,7 +56,7 @@ class Agent extends React.Component {
         <div className='AgentEdit'>
           <IntersectionArrival agents={this.props.agents}
                                agent={this.props.agent}
-                               step={this.props.sim_state}
+                               sim_step={this.props.sim_step}
                                socket={this.props.socket} />
           <InitialDirection agent={this.props.agent}
                             direction_label={direction_label}

@@ -11,7 +11,7 @@ class IntersectionArrival extends React.Component {
     super(props);
     this.state = {
       value: props.agent.intersection_arrival,
-      step:  props.step,
+      step:  props.sim_step,
     };
 
     this.handleChoice = this.handleChoice.bind(this);
