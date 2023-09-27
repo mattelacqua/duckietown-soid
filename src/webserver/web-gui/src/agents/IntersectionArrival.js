@@ -10,8 +10,8 @@ class IntersectionArrival extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value:  props.agent.intersection_arrival,
-      length: props.agents.length,
+      value: props.agent.intersection_arrival,
+      step:  props.step,
     };
 
     this.handleChoice = this.handleChoice.bind(this);
@@ -37,14 +37,16 @@ class IntersectionArrival extends React.Component {
   render() {
     const options = [];
 
-    for (let i = 0; i < this.state.length; i++) options.push({ value: i.toString(), label: i.toString() });
+    for (let i = 0; i < this.state.step; i++) options.push({ value: i.toString(), label: i.toString() });
+
+    let active = (this.state.value >= 0);
 
     return( 
-      <div className='IntersectionArrival'>
-        <h4> Order of Intersection Arrival: </h4>
+      <div className='IntersectionArrival' style={{'pointer-events' : (!active) ? 'none' : 'auto', 'opacity' : (!active) ? '0.5' : '1'}}>
+        <h4> Time of Intersection Arrival: </h4>
         <Select
           options={options} // Options to display in the dropdown
-          defaultValue={{value: this.state.value.toString(), label: this.state.value.toString()}}
+          defaultValue={{value: this.state.value.toString(), label: (active) ? this.state.value.toString() : "N/A"}}
           theme={theme => ({
             ...theme,
             borderRadius: 0,

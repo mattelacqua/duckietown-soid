@@ -31,20 +31,21 @@ class LogStep extends React.Component {
 
   // Render the Dial component from the react-dial-knob package
   render() {
-    if (!this.state.started) return;
+    let run = (this.props.sim_state === 'run')
+    let std = (this.props.started === true)
     
     // if we're running dial isn't useful and is confusing
     return (
-      <div style={{visibility: (!this.state.run) ? 'visible' : 'hidden'}}>
+      <div className="LogStep" style={{'pointer-events' : (run || !std) ? 'none' : 'auto', 'opacity' : (run || !std) ? '0.5' : '1', width : '125px'}}>
         <form className="form">
-        <p>Log Step</p>
+          <p>Log Step</p>
           <InputRange
-              maxValue = {this.state.max_step}
-              minValue = {0}
-              value={this.state.step}
-              step = {1}
-              onChangeComplete={value => {this.handleChange(value, )}}
-              onChange={value => this.setState({ step:value })}
+            maxValue = {(this.state.max_step) ? (this.state.max_step) : 0}
+            minValue = {0}
+            value={this.state.step}
+            step = {1}
+            onChangeComplete={value => {this.handleChange(value, )}}
+            onChange={value => this.setState({ step:value })}
           />
         </form>
       </div>
