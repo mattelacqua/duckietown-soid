@@ -5,52 +5,58 @@
     padding-top: 2em;
     padding-left: 2em;
     padding-right: 2em;
-    padding-bottom: 10em;
-    overflow:hidden;
+    padding-bottom: 2em;
 }
 
-.AgentManip {
+.Agent0 {
     display:flex;
     justify-content: space-between;
-    flex-direction: row;
-    padding-top: 2em;
+    flex-direction: column;
     padding-left: 2em;
     padding-right: 2em;
-    padding-bottom: 10em;
-    overflow:hidden;
+    padding-bottom: 2em;
+    margin-right: 30%;
 }
 
 .AgentEdit {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    padding-top: 2em;
-    padding-left: 2em;
-    padding-right: 2em;
-    padding-bottom: 10em;
-    overflow:hidden;
-}
-
-.InitialDirection {
-    display: flex;
+    display:flex;
     justify-content: space-between;
     flex-direction: row;
-    padding-top: 2em;
     padding-left: 2em;
     padding-right: 2em;
-    padding-bottom: 10em;
-    overflow:hidden;
 }
 
 .IntersectionArrival {
+    margin-top: -1.5em;
     display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-    padding-top: 2em;
-    padding-left: 2em;
-    padding-right: 2em;
-    padding-bottom: 10em;
-    overflow:hidden;
+    align-items: center;
+}
+
+.IntersectionArrival h4 {
+    margin-top: 3.1em;
+    margin-bottom: 3em;
+    margin-right: 1em;
+}
+
+.IntersectionArrival button {
+    margin-left: auto;
+}
+
+.InitialDirection {
+    margin-top: -1.5em;
+    margin-left: -5em;
+    display: flex;
+    align-items: center;
+}
+
+.InitialDirection h4 {
+    margin-top: 1.2em;
+    margin-bottom: 1em;
+    margin-right: 0.3em;
+}
+
+.InitialDirection button {
+    margin-left: auto;
 }
 
 

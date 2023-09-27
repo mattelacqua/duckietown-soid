@@ -42,7 +42,7 @@ class InitialDirection extends React.Component {
 
     return( 
       <div className='InitialDirection'>
-        <p> <br />Initial Direction: </p>
+        <h4> Initial Direction: </h4>
         <Select
           options={options} // Options to display in the dropdown
           defaultValue={{value: this.props.agent.initial_direction.toString(), label: this.props.direction_label}}

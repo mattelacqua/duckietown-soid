@@ -41,7 +41,7 @@ class IntersectionArrival extends React.Component {
 
     return( 
       <div className='IntersectionArrival'>
-        <p> <br />Order for Intersection Arrival: </p>
+        <h4> Order of Intersection Arrival: </h4>
         <Select
           options={options} // Options to display in the dropdown
           defaultValue={{value: this.state.value.toString(), label: this.state.value.toString()}}
