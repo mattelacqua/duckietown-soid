@@ -24,27 +24,18 @@ class EnvInfo extends React.Component {
 
   // Render the information to screen
   render() {
-    if (!this.state.started) return;
-
-    if (this.state.run) {
-      return (
-        <div style={{
-               display:'flex',
-               flexDirection:'row',
-             }}>
-          {/* HTML FOR ALL THE INFORMATION */}
-          <p> Sim State: {this.state.sim_state.charAt(0).toUpperCase() + this.state.sim_state.slice(1)} </p>
-        </div>
-      );
-    }
-
+    let run = (this.props.sim_state === 'run')
+    let std = (this.props.started === true)
+    
     return (
       <div style={{
         display:'flex',
-        flexDirection:'row',
+             flexDirection:'row',
+             'pointer-events' : (run || !std) ? 'none' : 'auto',
+             'opacity' : (run || !std) ? '0.5' : '1',
         }}>
           {/* HTML FOR ALL THE INFORMATION */}
-          <p> Sim State: {this.state.sim_state.charAt(0).toUpperCase() + this.state.sim_state.slice(1)} &nbsp;|&nbsp; Sim Step: {Math.min(0, this.state.sim_step - 1)} </p>
+          <p> Sim State: {this.state.sim_state.charAt(0).toUpperCase() + this.state.sim_state.slice(1)} &nbsp;|&nbsp; Sim Step: {Math.max(0, this.state.sim_step - 1)} </p>
       </div>
       );
     }

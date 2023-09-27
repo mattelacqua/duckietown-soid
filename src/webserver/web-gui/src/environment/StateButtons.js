@@ -30,7 +30,7 @@ class StateButtons extends React.Component {
 
   // Render the information to screen
   render() {
-    if (!this.state.started) {
+    if (!this.props.started) {
       return (
         <div class='StateButtons'>
           {/* Paused */}

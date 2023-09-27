@@ -2,7 +2,7 @@
 import React from "react";
 
 // Import envInfo
-import EnvInfo from "./EnvInfo.js"
+//import EnvInfo from "./EnvInfo.js"
 
 // Import envInfo
 import LogStep from "./LogStep.js"
@@ -31,10 +31,11 @@ class Environment extends React.Component {
                       update_from_sim={this.props.update_from_sim}
                       socket={this.props.socket}
                       started={this.props.started} />
-
+        {/*
         <EnvInfo  sim_state={this.props.sim_state}
                   sim_step={this.props.sim_step}
                   started={this.props.started} />
+         */}
 
         <LogStep  step={this.props.sim_step}
                   max_step={this.props.sim_step}
