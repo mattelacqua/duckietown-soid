@@ -18,37 +18,40 @@ class CounterfactualRange extends React.Component {
   // Render the agent component 
   render() {
 
+    let lp = "low, current value is ".concat(this.state.low_bound.toString());
+    let hp = "high, current value is ".concat(this.state.high_bound.toString())
+
     return (
-            <div>
-              <form>
-                <label>
-                  Low bound {'(MIN for min possible value)'}:   
-                  <input type="text" 
-                    value={this.state.low_bound}
-                    onChange = {(e) => {
-                      this.setState({low_bound:e.target.value});
-                      this.props.set_bound(e.target.value, "low");
-                    }
-                    }
-              />
-                </label>  
-              </form>
-              <form>
-                <label>
-                  High bound {'(MAX for max possible value)'}:   
-                  <input type="text" 
-                        value={this.state.high_bound}
-                        onChange = {(e) => {
-                          this.setState({high_bound:e.target.value});
-                          this.props.set_bound(e.target.value, "high");
-                        }
-                        }
-                  />
-                </label>  
-              </form>
-            </div>
-          );
-    }
+      <>
+      <p>of</p>
+      <div className="CounterfactualWriter">
+        <form>
+          <label>
+            <input type="text"
+                   placeholder={lp}
+                   onChange = {(e) => {
+                     this.setState({low_bound:e.target.value});
+                     this.props.set_bound(e.target.value, "low");
+                   } } />
+          </label>  
+        </form>
+      </div>
+      <p>to</p>
+      <div className="CounterfactualWriter">
+        <form>
+          <label>
+            <input type="text"
+                   placeholder={hp}
+                   onChange = {(e) => {
+                     this.setState({high_bound:e.target.value});
+                     this.props.set_bound(e.target.value, "high");
+                   } } />
+          </label>  
+        </form>
+      </div>
+      </>
+    );
+  }
 }
 
 // Allow it to be called in other functions

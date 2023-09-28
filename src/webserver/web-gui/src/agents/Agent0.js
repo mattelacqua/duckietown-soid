@@ -74,7 +74,7 @@ class Agent0 extends React.Component {
             <AgentInfo  agent={agent} />
           </div>
         </div>
-        <div className="AgentCounterfactuals" class="card" style={{width: '30%'}}>
+        <div className="AgentCounterfactuals" class="card" style={{width: '30%', height: '150px'}}>
           <AddCounterfactual  agent={agent} 
                               socket={this.props.socket} />
           <CounterfactualList agent={agent}  

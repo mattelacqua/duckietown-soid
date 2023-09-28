@@ -92,6 +92,7 @@ class MultiDirection extends React.Component {
     render() {
       return ( 
         <div>
+          including
           <Multiselect
             options={this.state.directions} // Options to display in the dropdown
             selectedValues={this.state.selectedValues} // Preselected value to persist in dropdown

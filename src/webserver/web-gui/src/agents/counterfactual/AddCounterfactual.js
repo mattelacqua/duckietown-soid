@@ -8,7 +8,9 @@ import CounterfactualRange from "./CounterfactualRange.js";
 import CounterfactualValue from "./CounterfactualValue.js";
 
 import ValueType from "./ValueType.js";
+import './Counterfactuals.css'
 import '../../environment/StateButtons.css'
+
 
 // Agent Component (gets rendered in app)
 class AddCounterfactual extends React.Component {
@@ -34,15 +36,15 @@ class AddCounterfactual extends React.Component {
       }
     };
 
-    this.set_type = this.set_type.bind(this); // Bind this to update_from sim 
-    this.set_value_type = this.set_value_type.bind(this); // Bind this to update_from sim 
-    this.set_single_direction = this.set_single_direction.bind(this); // Bind this to update_from sim 
-    this.set_multi_direction = this.set_multi_direction.bind(this); // Bind this to update_from sim 
-    this.set_bound = this.set_bound.bind(this); // Bind this to update_from sim 
-    this.set_value = this.set_value.bind(this); // Bind this to update_from sim 
-    this.set_initial_direction = this.set_initial_direction.bind(this); // Bind this to update_from sim 
-    this.set_intersection_arrival = this.set_intersection_arrival.bind(this); // Bind this to update_from sim 
-    this.handleClick = this.handleClick.bind(this); // Bind this to update_from sim 
+    this.set_type = this.set_type.bind(this); // Bind this to update_from sim
+    this.set_value_type = this.set_value_type.bind(this); // Bind this to update_from sim
+    this.set_single_direction = this.set_single_direction.bind(this); // Bind this to update_from sim
+    this.set_multi_direction = this.set_multi_direction.bind(this); // Bind this to update_from sim
+    this.set_bound = this.set_bound.bind(this); // Bind this to update_from sim
+    this.set_value = this.set_value.bind(this); // Bind this to update_from sim
+    this.set_initial_direction = this.set_initial_direction.bind(this); // Bind this to update_from sim
+    this.set_intersection_arrival = this.set_intersection_arrival.bind(this); // Bind this to update_from sim
+    this.handleClick = this.handleClick.bind(this); // Bind this to update_from sim
 
     console.log("RENDERED IT");
   }
@@ -88,7 +90,7 @@ class AddCounterfactual extends React.Component {
         is_turnchoice: false,
       });
     }
- 
+
     // forward_step
     if (type === 'is_forward_step'){
       this.setState({
@@ -112,9 +114,9 @@ class AddCounterfactual extends React.Component {
         is_speed: true,
         is_signalchoice: false,
         is_turnchoice: false,
-      });    
+      });
     }
-      
+
     // signal_choice
     if (type === 'is_signalchoice'){
       this.setState({
@@ -125,9 +127,9 @@ class AddCounterfactual extends React.Component {
         is_speed: false,
         is_signalchoice: true,
         is_turnchoice: false,
-      });    
+      });
     }
-    
+
     // is_turnchoice
     if (type === 'is_turn_choice'){
       this.setState({
@@ -152,7 +154,7 @@ class AddCounterfactual extends React.Component {
           is_range: false,
         });
       }
-  
+
       //Range
       if (type === 'is_range'){
         this.setState({
@@ -170,7 +172,7 @@ class AddCounterfactual extends React.Component {
       console.log("STATE", this.state);
       console.log("Value", value);
     }
-    
+
     // Callback function for seting mutliple directions
     set_multi_direction(directions){
       this.setState({
@@ -192,17 +194,17 @@ class AddCounterfactual extends React.Component {
         range.high_bound = value;
       }
       this.setState({range});
-    }    
+    }
 
     // Callback function for setting the boundss
     set_value(value){
       this.setState({value: value});
-    }    
+    }
 
     // Callback function for setting the boundss
     set_initial_direction(value){
       this.setState({initial_direction: value});
-    }    
+    }
 
     // Callback function for setting the boundss
     set_intersection_arrival(value){
@@ -220,144 +222,130 @@ class AddCounterfactual extends React.Component {
     )
   }
 
-  // Render the agent component 
+  // Render the agent component
   render() {
     let input_component;
     if (this.state.is_value){
       // x position value
       if (this.state.is_pos_x) {
-        console.log("Agent", this.props.agent.pos_x);
-        input_component = 
-            < CounterfactualValue label_string = 'Agent x-position'
-                                  default_val = {this.props.agent.pos_x}
-                                  set_value = {this.set_value}
-              />
+        input_component =
+          <CounterfactualValue default_val = {this.props.agent.pos_x}
+                               set_value = {this.set_value} />
       }
       // Z position value
       if (this.state.is_pos_z) {
-        input_component =  
-          < CounterfactualValue label_string = 'Agent z-position'
-                                default_val = {this.props.agent.pos_z}
-                                set_value = {this.set_value}
-            />
-      }    
+        input_component =
+          <CounterfactualValue default_val = {this.props.agent.pos_z}
+                               set_value = {this.set_value} />
+      }
       // Angle Value
       if (this.state.is_angle) {
-        input_component =  
-          < CounterfactualValue label_string = 'Agent angle'
-                                default_val = {this.props.agent.angle_deg}
-                                set_value = {this.set_value}
-            />
-      }       
+        input_component =
+          <CounterfactualValue default_val = {this.props.agent.angle_deg}
+                               set_value = {this.set_value} />
+      }
       // Forward Step Value
       if (this.state.is_forward_step) {
-        input_component =  
-          < CounterfactualValue label_string = 'Agent forward-step'
-                                default_val = {this.props.agent.forward_step}
-                                set_value = {this.set_value}
-            />
-      }       
+        input_component =
+          <CounterfactualValue default_val = {this.props.agent.forward_step}
+                               set_value = {this.set_value} />
+      }
       // Speed Value
       if (this.state.is_speed) {
-        input_component =  
-          < CounterfactualValue label_string = 'Agent speed'
-                                default_val = {this.props.agent.speed}
-                                set_value = {this.set_value}
-            />
-      }    
-      // Signal Choice 
-      if (this.state.is_signalchoice) {
-        input_component =  
-          <SingleDirection  direction={this.props.agent.signal_choice}
-                            set_single_direction={this.set_single_direction}
-                            signal_or_turn="Signal"
-          />
+        input_component =
+          <CounterfactualValue default_val = {this.props.agent.speed}
+                               set_value = {this.set_value} />
       }
-      // Signal Choice 
+      // Signal Choice
+      if (this.state.is_signalchoice) {
+        input_component =
+          <SingleDirection  direction={this.props.agent.signal_choice}
+                            set_single_direction={this.set_single_direction} />
+      }
+      // Signal Choice
       if (this.state.is_turnchoice) {
-        input_component =  
+        input_component =
           <SingleDirection  direction={this.props.agent.turn_choice}
-                            set_single_direction={this.set_single_direction}
-                            signal_or_turn="Turn"
-          />
+                            set_single_direction={this.set_single_direction} />
       }
     };
     if (this.state.is_range){
       // x position value
       if (this.state.is_pos_x) {
-        input_component =  
+        input_component =
           <CounterfactualRange default_val={this.props.agent.pos_x}
-                        set_bound={this.set_bound}
-          />
+                               set_bound={this.set_bound} />
       }
       // Z position value
       if (this.state.is_pos_z) {
         input_component =
           <CounterfactualRange default_val={this.props.agent.pos_z}
-                      set_bound={this.set_bound}
-          />
-      }    
+                               set_bound={this.set_bound} />
+      }
       // Angle Value
       if (this.state.is_angle) {
-        input_component =  
+        input_component =
           <CounterfactualRange default_val={this.props.agent.angle_deg}
-                      set_bound={this.set_bound}
-        />
-      }       
+                               set_bound={this.set_bound} />
+      }
       // Forward Step Value
       if (this.state.is_forward_step) {
-        input_component =  
+        input_component =
           <CounterfactualRange default_val={this.props.agent.forward_step}
-                      set_bound={this.set_bound}
-          />
-      }       
+                               set_bound={this.set_bound} />
+      }
       // Speed Value
       if (this.state.is_speed) {
-        input_component =  
+        input_component =
           <CounterfactualRange  default_val={this.props.agent.forward_step}
-                       set_bound={this.set_bound}
-          />
-      }    
-      // Signal Choice 
-      if (this.state.is_signalchoice) {
-        input_component =  
-          <MultiDirection direction={this.props.agent.signal_choice}
-                          set_multi_direction={this.set_multi_direction}
-          />
+                                set_bound={this.set_bound} />
       }
-      // Signal Choice 
+      // Signal Choice
+      if (this.state.is_signalchoice) {
+        input_component =
+          <MultiDirection direction={this.props.agent.signal_choice}
+                          set_multi_direction={this.set_multi_direction} />
+      }
+      // Signal Choice
       if (this.state.is_turnchoice) {
-        input_component =  
+        input_component =
           <MultiDirection  direction={this.props.agent.turn_choice}
-                           set_multi_direction={this.set_multi_direction}
-          />
+                           set_multi_direction={this.set_multi_direction} />
       }
     }
 
     return (
-            <div>
-                {/* Render */}
-                <CounterfactualType  is_pos_x={this.state.is_pos_x}
-                            is_pos_z={this.state.is_pos_z}
-                            is_angle={this.state.is_angle}
-                            is_forward_step={this.state.is_forward_step}
-                            is_speed={this.state.is_speed}
-                            is_signalchoice={this.state.is_signalchoice}
-                            is_turnchoice={this.state.is_turnchoice}
-                            set_type={this.set_type}
-                />
-                <ValueType  is_value={this.state.is_value}
-                            is_range={this.state.is_range}
-                            set_value_type={this.set_value_type}
-                />
-                {input_component}
-
-                <div class='StateButtons'>
-                  <button className='addcounterfac'onClick= {this.handleClick}> Add Counterfactual  </button>
-                </div>
-             </div>
-          );
-    }
+      <div className="AddCounterfactuals">
+        <div className="SpecCounterfactual">
+          {/* Render */}
+          <p>Suppose</p>
+          <CounterfactualType
+            is_pos_x={this.state.is_pos_x}
+            is_pos_z={this.state.is_pos_z}
+            is_angle={this.state.is_angle}
+            is_forward_step={this.state.is_forward_step}
+            is_speed={this.state.is_speed}
+            is_signalchoice={this.state.is_signalchoice}
+            is_turnchoice={this.state.is_turnchoice}
+            set_type={this.set_type} />
+          <p>had</p>
+          <ValueType  is_value={this.state.is_value}
+                      is_range={this.state.is_range}
+                      set_value_type={this.set_value_type} />
+        </div>
+        <div style={{ visibility: (input_component) ? 'visible' : 'hidden'}}>
+          <div className="InnerSpec">
+            {(input_component) ? input_component : <CounterfactualValue default_val = {0} set_value = {() => {}} />}
+          </div>
+        </div>
+        <div className="SetCounterfactual">
+          <div class='StateButtons'>
+            <button className='addcounterfac'onClick= {this.handleClick}> Add Counterfactual  </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
 // Allow it to be called in other functions

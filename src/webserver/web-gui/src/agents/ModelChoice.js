@@ -33,7 +33,7 @@ class ModelChoice extends React.Component {
   // Render the information to screen
   render() {
     const options = [
-          { value: 'good_agent', label: 'Good Agent (Hard-Coded Behavior)' },
+          { value: 'good_agent', label: 'Ideal Agent (Hard-Coded Behavior)' },
           { value: 'defensive', label: 'Defensive (Learned)' },
           { value: 'standard', label: 'Standard (Learned)' },
           { value: 'reckless', label: 'Reckless (Learned)' },
@@ -45,7 +45,7 @@ class ModelChoice extends React.Component {
         <h4> Decision Model: </h4>
         <Select
           options={options} // Options to display in the dropdown
-          defaultValue={{value: 'good_agent', label: 'Good Agent (Hard-Coded Behavior)'}} // Options to display in the dropdown
+          defaultValue={{value: 'good_agent', label: 'Ideal Agent (Hard-Coded Behavior)'}} // Options to display in the dropdown
           theme={theme => ({
             ...theme,
             borderRadius: 0,
