@@ -29,19 +29,19 @@ class CounterfactualType extends React.Component {
   // Render the information to screen
   render() {
     const options = [
-          { value: 'is_pos_x', label: 'x position' },
-          { value: 'is_pos_z', label: 'z position' },
+          { value: 'is_pos_x', label: 'x pos' },
+          { value: 'is_pos_z', label: 'y pos' },
           { value: 'is_angle', label: 'angle' },
           { value: 'is_forward_step', label: 'forward step (acceleration)' },
-          { value: 'is_speed', label: 'Speed' },
-          { value: 'is_signalchoice', label: 'Signal Choice' },
-          { value: 'is_turnchoice', label: 'Turn Choice' }
+          { value: 'is_speed', label: 'speed' },
+          { value: 'is_signalchoice', label: 'signal' },
+          { value: 'is_turnchoice', label: 'turn choice' }
     ];
 
     return( 
-      <div>
-        <p> <br />Counterfactual Type: </p>
+      <div className='CounterfactualSelector'>
         <Select
+          placeholder={'property'}
           options={options} // Options to display in the dropdown
           onChange= {new_option => {this.handleChoice(new_option.value)}}
           />

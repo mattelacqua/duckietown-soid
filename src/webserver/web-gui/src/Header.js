@@ -16,7 +16,7 @@ const Header = () => {
 
         <p>Below at right is a drag-and-drop interface for manipulating the location of cars. Further below, more cars can be added or removed and the orientation, direction of travel, and order of intersection arrival (for determining right-of-way) of all cars can be manipulated. In addition, the machine-learned (via reinforcement learning) decision logic to be used by the blue car can be selected. The options are informal descriptions of the behavior cultivated by the reward policy the logic was trained under.</p>
 
-        <p>After an execution is paused, the Log Step slider can be used to select a critical moment of the blue car's decision making. The counterfactual menus under each agent can be used to specify (families of) hypothetical, alternative scenario(s), and <b>soid</b> can then be queried to determine whether the blue car might or would have moved under (any of) the scenario(s). Behind the scenes, <b>soid</b> uses the <a href="https://www.microsoft.com/en-us/research/project/z3-3/">Z3</a> SMT solver to resolve all queries.</p>
+        <p>After an execution is paused, the Log Step slider can be used to select a critical moment of the blue car's decision making. The counterfactual menus for each agent can be used to specify (families of) hypothetical, alternative scenario(s), and <b>soid</b> can then be queried to determine whether the blue car might or would have moved under (any of) the scenario(s). Behind the scenes, <b>soid</b> uses the <a href="https://www.microsoft.com/en-us/research/project/z3-3/">Z3</a> SMT solver to resolve all queries.</p>
 
         <p><a href="https://arxiv.org/abs/2305.05731">arXiv</a><br />
         <a href="https://github.com/sjudson/soid">Github (soid)</a><br />

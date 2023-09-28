@@ -16,24 +16,27 @@ class CounterfactualValue extends React.Component {
   // Render the agent component 
   render() {
 
+    
+    let p = "currently ".concat(this.state.value.toString())
+
     return (
-            <div>
-              <form>
-                <label>
-                  {this.props.label_string}:   
-                  <input type="text" 
-                        value={this.state.value}
-                        onChange = {(e) => {
-                          this.setState({value:e.target.value});
-                          this.props.set_value(e.target.value);
-                          }
-                        }
-                  />
-                </label>  
-              </form>
-            </div>
-          );
-    }
+      <>
+      <p>of</p>
+      <div className="CounterfactualWriter">
+        <form>
+          <label>
+            <input type="text" 
+                   placeholder={p}
+                   onChange = {(e) => {
+                     this.setState({value:e.target.value});
+                     this.props.set_value(e.target.value);
+                   } } />
+          </label>  
+        </form>
+      </div>
+      </>
+    );
+  }
 }
 
 // Allow it to be called in other functions

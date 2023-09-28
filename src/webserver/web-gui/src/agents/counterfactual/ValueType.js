@@ -29,17 +29,17 @@ class ValueType extends React.Component {
   // Render the information to screen
   render() {
     const options = [
-          { value: 'is_value', label: 'single value' },
+          { value: 'is_value', label: 'value' },
           { value: 'is_range', label: 'range' },
     ];
 
     return( 
-      <div class = 'value-style'>
-        <p> <br />Value Type: </p>
+      <div className='CounterfactualSelector'>
         <Select
+          placeholder={'type'}
           options={options} // Options to display in the dropdown
           onChange= {new_option => {this.handleChoice(new_option.value)}}
-          />
+        />
       </div>);
   }
 }

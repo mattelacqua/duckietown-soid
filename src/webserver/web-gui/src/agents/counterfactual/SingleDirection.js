@@ -38,7 +38,7 @@ class SingleDirection extends React.Component {
     const default_val = this.props.direction;
     return( 
       <div>
-        <p> <br />{this.props.signal_or_turn} Type: </p>
+        of
         <Select
           defaultValue={default_val}
           options={options} // Options to display in the dropdown
