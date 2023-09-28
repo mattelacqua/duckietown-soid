@@ -102,7 +102,7 @@
     padding-bottom: 1em;
     padding-left: 2.5em;
     gap:1em;
-    overflow:auto;
+    overflow:hidden;
 }
 
 .CounterfactualEntry {
