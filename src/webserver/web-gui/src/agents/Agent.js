@@ -47,7 +47,6 @@ class Agent extends React.Component {
       direction_label = 'W'
     }
 
-    
     let COLORS = {
       "aliceblue": "#f0f8ff",
       "antiquewhite": "#faebd7",
@@ -206,6 +205,9 @@ class Agent extends React.Component {
 
     let agent = this.props.agent;
 
+    let run = (this.props.sim_state === 'run')
+    let std = (this.props.started === true)
+
     return (
       <div className='Agent'>
         <div className="AgentMain" class="card" style={{'background-color': 'rgba(' + h2rgb(agent.color).r + ', ' + h2rgb(agent.color).g + ', ' + h2rgb(agent.color).b + ', 0.5)', width: '60%'}}>
@@ -223,17 +225,17 @@ class Agent extends React.Component {
             <InitialDirection agent={agent}
                               direction_label={direction_label}
                               socket={this.props.socket} />
-            <AngleDial  agent={agent} 
-                        socket={this.props.socket} />  
+            <AngleDial  agent={agent}
+                        socket={this.props.socket} />
           </div>
           <div className='AgentInfo'>
             <AgentInfo  agent={agent} />
           </div>
         </div>
-        <div className="AgentCounterfactuals" class="card" style={{width: '30%', height: '150px'}}>
-          <AddCounterfactual  agent={agent} 
+        <div className="AgentCounterfactuals" class="card" style={{width: '30%' }}> {/*'pointer-events' : (run || !std) ? 'none' : 'auto', 'opacity' : (run || !std) ? '0.5' : '1'}}> */}
+          <AddCounterfactual  agent={agent}
                               socket={this.props.socket} />
-          <CounterfactualList agent={agent}  
+          <CounterfactualList agent={agent}
                               socket={this.props.socket} />
         </div>
       </div>

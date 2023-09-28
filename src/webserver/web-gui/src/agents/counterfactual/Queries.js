@@ -77,28 +77,30 @@ class Queries extends React.Component {
   // Render the information to screen
   render() {
     return (
-      <div> 
-        <p style={{
-        display: 'flex',
-        paddingTop: '2em',
-      }}> Ask a Question based on given Counterfactuals:</p>
-        <div className='Queries'>
+      <div className='Queries'>
+        <div className='QueryHeader'>
+          <h2> Query </h2>
+          <i style={{ fontWeight: 'normal', 'font-size' : '13px' }}> &emsp; (will use all counterfactual properties specified for all agents)</i>
+        </div>
+        <div className='Query'>
+          <p style={{ 'padding-top': '0.7em', 'padding-right': '2.35em' }}> &#8707;. Might the blue car possibly decide to move?</p>
           <div className='StateButtons'>
-            <button className='move_factual' onClick={()=>this.handleClick("move_factual")}>Will Agent 0 always move?</button>
-            <button className='move_existential' onClick={()=>this.handleClick("move_existential")}>Is there a scenario where Agent 0 moves?</button>
+            <button className='move_existential' onClick={()=>this.handleClick("move_existential")}>Yes</button>
+            &nbsp;&nbsp;
+            <button className='stop_factual' onClick={()=>this.handleClick("stop_factual")}>No</button>
           </div>
         </div>
-        <div className='Queries'>
+        <div className='Query'>
+          <p style={{ 'padding-top': '0.7em', 'padding-right': '0.7em' }}> &#8704;. Would the blue car necessarily decide to move?</p>
           <div className='StateButtons'>
-            <button className='stop_factual' onClick={()=>this.handleClick("stop_factual")}>Will Agent 0 always stop?</button>
-            <button className='stop_existential' onClick={()=>this.handleClick("stop_existential")}>Is there a scenario where Agent 0 stops?</button>
-            </div>
+            <button className='move_factual' onClick={()=>this.handleClick("move_factual")}>Yes</button>
+            &nbsp;&nbsp;
+            <button className='stop_existential' onClick={()=>this.handleClick("stop_existential")}>No</button>
+          </div>
         </div>
-        <p> SOID RESULT:</p>
-        <p> {JSON.stringify(this.props.env_info.soid_result, null, 2)} </p>
       </div>
-      );
-    }
+    );
+  }
 }
 
 export default Queries;

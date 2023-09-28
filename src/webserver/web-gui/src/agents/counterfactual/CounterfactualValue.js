@@ -16,8 +16,7 @@ class CounterfactualValue extends React.Component {
   // Render the agent component 
   render() {
 
-    
-    let p = "currently ".concat(this.state.value.toString())
+    let p = "current value ".concat(this.state.value.toString())
 
     return (
       <>

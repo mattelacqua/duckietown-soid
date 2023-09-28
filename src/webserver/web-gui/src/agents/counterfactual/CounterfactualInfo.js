@@ -18,80 +18,152 @@ class CounterfactualInfo extends React.Component {
     // Get the values first
     let values;
     if (counterfactual.is_value){
-      values = "Value:" + counterfactual.value;
+      values = [ counterfactual.value ];
     }
     else if (counterfactual.is_range){
-      values = counterfactual.range.low_bound + " to  " + counterfactual.range.high_bound;
+      values = [ counterfactual.range.low_bound, counterfactual.range.high_bound ];
     }   
 
     let cf;
-    if (counterfactual.is_pos_x){
+    if (counterfactual.is_pos_x && values.length === 1){
       cf = <p style={{
-                    color: color,
-                    textAlign: 'left',
-                    whiteSpace: 'pre-line',
-            }}> 
-            "Counterfactual Type: x pos" {"\n"}
-            "Possible Possible Values: " {values} {"\n"}
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             <b>x pos</b> is {values[0]}
+            </p>
+    }
+    else if (counterfactual.is_pos_x){
+      console.log(values)
+      cf = <p style={{
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             {values[0]} &le; <b>x pos</b> &le; {values[1]}
+            </p>
+    }
+    else if (counterfactual.is_pos_z && values.length === 1){
+      cf = <p style={{
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             <b>y pos</b> is {values[0]}
             </p>
     }
     else if (counterfactual.is_pos_z){
       cf = <p style={{
-                    color: color,
-                    textAlign: 'left',
-                    whiteSpace: 'pre-line',
-            }}> 
-            "Counterfactual Type: y pos" {"\n"}
-            "Possible Values: " {values} {"\n"}
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             {values[0]} &le; <b>y pos</b> &le; {values[1]}
+            </p>
+    }
+    else if (counterfactual.is_angle && values.length === 1){
+      cf = <p style={{
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             <b>angle</b> is {values[0]}
             </p>
     }
     else if (counterfactual.is_angle){
       cf = <p style={{
-                    color: color,
-                    textAlign: 'left',
-                    whiteSpace: 'pre-line',
-            }}> 
-            "Counterfactual Type: angle" {"\n"}
-            "Possible Values: " {values} {"\n"}
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             {values[0]} &le; <b>angle</b> &le; {values[1]}
+            </p>
+    }
+    else if (counterfactual.is_forward_step && values.length === 1){
+      cf = <p style={{
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             <b>forward step</b> is {values[0]}
             </p>
     }
     else if (counterfactual.is_forward_step){
       cf = <p style={{
-                    color: color,
-                    textAlign: 'left',
-                    whiteSpace: 'pre-line',
-            }}> 
-            "Counterfactual Type: forward step" {"\n"}
-            "Possible Values: " {values} {"\n"}
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             {values[0]} &le; <b>forward step</b> &le; {values[1]}
+            </p>
+    }
+    else if (counterfactual.is_speed && values.length === 1){
+      cf = <p style={{
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             <b>speed</b> is {values[0]}
             </p>
     }
     else if (counterfactual.is_speed){
       cf = <p style={{
-                    color: color,
-                    textAlign: 'left',
-                    whiteSpace: 'pre-line',
-            }}> 
-            "Counterfactual Type: speed" {"\n"}
-            "Possible Values: " {values} {"\n"}
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             {values[0]} &le; <b>speed</b> &le; {values[1]}
             </p>
     }
-    else if (counterfactual.is_signalchoice){
+    else if (counterfactual.is_signalchoice && counterfactual.is_range){
       cf = <p style={{
-                    color: color,
-                    textAlign: 'left',
-                    whiteSpace: 'pre-line',
-            }}> 
-            "Counterfactual Type: signal" {"\n"}
-            "Possible Values: " {counterfactual.range.turn_choices} {"\n"}
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}>
+             <b>signal</b> in &#123; <i>{counterfactual.range.turn_choices.join('  ')}</i> &#125;
             </p>
+    }
+     else if (counterfactual.is_signalchoice){
+      cf = <p style={{
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}> 
+             <b>signal</b> is <i>{counterfactual.value.toLowerCase()}</i>
+           </p>
+    }
+    else if (counterfactual.is_turnchoice && counterfactual.is_range){
+      cf = <p style={{
+                color: color,
+                textAlign: 'left',
+                fontWeight: 'normal',
+                whiteSpace: 'pre-line',
+              }}> 
+             <b>turn choice</b> in &#123; <i>{counterfactual.range.turn_choices.join('  ')}</i> &#125;
+           </p>
     }
     else if (counterfactual.is_turnchoice){
       cf = <p style={{
                 color: color,
                 textAlign: 'left',
+                fontWeight: 'normal',
                 whiteSpace: 'pre-line',
               }}> 
-             turn choice in {counterfactual.range.turn_choices} {"\n"}
+             <b>turn choice</b> is <i>{counterfactual.value.toLowerCase()}</i>
            </p>
     }
     return (

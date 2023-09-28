@@ -177,13 +177,18 @@ class CounterfactualList extends React.Component {
     return (
       <div className='MadeCounterfactuals'>
         {agent.counterfactuals.map((counterfactual, index) => (
-          <div className='MadeCounterfactual' class="card" style={{'background-color': (agent.id === 0) ? 'white' : 'rgba(' + h2rgb(agent.color).r + ', ' + h2rgb(agent.color).g + ', ' + h2rgb(agent.color).b + ', 0.5)', width: '80%', height: '150px'}}>
-            <CounterfactualInfo counterfactual={counterfactual}
-                                color={'black'} />
-            <DeleteCounterfactual counterfactuals={agent.counterfactuals}
-                                  index={index}
-                                  agent_index={agent.id}
-                                  socket={this.props.socket} />
+          <div className='CounterfactualEntry'>
+            <h3 style={{visibility : (index > 0) ? 'visible' : 'hidden'}}>and</h3>
+            <div class="card" style={{ 'background-color': (agent.id === 0) ? 'white' : 'rgba(' + h2rgb(agent.color).r + ', ' + h2rgb(agent.color).g + ', ' + h2rgb(agent.color).b + ', 0.5)', width: '100%' }}>
+              <div className='MadeCounterfactual'>
+                <CounterfactualInfo counterfactual={counterfactual}
+                                    color={'black'} />
+                <DeleteCounterfactual counterfactuals={agent.counterfactuals}
+                                      index={index}
+                                      agent_index={agent.id}
+                                      socket={this.props.socket} />
+              </div>
+            </div>
           </div>
         ))}
       </div>
