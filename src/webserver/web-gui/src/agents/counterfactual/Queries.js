@@ -76,8 +76,12 @@ class Queries extends React.Component {
   
   // Render the information to screen
   render() {
+
+    let run = (this.props.sim_state === 'run')
+    let std = (this.props.started === true)
+    
     return (
-      <div className='Queries'>
+      <div className='Queries' style={{'pointer-events' : (run || !std) ? 'none' : 'auto', 'opacity' : (run || !std) ? '0.5' : '1'}}>
         <div className='QueryHeader'>
           <h2> Query </h2>
           <i style={{ fontWeight: 'normal', 'font-size' : '13px' }}> &emsp; (will use all counterfactual properties specified for all agents)</i>

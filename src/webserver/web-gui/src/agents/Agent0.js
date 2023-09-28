@@ -67,7 +67,7 @@ class Agent0 extends React.Component {
             <div className='AgentEdit'>
               <IntersectionArrival agents={this.props.agents}
                                    agent={agent}
-                                   step={this.props.sim_state}
+                                   sim_step={this.props.sim_state}
                                    socket={this.props.socket} />
               <InitialDirection agent={agent}
                                 direction_label={direction_label}
@@ -86,7 +86,9 @@ class Agent0 extends React.Component {
                                 socket={this.props.socket} />
           </div>
         </div>
-        <Queries  socket={this.props.socket} 
+        <Queries  socket={this.props.socket}
+                  sim_step={this.props.sim_state}
+                  started={this.props.started}
                   update_from_sim={this.props.update_from_sim}
                   env_info={this.props.env_info} />
       </div>
