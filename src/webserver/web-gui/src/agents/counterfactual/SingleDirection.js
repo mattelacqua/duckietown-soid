@@ -36,15 +36,17 @@ class SingleDirection extends React.Component {
     ];
 
     const default_val = this.props.direction;
-    return( 
-      <div>
-        of
-        <Select
-          defaultValue={default_val}
-          options={options} // Options to display in the dropdown
-          onChange= {new_option => {this.handleChoice(new_option.value)}}
-          />
-      </div>);
+    return(
+      <>
+        <p>of</p>
+        <div className="CounterfactualValueSelector">
+          <Select
+            defaultValue={default_val}
+            options={options} // Options to display in the dropdown
+            onChange= {new_option => {this.handleChoice(new_option.value)}} />
+        </div>
+      </>
+    );   
   }
 }
 

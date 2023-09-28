@@ -23,8 +23,8 @@ class DeleteCounterfactual extends React.Component {
   // Render the information to screen
   render() {
     return (
-      <div class='DeleteAgent'>
-          <button onClick={this.handleClick}> Delete Counterfactual {this.props.index} </button>
+      <div class='StateButtons'>
+          <button className='delcounterfac' onClick={this.handleClick}> Delete </button>
       </div>
       );
     }

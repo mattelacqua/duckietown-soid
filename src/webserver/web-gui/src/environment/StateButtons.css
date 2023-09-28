@@ -107,7 +107,14 @@
 }
 .addcounterfac {
     transform: scale(0.7);
-    background-color: mediumslateblue!important;
+    background-color: #88CCEE!important;
+    margin-top: 10px;
+    justify-content: center;
+    align-items: center;
+}
+.delcounterfac {
+    transform: scale(0.7);
+    background-color: #882255!important;
     margin-top: 10px;
     justify-content: center;
     align-items: center;
