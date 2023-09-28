@@ -31,7 +31,7 @@ class CounterfactualInfo extends React.Component {
                     textAlign: 'left',
                     whiteSpace: 'pre-line',
             }}> 
-            "Counterfactual Type: x-position" {"\n"}
+            "Counterfactual Type: x pos" {"\n"}
             "Possible Possible Values: " {values} {"\n"}
             </p>
     }
@@ -41,7 +41,7 @@ class CounterfactualInfo extends React.Component {
                     textAlign: 'left',
                     whiteSpace: 'pre-line',
             }}> 
-            "Counterfactual Type: z-position" {"\n"}
+            "Counterfactual Type: y pos" {"\n"}
             "Possible Values: " {values} {"\n"}
             </p>
     }
@@ -61,7 +61,7 @@ class CounterfactualInfo extends React.Component {
                     textAlign: 'left',
                     whiteSpace: 'pre-line',
             }}> 
-            "Counterfactual Type: forward-step" {"\n"}
+            "Counterfactual Type: forward step" {"\n"}
             "Possible Values: " {values} {"\n"}
             </p>
     }
@@ -81,23 +81,19 @@ class CounterfactualInfo extends React.Component {
                     textAlign: 'left',
                     whiteSpace: 'pre-line',
             }}> 
-            "Counterfactual Type: signal-choice" {"\n"}
+            "Counterfactual Type: signal" {"\n"}
             "Possible Values: " {counterfactual.range.turn_choices} {"\n"}
             </p>
     }
     else if (counterfactual.is_turnchoice){
       cf = <p style={{
-                    color: color,
-                    textAlign: 'left',
-                    whiteSpace: 'pre-line',
-            }}> 
-            "Counterfactual Type: turn-choice" {"\n"}
-            "Possible Values: " {counterfactual.range.turn_choices} {"\n"}
-            </p>
+                color: color,
+                textAlign: 'left',
+                whiteSpace: 'pre-line',
+              }}> 
+             turn choice in {counterfactual.range.turn_choices} {"\n"}
+           </p>
     }
-
-
-    console.log("RENDERING NOTHING");
     return (
       <div>
         {cf}

@@ -39,15 +39,14 @@
     align-items:flex-start;
     padding-left: 2em;
     padding-right: 2em;
-    padding-bottom: 2em;
+    padding-bottom: 1.35em;
 }
 
 .InnerSpec p {
-    margin-left: 0.5em;
+    margin-left: 0.6em;
     margin-right: 0.5em;
-    margin-top: 0.2em;
+    margin-top: 0.8em;
 }
-
 
 .SetCounterfactual {
     margin-top: -1.5em;
@@ -70,8 +69,26 @@
     min-width: 120px;
 }
 
+.CounterfactualValueSelector {
+    padding-top: 0.3em;
+    min-width: 120px;
+}
+
 .CounterfactualWriter {
+    padding-top: 0.6em;
     min-width: 180px;
 }
 
+.CounterfactualMulti {
+    padding-top: 0.3em;
+    width:350px;
+}
 
+.multiSelectContainer li:hover {
+    background: #DDCC77;
+    color: #000000;  
+}
+
+.searchBox {
+    max-width: 100px;
+}

@@ -45,13 +45,10 @@ class AddCounterfactual extends React.Component {
     this.set_initial_direction = this.set_initial_direction.bind(this); // Bind this to update_from sim
     this.set_intersection_arrival = this.set_intersection_arrival.bind(this); // Bind this to update_from sim
     this.handleClick = this.handleClick.bind(this); // Bind this to update_from sim
-
-    console.log("RENDERED IT");
   }
 
   // Callback function for Counterfactual_type to set our state function
   set_type(type){
-    console.log("Call back got", type);
     //Pos x
     if (type === 'is_pos_x'){
       this.setState({
@@ -131,7 +128,7 @@ class AddCounterfactual extends React.Component {
     }
 
     // is_turnchoice
-    if (type === 'is_turn_choice'){
+    if (type === 'is_turnchoice'){
       this.setState({
         is_pos_x: false,
         is_pos_z: false,
@@ -146,7 +143,6 @@ class AddCounterfactual extends React.Component {
 
     // Callback function for Counterfactual_type to set our state function
     set_value_type(type){
-      console.log("Value type call back got", type);
       //Value
       if (type === 'is_value'){
         this.setState({
@@ -169,8 +165,6 @@ class AddCounterfactual extends React.Component {
       this.setState({
         value: value,
       });
-      console.log("STATE", this.state);
-      console.log("Value", value);
     }
 
     // Callback function for seting mutliple directions
@@ -339,8 +333,8 @@ class AddCounterfactual extends React.Component {
           </div>
         </div>
         <div className="SetCounterfactual">
-          <div class='StateButtons'>
-            <button className='addcounterfac'onClick= {this.handleClick}> Add Counterfactual  </button>
+          <div className='StateButtons'>
+            <button className='addcounterfac' onClick= {this.handleClick}> Add Counterfactual  </button>
           </div>
         </div>
       </div>
