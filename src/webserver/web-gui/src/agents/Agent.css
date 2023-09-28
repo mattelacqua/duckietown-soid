@@ -9,13 +9,7 @@
 }
 
 .Agent0 {
-    display:flex;
-    justify-content: space-between;
-    flex-direction: column;
-    padding-left: 2em;
-    padding-right: 2em;
-    padding-bottom: 2em;
-    margin-right: 30%;
+    display:block;
 }
 
 .AgentEdit {
@@ -29,7 +23,7 @@
 
 .AgentMain {
     display:flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex-direction: column;
     padding-left: 2em;
     padding-right: 2em;

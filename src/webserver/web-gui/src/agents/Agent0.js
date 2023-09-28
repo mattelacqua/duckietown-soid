@@ -21,6 +21,7 @@ import InitialDirection from './InitialDirection.js'
 // Import Counterfactuals
 import AddCounterfactual from './counterfactual/AddCounterfactual.js';
 import CounterfactualList from './counterfactual/CounterfactualList.js'
+import Queries from './counterfactual/Queries.js'
 
 // Agent Component (gets rendered in app)
 class Agent0 extends React.Component {
@@ -50,36 +51,44 @@ class Agent0 extends React.Component {
 
     let agent = this.props.agent;
 
+    let run = (this.props.sim_state === 'run')
+    let std = (this.props.started === true)
+
     return (
-      <div className='Agent'>
-        <div className='AgentMain' style={{width: '60%'}}>
-          <div className='AgentHeader'>
-            <h2> Agent {agent.agent_id.slice(-1)}. </h2>
-            <ModelChoice agent={this.props.agents[0]} 
-                         socket={this.props.socket} />
+      <div className='Agent0'>
+        <div className='Agent'>
+          <div className='AgentMain' style={{width: '60%'}}>
+            <div className='AgentHeader'>
+              <h2> Agent {agent.agent_id.slice(-1)}. </h2>
+              <ModelChoice agent={this.props.agents[0]} 
+                           socket={this.props.socket} />
+            </div>
+            {/* Manipulators */}
+            <div className='AgentEdit'>
+              <IntersectionArrival agents={this.props.agents}
+                                   agent={agent}
+                                   step={this.props.sim_state}
+                                   socket={this.props.socket} />
+              <InitialDirection agent={agent}
+                                direction_label={direction_label}
+                                socket={this.props.socket} />
+              <AngleDial  agent={agent}
+                          socket={this.props.socket} />
+            </div>
+            <div className='AgentInfo'>
+              <AgentInfo  agent={agent} />
+            </div>
           </div>
-          {/* Manipulators */}
-          <div className='AgentEdit'>
-            <IntersectionArrival agents={this.props.agents}
-                                 agent={agent}
-                                 step={this.props.sim_state}
-                                 socket={this.props.socket} />
-            <InitialDirection agent={agent}
-                              direction_label={direction_label}
-                              socket={this.props.socket} />
-            <AngleDial  agent={agent}
-                        socket={this.props.socket} />
-          </div>
-          <div className='AgentInfo'>
-            <AgentInfo  agent={agent} />
+          <div className="AgentCounterfactuals" class="card" style={{width: '30%', 'pointer-events' : (run || !std) ? 'none' : 'auto', 'opacity' : (run || !std) ? '0.5' : '1'}}>
+            <AddCounterfactual  agent={agent} 
+                                socket={this.props.socket} />
+            <CounterfactualList agent={agent}  
+                                socket={this.props.socket} />
           </div>
         </div>
-        <div className="AgentCounterfactuals" class="card" style={{width: '30%', height: '150px'}}>
-          <AddCounterfactual  agent={agent} 
-                              socket={this.props.socket} />
-          <CounterfactualList agent={agent}  
-                              socket={this.props.socket} />
-        </div>
+        <Queries  socket={this.props.socket} 
+                  update_from_sim={this.props.update_from_sim}
+                  env_info={this.props.env_info} />
       </div>
     );
   }

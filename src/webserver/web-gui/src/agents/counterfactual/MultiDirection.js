@@ -13,11 +13,11 @@ class MultiDirection extends React.Component {
     constructor(props) {
       super(props);
       let directions = [
-        {'direction': 'Right',
+        {'direction': 'right',
          'selected': false},
-        {'direction': 'Left',
+        {'direction': 'left',
          'selected': false},
-        {'direction': 'Straight',
+        {'direction': 'straight',
          'selected': false},
       ]
 

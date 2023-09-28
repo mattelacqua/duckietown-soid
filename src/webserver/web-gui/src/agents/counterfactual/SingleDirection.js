@@ -30,9 +30,9 @@ class SingleDirection extends React.Component {
   // Render the information to screen
   render() {
     const options = [
-          { value: 'Left', label: 'Left' },
-          { value: 'Right', label: 'Right' },
-          { value: 'Straight', label: 'Straight' },
+          { value: 'Left', label: 'left' },
+          { value: 'Right', label: 'right' },
+          { value: 'Straight', label: 'straight' },
     ];
 
     const default_val = this.props.direction;

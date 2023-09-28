@@ -15,7 +15,7 @@
     align-items:flex-start;
     flex-direction: column;
     padding-top: 1em;
-    padding-bottom: 1em;
+    border-bottom: thin dashed #DDDDDD;
 }
 
 .SpecCounterfactual {
@@ -92,3 +92,38 @@
 .searchBox {
     max-width: 100px;
 }
+
+.MadeCounterfactuals {
+    display:flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    flex-direction: column;
+    padding-top: 2.5em;
+    padding-bottom: 1em;
+    padding-left: 2.5em;
+    gap:1em;
+    overflow:auto;
+}
+
+.CounterfactualEntry {
+    display:flex;
+    justify-content:flex-end;
+    flex-direction: row;
+    gap:1em;
+    width:100%;
+}
+
+.CounterfactualEntry h3 {
+    margin-right: 2em;
+    margin-top: 1.6em;
+}
+
+.MadeCounterfactual {
+    display:flex;
+    justify-content:space-between;
+    flex-direction: row;
+    align-items:flex-start;
+    padding-right: 2em;
+    width:100%
+}
+
