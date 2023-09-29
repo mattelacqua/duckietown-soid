@@ -51,8 +51,7 @@ class Agent0 extends React.Component {
 
     let agent = this.props.agent;
 
-    let run = (this.props.sim_state === 'run')
-    let std = (this.props.started === true)
+    let std = (this.props.started)
 
     return (
       <div className='Agent0'>
@@ -67,7 +66,7 @@ class Agent0 extends React.Component {
             <div className='AgentEdit'>
               <IntersectionArrival agents={this.props.agents}
                                    agent={agent}
-                                   sim_step={this.props.sim_state}
+                                   sim_step={this.props.sim_step}
                                    socket={this.props.socket} />
               <InitialDirection agent={agent}
                                 direction_label={direction_label}
@@ -79,7 +78,7 @@ class Agent0 extends React.Component {
               <AgentInfo  agent={agent} />
             </div>
           </div>
-          <div className="AgentCounterfactuals" class="card" style={{width: '30%', 'pointer-events' : (run || !std) ? 'none' : 'auto', 'opacity' : (run || !std) ? '0.5' : '1'}}>
+          <div className="AgentCounterfactuals" class="card" style={{width: '30%', 'pointer-events' : (!std) ? 'none' : 'auto', 'opacity' : (!std) ? '0.5' : '1'}}>
             <AddCounterfactual  agent={agent} 
                                 socket={this.props.socket} />
             <CounterfactualList agent={agent}  

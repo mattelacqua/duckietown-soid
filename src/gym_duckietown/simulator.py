@@ -114,7 +114,7 @@ WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 
 # Camera image size
-DEFAULT_CAM_MODE = "top_down" 
+DEFAULT_CAM_MODE = "top_down"
 DEFAULT_CAMERA_WIDTH = 640
 DEFAULT_CAMERA_HEIGHT = 480
 
@@ -169,13 +169,13 @@ MIN_SPAWN_OBJ_DIST = 0.25
 DEFAULT_ROBOT_SPEED = 1.20
 # approx 2 tiles/second
 
-DEFAULT_FRAMERATE = 30 
+DEFAULT_FRAMERATE = 30
 
 DEFAULT_MAX_STEPS = 1500
 
 DEFAULT_MAP_NAME = "udem1"
 
-DEFAULT_FRAME_SKIP = 1 
+DEFAULT_FRAME_SKIP = 1
 
 DEFAULT_ACCEPT_START_ANGLE_DEG = 60
 
@@ -338,16 +338,16 @@ class Simulator(gym.Env):
         # Two-tuple of wheel torques, each in the range [-1, 1]
         self.action_space = spaces.Box(low=-1, high=1, shape=(2,), dtype=np.float32)
 
-        self.safety_factor = safety_factor 
-        
+        self.safety_factor = safety_factor
+
         # Number of agents ( probably depricated)
-        self.num_agents = num_agents 
-        
+        self.num_agents = num_agents
+
         # Number of agents participating with random start
-        self.num_random_agents = num_random_agents 
-        
+        self.num_random_agents = num_random_agents
+
         # Camera settings
-        self.cam_mode = cam_mode 
+        self.cam_mode = cam_mode
         self.camera_width = camera_width
         self.camera_height = camera_height
 
@@ -355,7 +355,7 @@ class Simulator(gym.Env):
         self.robot_speed = robot_speed
         self.robot_length = robot_length
         self.robot_width = robot_width
-        
+
         # We observe an RGB image with pixels in [0, 255]
         # Note: the pixels are in uint8 format because this is more compact
         # than float32 if sent over the network or stored in a dataset
@@ -425,8 +425,9 @@ class Simulator(gym.Env):
         # Logging
         self.verbose = verbose
 
-        # Set the default state to running
-        self.state = "run"
+        # Set the default state to stopped
+        self.state = "pause"
+        self.started = False
         self.max_agents = max_agents
         MAX_AGENTS = max_agents
         self.c_info_struct = None
@@ -511,33 +512,33 @@ class Simulator(gym.Env):
     def get_agents_states(self):
         env = self
         radius = (env.road_tile_size)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['in_intersection'] = agent.in_intersection(env)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['at_intersection_entry'] = agent.at_intersection_entry(env)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['intersection_empty'] = agent.intersection_empty(env)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['approaching_intersection'] = agent.approaching_intersection(env)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['obj_in_range'] = agent.object_in_range(env, location="Ahead", radius = radius)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['has_right_of_way'] = agent.has_right_of_way(env)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['next_to_go'] = agent.next_to_go(env)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['safe_to_enter'] = agent.safe_to_enter(env)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['cars_waiting_to_enter'] = agent.cars_waiting_to_enter(env)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['car_entering_range'] = agent.car_entering_range(env, radius=radius)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['obj_behind_intersection'] = agent.object_in_range(env, location="Behind", intersection=True, radius=radius)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['obj_behind_no_intersection'] =  agent.object_in_range(env, location="Behind", intersection=False, radius=radius)
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.states['is_tailgating'] =  agent.is_tailgating(env)
-    
+
     def reset(self, segment: bool = False, webserver_reset: bool = False):
         """
         Reset the simulation at the start of a new episode
@@ -548,11 +549,11 @@ class Simulator(gym.Env):
             self.window.clear()
             self.text_window.clear()
             self.close()
-        
+
         # Step count since episode start
         self.timestamp = 0.0
 
-        # Get the random number of agents from 
+        # Get the random number of agents from
         if not webserver_reset:
             self.agents = []
             if self.num_random_agents > 0:
@@ -571,7 +572,7 @@ class Simulator(gym.Env):
             agent.nearby_agents = []
             agent.timestamp = 0.0
             agent.last_action = None
-            agent.wheelVels = np.array([0.0, 0.0]) 
+            agent.wheelVels = np.array([0.0, 0.0])
             agent.state = None
             agent.intersection_arrival = -1
             agent.lights["front_left"][3] = False
@@ -594,8 +595,8 @@ class Simulator(gym.Env):
             agent.states['obj_behind_intersection'] = False
             agent.states['obj_behind_no_intersection'] = False
             agent.states['is_tailgating'] = False
-        
-                    
+
+
 
         if self.randomize_maps_on_reset:
             map_name = self.np_random.choice(self.map_names)
@@ -645,7 +646,7 @@ class Simulator(gym.Env):
         gl.glDisable(gl.GL_LIGHTING)
         gl.glEnable(gl.GL_LIGHTING)
         gl.glDisable(gl.GL_LIGHTING)
-        
+
         gl.glEnable(gl.GL_COLOR_MATERIAL)
 
         # Ground color
@@ -713,7 +714,7 @@ class Simulator(gym.Env):
         # Spawn agents
         directions = ['N', 'N',  'S', 'S', 'E', 'E', 'W', 'W']
         colors = ['green', 'red', 'grey', 'cyan', 'yellow', 'orange', 'midnight']
-        for agent in self.agents: 
+        for agent in self.agents:
             # If random spawn
             if agent.random_spawn and not webserver_reset:
                 self.spawn_random_agent(agent, directions, colors)
@@ -730,7 +731,7 @@ class Simulator(gym.Env):
 
             # If setting from the webserver, use that information for propose angle and position
             if webserver_reset:
-                propose_pos = agent.cur_pos 
+                propose_pos = agent.cur_pos
                 propose_angle = agent.cur_angle
                 agent.done = False
 
@@ -788,7 +789,7 @@ class Simulator(gym.Env):
 
                     # Found a valid initial pose
                     break
-                
+
                 # No valid pose
                 else:
                     msg = f"Could not find a valid starting pose after {MAX_SPAWN_ATTEMPTS} attempts"
@@ -824,13 +825,13 @@ class Simulator(gym.Env):
             agent.curve = agent.get_curve(self)
             agent.direction = agent.get_direction(self)
             agent.initial_direction = agent.get_direction(self)
-        
+
 
         # Generate the first camera image
         self.c_info_struct = EnvironmentInfo(self)
         self.get_agents_states()
 
-        return 
+        return
 
     def _load_map(self, map_name: str):
         """
@@ -954,7 +955,7 @@ class Simulator(gym.Env):
                 self.agents.append(new_agent)
         else:
             # Retroactive Support
-            try: 
+            try:
                 if map_data["start_pose"] and map_data["start_tile"]:
                     new_agent = Agent(self, cur_pos=map_data["start_pose"][0], cur_angle=map_data["start_pose"][1], start_tile=map_data["start_tile"], start_pose=map_data["start_pose"], agent_id="agent0")
                     self.agents.append(new_agent)
@@ -966,7 +967,7 @@ class Simulator(gym.Env):
                     self.agents.append(new_agent)
             except KeyError:
                 pass
-           
+
         # If we have none, init all as good random ones
         if not self.agents:
             num_random = self.num_random_agents
@@ -981,7 +982,7 @@ class Simulator(gym.Env):
         if not self.agents:
             new_agent = Agent(self, cur_pos=[0, 0, 0], cur_angle=0, agent_id="agent0", random_spawn=False)
             self.agents.append(new_agent)
-        
+
 
     def _load_objects(self, map_data: MapFormat1):
         # Create the objects array
@@ -1447,7 +1448,7 @@ class Simulator(gym.Env):
 
         curve_headings = curves[:, -1, :] - curves[:, 0, :]
         curve_headings = curve_headings / np.linalg.norm(curve_headings).reshape(1, -1)
-        
+
         dir_vec = get_dir_vec(angle)
 
         dot_prods = np.dot(curve_headings, dir_vec)
@@ -1567,7 +1568,7 @@ class Simulator(gym.Env):
         results = [
             np.linalg.norm(x.pos - pos) < max(x.max_coords) * 0.5 * x.scale + MIN_SPAWN_OBJ_DIST
             for x in self.objects
-            if x.visible 
+            if x.visible
         ]
         if not agent:
             return np.any(results)
@@ -1661,7 +1662,7 @@ class Simulator(gym.Env):
                 logger.info(f"f_pos: {f_pos}")
             return res
 
-        
+
     def _check_intersection_static_obstacles(self, pos: g.T3value, angle: float) -> bool:
         agent_corners = get_agent_corners(pos, angle)
         agent_norm = generate_norm(agent_corners)
@@ -1710,10 +1711,10 @@ class Simulator(gym.Env):
             else:
                 obj.step(delta_time)
 
-    
+
     # Get position distance
     def pos_distance(self, pos1, pos2):
-        return np.linalg.norm(np.array(pos1)-np.array(pos2)) 
+        return np.linalg.norm(np.array(pos1)-np.array(pos2))
 
     def cartesian_from_weird(self, pos, angle) -> np.ndarray:
         gx, gy, gz = pos
@@ -1795,7 +1796,7 @@ class Simulator(gym.Env):
             # Put the state into a dictionary
             agent.direction = agent.get_direction(self)
 
-            # Generate the state 
+            # Generate the state
             if learning and agent.in_bounds(self):
                 agent.q_state = agent.get_learning_state(self)
             elif learning and d.done:
@@ -1820,23 +1821,23 @@ class Simulator(gym.Env):
 
         # Initialize the states
         self.get_agents_states()
-        
+
         # Set the new info_struct
         self.c_info_struct = EnvironmentInfo(self)
-        
+
         # Get the relative learning state?
-        for agent in self.agents: 
+        for agent in self.agents:
             agent.get_learning_state(self)
 
-        return 
+        return
 
     # Compute the agents reqward if it is learning
     def _compute_done_reward(self, agent, learning=False) -> DoneRewardInfo:
         reward = 0
         # If the agent is not in a valid pose (on drivable tiles)
-        if learning: 
+        if learning:
             all_drivable, collision = self._valid_pose(agent.cur_pos, agent.cur_angle, agent, self.safety_factor, learning)
-            
+
             # If not on a tile
             if not all_drivable:
                 inbounds = agent.in_bounds(self)
@@ -1904,7 +1905,7 @@ class Simulator(gym.Env):
             msg = "in progress."
             reward = agent.get_reward(self, done_code)
             return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
-        
+
         # If not learning
         else:
             if not self._valid_pose(agent.cur_pos, agent.cur_angle, agent, self.safety_factor, learning):
@@ -1921,14 +1922,14 @@ class Simulator(gym.Env):
                 msg = "Stopping the simulator because we reached max_steps = %s" % self.max_steps
                 reward = REWARD_INVALID_POSE
                 return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
-            
+
             # If going still
             done = False
             done_code = "in-progress"
             msg = ""
             reward = 0
             return DoneRewardInfo(done=done, done_why=msg, reward=reward, done_code=done_code)
-        
+
     def map_jpg(self, segment: bool = False, background: bool = False):
         img = self._render_img(
             self.camera_width,
@@ -1955,14 +1956,14 @@ class Simulator(gym.Env):
                     current_color = img.getpixel((x,y))
                     if current_color == (255,  0 , 255):
                         img.putpixel((x,y), (38, 38, 38))
-                    
+
             image_path = "src/webserver/images"
             image = img.save(f"{image_path}/empty_map_background.jpg")
 
         return image
 
 
-    
+
     def _render_img(
         self,
         width: int,
@@ -2040,18 +2041,18 @@ class Simulator(gym.Env):
         elif top_down:
             a = (self.grid_width * self.road_tile_size) / 2
             b = (self.grid_height * self.road_tile_size) / 2
-            
+
             fov_y_deg = self.cam_fov_y
             fov_y_rad = np.deg2rad(fov_y_deg)
             H_to_fit = max(a, b) + 0.3  # borders
 
-            H_FROM_FLOOR = H_to_fit / (np.tan(fov_y_rad / 2)) 
+            H_FROM_FLOOR = H_to_fit / (np.tan(fov_y_rad / 2))
 
             look_from = a, H_FROM_FLOOR, b
             look_at = a, 0.0, b - 0.0000001
             up_vector = 0.0, 1.0, 0
             gl.gluLookAt(*look_from, *look_at, *up_vector)
-            
+
         else:
             look_from = x, y, z
             look_at = x + dx, y + dy, z + dz
@@ -2095,7 +2096,7 @@ class Simulator(gym.Env):
                 ambient = [0.0, 0.0, 0.0, 1.0]
                 specular = [0.0, 0.0, 0.0, 1.0]
                 spot_direction = [0.0, -1.0, 0.0]
-                
+
                 if self.verbose:
                     logger.debug(
                         li=li, li_pos=li_pos, ambient=ambient, diffuse=diffuse, spot_direction=spot_direction
@@ -2175,7 +2176,7 @@ class Simulator(gym.Env):
             for agent in self.agents:
                 pos = agent.cur_pos
                 angle = agent.cur_angle
-         
+
                 if self.draw_bbox:
                     corners = get_agent_corners(pos, angle, bbox_offset_w=agent.bbox_offset_w, bbox_offset_l=agent.bbox_offset_l)
                     gl.glColor3f(0, .9, .9)
@@ -2185,7 +2186,7 @@ class Simulator(gym.Env):
                     gl.glVertex3f(corners[2, 0], .01, corners[2, 1])
                     gl.glVertex3f(corners[3, 0], .01, corners[3, 1])
                     gl.glEnd()
-                
+
                 gl.glPushMatrix()
                 gl.glTranslatef(*agent.cur_pos)
                 gl.glScalef(1, 1, 1)
@@ -2196,7 +2197,7 @@ class Simulator(gym.Env):
                 if self.enable_leds:
                     s_main = 0.01  # 1 cm sphere
                     s_halo = 0.04
-                    
+
                     colors = {
                         "center": (1, 1, 0),
                         "front_left": (1, 1, 0),
@@ -2230,8 +2231,8 @@ class Simulator(gym.Env):
                             gl.glBlendFunc(gl.GL_ONE, gl.GL_ZERO)
                             gl.glDisable(gl.GL_BLEND)
 
-                            gl.glPopMatrix()      
-                
+                            gl.glPopMatrix()
+
                     gl.glPopMatrix()
 
                 draw_xyz_axes = False
@@ -2239,7 +2240,7 @@ class Simulator(gym.Env):
                 if draw_xyz_axes:
                     draw_axes()
 
-        
+
         # Resolve the multisampled frame buffer into the final frame buffer
         gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, multi_fbo)
         gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, final_fbo)
@@ -2349,7 +2350,7 @@ class Simulator(gym.Env):
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 0, 1)
-        
+
 
         # Draw the image to the rendering window
         width = img.shape[1]
@@ -2364,7 +2365,7 @@ class Simulator(gym.Env):
         )
         img_data.blit(0, 0, 0, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
 
-       
+
         # Display position/state information
         if mode != "free_cam":
             starting_x = 0
@@ -2372,71 +2373,71 @@ class Simulator(gym.Env):
             for agent in self.agents:
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y= 20 * 20)
                 stat.text = (f"Agent {agent.index}, {agent.color}, Step: {agent.step_count}")
-                stat.draw()  
+                stat.draw()
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 19)
                 x, y, z = agent.cur_pos
                 stat.text = (f"pos: ({x:.2f}, {y:.2f}, {z:.2f})")
-                stat.draw()  
+                stat.draw()
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 18)
                 stat.text = (f"angle: {np.rad2deg(self.agents[0].cur_angle):.1f} direction: {agent.direction} ")
-                stat.draw()  
+                stat.draw()
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 17)
                 stat.text = (f"speed: {agent.speed:.2f}")
-                stat.draw()  
+                stat.draw()
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 16)
                 stat.text = (f"forward_step: {agent.forward_step:.2f}")
-                stat.draw()  
+                stat.draw()
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 15)
                 stat.text = (f"turn: {agent.turn_choice} signal: {agent.signal_choice}")
-                stat.draw()  
+                stat.draw()
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 14)
                 stat.text = (f"patience: {agent.patience} int_arrival: {agent.intersection_arrival}")
-                stat.draw()  
-                #0 
+                stat.draw()
+                #0
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 13)
                 stat.text = (f"in_int: {agent.states['in_intersection']}")
-                stat.draw()  
-                #1 
+                stat.draw()
+                #1
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 12)
                 stat.text = (f"at_int: {agent.states['at_intersection_entry']}")
-                stat.draw()  
-                #2 
+                stat.draw()
+                #2
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 11)
                 stat.text = (f"empty_int: {agent.states['intersection_empty']}")
-                stat.draw()  
-                #3 
+                stat.draw()
+                #3
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 10)
                 stat.text = (f"appr_int: {agent.states['approaching_intersection']}")
-                stat.draw()  
-                #4 
+                stat.draw()
+                #4
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 9)
                 stat.text = (f"obj_in_range: {agent.states['obj_in_range']}")
-                stat.draw()  
-                #5 
+                stat.draw()
+                #5
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 8)
                 stat.text = (f"has_right_of_way: {agent.states['has_right_of_way']}")
-                stat.draw()  
-                #6 
+                stat.draw()
+                #6
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 7)
                 stat.text = (f"cars_waiting_to_enter: {agent.states['cars_waiting_to_enter']}")
-                stat.draw()  
-                #7 
+                stat.draw()
+                #7
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 6)
                 stat.text = (f"car_entering_range: {agent.states['car_entering_range']}")
-                stat.draw()  
-                #8 
+                stat.draw()
+                #8
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 5)
                 stat.text = (f"safe_to_enter: {agent.states['safe_to_enter']}")
-                stat.draw()  
-                #9 
+                stat.draw()
+                #9
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 4)
                 stat.text = (f"is_tailgating: {agent.states['is_tailgating']}")
-                stat.draw()  
+                stat.draw()
                 #10
                 stat = pyglet.text.Label(font_name="Arial", font_size=9, x=200*starting_x, y=20 * 3)
                 next_to_go = agent.states["next_to_go"]
                 stat.text = (f"next_to_go: {next_to_go}")
-                stat.draw()  
+                stat.draw()
                 starting_x += 1
             self.text_window.dispatch_events()
 
@@ -2498,13 +2499,13 @@ class Simulator(gym.Env):
                 z = perturb_z + j * self.road_tile_size
                 base_angle = 270
             elif direction == 'E':
-                perturb_x = self.np_random.uniform(0.01, .9) * self.road_tile_size 
+                perturb_x = self.np_random.uniform(0.01, .9) * self.road_tile_size
                 perturb_z = 3/4 * self.road_tile_size   # Right side of the road
                 x = perturb_x + i * self.road_tile_size
                 z = perturb_z + j * self.road_tile_size
                 base_angle = 360
             elif direction == 'W':
-                perturb_x = self.np_random.uniform(0.01, 0.9) * self.road_tile_size 
+                perturb_x = self.np_random.uniform(0.01, 0.9) * self.road_tile_size
                 perturb_z = 1/4 * self.road_tile_size   # Right side of the road
                 x = perturb_x + i * self.road_tile_size
                 z = perturb_z + j * self.road_tile_size
@@ -2512,7 +2513,7 @@ class Simulator(gym.Env):
 
             # Choose a random position and direction to face
             propose_pos = np.array([x, 0, z])
-            propose_angle = math.radians(base_angle) 
+            propose_angle = math.radians(base_angle)
 
             # If this is too close to an object or not a valid pose, retry
             inconvenient = self._inconvenient_spawn(propose_pos, agent)
@@ -2548,7 +2549,7 @@ class Simulator(gym.Env):
         agent.nearby_agents = []
         agent.last_action = None
         agent.tiles_visited = set()
-        agent.wheelVels = np.array([0.0, 0.0]) 
+        agent.wheelVels = np.array([0.0, 0.0])
 
         # Initialize Dynamics model
         init_vel = np.array([0, 0])
@@ -2563,14 +2564,14 @@ class Simulator(gym.Env):
         c0 = q, v0
         agent.state = p.initialize(c0=c0, t0=0)
 
-        # SEt the lights 
+        # SEt the lights
         agent.intersection_arrival = -1
         agent.lights["front_left"][3] = False
         agent.lights["front_right"][3] = False
         agent.lights["back_left"][3] = False
         agent.lights["back_right"][3] = False
         agent.lights["center"][3] = False
-        
+
         # Set the states
         agent.states['in_intersection'] = False
         agent.states['at_intersection_entry'] = False
@@ -2585,7 +2586,7 @@ class Simulator(gym.Env):
         agent.states['is_tailgating'] = False
         agent.states['next_to_go'] = False
         agent.states['safe_to_enter'] = False
-        
+
 
 
     def get_agent_corners(self, pos, angle, bbox_offset_w = 0, bbox_offset_l = 0):
@@ -2631,7 +2632,7 @@ def get_agent_corners(pos, angle, bbox_offset_w = 0, bbox_offset_l = 0):
     )
     return agent_corners
 
-       
+
 class FrameBufferMemory:
     multi_fbo: int
     final_fbo: int
@@ -2672,4 +2673,3 @@ def draw_axes():
     gl.glEnd()
 
     gl.glPopMatrix()
-

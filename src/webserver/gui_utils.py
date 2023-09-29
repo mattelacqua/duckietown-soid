@@ -1,4 +1,4 @@
-from gym_duckietown import agents,  dl_utils
+from gym_duckietown import agents, dl_utils
 from gym_duckietown.utils import read_model
 import math
 import pickle
@@ -16,7 +16,8 @@ def handle_input(env, gui_input):
     # If its a state update
     if gui_input['kind'] == 'state':
         state = gui_input['state']
-        env.state = state
+        env.state   = state
+        env.started = gui_input['started']
         return state
 
     # If there is a change from the RHS of GUI
@@ -51,9 +52,7 @@ def handle_input(env, gui_input):
         elif change == "intersection_arrival":
             agent.intersection_arrival = gui_input['intersection_arrival']
         elif change == "model_choice":
-            print(f"Got the new model choice {gui_input['choice']}")
             if gui_input['choice'] == 'good_agent':
-                print("BROKEN BAD INPUT GUI_UTILS 49")
                 agent.good_agent = True
             elif gui_input['choice'] == 'defensive':
                 agent.good_agent = False
@@ -155,8 +154,6 @@ def handle_input(env, gui_input):
     env.c_info_struct = agents.EnvironmentInfo(env)
 
     return env.state
-
-
 
 # Serialize by pickling to fifo
 def serialize(obj, fifo):
@@ -269,9 +266,10 @@ def env_info_dict(env):
 
         agents.append(dict_agent)
 
-    env_info['agents'] = agents
-    env_info['state'] = env.state
+    env_info['agents']   = agents
+    env_info['state']    = env.state
     env_info['sim_step'] = env.agents[0].step_count
+    env_info['started']  = env.started
 
     return env_info
 
@@ -305,13 +303,13 @@ def start_webserver():
     my_pid, err = process.communicate()
 
     if len(my_pid.splitlines()) >0:
-       print("Old webserver running. Killing old and starting up new")
+       print("Old webserver running. Killing old and starting up new...")
        try:
            os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
        except:
-           print("Unable to kill old webserver, so Starting up new")
+           print("Unable to kill old webserver, but will still try to start up new...")
     else:
-      print("Old webserver not Running, Starting up new")
+      print("Old webserver not running. Starting up new...")
 
     webserver = subprocess.Popen(["python","src/webserver/server.py"])
     return webserver
@@ -324,13 +322,13 @@ def start_node():
     my_pid, err = process.communicate()
 
     if len(my_pid.splitlines()) >0:
-       print("Old NJS SCRIPT Running Killing.")
+       print("Old NJS SCRIPT Running. Killing...")
        try:
            os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
        except:
-           print("Unable to kill old NJS SCRIPT, so Starting up new")
+           print("Unable to kill old NJS SCRIPT, but will try to start up new...")
     else:
-      print("Old NJS SCRIPT not Running, Starting up new")
+      print("Old NJS SCRIPT not running, Starting up new...")
 
     cmd = ['pgrep -f .*npm.*start']
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
@@ -338,14 +336,14 @@ def start_node():
     my_pid, err = process.communicate()
 
     if len(my_pid.splitlines()) >0:
-       print("Old NJS Running Killing.")
+       print("Old NJS Running. Killing...")
        try:
            os.kill(int(my_pid.decode("utf-8")), signal.SIGTERM)
        except:
-           print("Unable to kill old NJS, so Starting up new")
+           print("Unable to kill old NJS, but will still try to start up new...")
 
     else:
-      print("Old NJS not Running, Starting up new")
+      print("Old NJS not running. Starting up new...")
 
     node = subprocess.Popen(["npm","start", "--prefix", "src/webserver/web-gui"])
     return node
