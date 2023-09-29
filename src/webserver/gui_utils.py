@@ -54,17 +54,22 @@ def handle_input(env, gui_input):
         elif change == "model_choice":
             if gui_input['choice'] == 'good_agent':
                 agent.good_agent = True
+                agent.model = 'good'
             elif gui_input['choice'] == 'defensive':
                 agent.good_agent = False
+                agent.model = 'defensive'
                 agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/defensive/10k_train'))
             elif gui_input['choice'] == 'standard':
                 agent.good_agent = False
+                agent.model = 'standard'
                 agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/standard/10k_train'))
             elif gui_input['choice'] == 'reckless':
                 agent.good_agent = False
+                agent.model = 'reckless'
                 agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/impatient/10k_train'))
             elif gui_input['choice'] == 'pathological':
                 agent.good_agent = False
+                agent.model = 'pathological'
                 agent.q_table = QTable(read_model('learning/reinforcement/q-learning/models/saved/pathological/10k_train'))
                 print("New Q Table set for pathological.")
 
@@ -263,6 +268,10 @@ def env_info_dict(env):
             dict_agent['q_table']=[[float(env.agents[i].q_table.qt[m][0]), float(env.agents[i].q_table.qt[m][1])] for m in range(1024)]
         else:
             dict_agent['q_table']=[[0.0, 0.0] for m in range(1024)]
+        dict_agent['good_agent'] = env.agents[i].good_agent
+        dict_agent['model'] = None
+        if i == 0:
+            dict_agent['model'] = env.agents[i].model
 
         agents.append(dict_agent)
 
