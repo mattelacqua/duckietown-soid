@@ -23,13 +23,20 @@ class LogStep extends React.Component {
     console.log("SENDING OUT LOG STEP")
     this.state.socket.emit('log_step',
                     {
-                      'step': this.state.step,         // Pass the agent_id stored in state
+                      'step': this.state.step,
                     }); // End emit
     this.setState({step: newValue});
   };
 
   // Render the Dial component from the react-dial-knob package
   render() {
+    if (this.props.max_step !== this.state.max_step) {
+      this.setState({
+        step: this.props.step,
+        max_step: this.props.max_step,
+      });
+    }
+    
     let run = (this.props.sim_state === 'run')
     let std = (this.props.started === true)
     
@@ -49,7 +56,7 @@ class LogStep extends React.Component {
         </form>
       </div>
     )
-    } // End Render
+  } // End Render
 } // End Class
 
 // Let us use in other componenets
