@@ -80,7 +80,7 @@ class AgentMap extends React.Component {
     
     // Load background image
     const image = new Image();
-    image.src = 'http://localhost:5001/mapImage';
+    image.src = 'http://127.0.0.1:5001/mapImage';
 
     const map_background = {
       beforeDraw: (chart) => {
