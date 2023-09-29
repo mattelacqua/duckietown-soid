@@ -60,7 +60,8 @@ class Agent0 extends React.Component {
             <div className='AgentHeader'>
               <h2> Agent {agent.agent_id.slice(-1)}. </h2>
               <ModelChoice agent={this.props.agents[0]} 
-                           socket={this.props.socket} />
+                           socket={this.props.socket}
+                           started={this.props.started} />
             </div>
             {/* Manipulators */}
             <div className='AgentEdit'>
@@ -86,7 +87,6 @@ class Agent0 extends React.Component {
           </div>
         </div>
         <Queries  socket={this.props.socket}
-                  sim_step={this.props.sim_state}
                   started={this.props.started}
                   update_from_sim={this.props.update_from_sim}
                   env_info={this.props.env_info} />

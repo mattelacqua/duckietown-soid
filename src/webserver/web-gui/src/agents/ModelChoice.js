@@ -49,10 +49,12 @@ class ModelChoice extends React.Component {
       }
     }
 
+    let std = (this.props.started)
+
     return( 
       <div className="ModelChoice">
         <h4> Decision Model: </h4>
-        <div className="ModelSelector">
+        <div className="ModelSelector" style={{'pointer-events' : (std) ? 'none' : 'auto', 'opacity' : (std) ? '0.5' : '1'}}>
           <Select
             options={options} // Options to display in the dropdown
             defaultValue={dflt} // Options to display in the dropdown
