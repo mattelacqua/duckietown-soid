@@ -14,9 +14,6 @@ import AgentMap from './agents/AgentMap.js'
 // Import RenderedScene
 import RenderedScene from './environment/RenderedScene.js'
 
-// Import Counterfactuals
-import CounterfactualMenu from './counterfactual/CounterfactualMenu.js'
-
 // Import LODASH
 import _ from 'lodash';
 
@@ -66,7 +63,7 @@ class App extends React.Component{
               env_info: new_ref,
               EnvLoaded: true,
               sim_state: new_ref.state,
-              started: this.state.started
+              started: new_ref.started
             });
           } // Endif
       })
@@ -123,6 +120,7 @@ class App extends React.Component{
           </div>
           <Agents agents={this.state.env_info.agents}
                   socket={this.state.socket}
+                  sim_state={this.state.sim_state}
                   sim_step={this.state.env_info.sim_step}
                   env_info={this.state.env_info}
                   update_from_sim={this.update_from_sim}

@@ -20,7 +20,6 @@ app = Flask(__name__, template_folder=template_dir)
 CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-
 # start a socket
 socketio = SocketIO(app,cors_allowed_origins="*")
 
@@ -65,11 +64,11 @@ def renderedScene():
 #Connect and Disconnect
 @socketio.on('connect')
 def test_connect(auth):
-    print(f"New Socket Client Connection: {auth}")
+    print(f"Client connected... authd? {auth}")
 
 @socketio.on('disconnect')
 def test_disconnect():
-    print('Client disconnected')
+    print('Client disconnected...')
 
 # Update the simulator info
 @socketio.on("update_sim_info")
@@ -146,8 +145,8 @@ def sim_state(data):
     to_send = {
                 'kind': 'state',
                 'state': state,
+                'started': True, # if the sim_state is changing we must have started
               }
-    print(f"GETTING THE {state}")
     serialize(to_send, out)
 
 # add an agent
@@ -197,13 +196,11 @@ def log_step(data):
     try: log_step = log_info[step]
     except: return ""
 
-    print(f"Log step {json.dumps(log_step, indent=2)}")
     log_change = {
                 'kind': 'log',
                 'change': 'log',
                 'log': log_step
     }
-    print(f"Sending out a log change")
     serialize(log_change, out)
 
 # Do a soid query
@@ -211,7 +208,7 @@ def log_step(data):
 def query(query_info):
     query_blob = {
                     'kind': 'query',
-                    'query_info': query_info\
+                    'query_info': query_info
                 }
     serialize(query_blob, out)
 
