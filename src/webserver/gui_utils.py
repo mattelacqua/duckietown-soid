@@ -168,18 +168,33 @@ def serialize(obj, fifo):
 
 # Unserialize from fifo
 def unserialize(fifo, log=False):
-    if log:
-        lines = fifo.readlines()
-        for line in lines:
-            line.strip()
-            json_line = json.loads(line)
-            yield json_line
-    else:
+    #if log:
+    #    lines = fifo.readlines()
+    #    for line in lines:
+    #        line.strip()
+    #        json_line = json.loads(line)
+    #        yield json_line
+    #else:
+
+    # if race condition, just sleep for a moment and then retry reading it
+    try:
         lines = fifo.readlines()
         if lines:
             lines[-1].strip()
             json_line = json.loads(lines[-1])
+
             yield json_line
+    except json.decoder.JSONDecodeError as e:
+        try:
+            time.sleep( 1 / 100 )
+            lines = fifo.readlines()
+            if lines:
+                lines[-1].strip()
+                json_line = json.loads(lines[-1])
+
+                yield json_line
+        except json.decoder.JSONDecodeError as e:
+            raise Exception('Potential race condition parsing new front-end state, will check again shortly...')
 
 # Init agents in server
 def init_server(dt, fifo, env, socket, get_map=False):
@@ -281,7 +296,6 @@ def env_info_dict(env):
     env_info['started']  = env.started
 
     return env_info
-
 
 # Read initial positions and env info
 def read_init(fifo, log=False):
