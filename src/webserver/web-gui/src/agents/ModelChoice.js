@@ -42,7 +42,7 @@ class ModelChoice extends React.Component {
     let dflt = options[ 0 ];
     if (this.props.agent.model) {
       for (let i = 0; i < options.length; i++) {
-        if (options[i].value == this.props.agent.model) {
+        if (options[i].value === this.props.agent.model) {
           dflt = options[i];
           break;
         }
