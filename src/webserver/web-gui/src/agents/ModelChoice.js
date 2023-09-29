@@ -26,8 +26,7 @@ class ModelChoice extends React.Component {
       {
         'choice': choice,
       }
-    );
-    
+    );    
   }
   
   // Render the information to screen
@@ -40,13 +39,23 @@ class ModelChoice extends React.Component {
           { value: 'pathological', label: 'Pathological (Learned)' }
     ];
 
+    let dflt = options[ 0 ];
+    if (this.props.agent.model) {
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value == this.props.agent.model) {
+          dflt = options[i];
+          break;
+        }
+      }
+    }
+
     return( 
       <div className="ModelChoice">
         <h4> Decision Model: </h4>
         <div className="ModelSelector">
           <Select
             options={options} // Options to display in the dropdown
-            defaultValue={{value: 'good_agent', label: 'Ideal Agent (Hard-Coded Behavior)'}} // Options to display in the dropdown
+            defaultValue={dflt} // Options to display in the dropdown
             theme={theme => ({
               ...theme,
               borderRadius: 0,
