@@ -32,6 +32,7 @@ class Agents extends React.Component {
                  <Agent0  agents={this.props.agents}
                           agent={agent0}
                           sim_step={this.props.sim_step}
+                          started={this.props.started}
                           env_info={this.props.env_info}
                           socket={this.props.socket}
                           update_from_sim={this.props.update_from_sim}/>
@@ -44,6 +45,7 @@ class Agents extends React.Component {
                      <Agent  agents={this.props.agents}
                              agent={agent}
                              sim_step={this.props.sim_step}
+                             started={this.props.started}
                              socket={this.props.socket}
                              update_from_sim={this.props.update_from_sim}/>
                  ))}

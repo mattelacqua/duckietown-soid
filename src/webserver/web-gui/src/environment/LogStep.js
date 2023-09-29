@@ -15,7 +15,6 @@ class LogStep extends React.Component {
       step: this.props.step,
       max_step: this.props.max_step,
       socket: this.props.socket,     // Socket
-      run: (this.props.sim_state === 'run'),
     };
   }
 

@@ -78,7 +78,7 @@ class Queries extends React.Component {
   render() {
 
     let std = (this.props.started)
-    
+        
     return (
       <div className='Queries' style={{'pointer-events' : (!std) ? 'none' : 'auto', 'opacity' : (!std) ? '0.5' : '1'}}>
         <div className='QueryHeader'>
