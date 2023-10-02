@@ -394,7 +394,7 @@ The [webserver.out](webserver.out) pipe is used for any information recieved on 
 We are using the Pickle/JSON libraries to serialize and unserialize several different sorts of gui input (each of these object classes can be found in [gui_utils.py](src/gym_duckietown/gui_utils.py).
 
 ## Troubleshooting <a name="troubleshooting"></a>
-***NOTE** In Samuel Judson's [soid repository](https://gitlab.com/rose-yale/soid) there are patches for these issues should you run into them.
+***NOTE** In the ROSE group [soid repository](https://gitlab.com/rose-yale/soid) there are patches for these issues should you run into them.
 
 
 If you run into problems of any kind, don't hesitate to [open an issue](https://github.com/mattelacqua/duckietown-soid/issues) on this repository. It's quite possible that you've run into some bug we aren't aware of. Please make sure to give some details about your system configuration (ie: PC or Max, operating system), and to paste the command you used to run the simulator, as well as the complete error message that was produced, if any.
