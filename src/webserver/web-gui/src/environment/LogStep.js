@@ -20,26 +20,28 @@ class LogStep extends React.Component {
 
   // Update the dial state on new changes
   handleChange = (newValue) => {
-    console.log("SENDING OUT LOG STEP")
     this.state.socket.emit('log_step',
-                    {
-                      'step': this.state.step,
-                    }); // End emit
+                           {
+                             // the slider displays a step zero so that it looks reasonable before a run starts
+                             // but not step zero actually exists -- so we need to account for this fencepost
+                             'step': this.state.step - 1
+                           });
     this.setState({step: newValue});
   };
 
   // Render the Dial component from the react-dial-knob package
   render() {
-    if (this.props.max_step !== this.state.max_step) {
+    if (this.props.max_step > this.state.max_step) {
       this.setState({
         step: this.props.step,
         max_step: this.props.max_step,
+        socket: this.props.socket,     // Socket
       });
     }
-    
+
     let run = (this.props.sim_state === 'run')
     let std = (this.props.started === true)
-    
+
     // if we're running dial isn't useful and is confusing
     return (
       <div className="LogStep" style={{'pointer-events' : (run || !std) ? 'none' : 'auto', 'opacity' : (run || !std) ? '0.5' : '1', width : '125px'}}>

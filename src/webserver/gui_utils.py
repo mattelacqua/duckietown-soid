@@ -168,27 +168,30 @@ def serialize(obj, fifo):
 
 # Unserialize from fifo
 def unserialize(fifo, log=False):
-    #if log:
-    #    lines = fifo.readlines()
-    #    for line in lines:
-    #        line.strip()
-    #        json_line = json.loads(line)
-    #        yield json_line
-    #else:
-
-    # if race condition, just sleep for a moment and then retry reading it
     try:
         lines = fifo.readlines()
-        if lines:
+        if lines and log:
+            for line in lines:
+                line.strip()
+                json_line = json.loads(line)
+
+                yield json_line
+        elif lines:
             lines[-1].strip()
             json_line = json.loads(lines[-1])
 
             yield json_line
-    except json.decoder.JSONDecodeError as e:
+    except json.decoder.JSONDecodeError as e: # if race condition, just sleep for a moment and then retry reading it
         try:
             time.sleep( 1 / 100 )
             lines = fifo.readlines()
-            if lines:
+            if lines and log:
+                for line in lines:
+                    line.strip()
+                    json_line = json.loads(line)
+
+                    yield json_line
+            elif lines:
                 lines[-1].strip()
                 json_line = json.loads(lines[-1])
 
