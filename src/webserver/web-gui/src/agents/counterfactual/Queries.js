@@ -12,21 +12,20 @@ class Queries extends React.Component {
     };
     this.handleClick = this.handleClick.bind(this);
   }
-  
+
   // Handle the click
   async handleClick(query) {
       const delay = ms => new Promise(res => setTimeout(res, ms));
       this.props.update_from_sim();
       await delay(2000)
       this.props.update_from_sim();
-      
+
       // Add the counterfactuals to the queryy
       if (query === "move_factual"){
-
-        this.props.socket.emit('query', 
+        this.props.socket.emit('query',
           {
             'query': {
-              'is_factual': true ,
+              'is_universal': true ,
               'is_existential': false ,
               'behavior': 'move' ,
             },
@@ -34,11 +33,10 @@ class Queries extends React.Component {
           } );
       }
       else if (query === "move_existential"){
-
-        this.props.socket.emit('query', 
+        this.props.socket.emit('query',
           {
             'query': {
-              'is_factual': false ,
+              'is_universal': false ,
               'is_existential': true ,
               'behavior': 'move' ,
             },
@@ -46,11 +44,10 @@ class Queries extends React.Component {
           } );
       }
       else if (query === "stop_factual"){
-
-        this.props.socket.emit('query', 
+        this.props.socket.emit('query',
           {
             'query': {
-              'is_factual': true ,
+              'is_universal': true ,
               'is_existential': false ,
               'behavior': 'stop' ,
             },
@@ -58,23 +55,23 @@ class Queries extends React.Component {
           } );
       }
       if (query === "stop_existential"){
-        this.props.socket.emit('query', 
+        this.props.socket.emit('query',
           {
             'query': {
-              'is_factual': false ,
+              'is_universal': false ,
               'is_existential': true ,
-              'behavior': 'stop' ,
+              'behavior': 'stop',
             },
             'env_info': this.props.env_info
           } );
       }
   }
-  
+
   // Render the information to screen
   render() {
 
     let std = (this.props.started)
-        
+
     return (
       <div className='Queries' style={{'pointer-events' : (!std) ? 'none' : 'auto', 'opacity' : (!std) ? '0.5' : '1'}}>
         <div className='QueryHeader'>

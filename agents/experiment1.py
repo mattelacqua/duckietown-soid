@@ -130,7 +130,7 @@ def pause(dt):
         # Handle input via gui_utils.py
         if gui_input:
             gui_input = gui_input[-1]
-            state = gu.handle_input(env, gui_input)
+            state = gu.handle_input(env, gui_input, out, socket)
             gu.init_server(0, out, env, socket)
             # If we quit
             if state == "quit":
