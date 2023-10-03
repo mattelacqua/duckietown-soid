@@ -241,7 +241,6 @@ def delete_counterfactual(data):
     }
     serialize(counterfactual_wrap, out)
 
-
 if __name__ == '__main__':
     socketio.run(app, port=5001)
 

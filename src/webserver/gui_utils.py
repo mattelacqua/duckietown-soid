@@ -9,10 +9,10 @@ import signal
 import time
 from learn_types import QTable
 from webserver import counterfactual as cf
-#from webserver import soid_query as sq
+from webserver import soid_query as sq
 
 # Handle the GUI input for each respective state. These come from server.py -> pipe -> agent_file.py -> here
-def handle_input(env, gui_input):
+def handle_input(env, gui_input, fifo = None, socket = None):
     # If its a state update
     if gui_input['kind'] == 'state':
         state = gui_input['state']
@@ -137,20 +137,18 @@ def handle_input(env, gui_input):
 
     # If user specifies a soid query
     if gui_input['kind'] == 'query':
+        env.querying = True
+
         # Convert all the info to query blob
         query_blob = cf.get_query_blob(env, gui_input['query_info'])
 
-        # Print it out for debugging
-        print("\n\n Final Query Blob")
-        print(json.dumps(query_blob, indent=2))
-
         # Generate the klee file
-        #klee_file = cf.generate_klee_file(query_blob)
+        klee_file = cf.generate_klee_file(query_blob)
 
         # Invoke soid to generate the soid query over the blob
-        #soid_result = sq.invoke_soid(query_blob)
+        soid_result = sq.invoke_soid(query_blob, env, lambda: update_env(fifo, env, socket))
 
-        #env.soid_result = soid_result
+        env.soid_result = soid_result
 
         # Actually set to pause but return soid
         env.state = 'pause'
@@ -199,12 +197,7 @@ def unserialize(fifo, log=False):
         except json.decoder.JSONDecodeError as e:
             raise Exception('Potential race condition parsing new front-end state, will check again shortly...')
 
-# Init agents in server
-def init_server(dt, fifo, env, socket, get_map=False):
-    if get_map:
-        env.map_jpg(background=True)
-        env.map_jpg(background=False)
-
+def update_env(fifo, env, socket):
     env_info = env_info_dict(env)
 
     # Serialize the input
@@ -212,6 +205,13 @@ def init_server(dt, fifo, env, socket, get_map=False):
 
     if socket:
         socket.emit("update_sim_info")
+
+def init_server(dt, fifo, env, socket, get_map=False):
+    if get_map:
+        env.map_jpg(background=True)
+        env.map_jpg(background=False)
+
+    update_env(fifo, env, socket)
 
 # Convert the environment info into a dictionary
 def env_info_dict(env):
@@ -293,10 +293,14 @@ def env_info_dict(env):
 
         agents.append(dict_agent)
 
-    env_info['agents']   = agents
-    env_info['state']    = env.state
-    env_info['sim_step'] = env.agents[0].step_count
-    env_info['started']  = env.started
+    env_info['agents']     = agents
+    env_info['state']      = env.state
+    env_info['sim_step']   = env.agents[0].step_count
+    env_info['started']    = env.started
+    env_info['querying']   = env.querying
+    env_info['query_time'] = None
+    if env.querying and env.query_start:
+        time.time() - env.query_start
 
     return env_info
 

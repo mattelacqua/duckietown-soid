@@ -5,7 +5,6 @@ from ctypes import *
 
 # Get the turn choice in decision logic values
 def get_dl_turn_choice(choice):
-    print(f"Printing choice {choice}")
     if choice == "Straight":
         return "STRAIGHT"
     if choice == "Left":
@@ -44,7 +43,6 @@ def get_query_blob(env, query_info):
 
     # Parse the environment
     def get_environment(query_info):
-        print(query_info)
         env_info = query_info['env_info']
         environment = {
             'intersection_x': env_info['intersection_x'],
@@ -142,7 +140,6 @@ def get_query_blob(env, query_info):
         for agent in agents_info:
             agents[agent['agent_id']] = get_agent(agent)
 
-
         return agents
 
     # Get the log from the webserver in the right format
@@ -167,7 +164,7 @@ def get_query_blob(env, query_info):
     # Get a query
     def get_query(query_info):
         query = {
-            'is_factual': query_info['query']['is_factual'] ,
+            'is_universal': query_info['query']['is_universal'] ,
             'is_existential': query_info['query']['is_existential'] ,
             'behavior': query_info['query']['behavior'] ,
         }
@@ -195,7 +192,6 @@ def generate_klee_file(query_blob):
 
     """
     This function will generate the klee file used by soid.
-
     """
     #query = json.loads(query_blob)
     query = query_blob
@@ -655,7 +651,6 @@ def generate_klee_file(query_blob):
     # exec klee
     makefile.write("	$(KEXEC) -silent-klee-assume -write-smt2s -use-merge $(BC)\n")
 
-
     makefile.write("\nclean:\n")
     makefile.write("	rm -f ./inter1.bc\n")
     makefile.write("	rm -f ./inter2.bc\n")
@@ -665,7 +660,6 @@ def generate_klee_file(query_blob):
     makefile.write("	rm -rf ./klee-last\n")
 
     makefile.close()
-
 
     # print(agents)
     # return file_descriptor, file_path

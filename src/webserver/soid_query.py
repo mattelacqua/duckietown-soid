@@ -3,6 +3,7 @@ import soid
 from soid.soidlib import *
 import json
 import os
+import time
 
 # Generate the soid query
 def get_dl_direction(direction):
@@ -14,18 +15,10 @@ def get_dl_direction(direction):
         return 2
 
 def generate_soid_query(query_blob):
-    """
-    generate the soid query
-    """
-    oracle = soid.Oracle()
-    klee_prefix = "src/webserver/soid_files/klee/"
-    make = klee_prefix + 'makefile'
-
     if query_blob['query']['is_universal']:
         query = soid.soidlib.Soid('GUI Query', soid.soidlib.verification) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
     if query_blob['query']['is_existential']:
         query = soid.soidlib.Soid('GUI Query', soid.soidlib.counterfactual.single) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
-
 
     q_environment = query_blob['environment']
     agents = query_blob['agents']
@@ -790,29 +783,39 @@ def generate_soid_query(query_blob):
             return Equal(P.will_proceed, False) # This will tell us if we ever move
     query.behavior(behavior)
 
-    # invoke soid
-    print(f"Soid Results:")
-    (info, res, models, resources) = soid.invoke(oracle, make, query)
-    print(f"Result: {res} Resources: {resources}")
-    model_prefix = "src/webserver/soid_files/klee/models/"
-    # open klee file
-    if models:
-        if not os.path.exists(model_prefix):
-            os.makedirs(model_prefix)
-        print(f"Model in {model_prefix}")
-        model_file = open((model_prefix + "model.out"), 'w', encoding="utf-8")
-        model_file.write(f"{models['raw']}")
-        model_file.close()
+    return query
 
+def invoke_soid(query_blob, env = None, updater = None):
+    oracle = soid.Oracle()
+    klee_prefix = "src/webserver/soid_files/klee/"
+    make = klee_prefix + 'makefile'
+
+    query = generate_soid_query(query_blob)
+
+    if env and updater:
+        env.query_start = time.time()
+        updater(env)
+
+    # invoke soid
+    time.sleep(1000)
+    return True, { 'foo' : 'bar' }, { 'foobar' : 'foofoobar' }
+
+    #(info, res, models, resources) = soid.invoke(oracle, make, query)
+    #model_prefix = "src/webserver/soid_files/klee/models/"
+    # open klee file
+    #if models:
+    #    if not os.path.exists(model_prefix):
+    #        os.makedirs(model_prefix)
+    #    print(f"Model in {model_prefix}")
+    #    model_file = open((model_prefix + "model.out"), 'w', encoding="utf-8")
+    #    model_file.write(f"{models['raw']}")
+    #    model_file.close()
+    #
     # Ignore info
     # Res is the result
     # Models is empty or models[0] is the model
     # resources is the timing of the query
-    return res, models, resources
-
-
-def invoke_soid(query_blob):
-    return generate_soid_query(query_blob)
+    #return res, models, resources
 
 
 ### for running benchmarks
