@@ -85,12 +85,11 @@ def agent_angle(data):
     a_id = str(data['id'])
     angle = int(data['value'])
     agent_change = {
-                    'kind': 'change',
-                    'change': 'angle',
-                    'agent_id': a_id,
-                    'cur_angle': angle,
-                    }
-
+        'kind': 'change',
+        'change': 'angle',
+        'agent_id': a_id,
+        'cur_angle': angle,
+    }
     serialize(agent_change, out)
  
 # On socket update change agent angle
@@ -100,11 +99,11 @@ def initial_direction(data):
     a_id = int(data['agent_index'])
     initial_direction = str(data['initial_direction'])
     agent_change = {
-                    'kind': 'change',
-                    'change': 'initial_direction',
-                    'agent_id': a_id,
-                    'initial_direction': initial_direction,
-                    }
+        'kind': 'change',
+        'change': 'initial_direction',
+        'agent_id': a_id,
+    'initial_direction': initial_direction,
+    }
     serialize(agent_change, out)
 
 # On socket update change agent angle
@@ -114,11 +113,11 @@ def intersection_arrival(data):
     a_id = int(data['agent_index'])
     intersection_arrival = int(data['intersection_arrival'])
     agent_change = {
-                    'kind': 'change',
-                    'change': 'intersection_arrival',
-                    'agent_id': a_id,
-                    'intersection_arrival': intersection_arrival,
-                    }
+        'kind': 'change',
+        'change': 'intersection_arrival',
+        'agent_id': a_id,
+        'intersection_arrival': intersection_arrival,
+    }
     serialize(agent_change, out)
 
 # On socket update change agent angle position (from map)
@@ -129,12 +128,12 @@ def agent_pos(data):
     x = data['x']
     z = data['z']
     agent_change = {
-                    'kind': 'change',
-                    'change': 'pos',
-                    'agent_id': a_id,
-                    'pos_x': x,
-                    'pos_z': z,
-                    }   
+        'kind': 'change',
+        'change': 'pos',
+        'agent_id': a_id,
+        'pos_x': x,
+        'pos_z': z,
+    }   
     serialize(agent_change, out)
 
 # On socket update resume simulation from button press
@@ -143,10 +142,10 @@ def sim_state(data):
     global out
     state = str(data['state'])
     to_send = {
-                'kind': 'state',
-                'state': state,
-                'started': True, # if the sim_state is changing we must have started
-              }
+        'kind': 'state',
+        'state': state,
+        'started': True, # if the sim_state is changing we must have started
+    }
     serialize(to_send, out)
 
 # add an agent
@@ -154,8 +153,8 @@ def sim_state(data):
 def add_agent():
     global out
     agent_change = {
-                    'kind': 'add_agent',
-                   }
+        'kind': 'add_agent',
+    }
     serialize(agent_change, out)
 
 # delete an agent
@@ -164,10 +163,10 @@ def delete_agent(data):
     global out
     a_id = str(data['id'])
     agent_change = {
-                    'kind': 'change',
-                    'change': 'delete',
-                    'agent_id': a_id,
-                    }
+        'kind': 'change',
+        'change': 'delete',
+        'agent_id': a_id,
+    }
     serialize(agent_change, out)
 
 @socketio.on("model_choice")
@@ -180,7 +179,6 @@ def model_choice(data):
         'agent_id': 0,
     }
     serialize(counterfactual_wrap, out)
-
 
 # Reinstate from log
 @socketio.on("log_step")
@@ -197,9 +195,9 @@ def log_step(data):
     except: return ""
 
     log_change = {
-                'kind': 'log',
-                'change': 'log',
-                'log': log_step
+        'kind': 'log',
+        'change': 'log',
+        'log': log_step
     }
     serialize(log_change, out)
 
@@ -207,9 +205,9 @@ def log_step(data):
 @socketio.on("query")
 def query(query_info):
     query_blob = {
-                    'kind': 'query',
-                    'query_info': query_info
-                }
+        'kind': 'query',
+        'query_info': query_info
+    }
     serialize(query_blob, out)
 
 # Add a counterfactual to agent list

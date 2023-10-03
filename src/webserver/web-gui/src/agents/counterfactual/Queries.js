@@ -31,8 +31,7 @@ class Queries extends React.Component {
               'behavior': 'move' ,
             },
             'env_info': this.props.env_info
-          }
-          );
+          } );
       }
       else if (query === "move_existential"){
 
@@ -44,8 +43,7 @@ class Queries extends React.Component {
               'behavior': 'move' ,
             },
             'env_info': this.props.env_info
-          }
-          );
+          } );
       }
       else if (query === "stop_factual"){
 
@@ -57,8 +55,7 @@ class Queries extends React.Component {
               'behavior': 'stop' ,
             },
             'env_info': this.props.env_info
-          }
-          );
+          } );
       }
       if (query === "stop_existential"){
         this.props.socket.emit('query', 
@@ -69,8 +66,7 @@ class Queries extends React.Component {
               'behavior': 'stop' ,
             },
             'env_info': this.props.env_info
-          }
-          );
+          } );
       }
   }
   
@@ -83,20 +79,20 @@ class Queries extends React.Component {
       <div className='Queries' style={{'pointer-events' : (!std) ? 'none' : 'auto', 'opacity' : (!std) ? '0.5' : '1'}}>
         <div className='QueryHeader'>
           <h2> Query </h2>
-          <i style={{ fontWeight: 'normal', 'font-size' : '13px' }}> &emsp; (will use all counterfactual properties specified for all agents)</i>
+          <i style={{ fontWeight: 'normal', 'font-size' : '13px' }}> &emsp; (will use all counteruniversal properties specified for all agents)</i>
         </div>
         <div className='Query'>
           <p style={{ 'padding-top': '0.7em', 'padding-right': '2.35em' }}> &#8707;. Might the blue car possibly decide to move?</p>
           <div className='StateButtons'>
             <button className='move_existential' onClick={()=>this.handleClick("move_existential")}>Yes</button>
             &nbsp;&nbsp;
-            <button className='stop_factual' onClick={()=>this.handleClick("stop_factual")}>No</button>
+            <button className='stop_universal' onClick={()=>this.handleClick("stop_universal")}>No</button>
           </div>
         </div>
         <div className='Query'>
           <p style={{ 'padding-top': '0.7em', 'padding-right': '0.7em' }}> &#8704;. Would the blue car necessarily decide to move?</p>
           <div className='StateButtons'>
-            <button className='move_factual' onClick={()=>this.handleClick("move_factual")}>Yes</button>
+            <button className='move_universal' onClick={()=>this.handleClick("move_universal")}>Yes</button>
             &nbsp;&nbsp;
             <button className='stop_existential' onClick={()=>this.handleClick("stop_existential")}>No</button>
           </div>
