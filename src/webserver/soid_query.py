@@ -16,14 +16,12 @@ def get_dl_direction(direction):
 def generate_soid_query(query_blob):
     """
     generate the soid query
-
     """
-
     oracle = soid.Oracle()
     klee_prefix = "src/webserver/soid_files/klee/"
     make = klee_prefix + 'makefile'
 
-    if query_blob['query']['is_factual']:
+    if query_blob['query']['is_universal']:
         query = soid.soidlib.Soid('GUI Query', soid.soidlib.verification) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
     if query_blob['query']['is_existential']:
         query = soid.soidlib.Soid('GUI Query', soid.soidlib.counterfactual.single) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
@@ -38,7 +36,6 @@ def generate_soid_query(query_blob):
 
     # For each of the agents, lets preprocess for easier lambda stuff later
     for i in range(int(q_environment['num_agents'])):
-
 
         # If we are on the first agent, who is the agent who's perspective matters
         agent = agents[f'agent{i}']
@@ -466,8 +463,6 @@ def generate_soid_query(query_blob):
                     'val': None,
                 })
 
-
-
     def declare():
         # declare Environment
         E = {}
@@ -745,7 +740,7 @@ def generate_soid_query(query_blob):
                     list_step_count.append(cf)
                 else:
                     if i== cf['id']:
-                        print("SHOULD NEVER SEE THIS. IN SOID_QUERY ENCODE")
+                        raise Exception("Invalid information in soid query during encoding.")
             cf_lists.append(list_pos_x)
             cf_lists.append(list_pos_z)
             cf_lists.append(list_angle)
@@ -809,7 +804,6 @@ def generate_soid_query(query_blob):
         model_file.write(f"{models['raw']}")
         model_file.close()
 
-
     # Ignore info
     # Res is the result
     # Models is empty or models[0] is the model
@@ -820,6 +814,8 @@ def generate_soid_query(query_blob):
 def invoke_soid(query_blob):
     return generate_soid_query(query_blob)
 
+
+### for running benchmarks
 
 if __name__ == '__main__':
     if os.path.isabs(sys.argv[1]):
