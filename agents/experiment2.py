@@ -94,6 +94,7 @@ clear = open(fifo_log, 'w').close()
 
 # Open new pipes
 out = open(fifo_out, 'w', os.O_NONBLOCK)
+inn = open(fifo_in, 'w', os.O_NONBLOCK)
 inp = open(fifo_in, 'r', os.O_NONBLOCK)
 log = open(fifo_log, 'w', os.O_NONBLOCK)
 
@@ -130,7 +131,7 @@ def pause(dt):
         # Handle input via gui_utils.py
         if gui_input:
             gui_input = gui_input[-1]
-            state = gu.handle_input(env, gui_input, out, socket)
+            state = gu.handle_input(env, gui_input, inn)
             gu.init_server(0, out, env, socket)
             # If we quit
             if state == "quit":
@@ -173,7 +174,7 @@ def update(dt):
     # Get the new information
     if gui_input:
         gui_input = gui_input[-1]
-        state  = gu.handle_input(env, gui_input)
+        state  = gu.handle_input(env, gui_input, inn)
         # If we quit
         if state == "quit":
             print("Killing Webserver")

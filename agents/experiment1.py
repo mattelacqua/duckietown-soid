@@ -13,12 +13,12 @@ from learn_types import *
 
 
 # Logging
-from gym_duckietown import logger 
+from gym_duckietown import logger
 from gym_duckietown.agents import Agent
 from gym_duckietown.utils import read_model
 
 # Webserver
-import webserver.gui_utils as gu 
+import webserver.gui_utils as gu
 import socketio
 
 # Utils / Event Wrappers
@@ -64,16 +64,16 @@ env_agent = env.agents[1]
 learn_agent.agent_id = "agent0"
 learn_agent.index = 0
 learn_agent.forward_step = 0.44
-learn_agent.turn_choice = 'Right' 
-learn_agent.signal_choice = 'Right' 
+learn_agent.turn_choice = 'Right'
+learn_agent.signal_choice = 'Right'
 learn_agent.curve = learn_agent.get_curve(env)
 learn_agent.reward_profile = args.reward_profile
 
 env_agent.agent_id = "agent1"
 env_agent.index = 1
 env_agent.forward_step = 0.44
-env_agent.turn_choice = 'Right' 
-env_agent.signal_choice = 'Right' 
+env_agent.turn_choice = 'Right'
+env_agent.signal_choice = 'Right'
 env_agent.curve = env_agent.get_curve(env)
 
 # Start up env
@@ -94,6 +94,7 @@ clear = open(fifo_log, 'w').close()
 
 # Open new pipes
 out = open(fifo_out, 'w', os.O_NONBLOCK)
+inn = open(fifo_in, 'w', os.O_NONBLOCK)
 inp = open(fifo_in, 'r', os.O_NONBLOCK)
 log = open(fifo_log, 'w', os.O_NONBLOCK)
 
@@ -119,7 +120,7 @@ def pause(dt):
 
     # Feed agent information to webserver
     gu.init_server(0, out, env, socket)
-
+    
     # While still getting input
     while env.state == "pause":
         # Keep checking for new info
@@ -130,12 +131,12 @@ def pause(dt):
         # Handle input via gui_utils.py
         if gui_input:
             gui_input = gui_input[-1]
-            state = gu.handle_input(env, gui_input, out, socket)
+            state = gu.handle_input(env, gui_input, inn)
             gu.init_server(0, out, env, socket)
             # If we quit
             if state == "quit":
                 print("Killing Webserver")
-                gu.init_server(0, out, env, socket, get_map=False) # Init to send the dead signal to 
+                gu.init_server(0, out, env, socket, get_map=False) # Init to send the dead signal to
                 time.sleep(2)
                 webserver.kill()
                 print("Killing Simulator")
@@ -171,7 +172,7 @@ def update(dt):
     # Get the new information
     if gui_input:
         gui_input = gui_input[-1]
-        state  = gu.handle_input(env, gui_input)
+        state  = gu.handle_input(env, gui_input, inn)
         # If we quit
         if state == "quit":
             print("Killing Webserver")
@@ -193,7 +194,7 @@ def update(dt):
         if not agent.actions:
             if agent.intersection_detected(env):
                 agent.add_actions(agent.handle_intersection(env))
-            else: 
+            else:
                 agent.add_actions(agent.move_forward(env))
 
         # Render agent's next move
@@ -225,6 +226,3 @@ if __name__ == '__main__':
     pyglet.app.run()
 
     env.close()
-
-
-        

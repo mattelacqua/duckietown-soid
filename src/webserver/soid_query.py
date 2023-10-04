@@ -785,16 +785,18 @@ def generate_soid_query(query_blob):
 
     return query
 
-def invoke_soid(query_blob, env = None, updater = None):
+def invoke_soid(query_blob, env = None, out = None, serialize = None):
     oracle = soid.Oracle()
     klee_prefix = "src/webserver/soid_files/klee/"
     make = klee_prefix + 'makefile'
 
     query = generate_soid_query(query_blob)
 
-    if env and updater:
-        env.query_start = time.time()
-        updater(env)
+    env.querying    = True
+    env.query_start = time.time()
+
+    query_start = {'kind' : 'soid_start', 'querying' : True, 'query_start' : env.query_start}
+    serialize(query_start, out)
 
     # invoke soid
     time.sleep(1000)
