@@ -3,6 +3,7 @@ import './App.css';
 
 // Import React for components
 import React from 'react'
+import ReactModal from 'react-modal'
 
 import Header from './Header.js'
 import Footer from './Footer.js'
@@ -53,11 +54,13 @@ class App extends React.Component{
   async update_from_sim() {
     socket.emit("update_sim_info");
 
+    let new_ref;
+
     // Fetch for env info
     await fetch("/envInfo.json", {headers: headers}) // Shorthand for http://127.0.0.1:5001/envInfo.json
       .then(res => res.json()) // Result becomes a json
       .then(result =>
-        { let new_ref = result;
+        { new_ref = result;
           if (!_.isEqual(new_ref, this.state.env_info)) {
             this.setState({
               env_info: new_ref,
@@ -79,6 +82,8 @@ class App extends React.Component{
     });
 
     this.forceUpdate();
+
+    return new_ref;
   }
 
   // When we renderour App, fetch the agent information
@@ -95,14 +100,19 @@ class App extends React.Component{
         return <div>
                 <h1> Loading Simulation Information ... </h1>
                 <h1> Please ensure that the simulator and webserver are running ... </h1>
-              </div> ;
+               </div> ;
 
     // When our data is loaded
     return (
       // Div to clump app up into one component to render
       <>
-      <Header />
-        <div className = "App">
+        <Header />
+        <div className="Modal">
+          <ReactModal isOpen={this.state.env_info.querying}>
+            <p>Querying... Time Elapsed: {Math.floor(((Date.now() / 1000) - this.state.env_info.query_start) / 5) * 5}s</p>
+          </ReactModal>
+        </div>
+        <div className="App">
           <div className="Modify-wrap">
             <RenderedScene sim_state={this.state.sim_state}
                            sim_step={this.state.env_info.sim_step}

@@ -12,7 +12,7 @@ from webserver import counterfactual as cf
 from webserver import soid_query as sq
 
 # Handle the GUI input for each respective state. These come from server.py -> pipe -> agent_file.py -> here
-def handle_input(env, gui_input, fifo = None, socket = None):
+def handle_input(env, gui_input, out):
     # If its a state update
     if gui_input['kind'] == 'state':
         state = gui_input['state']
@@ -137,8 +137,6 @@ def handle_input(env, gui_input, fifo = None, socket = None):
 
     # If user specifies a soid query
     if gui_input['kind'] == 'query':
-        env.querying = True
-
         # Convert all the info to query blob
         query_blob = cf.get_query_blob(env, gui_input['query_info'])
 
@@ -146,12 +144,15 @@ def handle_input(env, gui_input, fifo = None, socket = None):
         klee_file = cf.generate_klee_file(query_blob)
 
         # Invoke soid to generate the soid query over the blob
-        soid_result = sq.invoke_soid(query_blob, env, lambda: update_env(fifo, env, socket))
+        soid_result = sq.invoke_soid(query_blob, env, out, serialize)
 
         env.soid_result = soid_result
 
         # Actually set to pause but return soid
         env.state = 'pause'
+
+        ### SERIALIZE OUT
+
         return 'soid'
 
     env.c_info_struct = agents.EnvironmentInfo(env)
@@ -160,6 +161,7 @@ def handle_input(env, gui_input, fifo = None, socket = None):
 
 # Serialize by pickling to fifo
 def serialize(obj, fifo):
+    fifo.seek(0, 2) # seek to end of file for safety
     json.dump(obj, fifo)
     fifo.write('\n')
     fifo.flush()
@@ -179,9 +181,9 @@ def unserialize(fifo, log=False):
             json_line = json.loads(lines[-1])
 
             yield json_line
-    except json.decoder.JSONDecodeError as e: # if race condition, just sleep for a moment and then retry reading it
+    except json.decoder.JSONDecodeError as e: # if race condition, just sleep for a second and then retry reading it
         try:
-            time.sleep( 1 / 100 )
+            time.sleep( 1 )
             lines = fifo.readlines()
             if lines and log:
                 for line in lines:
@@ -293,14 +295,12 @@ def env_info_dict(env):
 
         agents.append(dict_agent)
 
-    env_info['agents']     = agents
-    env_info['state']      = env.state
-    env_info['sim_step']   = env.agents[0].step_count
-    env_info['started']    = env.started
-    env_info['querying']   = env.querying
-    env_info['query_time'] = None
-    if env.querying and env.query_start:
-        time.time() - env.query_start
+    env_info['agents']      = agents
+    env_info['state']       = env.state
+    env_info['sim_step']    = env.agents[0].step_count
+    env_info['started']     = env.started
+    env_info['querying']    = env.querying
+    env_info['query_start'] = env.query_start
 
     return env_info
 
@@ -318,8 +318,7 @@ def read_init(fifo, log=False):
         for input in input_list:
             env_info = input
         if log:
-            return {'step': env_info['agents'][0]['step_count'],
-                    'env_info': env_info}
+            return {'step': env_info['agents'][0]['step_count'], 'env_info': env_info}
         else:
             return env_info
     else:

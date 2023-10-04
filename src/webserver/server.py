@@ -28,6 +28,7 @@ fifo_out = 'src/webserver/webserver.out'
 fifo_in = 'src/webserver/webserver.in'
 fifo_log = 'src/webserver/webserver.log'
 out = open(fifo_out, "w")
+inn = open(fifo_out, "r")
 inp = open(fifo_in, "r")
 logger = open(fifo_log, "r")
 
@@ -37,12 +38,17 @@ log_info = []
 while not env_info:
     env_info = read_init(inp)
 
-# Home page for website, has all information we want on it
 @app.route("/envInfo.json")
 @cross_origin()
 def envInfo():
     global env_info
     update_sim_info()
+
+    mself = next(unserialize(inn), None)
+    if mself and mself[ 'kind' ] == 'soid_start':
+        env_info['querying']    = mself['querying']
+        env_info['query_start'] = mself['query_start']
+
     envInfo_string = json.dumps(env_info)
     return envInfo_string
 
@@ -91,7 +97,7 @@ def agent_angle(data):
         'cur_angle': angle,
     }
     serialize(agent_change, out)
- 
+
 # On socket update change agent angle
 @socketio.on("initial_direction")
 def initial_direction(data):
@@ -133,7 +139,7 @@ def agent_pos(data):
         'agent_id': a_id,
         'pos_x': x,
         'pos_z': z,
-    }   
+    }
     serialize(agent_change, out)
 
 # On socket update resume simulation from button press
@@ -214,7 +220,7 @@ def query(query_info):
 @socketio.on("add_counterfactual")
 def add_counterfactual(data):
     counterfactual = data['counterfactual']
-    
+
     # filter for turn choices
     turnchoices = []
     for choice in counterfactual['range']['turn_choices']:
@@ -243,4 +249,3 @@ def delete_counterfactual(data):
 
 if __name__ == '__main__':
     socketio.run(app, port=5001)
-
