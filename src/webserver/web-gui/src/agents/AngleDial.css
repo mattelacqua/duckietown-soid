@@ -1,3 +1,7 @@
+.AngleDial {
+    z-index: 0;
+}
+
 .angle-dialwrap {
     display: flex;
     flex-direction: row;

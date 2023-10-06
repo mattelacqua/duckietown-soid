@@ -148,13 +148,6 @@ def handle_input(env, gui_input, out):
 
         env.soid_result = soid_result
 
-        # Actually set to pause but return soid
-        env.state = 'pause'
-
-        ### SERIALIZE OUT
-
-        return 'soid'
-
     env.c_info_struct = agents.EnvironmentInfo(env)
 
     return env.state
@@ -299,8 +292,7 @@ def env_info_dict(env):
     env_info['state']       = env.state
     env_info['sim_step']    = env.agents[0].step_count
     env_info['started']     = env.started
-    env_info['querying']    = env.querying
-    env_info['query_start'] = env.query_start
+    env_info['query_info']  = env.query_info
 
     return env_info
 

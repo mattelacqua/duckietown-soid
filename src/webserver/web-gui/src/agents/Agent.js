@@ -235,6 +235,9 @@ class Agent extends React.Component {
           <AddCounterfactual  agent={agent}
                               socket={this.props.socket} />
           <CounterfactualList agent={agent}
+                              fixed={false}
+                              finished={false}
+                              model={null}
                               socket={this.props.socket} />
         </div>
       </div>

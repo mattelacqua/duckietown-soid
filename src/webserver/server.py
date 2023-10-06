@@ -45,9 +45,8 @@ def envInfo():
     update_sim_info()
 
     mself = next(unserialize(inn), None)
-    if mself and mself[ 'kind' ] == 'soid_start':
-        env_info['querying']    = mself['querying']
-        env_info['query_start'] = mself['query_start']
+    if mself and mself[ 'kind' ] in [ 'soid_start', 'soid_finish' ]:
+        env_info['query_info'] = mself['query_info']
 
     envInfo_string = json.dumps(env_info)
     return envInfo_string

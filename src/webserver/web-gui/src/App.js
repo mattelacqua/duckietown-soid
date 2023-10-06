@@ -15,6 +15,9 @@ import AgentMap from './agents/AgentMap.js'
 // Import RenderedScene
 import RenderedScene from './environment/RenderedScene.js'
 
+// Import CounterfactualModal
+import CounterfactualModal from './agents/counterfactual/CounterfactualModal.js'
+
 // Import LODASH
 import _ from 'lodash';
 
@@ -107,11 +110,9 @@ class App extends React.Component{
       // Div to clump app up into one component to render
       <>
         <Header />
-        <div className="Modal">
-          <ReactModal isOpen={this.state.env_info.querying}>
-            <p>Querying... Time Elapsed: {Math.floor(((Date.now() / 1000) - this.state.env_info.query_start) / 5) * 5}s</p>
-          </ReactModal>
-        </div>
+        <CounterfactualModal
+          query_info={this.state.env_info.query_info}
+          agents={this.state.env_info.agents} />
         <div className="App">
           <div className="Modify-wrap">
             <RenderedScene sim_state={this.state.sim_state}
