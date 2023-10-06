@@ -1,6 +1,7 @@
 // Import React
 import React from "react";
 import CounterfactualInfo from "./CounterfactualInfo.js"
+import CounterfactualModel from "./CounterfactualModel.js"
 import DeleteCounterfactual from "./DeleteCounterfactual.js"
 import './Counterfactuals.css'
 
@@ -175,18 +176,26 @@ class CounterfactualList extends React.Component {
     let agent = this.props.agent;
 
     return (
-      <div className='MadeCounterfactuals'>
+      <div className='ModalMadeCounterfactuals'>
         {agent.counterfactuals.map((counterfactual, index) => (
-          <div className='CounterfactualEntry'>
-            <h3 style={{visibility : (index > 0) ? 'visible' : 'hidden'}}>and</h3>
-            <div class="card" style={{ 'background-color': (agent.id === 0) ? 'white' : 'rgba(' + h2rgb(agent.color).r + ', ' + h2rgb(agent.color).g + ', ' + h2rgb(agent.color).b + ', 0.5)', width: '100%' }}>
-              <div className='MadeCounterfactual'>
+          <div className='ModalCounterfactualEntry'>
+            {(!this.props.fixed)
+             ? <h3 style={{visibility : (index > 0) ? 'visible' : 'hidden'}}>and</h3>
+             : null
+            }
+            <div class="card" style={{ 'background-color': (agent.id === 0 && !this.props.fixed) ? 'white' : 'rgba(' + h2rgb(agent.color).r + ', ' + h2rgb(agent.color).g + ', ' + h2rgb(agent.color).b + ', 0.5)', width: '100%' }}>
+              <div className='ModalMadeCounterfactual'>
                 <CounterfactualInfo counterfactual={counterfactual}
                                     color={'black'} />
-                <DeleteCounterfactual counterfactuals={agent.counterfactuals}
-                                      index={index}
-                                      agent_index={agent.id}
-                                      socket={this.props.socket} />
+                {(!this.props.fixed)
+                 ? <DeleteCounterfactual counterfactuals={agent.counterfactuals}
+                                         index={index}
+                                         agent_index={agent.id}
+                                         socket={this.props.socket} />
+                 : <CounterfactualModel counterfactual={counterfactual}
+                                        finished={this.props.finished}
+                                        model={(!this.props.model) ? null : this.props.model[agent.id]}/>
+                 }
               </div>
             </div>
           </div>

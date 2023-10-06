@@ -792,33 +792,47 @@ def invoke_soid(query_blob, env = None, out = None, serialize = None):
 
     query = generate_soid_query(query_blob)
 
-    env.querying    = True
-    env.query_start = time.time()
+    def query_type():
+        if query_blob['query']['is_universal']:
+            return 'move_universal' if query_blob['query']['behavior'] == 'move' else 'stop_universal'
+        if query_blob['query']['is_existential']:
+            return 'move_existential' if query_blob['query']['behavior'] == 'move' else 'stop_existential'
 
-    query_start = {'kind' : 'soid_start', 'querying' : True, 'query_start' : env.query_start}
+    query_start = {
+        'kind' : 'soid_start',
+        'query_info': {
+            'querying'    : True,
+            'query_start' : time.time(),
+            'query_type'  : query_type(),
+            'finished'    : False,
+            'result'      : None, 
+            'model'       : None, 
+            'resources'   : None
+        }
+    }
+    env.query_info = query_start[ 'query_info' ]
     serialize(query_start, out)
 
     # invoke soid
-    time.sleep(1000)
-    return True, { 'foo' : 'bar' }, { 'foobar' : 'foofoobar' }
-
+    time.sleep(10)
     #(info, res, models, resources) = soid.invoke(oracle, make, query)
-    #model_prefix = "src/webserver/soid_files/klee/models/"
-    # open klee file
-    #if models:
-    #    if not os.path.exists(model_prefix):
-    #        os.makedirs(model_prefix)
-    #    print(f"Model in {model_prefix}")
-    #    model_file = open((model_prefix + "model.out"), 'w', encoding="utf-8")
-    #    model_file.write(f"{models['raw']}")
-    #    model_file.close()
-    #
-    # Ignore info
-    # Res is the result
-    # Models is empty or models[0] is the model
-    # resources is the timing of the query
-    #return res, models, resources
 
+    query_result = {
+        'kind' : 'soid_finish',
+        'query_info': {
+            'querying'    : query_start['query_info']['querying'],
+            'query_start' : query_start['query_info']['query_start'],
+            'query_type'  : query_start['query_info']['query_type'],
+            'finished'    : True,
+            'result'      : True,  #res
+            'model'       : [ { 'speed' : 0.3 }, { 'signal_choice' : 'Right' } ], #model, need to process...
+            'resources'   : { 'time' : { 'total' : 7.2 } } # resources
+        }
+    }
+    env.query_info = query_result[ 'query_info' ]
+    serialize(query_result, out)
+
+    #return res, model, resources
 
 ### for running benchmarks
 

@@ -45,23 +45,23 @@ class AngleDial extends React.Component {
   // Render the Dial component from the react-dial-knob package
   render() {
     return (
-      <CircularSlider
-        progressColorFrom="#eeeeee"
-        progressColorTo="#eeeeee"
-        progressSize={10}
-        trackColor="#eeeeee"
-        trackSize={10}
-        min={0}
-        max={360}
-        width={150}
-        knobPosition="left"
-        direction={-1}
-        dataIndex={this.props.agent.angle_deg}
-        onChange={value => {this.handleChange(value)}}
-      />
+      <div className="AngleDial">
+        <CircularSlider
+          progressColorFrom="#eeeeee"
+          progressColorTo="#eeeeee"
+          progressSize={10}
+          trackColor="#eeeeee"
+          trackSize={10}
+          min={0}
+          max={360}
+          width={150}
+          knobPosition="left"
+          direction={-1}
+          dataIndex={this.props.agent.angle_deg}
+          onChange={value => {this.handleChange(value)}} />
+      </div>
     )
   } // End Render
 } // End Class
-
 // Let us use in other componenets
 export default AngleDial;

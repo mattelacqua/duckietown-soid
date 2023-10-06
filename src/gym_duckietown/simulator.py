@@ -428,8 +428,15 @@ class Simulator(gym.Env):
         # Set the default state to stopped
         self.state = "pause"
         self.started  = False
-        self.querying = False
-        self.query_start = 0
+        self.query_info = {
+            'querying'    : False,
+            'query_start' : 0,
+            'query_type'  : None,
+            'finished'    : False,
+            'result'      : None,
+            'model'       : None,
+            'resources'   : None
+        }
         self.max_agents = max_agents
         MAX_AGENTS = max_agents
         self.c_info_struct = None

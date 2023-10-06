@@ -127,3 +127,46 @@
     width:100%
 }
 
+.ModalAgentCounterfactuals {
+    display:flex;
+    align-items: center;
+    flex-direction: column;
+    padding-bottom: 1em;
+    padding-left: 2.5em;
+    gap:1em;
+    overflow:hidden;
+}
+
+.ModalMadeCounterfactuals {
+    display:flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    flex-direction: column;
+    padding-bottom: 1em;
+    padding-left: 2.5em;
+    gap:1em;
+    overflow:hidden;
+}
+
+.ModalCounterfactualEntry {
+    display:flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    gap:1em;
+    width:100%;
+}
+
+.ModalCounterfactualEntry h3 {
+    margin-right: 2em;
+    margin-top: 1.6em;
+}
+
+.ModalMadeCounterfactual {
+    display:flex;
+    justify-content:space-between;
+    flex-direction: row;
+    align-items:flex-start;
+    padding-right: 2em;
+    width:100%
+}
+
