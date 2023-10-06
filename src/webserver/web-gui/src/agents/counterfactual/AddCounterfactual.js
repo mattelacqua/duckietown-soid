@@ -206,7 +206,6 @@ class AddCounterfactual extends React.Component {
     }
 
   handleClick(){
-    console.log("THIS STATE", this.state);
     this.props.socket.emit(
       "add_counterfactual",
       {
@@ -308,6 +307,8 @@ class AddCounterfactual extends React.Component {
       }
     }
 
+    let tc = (this.props.agent.id === 0) ? this.state.is_turnchoice : null;
+
     return (
       <div className="AddCounterfactuals">
         <div className="SpecCounterfactual">
@@ -320,7 +321,7 @@ class AddCounterfactual extends React.Component {
             is_forward_step={this.state.is_forward_step}
             is_speed={this.state.is_speed}
             is_signalchoice={this.state.is_signalchoice}
-            is_turnchoice={this.state.is_turnchoice}
+            is_turnchoice={tc}
             set_type={this.set_type} />
           <p>had</p>
           <ValueType  is_value={this.state.is_value}
@@ -334,7 +335,7 @@ class AddCounterfactual extends React.Component {
         </div>
         <div className="SetCounterfactual">
           <div className='StateButtons'>
-            <button className='addcounterfac' onClick= {this.handleClick}> Add Counterfactual  </button>
+            <button className='addcounterfac' onClick= {this.handleClick}> Add Counterfactual </button>
           </div>
         </div>
       </div>

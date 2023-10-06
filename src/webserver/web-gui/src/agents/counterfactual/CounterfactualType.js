@@ -35,8 +35,9 @@ class CounterfactualType extends React.Component {
           { value: 'is_forward_step', label: 'forward step (acceleration)' },
           { value: 'is_speed', label: 'speed' },
           { value: 'is_signalchoice', label: 'signal' },
-          { value: 'is_turnchoice', label: 'turn choice' }
     ];
+
+    if (this.props.is_turnchoice !== null) options.push({ value: 'is_turnchoice', label: 'turn choice' });
 
     return( 
       <div className='CounterfactualSelector'>
