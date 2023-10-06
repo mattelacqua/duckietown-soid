@@ -27,7 +27,7 @@ class CounterfactualModal extends React.Component {
     if (this.props.query_info.finished) {
       stat = 'queried';
       mark = (this.props.query_info.result) ? '\u2713' : '\u2717';
-      time = (this.props.query_info.resources.time.total)
+      time = (this.props.query_info.resources.time.total.toFixed(3))
     }
 
     let cfagents = this.props.agents.filter((agent) => agent.counterfactuals.length > 0)
