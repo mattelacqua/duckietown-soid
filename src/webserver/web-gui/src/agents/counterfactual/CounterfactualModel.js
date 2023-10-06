@@ -36,8 +36,8 @@ class CounterfactualModel extends React.Component {
     return (
       <div className="Model">
         {(format)
-         ? <p>model: <i>{(!this.props.finished) ? '???' : value.toString().toLowerCase()}</i></p>
-         : <p>model: {(!this.props.finished) ? '???' : value}</p> }
+         ? <p><b><i>{(!this.props.finished) ? '???' : value.toString().toLowerCase()}</i></b></p>
+         : <p><b>{(!this.props.finished) ? '???' : value}</b></p> }
       </div>
     )
   }

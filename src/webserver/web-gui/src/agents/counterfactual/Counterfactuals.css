@@ -170,3 +170,11 @@
     width:100%
 }
 
+.ModalOperate {
+    display:flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    padding-right: 2em;
+    padding-bottom: 2em;
+}
+
