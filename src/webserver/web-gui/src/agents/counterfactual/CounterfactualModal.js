@@ -2,6 +2,7 @@
 import React from 'react'
 import ReactModal from 'react-modal'
 
+import ModalClose from './ModalClose.js'
 import CounterfactualList from './CounterfactualList.js'
 
 class CounterfactualModal extends React.Component {
@@ -45,7 +46,13 @@ class CounterfactualModal extends React.Component {
                         width:  '60%',
                       } }} >
           <h3 style={{ fontWeight: 'normal' }}>Question: <i>{type[0]}</i> the agent <b>{move}</b>? In other words, will it do so for <i>{type[1]}</i> possible counterfactual? &nbsp;&nbsp;&nbsp;&nbsp; {mark}</h3>
-          <p style={{ fontSize: '10pt' }}><i>&nbsp;&nbsp;&nbsp;&nbsp; {stat} <b>soid</b>... time elapsed: {time}s</i></p>
+          <div className="ModalOperate">
+            <p style={{ fontSize: '10pt' }}><i>&nbsp;&nbsp;&nbsp;&nbsp; {stat} <b>soid</b>... time elapsed: {time}s</i></p>
+            {(this.props.query_info.finished)
+             ? <ModalClose agents={this.props.agents}
+                           socket={this.props.socket} />
+             : null}
+          </div>
           {cfagents.map((agent, index) => (
              <div className="ModalAgentCounterfactuals">
                <div class="card" style={{width: '45%'}}>

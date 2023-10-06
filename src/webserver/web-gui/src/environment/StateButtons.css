@@ -120,3 +120,14 @@
     align-items: center;
 }
 
+.alter {
+    transform: scale(0.7);
+    background-color: #88CCEE!important;
+    margin-top: 5px;
+    margin-left: -20px;
+}
+.clear {
+    transform: scale(0.7);
+    background-color: #882255!important;
+    margin-top: 5px;
+}
