@@ -162,7 +162,6 @@ def pause(dt):
     env.render(env.cam_mode)
 
     # Unschedule pause and resume rendering
-    print("MAKE IT HERE")
     pyglet.clock.unschedule(pause)
     pyglet.clock.schedule_interval(update, 1.0 / (env.unwrapped.frame_rate))
 
@@ -209,7 +208,6 @@ def update(dt):
     # If the agent finished set it to pause
     if env.agents[0].done:
         pyglet.clock.unschedule(update)
-        print("STUCK HERE")
         pyglet.clock.schedule_interval(pause, 1.0 / (env.unwrapped.frame_rate))
     else:
         env.step(learning=True)

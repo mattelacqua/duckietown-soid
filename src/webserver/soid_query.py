@@ -1,6 +1,5 @@
 import sys
 import soid
-from soid.soidlib import *
 import json
 import os
 import time
@@ -464,45 +463,45 @@ def generate_soid_query(query_blob):
             if tagged_cf['is_cf']:
                 counterfactual = tagged_cf['cf']
                 if counterfactual['is_pos_x']:
-                    E[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x', pp=None, raw=None)
+                    E[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x')
                 if counterfactual['is_pos_z']:
-                    E[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z', pp=None, raw=None)
+                    E[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z')
                 if counterfactual['is_angle']:
-                    E[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle', pp=None, raw=None)
+                    E[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle')
                 if counterfactual['is_forward_step']:
-                    E[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step', pp=None, raw=None)
+                    E[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step')
                 if counterfactual['is_speed']:
-                    E[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed', pp=None, raw=None)
+                    E[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed')
                 if counterfactual['is_turnchoice']:
-                    E[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_turn_choice', pp=None, raw=None)
+                    E[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_turn_choice')
                 if counterfactual['is_signalchoice']:
-                    E[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_signal_choice', pp=None, raw=None)
+                    E[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_signal_choice')
             elif tagged_cf['is_val']:
                 val_type = tagged_cf['val_type']
                 if val_type == 'pos_x':
-                    E[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x', pp=None, raw=None)
+                    E[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x')
                 if val_type == 'pos_z':
-                    E[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z', pp=None, raw=None)
+                    E[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z')
                 if val_type == 'angle':
-                    E[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle', pp=None, raw=None)
+                    E[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle')
                 if val_type == 'forward_step':
-                    E[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step', pp=None, raw=None)
+                    E[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step')
                 if val_type == 'speed':
-                    E[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed', pp=None, raw=None)
+                    E[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed')
                 if val_type == 'signal_choice':
-                    E[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_signal_choice', pp=None, raw=None)
+                    E[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_signal_choice')
                 if val_type == 'turn_choice':
-                    E[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_turn_choice', pp=None, raw=None)
+                    E[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_turn_choice')
                 if val_type == 'lookahead':
-                    E[f'agent{a_id}_lookahead'] = soid.soidlib.types.float(f'agent{a_id}_lookahead', pp=None, raw=None)
+                    E[f'agent{a_id}_lookahead'] = soid.soidlib.types.float(f'agent{a_id}_lookahead')
                 if val_type == 'intersection_arrival':
-                    E[f'agent{a_id}_intersection_arrival'] = soid.soidlib.types.int_bv(f'agent{a_id}_intersection_arrival', pp=None, raw=None)
+                    E[f'agent{a_id}_intersection_arrival'] = soid.soidlib.types.int_bv(f'agent{a_id}_intersection_arrival')
                 if val_type == 'initial_direction':
-                    E[f'agent{a_id}_initial_direction'] = soid.soidlib.types.int_bv(f'agent{a_id}_initial_direction', pp=None, raw=None)
+                    E[f'agent{a_id}_initial_direction'] = soid.soidlib.types.int_bv(f'agent{a_id}_initial_direction')
                 if val_type == 'patience':
-                    E[f'agent{a_id}_patience'] = soid.soidlib.types.int_bv(f'agent{a_id}_patience', pp=None, raw=None)
+                    E[f'agent{a_id}_patience'] = soid.soidlib.types.int_bv(f'agent{a_id}_patience')
                 if val_type == 'step_count':
-                    E[f'agent{a_id}_step_count'] = soid.soidlib.types.int_bv(f'agent{a_id}_step_count', pp=None, raw=None)
+                    E[f'agent{a_id}_step_count'] = soid.soidlib.types.int_bv(f'agent{a_id}_step_count')
 
         # declare state
         S = {}
@@ -511,49 +510,49 @@ def generate_soid_query(query_blob):
             if tagged_cf['is_cf']:
                 counterfactual = tagged_cf['cf']
                 if counterfactual['is_pos_x']:
-                    S[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x', pp=None, raw=None)
+                    S[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x')
                 if counterfactual['is_pos_z']:
-                    S[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z', pp=None, raw=None)
+                    S[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z')
                 if counterfactual['is_angle']:
-                    S[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle', pp=None, raw=None)
+                    S[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle')
                 if counterfactual['is_forward_step']:
-                    S[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step', pp=None, raw=None)
+                    S[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step')
                 if counterfactual['is_speed']:
-                    S[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed', pp=None, raw=None)
+                    S[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed')
                 if counterfactual['is_turnchoice']:
-                    S[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_turn_choice', pp=None, raw=None)
+                    S[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_turn_choice')
                 if counterfactual['is_signalchoice']:
-                    S[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_signal_choice', pp=None, raw=None)
+                    S[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_signal_choice')
             elif tagged_cf['is_val']:
                 val_type = tagged_cf['val_type']
                 if val_type == 'pos_x':
-                    S[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x', pp=None, raw=None)
+                    S[f'agent{a_id}_pos_x'] = soid.soidlib.types.float(f'agent{a_id}_pos_x')
                 if val_type == 'pos_z':
-                    S[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z', pp=None, raw=None)
+                    S[f'agent{a_id}_pos_z'] = soid.soidlib.types.float(f'agent{a_id}_pos_z')
                 if val_type == 'angle':
-                    S[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle', pp=None, raw=None)
+                    S[f'agent{a_id}_angle'] = soid.soidlib.types.float(f'agent{a_id}_angle')
                 if val_type == 'forward_step':
-                    S[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step', pp=None, raw=None)
+                    S[f'agent{a_id}_forward_step'] = soid.soidlib.types.float(f'agent{a_id}_forward_step')
                 if val_type == 'speed':
-                    S[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed', pp=None, raw=None)
+                    S[f'agent{a_id}_speed'] = soid.soidlib.types.float(f'agent{a_id}_speed')
                 if val_type == 'signal_choice':
-                    S[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_signal_choice', pp=None, raw=None)
+                    S[f'agent{a_id}_signal_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_signal_choice')
                 if val_type == 'turn_choice':
-                    S[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_turn_choice', pp=None, raw=None)
+                    S[f'agent{a_id}_turn_choice'] = soid.soidlib.types.int_bv(f'agent{a_id}_turn_choice')
                 if val_type == 'lookahead':
-                    S[f'agent{a_id}_lookahead'] = soid.soidlib.types.float(f'agent{a_id}_lookahead', pp=None, raw=None)
+                    S[f'agent{a_id}_lookahead'] = soid.soidlib.types.float(f'agent{a_id}_lookahead')
                 if val_type == 'intersection_arrival':
-                    S[f'agent{a_id}_intersection_arrival'] = soid.soidlib.types.int_bv(f'agent{a_id}_intersection_arrival', pp=None, raw=None)
+                    S[f'agent{a_id}_intersection_arrival'] = soid.soidlib.types.int_bv(f'agent{a_id}_intersection_arrival')
                 if val_type == 'initial_direction':
-                    S[f'agent{a_id}_initial_direction'] = soid.soidlib.types.int_bv(f'agent{a_id}_initial_direction', pp=None, raw=None)
+                    S[f'agent{a_id}_initial_direction'] = soid.soidlib.types.int_bv(f'agent{a_id}_initial_direction')
                 if val_type == 'patience':
-                    S[f'agent{a_id}_patience'] = soid.soidlib.types.int_bv(f'agent{a_id}_patience', pp=None, raw=None)
+                    S[f'agent{a_id}_patience'] = soid.soidlib.types.int_bv(f'agent{a_id}_patience')
                 if val_type == 'step_count':
-                    S[f'agent{a_id}_step_count'] = soid.soidlib.types.int_bv(f'agent{a_id}_step_count', pp=None, raw=None)
+                    S[f'agent{a_id}_step_count'] = soid.soidlib.types.int_bv(f'agent{a_id}_step_count')
 
         # declare behaviors
         D = {}
-        D[f'will_proceed'] = soid.soidlib.types.bool_bv(f'will_proceed', pp=None, raw=None)
+        D[f'will_proceed'] = soid.soidlib.types.bool_bv(f'will_proceed')
 
         return E,S, D
 
@@ -785,6 +784,17 @@ def generate_soid_query(query_blob):
 
     return query
 
+
+def process(query_blob, models):
+    num_agents = int(query_blob['environment']['num_agents'])
+
+    if not models[0]:
+        return [ {} for i in range(num_agents) ]
+
+    print(models[0])
+    return [ {} for i in range(num_agents) ]
+
+
 def invoke_soid(query_blob, env = None, out = None, serialize = None):
     oracle = soid.Oracle()
     klee_prefix = "src/webserver/soid_files/klee/"
@@ -805,8 +815,8 @@ def invoke_soid(query_blob, env = None, out = None, serialize = None):
             'query_start' : time.time(),
             'query_type'  : query_type(),
             'finished'    : False,
-            'result'      : None, 
-            'model'       : None, 
+            'result'      : None,
+            'model'       : None,
             'resources'   : None
         }
     }
@@ -814,8 +824,7 @@ def invoke_soid(query_blob, env = None, out = None, serialize = None):
     serialize(query_start, out)
 
     # invoke soid
-    time.sleep(10)
-    #(info, res, models, resources) = soid.invoke(oracle, make, query)
+    (info, res, models, resources) = soid.invoke(oracle, make, query)
 
     query_result = {
         'kind' : 'soid_finish',
@@ -824,15 +833,15 @@ def invoke_soid(query_blob, env = None, out = None, serialize = None):
             'query_start' : query_start['query_info']['query_start'],
             'query_type'  : query_start['query_info']['query_type'],
             'finished'    : True,
-            'result'      : True,  #res
-            'model'       : [ { 'speed' : 0.3 }, { 'signal_choice' : 'Right' } ], #model, need to process...
-            'resources'   : { 'time' : { 'total' : 7.2 } } # resources
+            'result'      : res,
+            'model'       : process(models),
+            'resources'   : resources
         }
     }
     env.query_info = query_result[ 'query_info' ]
     serialize(query_result, out)
 
-    #return res, model, resources
+    return res, model, resources
 
 ### for running benchmarks
 
