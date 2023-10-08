@@ -644,7 +644,7 @@ def generate_soid_query(query_blob):
                         if not direction_formula:
                             direction_formula = soid.soidlib.Equal(declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(direction))
                             continue
-                        direction_formula = Or (
+                        direction_formula = soid.soidlib.Or (
                             soid.soidlib.Equal(declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(direction)),
                             direction_formula
                         )
@@ -683,7 +683,7 @@ def generate_soid_query(query_blob):
             if sub_formula == None:
                 sub_formula = get_constraint(declare_type, tagged_cf)
                 continue
-            sub_formula = Or (
+            sub_formula = soid.soidlib.Or (
                 get_constraint(declare_type, tagged_cf),
                 sub_formula)
         return sub_formula
@@ -760,7 +760,7 @@ def generate_soid_query(query_blob):
             if sub_formula == None:
                 continue
             else:
-                formula = And (
+                formula = sid.soidlib.And (
                     sub_formula,
                     formula)
 
