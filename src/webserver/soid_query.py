@@ -760,7 +760,7 @@ def generate_soid_query(query_blob):
             if sub_formula == None:
                 continue
             else:
-                formula = sid.soidlib.And (
+                formula = soid.soidlib.And (
                     sub_formula,
                     formula)
 
