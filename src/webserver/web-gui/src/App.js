@@ -57,19 +57,19 @@ class App extends React.Component{
   async update_from_sim() {
     socket.emit("update_sim_info");
 
-    let new_ref;
+    let ref;
 
     // Fetch for env info
     await fetch("/envInfo.json", {headers: headers}) // Shorthand for http://127.0.0.1:5001/envInfo.json
       .then(res => res.json()) // Result becomes a json
       .then(result =>
-        { new_ref = result;
-          if (!_.isEqual(new_ref, this.state.env_info)) {
+        { ref = result;
+          if (!_.isEqual(ref, this.state.env_info)) {
             this.setState({
-              env_info: new_ref,
+              env_info: ref,
               EnvLoaded: true,
-              sim_state: new_ref.state,
-              started: new_ref.started
+              sim_state: ref.state,
+              started: ref.started
             });
           } // Endif
       })
@@ -86,7 +86,7 @@ class App extends React.Component{
 
     this.forceUpdate();
 
-    return new_ref;
+    return ref;
   }
 
   // When we renderour App, fetch the agent information
