@@ -10,7 +10,7 @@ class RenderedScene extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      src: "http://127.0.0.1:5001/renderedScene",
+      src: "http://172.28.229.94:5001/renderedScene",
       key: Date.now(),
       lst: Date.now(),
     };
@@ -21,7 +21,7 @@ class RenderedScene extends React.Component {
 
   tick() {
     this.setState({
-      src: "http://127.0.0.1:5001/renderedScene",
+      src: "http://172.28.229.94:5001/renderedScene",
       key: Date.now(),
       lst: this.state.lst,
     })
@@ -29,7 +29,7 @@ class RenderedScene extends React.Component {
 
   error_tick() {
     this.setState({
-      src: "http://127.0.0.1:5001/renderedScene",
+      src: "http://172.28.229.94:5001/renderedScene",
       key: Date.now(),
       lst: this.state.lst,
     });
@@ -44,7 +44,7 @@ class RenderedScene extends React.Component {
   }
 
   componentDidMount() {
-    this.interval = setInterval(() => this.tick(), 200);
+    this.interval = setInterval(() => this.tick(), 300);
   }
   
   // Render the information to screen
@@ -57,7 +57,7 @@ class RenderedScene extends React.Component {
                 float: 'left',
                 height: '450px',
                 width: '600px',
-                backgroundImage: "url('http://127.0.0.1:5001/mapImageBackground')",
+                backgroundImage: "url('http://172.28.229.94:5001/mapImageBackground')",
                 backgroundSize: "cover",
                 background: "gray15",
               }}>
