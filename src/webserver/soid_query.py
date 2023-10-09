@@ -6,11 +6,11 @@ import time
 
 # Generate the soid query
 def get_dl_direction(direction):
-    if direction == 'Straight':
+    if direction == 'Straight' or direction == 'straight':
         return 0
-    if direction == 'Left':
+    if direction == 'Left' or direction == 'left':
         return 1
-    if direction == 'Right':
+    if direction == 'Right' or direction == 'right':
         return 2
 
 def generate_soid_query(query_blob):
@@ -575,22 +575,10 @@ def generate_soid_query(query_blob):
                     return soid.soidlib.Equal( declare_type[f"agent{tagged_cf['id']}_forward_step"], float(counterfactual['value']))
                 if counterfactual['is_turnchoice']:
                     direction = counterfactual['value']
-                    if direction == "Straight":
-                        direction = 0
-                    if direction == "Left":
-                        direction = 1
-                    if direction == "Right":
-                        direction = 2
-                    return soid.soidlib.Equal( declare_type[f"agent{tagged_cf['id']}_turn_choice"], int(direction))
+                    return soid.soidlib.Equal( declare_type[f"agent{tagged_cf['id']}_turn_choice"], int(get_dl_direction(direction)))
                 if counterfactual['is_signalchoice']:
                     direction = counterfactual['value']
-                    if direction == "Straight":
-                        direction = 0
-                    if direction == "Left":
-                        direction = 1
-                    if direction == "Right":
-                        direction = 2
-                    return soid.soidlib.Equal( declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(direction))
+                    return soid.soidlib.Equal( declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(get_dl_direction(direction)))
             if counterfactual['is_range']:
                 low_bound = counterfactual['range']['low_bound']
                 high_bound = counterfactual['range']['high_bound']
@@ -618,34 +606,22 @@ def generate_soid_query(query_blob):
                 if counterfactual['is_turnchoice']:
                     direction_formula = False
                     for direction in turn_choices:
-                        if direction == 'Straight':
-                            direction = 0
-                        if direction == 'Left':
-                            direction = 1
-                        if direction == 'Right':
-                            direction = 2
                         if not direction_formula:
-                            direction_formula = soid.soidlib.Equal(declare_type[f"agent{tagged_cf['id']}_turn_choice"], int(direction))
+                            direction_formula = soid.soidlib.Equal(declare_type[f"agent{tagged_cf['id']}_turn_choice"], int(get_dl_direction(direction)))
                             continue
                         direction_formula = soid.soidlib.Or (
-                            soid.soidlib.Equal(declare_type[f"agent{tagged_cf['id']}_turn_choice"], int(direction)),
+                            soid.soidlib.Equal(declare_type[f"agent{tagged_cf['id']}_turn_choice"], int(get_dl_direction(direction))),
                             direction_formula
                         )
                     return direction_formula
                 if counterfactual['is_signalchoice']:
                     direction_formula = None
                     for direction in turn_choices:
-                        if direction == 'Straight':
-                            direction = 0
-                        if direction == 'Left':
-                            direction = 1
-                        if direction == 'Right':
-                            direction = 2
                         if not direction_formula:
-                            direction_formula = soid.soidlib.Equal(declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(direction))
+                            direction_formula = soid.soidlib.Equal(declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(get_dl_direction(direction)))
                             continue
                         direction_formula = soid.soidlib.Or (
-                            soid.soidlib.Equal(declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(direction)),
+                            soid.soidlib.Equal(declare_type[f"agent{tagged_cf['id']}_signal_choice"], int(get_dl_direction(direction))),
                             direction_formula
                         )
                     return direction_formula
