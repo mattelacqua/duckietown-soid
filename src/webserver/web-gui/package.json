@@ -2,7 +2,10 @@
   "name": "web-gui",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://127.0.0.1:5001/",
+  "options": {
+    "allowedHosts": [ "172.28.229.94" ],
+    "proxy": "http://172.28.229.94:5001/"
+  },
   "dependencies": {
     "@fseehawer/react-circular-slider": "^2.5.9",
     "@testing-library/jest-dom": "^5.16.4",
@@ -28,7 +31,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "HOST=172.28.229.94 PORT=3000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

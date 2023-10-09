@@ -109,7 +109,7 @@ gu.init_server(0, out, env, None, get_map=True)
 print("Connecting to Socket")
 socket = socketio.Client()
 while True:
-    try:    socket.connect('http://127.0.0.1:5001', wait=True)
+    try:    socket.connect('http://172.28.229.94:5001', wait=True)
     except Exception as e: pass
     else:   break
 

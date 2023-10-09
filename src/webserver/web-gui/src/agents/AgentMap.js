@@ -77,10 +77,10 @@ class AgentMap extends React.Component {
     let data = {
       datasets
     };
-    
+
     // Load background image
     const image = new Image();
-    image.src = 'http://127.0.0.1:5001/mapImage';
+    image.src = 'http://172.28.229.94:5001/mapImage';
 
     const map_background = {
       beforeDraw: (chart) => {
@@ -96,7 +96,7 @@ class AgentMap extends React.Component {
         }
       }}
     };
-    
+
     const options = {
       aspectRatio: 1,
       onResize: this.update_point_size,
@@ -104,7 +104,7 @@ class AgentMap extends React.Component {
       // Elements
       elements : {
         point : {
-            radius : this.state.car_radius * 0.9, 
+            radius : this.state.car_radius * 0.9,
             pointStyle: 'rect',
         },
       },
@@ -139,7 +139,7 @@ class AgentMap extends React.Component {
           }
         },
       }, // End plugin
-      
+
       // Parsing
       parsing: {
           xAxisKey: 'x',
@@ -177,18 +177,18 @@ class AgentMap extends React.Component {
           type: "linear",
         }, // End x
       }, // End Scales
-      
-    }; // End options  
+
+    }; // End options
 
     return (
         <div classname='AgentMap'>
-        <Line ref={this.chartReference} 
-              classname="AgentMap" 
-              options={options} 
-              data={data} 
+        <Line ref={this.chartReference}
+              classname="AgentMap"
+              options={options}
+              data={data}
               width={550}
               height={550}
-              plugins={[map_background]} 
+              plugins={[map_background]}
               />
         </div>
     );
@@ -196,4 +196,3 @@ class AgentMap extends React.Component {
 } // end component
 
 export default AgentMap;
-
