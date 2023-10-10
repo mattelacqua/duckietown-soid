@@ -146,7 +146,7 @@ def handle_input(env, gui_input, out):
         # Invoke soid to generate the soid query over the blob
         soid_result = sq.invoke_soid(query_blob, env, out, serialize)
 
-        env.soid_result = soid_result
+        #env.soid_result = soid_result
 
     env.c_info_struct = agents.EnvironmentInfo(env)
 
