@@ -814,11 +814,17 @@ def invoke_soid(query_blob, env = None, out = None, serialize = None):
             'resources'   : None
         }
     }
-    env.query_info = query_start[ 'query_info' ]
-    serialize(query_start, out)
+    if env:
+        env.query_info = query_start[ 'query_info' ]
+    if out and serialize:
+        serialize(query_start, out)
 
     # invoke soid
     (info, res, models, resources) = soid.invoke(oracle, make, query)
+
+    model = models['raw']
+    if serialize:
+        model = process(query_blob, models)
 
     query_result = {
         'kind' : 'soid_finish',
@@ -828,14 +834,17 @@ def invoke_soid(query_blob, env = None, out = None, serialize = None):
             'query_type'  : query_start['query_info']['query_type'],
             'finished'    : True,
             'result'      : res,
-            'model'       : process(query_blob, models),
+            'model'       : model,
             'resources'   : resources
         }
     }
-    env.query_info = query_result[ 'query_info' ]
-    serialize(query_result, out)
+    if env:
+        env.query_info = query_result[ 'query_info' ]
+    if out and serialize:
+        serialize(query_result, out)
 
-    return res, models, resources
+    return info, res, models, resources
+
 
 ### for running benchmarks
 
@@ -845,4 +854,16 @@ if __name__ == '__main__':
     else:
         query_prefix = 'src/webserver/soid_files/query_blobs/experiments/'
         query_blob = json.load(open(query_prefix + sys.argv[1]))
-    invoke_soid(query_blob)
+
+    print(f"Soid Results:")
+    info, res, models, resources = invoke_soid(query_blob)
+
+    print(f"Result: {res} Resources: {resources}")
+    model_prefix = "src/webserver/soid_files/klee/models/"
+    if models:
+	if not os.path.exists(model_prefix):
+            os.makedirs(model_prefix)
+	print(f"Model in {model_prefix}")
+	model_file = open((model_prefix + "model.out"), 'w', encoding="utf-8")
+	model_file.write(f"{models['raw']}")
+	model_file.close()
