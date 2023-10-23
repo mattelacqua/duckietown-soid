@@ -861,9 +861,9 @@ if __name__ == '__main__':
     print(f"Result: {res} Resources: {resources}")
     model_prefix = "src/webserver/soid_files/klee/models/"
     if models:
-	if not os.path.exists(model_prefix):
+        if not os.path.exists(model_prefix):
             os.makedirs(model_prefix)
-	print(f"Model in {model_prefix}")
-	model_file = open((model_prefix + "model.out"), 'w', encoding="utf-8")
-	model_file.write(f"{models['raw']}")
-	model_file.close()
+        print(f"Model in {model_prefix}")
+        model_file = open((model_prefix + "model.out"), 'w', encoding="utf-8")
+        model_file.write(f"{models['raw']}")
+        model_file.close()
