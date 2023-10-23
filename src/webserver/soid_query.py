@@ -15,9 +15,9 @@ def get_dl_direction(direction):
 
 def generate_soid_query(query_blob):
     if query_blob['query']['is_universal']:
-        query = soid.soidlib.Soid('GUI Query', soid.soidlib.verification) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
+        query = soid.soidlib.Soid('GUI Query', soid.soidlib.would)
     if query_blob['query']['is_existential']:
-        query = soid.soidlib.Soid('GUI Query', soid.soidlib.counterfactual.single) # counterfactual.single for 'exists queries' : counterfactual.verification for 'for all queries'
+        query = soid.soidlib.Soid('GUI Query', soid.soidlib.might)
 
     q_environment = query_blob['environment']
     agents = query_blob['agents']
