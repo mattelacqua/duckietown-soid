@@ -6,12 +6,10 @@ class DeleteCounterfactual extends React.Component {
 
   constructor(props) {
     super(props);
-    this.State = {
-    };
+    this.state = {};
   }
 
   handleClick = () => {
-    console.log('deleting counterfactual ' + this.props.index);
     this.props.socket.emit(
       'delete_counterfactual', 
       {

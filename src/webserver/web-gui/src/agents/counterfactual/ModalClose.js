@@ -9,8 +9,8 @@ class ModalClose extends React.Component {
     this.state = {};
   }
 
-  async handleClick(state) {
-    //
+  handleClick = (state) => {
+    this.props.socket.emit('end_query', { 'type': state });
   }
 
   render() {

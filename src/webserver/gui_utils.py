@@ -148,6 +148,23 @@ def handle_input(env, gui_input, out):
 
         #env.soid_result = soid_result
 
+    # If user wants to end a previously run query
+    if gui_input['kind'] == 'clear_query' or gui_input['kind'] == 'alter_query':
+        env.query_info = {
+            'querying'    : False,
+            'query_start' : 0,
+            'query_type'  : None,
+            'finished'    : False,
+            'result'      : None,
+            'model'       : None,
+            'resources'   : None
+        }
+        env.soid_result = {}
+
+        if gui_input['kind'] == 'clear_query':
+            for agent in env.agents:
+                agent.counterfactuals.clear()
+
     env.c_info_struct = agents.EnvironmentInfo(env)
 
     return env.state

@@ -1,6 +1,5 @@
 import React from 'react'
 
-
 class CounterfactualModel extends React.Component {
 
   constructor(props) {
@@ -10,7 +9,7 @@ class CounterfactualModel extends React.Component {
 
   // Render the conponents
   render() {
-    
+
     let nmap = {
       'is_angle' : 'angle',
       'is_forward_step' : 'forward_step',
@@ -22,17 +21,17 @@ class CounterfactualModel extends React.Component {
       'is_turnchoice' : 'turn_choice'
     }
 
-    let value  = 'N/A';
-    let format = false;
+    var value  = 'N/A';
+    var format = false;
     if (this.props.model) {
-      [ 'is_angle', 'is_forward_step', 'is_pos_x', 'is_pos_z',  'is_range', 'is_signalchoice', 'is_speed', 'is_turnchoice' ].forEach((type) => {
+      for (let type in ['is_angle', 'is_forward_step', 'is_pos_x', 'is_pos_z',  'is_range', 'is_signalchoice', 'is_speed', 'is_turnchoice']) {
         if (this.props.counterfactual[type]) {
           if (type === 'is_signalchoice' || type === 'is_turnchoice') format = true;
           value = this.props.model[nmap[type]];
         }
-      });
+      }
     }
-    
+
     return (
       <div className="Model">
         {(format)

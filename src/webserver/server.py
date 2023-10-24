@@ -246,5 +246,14 @@ def delete_counterfactual(data):
     }
     serialize(counterfactual_wrap, out)
 
+# Handle clear/modify query
+@socketio.on("end_query")
+def delete_counterfactual(data):
+    query_blob = {
+        'kind': 'clear_query' if data['type'] == 'clear' else 'alter_query',
+    }
+    serialize(query_blob, out)
+
+
 if __name__ == '__main__':
     socketio.run(app, port=5001)
