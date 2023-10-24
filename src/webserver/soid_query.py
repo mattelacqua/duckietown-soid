@@ -760,18 +760,16 @@ def generate_soid_query(query_blob):
 
     return query
 
-def process(query_blob, models):
+def process(query_blob, raw):
+    if not raw:
+        return
+
     num_agents = int(query_blob['environment']['num_agents'])
+    model = [{} for i in range(num_agents)]
 
-    model = [ {} for i in range(num_agents) ]
-    raw  = models[ 'raw' ] # todo: fix pp in soid so that can use that nicer interface
-
-    if not models:
-        return model
-
-    nflt = [ 'pos_x', 'pos_z', 'speed', 'angle', 'forward_step' ]
-    ndir = [ 'signal_choice', 'turn_choice' ]
-    dir_arr = [ 'straight', 'left', 'right' ]
+    nflt = ['pos_x', 'pos_z', 'speed', 'angle', 'forward_step']
+    ndir = ['signal_choice', 'turn_choice']
+    dir_arr = ['straight', 'left', 'right']
 
     for key in raw:
         try:
@@ -815,13 +813,14 @@ def invoke_soid(query_blob, env = None, out = None, serialize = None):
         }
     }
     if env:
-        env.query_info = query_start[ 'query_info' ]
+        env.query_info = query_start['query_info']
     if out and serialize:
         serialize(query_start, out)
 
     # invoke soid
     (info, res, models, resources) = soid.invoke(oracle, make, query)
 
+    # todo: fix pp in soid so that can use that nicer interface
     model = models['raw']
     if serialize:
         model = process(query_blob, models)
@@ -839,7 +838,7 @@ def invoke_soid(query_blob, env = None, out = None, serialize = None):
         }
     }
     if env:
-        env.query_info = query_result[ 'query_info' ]
+        env.query_info = query_result['query_info']
     if out and serialize:
         serialize(query_result, out)
 
