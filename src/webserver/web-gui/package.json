@@ -2,6 +2,10 @@
   "name": "web-gui",
   "version": "0.1.0",
   "private": true,
+  "options": {
+    "allowedHosts": ["127.0.0.1", "localhost", ".localhost"],
+    "proxy": "http://127.0.0.1:5001/"
+  },
   "proxy": "http://127.0.0.1:5001/",
   "dependencies": {
     "@fseehawer/react-circular-slider": "^2.5.9",
