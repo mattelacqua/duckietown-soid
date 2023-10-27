@@ -113,7 +113,7 @@ class App extends React.Component{
         <CounterfactualModal
           query_info={this.state.env_info.query_info}
           agents={this.state.env_info.agents}
-          socket={this.state.socker} />
+          socket={this.state.socket} />
         <div className="App">
           <div className="Modify-wrap">
             <RenderedScene sim_state={this.state.sim_state}
