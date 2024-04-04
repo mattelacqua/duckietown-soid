@@ -10,7 +10,7 @@ class RenderedScene extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      src: "http://172.28.229.94:5001/renderedScene",
+      src: "http://10.66.3.100:5001/renderedScene",
       key: Date.now(),
       lst: Date.now(),
     };
@@ -21,7 +21,7 @@ class RenderedScene extends React.Component {
 
   tick() {
     this.setState({
-      src: "http://172.28.229.94:5001/renderedScene",
+      src: "http://10.66.3.100:5001/renderedScene",
       key: Date.now(),
       lst: this.state.lst,
     })
@@ -29,7 +29,7 @@ class RenderedScene extends React.Component {
 
   error_tick() {
     this.setState({
-      src: "http://172.28.229.94:5001/renderedScene",
+      src: "http://10.66.3.100:5001/renderedScene",
       key: Date.now(),
       lst: this.state.lst,
     });
@@ -44,9 +44,9 @@ class RenderedScene extends React.Component {
   }
 
   componentDidMount() {
-    this.interval = setInterval(() => this.tick(), 300);
+    this.interval = setInterval(() => this.tick(), 200);
   }
-  
+
   // Render the information to screen
   render() {
     return (
@@ -57,11 +57,11 @@ class RenderedScene extends React.Component {
                 float: 'left',
                 height: '450px',
                 width: '600px',
-                backgroundImage: "url('http://172.28.229.94:5001/mapImageBackground')",
+                backgroundImage: "url('http://10.66.3.100:5001/mapImageBackground')",
                 backgroundSize: "cover",
                 background: "gray15",
               }}>
-          
+
             {/* HTML FOR IMAGE */}
             <img src={this.state.src + "?v=" + this.state.key}
                  onLoad={() => { this.load_tick() }}
@@ -71,9 +71,9 @@ class RenderedScene extends React.Component {
                           float: 'left',
                           height: '450px',
                           width: '600px',
-                  }} /> 
+                  }} />
         </div>
-        <Environment  max_NS={this.props.max_NS} 
+        <Environment  max_NS={this.props.max_NS}
                       max_EW={this.props.max_EW}
                       tile_size={this.props.tile_size}
                       sim_state={this.props.sim_state}

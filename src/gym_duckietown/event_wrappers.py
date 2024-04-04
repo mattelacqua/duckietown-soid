@@ -23,7 +23,7 @@ def on_mouse_press(x, y, button, modifiers, update, pause):
     This handler processes keyboard commands that
     control the simulation
     """
-    webbrowser.open('http://172.28.229.94:3000', new=1)
+    webbrowser.open('http://10.66.3.100:3000', new=1)
     pyglet.clock.unschedule(update)
     pyglet.clock.schedule_once(pause, 0.0)
 

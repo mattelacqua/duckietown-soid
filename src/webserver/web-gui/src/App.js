@@ -25,7 +25,7 @@ import _ from 'lodash';
 import io from 'socket.io-client';
 
 // Create the socket
-const socket = io("http://172.28.229.94:5001");
+const socket = io("http://10.66.3.100:5001");
 
 const headers = new Headers();
 headers.set('Accept', '*');
@@ -61,7 +61,7 @@ class App extends React.Component{
     let ref;
 
     // Fetch for env info
-    await fetch("http://172.28.229.94:5001/envInfo.json", { headers : headers })
+    await fetch("http://10.66.3.100:5001/envInfo.json", { headers : headers })
       .then(res => res.json()) // Result becomes a json
       .then(result =>
         { ref = result;
@@ -78,7 +78,7 @@ class App extends React.Component{
 
     // Get the rendered image
     const image = new Image();
-    image.src = 'http://172.28.229.94:5001/renderedScene';
+    image.src = 'http://10.66.3.100:5001/renderedScene';
 
     this.setState({
       rendered_img: image,
